@@ -1,5 +1,15 @@
 # Frontend environment
 
+## Minimal simulator dashboard
+
+The dashboard uses a light contact-network canvas on the left and a synchronized temporal chart plus scenario parameters on the right. Navigation is reduced to Simulador, Comparación and Ayuda. Labels and input text use 16px, with 15px supporting text. The surprise-outbreak section and its navigation are removed; its domain helpers remain available to existing tests.
+
+The follow-up preview explains that each point (node) represents a synthetic person and each line a contact. Origin controls use Origen aleatorio, Persona específica and Número de persona; internal API/configuration keys are unchanged. Evolution displays all four states directly, without a state selector. Initial fit, centering and fit controls share 16px padding to enlarge the complete network; the native Cytoscape wheel sensitivity is restored without custom wheel listeners or animation timers. Browser checks observed wheel zoom in/out, complete recentering, person-origin field visibility and synchronized day-3 counts (102/2/3/3). All 9 tests and the production build passed.
+
+Simulation data, playback, filters, validation and configuration-draft export retain their existing behavior. The chart/network demo remains independent of scenario parameters; the main action validates configuration without claiming to run the disconnected engine. Narrow screens stack the workbench and preserve readable controls.
+
+PRODUCT.md and DESIGN.md record the current product scope and interface. The sections below include earlier implementation and verification history.
+
 ## Committee interface refinement
 
 The temporal chart's state selector includes “Todos los estados”, displaying Sano, Mordido, Zombie and Exorcizado together. Each line has its own color and dash pattern; a legend shows counts for the current playback day. Individual-state views, the synchronized day boundary, and the complete data table remain available. Browser verification observed four series in the combined view and one after selecting Zombie; build and all 9 existing tests passed.
@@ -30,7 +40,7 @@ The environment includes the generated shadcn Button at `src/components/ui/butto
 
 ## Scope
 
-The first interactive workspace is implemented: editable scenario controls, advanced parameters, four non-accumulating surprise presets, a Cytoscape contact-network illustration with layer filtering and fit control, Recharts example curves with an equivalent table, responsive navigation, Base UI dialogs, and configuration-draft JSON downloads.
+The interactive workspace includes editable scenario controls, advanced parameters, a Cytoscape contact-network illustration with layer filtering and fit control, a synchronized temporal chart and equivalent table, a separate illustrative comparison view, responsive navigation, Base UI dialogs, and configuration-draft JSON downloads. Surprise presets are no longer exposed in the current UI preview.
 
 All network and curve data are fixed illustrations, independent of scenario inputs. They are explicitly marked and are not schema-validated experiment fixtures. No simulation runs, hashes, paired metrics or recommendations are fabricated. The Run action validates inputs and explains that the API is unavailable. Downloads contain a UI configuration draft, not canonical experiment requests or reproducible results. No persistence or remote calls are implemented.
 

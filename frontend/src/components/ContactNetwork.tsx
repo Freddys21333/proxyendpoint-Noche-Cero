@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import cytoscape from "cytoscape";
 import {
@@ -34,8 +35,10 @@ import {
   playbackReducer,
   initialPlayback,
 } from "@/lib/temporal-demo";
+import "./ContactNetwork.css";
 
 const elements = buildDemoNetwork();
+const FIT_PADDING = 16;
 const TemporalChart = lazy(() => import("@/components/TemporalChart"));
 const nodes = elements.filter((element) => "state" in element.data);
 const layers: Record<string, string> = {
@@ -58,9 +61,11 @@ const states: Record<
 export function ContactNetwork({
   resetKey,
   layer,
+  children,
 }: {
   resetKey: number;
   layer: string;
+  children?: ReactNode;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const network = useRef<cytoscape.Core | null>(null);
@@ -113,7 +118,6 @@ export function ContactNetwork({
       boxSelectionEnabled: false,
       minZoom: 0.25,
       maxZoom: 3,
-      wheelSensitivity: 0.15,
       style: [
         {
           selector: "node",
@@ -122,7 +126,7 @@ export function ContactNetwork({
             height: 17,
             "background-color": states.S.color,
             "border-width": 1.5,
-            "border-color": "#20382f",
+            "border-color": "#365b4a",
             "overlay-opacity": 0,
           },
         },
@@ -146,10 +150,10 @@ export function ContactNetwork({
             "border-color": "#713f36",
 
             "font-size": 14,
-            color: "#f2c6ba",
+            color: "#934534",
             "text-margin-y": -13,
             "text-valign": "top",
-            "text-background-color": "#12251e",
+            "text-background-color": "#f8fbf8",
             "text-background-opacity": 0.9,
             "text-background-padding": "4px",
           },
@@ -165,8 +169,8 @@ export function ContactNetwork({
           selector: "edge",
           style: {
             width: 1,
-            "line-color": "#587a6a",
-            opacity: 0.7,
+            "line-color": "#a8c0b2",
+            opacity: 0.6,
             "curve-style": "straight",
           },
         },
@@ -180,11 +184,11 @@ export function ContactNetwork({
           selector: `node[id="${id}"]`,
           style: {
             label,
-            color: "#b9cec2",
-            "font-size": 14,
+            color: "#365b4a",
+            "font-size": 16,
             "text-valign": "top" as const,
             "text-margin-y": -16,
-            "text-background-color": "#12251e",
+            "text-background-color": "#f8fbf8",
             "text-background-opacity": 0.9,
             "text-background-padding": "4px",
           },
@@ -194,18 +198,18 @@ export function ContactNetwork({
           selector: 'node[id="8"]',
           style: {
             label: "Paciente cero",
-            color: "#f2c6ba",
-            "font-size": 14,
+            color: "#934534",
+            "font-size": 16,
             "text-valign": "top",
             "text-margin-y": -13,
-            "text-background-color": "#12251e",
+            "text-background-color": "#f8fbf8",
             "text-background-opacity": 0.9,
             "text-background-padding": "4px",
           },
         },
         {
           selector: "node.day-event",
-          style: { "border-color": "#e6d4b0", "border-width": 3 },
+          style: { "border-color": "#906d2e", "border-width": 3 },
         },
         {
           selector: "node.day-vaccine",
@@ -213,17 +217,17 @@ export function ContactNetwork({
         },
         {
           selector: "edge.connected",
-          style: { "line-color": "#d7eadf", width: 2, opacity: 1 },
+          style: { "line-color": "#315d47", width: 2, opacity: 1 },
         },
         {
           selector: "node.neighbor",
-          style: { "border-color": "#c8ded1", "border-width": 2 },
+          style: { "border-color": "#315d47", "border-width": 2 },
         },
         {
           selector: "node:selected",
           style: {
             opacity: 1,
-            "border-color": "#fff",
+            "border-color": "#173e32",
             "border-width": 3,
             "overlay-opacity": 0,
           },
@@ -268,7 +272,7 @@ export function ContactNetwork({
             }
         });
         previousCompact = compact;
-        cy.fit(undefined, compact ? 24 : 35);
+        cy.fit(undefined, FIT_PADDING);
       }
     };
     const resize = new ResizeObserver(resizeViewport);
@@ -282,7 +286,7 @@ export function ContactNetwork({
   }, []);
 
   useEffect(() => {
-    network.current?.fit(undefined, 35);
+    network.current?.fit(undefined, FIT_PADDING);
   }, [resetKey]);
   useEffect(() => {
     const cy = network.current;
@@ -336,10 +340,18 @@ export function ContactNetwork({
   }
 
   return (
-    <div className="network-workbench">
+    <div className="simulator-workbench network-workbench">
+      <section className="network-demo-panel" aria-label="Red de contactos de demostración">
+        <header className="network-demo-heading">
+          <h2>Red de contactos</h2>
+          <span>Demo · 110 personas · 20 días</span>
+        </header>
+        <p className="network-meaning" id={`${pickerId}-guide`}>
+          Cada punto (nodo) es una persona; cada línea, un contacto.
+        </p>
       <div
         className="seir-instrument"
-        aria-label="Estados de los 110 nodos de demostración"
+        aria-label="Estados de las 110 personas de demostración"
       >
         {(Object.keys(states) as DemoState[]).map((state) => (
           <div
@@ -359,16 +371,6 @@ export function ContactNetwork({
           </div>
         ))}
       </div>
-      <div className="network-data-note">
-        Demo temporal guiada · 110 personas · 20 días · independiente del
-        formulario
-      </div>
-      <div className="network-reading-guide" id={`${pickerId}-guide`}>
-        <span><i className="person-key" aria-hidden="true" /> Cada punto es una persona sintética.</span>
-        <span><i className="contact-key" aria-hidden="true" /> Cada línea es un contacto.</span>
-        <small>Los grupos indican contextos de contacto, no ubicaciones geográficas.</small>
-      </div>
-      <div className="network-explorer">
         <div className="network-view">
           <div
             ref={container}
@@ -377,12 +379,8 @@ export function ContactNetwork({
             aria-label="Red de demostración de 110 personas sintéticas. Seleccione una persona en el grafo o use el selector del panel contextual."
             aria-describedby={`${pickerId}-guide`}
           />
-          <div className="graph-mode-label">
-            <span />
-            Reproducción de demostración
-          </div>
           <div className="graph-day-label">
-            Día {playback.day} · {frame.events.length} eventos
+            Día {playback.day} · {frame.events.length} {frame.events.length === 1 ? "evento" : "eventos"}
           </div>
           <div
             className="network-zoom"
@@ -405,7 +403,7 @@ export function ContactNetwork({
             <button
               type="button"
               aria-label="Ajustar grafo a la vista"
-              onClick={() => network.current?.fit(undefined, 35)}
+              onClick={() => network.current?.fit(undefined, FIT_PADDING)}
             >
               <Crosshair size={17} />
             </button>
@@ -415,132 +413,6 @@ export function ContactNetwork({
             Arrastrar · ampliar · seleccionar
           </p>
         </div>
-        <aside
-          className="node-inspector"
-          aria-label="Panel contextual de nodos"
-        >
-          <div className="node-inspector-heading">
-            <h3>Persona seleccionada</h3>
-            {detail && (
-              <button
-                aria-label="Limpiar selección"
-                onClick={() => setSelectedId("")}
-              >
-                <X size={15} />
-              </button>
-            )}
-          </div>
-          <label htmlFor={pickerId}>Elegir persona por ID</label>
-          <select
-            id={pickerId}
-            value={selectedId}
-            onChange={(event) => setSelectedId(event.target.value)}
-          >
-            <option value="">Seleccione una persona</option>
-            {nodes.map(({ data }) => (
-              <option key={data.id} value={data.id}>
-                Persona {data.id.padStart(3, "0")} · {layers[data.group]}
-              </option>
-            ))}
-          </select>
-          <div className="node-context" aria-live="polite" aria-atomic="true">
-            {detail ? (
-              <>
-                <div className="node-context-id">
-                  Persona <strong>{detail.id.padStart(3, "0")}</strong>
-                </div>
-                <div
-                  className="node-state-tag"
-                  title={states[detail.state].description}
-                  style={
-                    {
-                      "--state-color": states[detail.state].color,
-                    } as CSSProperties
-                  }
-                >
-                  <span
-                    className="seir-status-dot"
-                  />
-                  <strong>{detail.state}</strong>
-                  {states[detail.state].nodeLabel}
-                </div>
-                <dl>
-                  <div>
-                    <dt>Contexto de contacto</dt>
-                    <dd>{layers[detail.group]}</dd>
-                  </div>
-                  <div>
-                    <dt>Contactos directos</dt>
-                    <dd>{detail.contacts}</dd>
-                  </div>
-                  <div>
-                    <dt>Origen de datos</dt>
-                    <dd>Guion temporal de demo</dd>
-                  </div>
-                </dl>
-                <div className="node-timeline">
-                  <h4>Historial hasta el día {playback.day}</h4>
-                  {history.length ? (
-                    <ol>
-                      {history.map((event, index) => (
-                        <li key={index}>
-                          <span>Día {event.day}</span>
-                          <strong>
-                            {event.cause === "initial"
-                              ? "Zombie inicial"
-                              : event.cause === "contact"
-                                ? `Mordido por nodo ${event.sourceNodeId}`
-                                : event.cause === "vaccine"
-                                  ? "Vacunación"
-                                  : event.to === "I"
-                                    ? "Transformación en Zombie"
-                                    : "Exorcizado"}
-                          </strong>
-                          <small>
-                            {event.from} → {event.to}
-                          </small>
-                        </li>
-                      ))}
-                    </ol>
-                  ) : (
-                    <p>Sin eventos registrados para este nodo.</p>
-                  )}
-                </div>
-                {layer !== "All layers" && detail.group !== layer && (
-                  <p className="node-layer-notice">
-                    Este nodo está fuera de la capa filtrada.
-                  </p>
-                )}
-                <Button
-                  variant="outline"
-                  className="node-focus-button"
-                  onClick={() => {
-                    const cy = network.current;
-                    if (cy)
-                      cy.fit(
-                        cy.getElementById(detail.id).closedNeighborhood(),
-                        45,
-                      );
-                  }}
-                >
-                  <Crosshair size={14} />
-                  Enfocar conexiones
-                </Button>
-              </>
-            ) : (
-              <div className="node-context-empty">
-                <MousePointer2 size={24} />
-                <h4>¿Con quién tiene contacto?</h4>
-                <p>
-                  Pulse un punto para ver el estado de esa persona, su contexto
-                  y cuántas personas están conectadas con ella.
-                </p>
-                <small>También puede usar el selector con el teclado.</small>
-              </div>
-            )}
-          </div>
-        </aside>
-      </div>
       <div
         className="network-playback"
         aria-label="Reproductor de demostración temporal"
@@ -588,10 +460,10 @@ export function ContactNetwork({
         <label className="playback-timeline">
           <span>
             {playback.playing
-              ? "Reproduciendo guion de demostración"
+              ? "Reproduciendo"
               : playback.day === temporalDemo.days
-                ? "Demostración finalizada"
-                : "Deslice para explorar un día"}
+                ? "Finalizada"
+                : "Día de la demo"}
           </span>
           <input
             aria-label="Día de la demostración"
@@ -620,10 +492,129 @@ export function ContactNetwork({
           </select>
         </label>
       </div>
-      <p className="network-playback-status" id="network-playback-status">
-        Guion manual para probar la interfaz. No es una ejecución del motor ni
-        evidencia científica. Cambiar el formulario no recalcula esta demo.
-      </p>
+        <p className="network-playback-status" id="network-playback-status">
+          Demo independiente de los parámetros.
+        </p>
+        <details
+          className="node-inspector"
+          open={Boolean(detail)}
+          aria-label="Información de la persona seleccionada"
+        >
+          <summary>Explorar personas</summary>
+          <p className="network-reading-guide">
+            Las personas son sintéticas. Los grupos no son ubicaciones reales.
+          </p>
+          <div className="node-inspector-heading">
+            <h3>Persona seleccionada</h3>
+            {detail && (
+              <button
+                aria-label="Limpiar selección"
+                onClick={() => setSelectedId("")}
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+          <label htmlFor={pickerId}>Buscar persona por número</label>
+          <select
+            id={pickerId}
+            value={selectedId}
+            onChange={(event) => setSelectedId(event.target.value)}
+          >
+            <option value="">Seleccione una persona</option>
+            {nodes.map(({ data }) => (
+              <option key={data.id} value={data.id}>
+                Persona {data.id.padStart(3, "0")} · {layers[data.group]}
+              </option>
+            ))}
+          </select>
+          <div className="node-context" aria-live="polite" aria-atomic="true">
+            {detail ? (
+              <>
+                <div className="node-context-id">
+                  Persona <strong>{detail.id.padStart(3, "0")}</strong>
+                </div>
+                <div
+                  className="node-state-tag"
+                  title={states[detail.state].description}
+                  style={
+                    {
+                      "--state-color": states[detail.state].color,
+                    } as CSSProperties
+                  }
+                >
+                  <span
+                    className="seir-status-dot"
+                  />
+                  <strong>{detail.state}</strong>
+                  {states[detail.state].nodeLabel}
+                </div>
+                <dl>
+                  <div>
+                    <dt>Contexto de contacto</dt>
+                    <dd>{layers[detail.group]}</dd>
+                  </div>
+                  <div>
+                    <dt>Contactos directos</dt>
+                    <dd>{detail.contacts}</dd>
+                  </div>
+                </dl>
+                <div className="node-timeline">
+                  <h4>Historial hasta el día {playback.day}</h4>
+                  {history.length ? (
+                    <ol>
+                      {history.map((event, index) => (
+                        <li key={index}>
+                          <span>Día {event.day}</span>
+                          <strong>
+                            {event.cause === "initial"
+                              ? "Zombie inicial"
+                              : event.cause === "contact"
+                                ? `Mordido por la persona ${event.sourceNodeId}`
+                                : event.cause === "vaccine"
+                                  ? "Vacunación"
+                                  : event.to === "I"
+                                    ? "Transformación en Zombie"
+                                    : "Exorcizado"}
+                          </strong>
+                          <small>
+                            {event.from} → {event.to}
+                          </small>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p>Esta persona aún no tiene eventos registrados.</p>
+                  )}
+                </div>
+                {layer !== "All layers" && detail.group !== layer && (
+                  <p className="node-layer-notice">
+                    Esta persona no pertenece al grupo mostrado.
+                  </p>
+                )}
+                <Button
+                  variant="outline"
+                  className="node-focus-button"
+                  onClick={() => {
+                    const cy = network.current;
+                    if (cy)
+                      cy.fit(
+                        cy.getElementById(detail.id).closedNeighborhood(),
+                        45,
+                      );
+                  }}
+                >
+                  <Crosshair size={14} />
+                  Enfocar conexiones
+                </Button>
+              </>
+            ) : (
+              <p>Seleccione una persona en la red o por su ID.</p>
+            )}
+          </div>
+        </details>
+      </section>
+      <div className="simulator-control-column">
       <Suspense
         fallback={
           <p className="temporal-chart-loading">Cargando curva de la demo…</p>
@@ -631,6 +622,8 @@ export function ContactNetwork({
       >
         <TemporalChart day={playback.day} daily={temporalDemo.daily} />
       </Suspense>
+        {children}
+      </div>
     </div>
   );
 }

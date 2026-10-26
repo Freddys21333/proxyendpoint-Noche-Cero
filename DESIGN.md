@@ -12,10 +12,10 @@ colors:
 typography:
   headline:
     fontFamily: "IBM Plex Sans, sans-serif"
-    fontSize: "28px"
+    fontSize: "23px"
     fontWeight: 500
     lineHeight: 1.2
-    letterSpacing: "-0.8px"
+    letterSpacing: "-0.4px"
   body:
     fontFamily: "IBM Plex Sans, sans-serif"
   data:
@@ -36,7 +36,7 @@ Technical, focused, analytical. The existing interface treats scenario controls,
 
 **Key Characteristics:**
 - Flat surfaces with borders and tonal separation.
-- A dark green navigation rail beside a light workspace.
+- A compact top navigation above a light simulation workspace.
 - Sans-serif labels with monospaced identifiers and data.
 
 ## Colors
@@ -45,11 +45,11 @@ Containment Green anchors navigation and headings; Paper supports the working ar
 
 ## Typography
 
-IBM Plex Sans carries interface text and headings. IBM Plex Mono distinguishes identifiers and data. Preserve readable labels and the implemented hierarchy rather than turning every label into a miniature caption.
+IBM Plex Sans carries interface text and headings. Field labels and inputs use 16px; supporting text uses 15px. IBM Plex Mono distinguishes identifiers and data where useful. Preserve readable labels and the implemented hierarchy rather than turning every label into a miniature caption.
 
 ## Layout
 
-Desktop uses a fixed 212px navigation rail and an offset workspace. A 288px parameter column accompanies the dominant network. The top bar is 54px tall; the main sheet uses 28px horizontal padding. Responsive layouts reflow controls and expose mobile navigation. The network is the dark working canvas within the light interface.
+Desktop uses a compact top navigation with Simulador, Comparación and Ayuda. The dominant light network canvas sits on the left; synchronized evolution and scenario parameters share the right column. Playback sits beneath the network, while person details use a disclosure. The top bar is 72px tall; the main workspace uses 28px horizontal padding. Narrow layouts stack the workbench, wrap controls and retain visible navigation labels.
 
 ## Elevation & Depth
 
@@ -63,12 +63,12 @@ Controls commonly use restrained 3px corners. Network people and state indicator
 
 Buttons, fields, navigation, chips, and panels are practical and confident. Primary actions use the established green; secondary actions use outlined or transparent treatments. Focus-visible controls use a 3px green outline with a 3px offset. Button color and background transitions last 0.15s.
 
-Fields retain visible labels and units. Navigation maintains the green rail and clear active states. White containers use the Line border. Network controls and temporal playback remain visibly distinct from scientific experiment results.
+Fields retain visible labels and units, with person-facing terms such as Origen aleatorio and Número de persona. Navigation uses a clear active underline. White containers use the Line border. Evolution displays the four SEIR series together with labels and distinct line patterns. Network controls and temporal playback remain visibly distinct from scientific experiment results. Complete-network fit uses 16px padding and native wheel sensitivity.
 
 ## Do's and Don'ts
 
 ### Do:
-- Do preserve the existing green navigation and light workspace relationship.
+- Do preserve the green identity, restrained top navigation and light workspace.
 - Do use borders and tonal separation to group controls.
 - Do preserve state letters, labels, and line patterns alongside scientific colors.
 

@@ -26,14 +26,14 @@ The documented mechanism compares `none`, `random`, and `targeted` on the same s
 
 The Spanish interface supports scenario configuration, contact-network exploration, and policy comparison. Contact layers represent households, schools, buses, markets, and neighborhoods without personal data or precise household geolocation.
 
-The current React/TypeScript frontend includes editable controls, surprise presets, an illustrative network, example comparison curves, and a scripted temporal demo. Scenario inputs are independent of those illustrations. Real simulation execution and experiment exports require backend integration.
+The current React/TypeScript frontend includes editable controls, an illustrative network, example comparison curves, and a scripted temporal demo. Navigation separates Simulador, Comparación and Ayuda. The surprise-outbreak section is removed from the interface. Scenario inputs are independent of those illustrations. Real simulation execution and experiment exports require backend integration.
 
 ## Capabilities and Constraints
 
 - Preserve the confirmed educational scope, synthetic population, Spanish interface, reproducible policy comparisons, and explicit demo-data labeling.
 - The intended scientific model is daily SEIR: susceptible (`S`), exposed (`E`), infectious (`I`), and recovered or immunized (`R`). Only susceptible nodes are eligible for vaccination.
 - Intended experiment outputs include daily curves, aggregate metrics, uncertainty across replicas, and reproducibility metadata. These are requirements, not evidence of implemented results.
-- Current downloads are UI configuration drafts, not canonical experiment requests or reproducible results. The Run action validates inputs and explains that the API is unavailable.
+- Current downloads are UI configuration drafts, not canonical experiment requests or reproducible results. Validar configuración validates inputs and explains that the API is unavailable.
 - Keep epidemiological calculations out of the frontend; use the shared technical agreements for integration.
 - AWS deployment is documented as a delivery objective; a public deployment and operational results are not established by this product record.
 - PRO capabilities remain separate from the required base scope and must not be represented as available without verification.

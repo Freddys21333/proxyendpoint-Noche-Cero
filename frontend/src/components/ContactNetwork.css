@@ -1,0 +1,464 @@
+/* The demo and scenario controls share a two-column workbench. */
+.simulator-workbench.network-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
+  gap: 20px;
+  align-items: stretch;
+  background: transparent;
+  container-type: normal;
+  color: #203d31;
+  font-size: 16px;
+}
+
+.simulator-workbench .network-demo-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid #dbe4dd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.simulator-workbench .network-demo-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 20px 20px 16px;
+}
+
+.simulator-workbench .network-demo-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.simulator-workbench .network-demo-heading > span {
+  font-size: 15px;
+  color: #52695a;
+}
+
+.simulator-workbench .network-meaning {
+  margin: 0;
+  padding: 0 20px 16px;
+  color: #52695a;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.simulator-workbench .seir-instrument {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 0 20px 16px;
+  gap: 12px;
+  background: #fff;
+  color: #203d31;
+}
+
+.simulator-workbench .seir-instrument > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0;
+  min-width: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.simulator-workbench .seir-instrument-label,
+.simulator-workbench .seir-instrument-label b {
+  color: #3e594a;
+  font-size: 15px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.simulator-workbench .seir-instrument-label b {
+  margin-right: 2px;
+  font-weight: 600;
+}
+
+.simulator-workbench .seir-instrument strong {
+  color: #203d31;
+  font-size: 21px;
+  font-weight: 600;
+  margin-left: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.simulator-workbench .seir-status-dot {
+  width: 9px;
+  height: 9px;
+  border: 1px solid #385d4c;
+}
+
+.simulator-workbench .network-view {
+  flex: 1;
+  min-height: 470px;
+  background: #f8fbf8;
+  border-top: 1px solid #e5ece6;
+  overflow: hidden;
+}
+
+.simulator-workbench .network-view .network-canvas {
+  min-height: 0;
+  background: #f8fbf8;
+}
+
+.simulator-workbench .graph-day-label {
+  top: 14px;
+  right: 16px;
+  color: #465f50;
+  background: #f8fbf8eb;
+  font-size: 15px;
+  padding: 4px;
+}
+
+.simulator-workbench .graph-interaction-hint {
+  left: 16px;
+  bottom: 15px;
+  color: #526b5b;
+  background: #f8fbf8eb;
+  font-size: 15px;
+  padding: 3px 0;
+}
+
+.simulator-workbench .network-view .network-zoom {
+  display: flex;
+  bottom: 15px;
+  right: 16px;
+  background: #fff;
+  border: 1px solid #bdcdc2;
+  border-radius: 5px;
+}
+
+.simulator-workbench .network-view .network-zoom button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: #365b4a;
+  background: #fff;
+  border: 0;
+  border-right: 1px solid #dbe4dd;
+}
+
+.simulator-workbench .network-view .network-zoom button:last-child {
+  border-right: 0;
+}
+
+.simulator-workbench .network-view .network-zoom button:hover {
+  background: #edf3ee;
+}
+
+.simulator-workbench .network-playback {
+  display: grid;
+  grid-template-columns: auto auto minmax(90px, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px 12px;
+  background: #fff;
+  border-top: 1px solid #dbe4dd;
+}
+
+.simulator-workbench .playback-time > span,
+.simulator-workbench .playback-time strong small,
+.simulator-workbench .playback-timeline span,
+.simulator-workbench .playback-speed span {
+  font-size: 15px;
+  color: #52695a;
+}
+
+.simulator-workbench .playback-time strong {
+  font-size: 22px;
+  color: #203d31;
+}
+
+.simulator-workbench .playback-actions {
+  display: flex;
+  gap: 3px;
+}
+
+.simulator-workbench .playback-actions > button {
+  width: 34px;
+  height: 38px;
+  padding: 0;
+}
+
+.simulator-workbench .playback-actions > button:not(:disabled) {
+  background: #edf3ee;
+  color: #254c39;
+  opacity: 1;
+}
+
+.simulator-workbench .playback-actions > button:disabled {
+  background: transparent;
+  color: #718375;
+  opacity: 0.5;
+}
+
+.simulator-workbench .playback-timeline {
+  min-width: 0;
+}
+
+.simulator-workbench .playback-timeline input {
+  accent-color: #315f47;
+  height: 6px;
+}
+
+.simulator-workbench .playback-speed select {
+  min-height: 34px;
+  color: #365b4a;
+  font-size: 15px;
+  background: #fff;
+}
+
+.simulator-workbench .network-playback-status {
+  margin: 0;
+  padding: 0 20px 16px;
+  background: #fff;
+  color: #52695a;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.simulator-workbench .node-inspector {
+  border: 0;
+  border-top: 1px solid #e2e9e3;
+  padding: 14px 20px;
+  background: #fff;
+  color: #203d31;
+}
+
+.simulator-workbench .node-inspector > summary {
+  cursor: pointer;
+  font-size: 16px;
+  color: #315d46;
+  width: fit-content;
+}
+
+.simulator-workbench .network-reading-guide {
+  display: block;
+  padding: 0;
+  margin: 14px 0 20px;
+  background: transparent;
+  color: #52695a;
+  font-size: 15px;
+  line-height: 1.5;
+  border: 0;
+}
+
+.simulator-workbench .node-inspector-heading {
+  margin-bottom: 12px;
+}
+
+.simulator-workbench .node-inspector h3,
+.simulator-workbench .node-inspector h4,
+.simulator-workbench .node-inspector > label,
+.simulator-workbench .node-inspector select,
+.simulator-workbench .node-context p,
+.simulator-workbench .node-context dt,
+.simulator-workbench .node-context dd,
+.simulator-workbench .node-context-id,
+.simulator-workbench .node-state-tag,
+.simulator-workbench .node-timeline li,
+.simulator-workbench .node-timeline li small,
+.simulator-workbench .node-focus-button {
+  font-size: 15px;
+}
+
+.simulator-workbench .node-inspector select {
+  max-width: 100%;
+  min-height: 42px;
+}
+
+.simulator-workbench .node-inspector-heading button {
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+}
+
+.simulator-workbench .node-state-tag {
+  color: #203d31;
+  background: #f1f5f1;
+  border-color: #dbe4dd;
+}
+
+.simulator-workbench .simulator-control-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.simulator-workbench .temporal-chart-panel {
+  border: 1px solid #dbe4dd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fff;
+  min-width: 0;
+}
+
+.simulator-workbench .temporal-chart-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+}
+
+.simulator-workbench .temporal-chart-heading h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: #203d31;
+}
+
+.simulator-workbench .temporal-chart-heading p,
+.simulator-workbench .temporal-chart-heading > label {
+  font-size: 15px;
+  color: #52695a;
+}
+
+.simulator-workbench .temporal-chart-heading > label {
+  gap: 6px;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.simulator-workbench .temporal-chart-heading select {
+  font-size: 15px;
+  min-height: 36px;
+  max-width: 170px;
+  border-color: #bdcdc2;
+}
+
+.simulator-workbench .temporal-chart-canvas {
+  margin-top: 8px;
+  height: 170px;
+}
+
+.simulator-workbench .temporal-chart-caption,
+.simulator-workbench .temporal-series-legend,
+.simulator-workbench .temporal-data-table,
+.simulator-workbench .temporal-data-table caption,
+.simulator-workbench .temporal-chart-loading {
+  font-size: 15px;
+  color: #52695a;
+}
+
+.simulator-workbench .temporal-series-legend {
+  gap: 10px 18px;
+  margin: 14px 0 8px;
+}
+
+.simulator-workbench .temporal-data-table {
+  margin-top: 14px;
+}
+
+.simulator-workbench .temporal-data-table > div {
+  overflow: auto;
+}
+
+.simulator-workbench :is(button, select, input, summary):focus-visible {
+  outline: 2px solid #315f47;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .simulator-workbench .network-playback {
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+  }
+
+  .simulator-workbench .playback-actions {
+    justify-content: center;
+  }
+
+  .simulator-workbench .playback-timeline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 900px) {
+  .simulator-workbench.network-workbench {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .simulator-workbench .network-view {
+    min-height: 440px;
+  }
+}
+
+@media (max-width: 600px) {
+  .simulator-workbench .network-demo-heading,
+  .simulator-workbench .network-playback,
+  .simulator-workbench .node-inspector,
+  .simulator-workbench .temporal-chart-panel {
+    padding: 16px;
+  }
+
+  .simulator-workbench .seir-instrument {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0 16px 16px;
+    gap: 10px 16px;
+  }
+
+  .simulator-workbench .network-meaning {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .simulator-workbench .seir-instrument > div {
+    flex-wrap: nowrap;
+  }
+
+  .simulator-workbench .seir-instrument strong {
+    margin-left: auto;
+  }
+
+  .simulator-workbench .network-view {
+    min-height: 420px;
+  }
+
+  .simulator-workbench .graph-interaction-hint {
+    display: none;
+  }
+
+  .simulator-workbench .network-view .network-zoom button,
+  .simulator-workbench .playback-actions > button {
+    width: 40px;
+    height: 44px;
+  }
+
+  .simulator-workbench .network-playback-status {
+    padding: 0 16px 16px;
+  }
+
+  .simulator-workbench .temporal-chart-canvas {
+    height: 180px;
+  }
+
+  .simulator-workbench .temporal-chart-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .simulator-workbench .temporal-chart-heading > label {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 400px) {
+  .simulator-workbench .seir-instrument-label b {
+    display: none;
+  }
+}
