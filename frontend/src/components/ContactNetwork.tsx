@@ -118,8 +118,8 @@ export function ContactNetwork({
         {
           selector: "node",
           style: {
-            width: 13,
-            height: 13,
+            width: 17,
+            height: 17,
             "background-color": states.S.color,
             "border-width": 1.5,
             "border-color": "#20382f",
@@ -130,22 +130,22 @@ export function ContactNetwork({
           selector: 'node[state="E"]',
           style: {
             "background-color": states.E.color,
-            shape: "diamond",
-            width: 16,
-            height: 16,
+            shape: "ellipse",
+            width: 19,
+            height: 19,
           },
         },
         {
           selector: 'node[state="I"]',
           style: {
             "background-color": states.I.color,
-            shape: "hexagon",
-            width: 23,
-            height: 23,
+            shape: "ellipse",
+            width: 25,
+            height: 25,
             "border-width": 2,
             "border-color": "#713f36",
 
-            "font-size": 12,
+            "font-size": 14,
             color: "#f2c6ba",
             "text-margin-y": -13,
             "text-valign": "top",
@@ -158,7 +158,7 @@ export function ContactNetwork({
           selector: 'node[state="R"]',
           style: {
             "background-color": states.R.color,
-            shape: "round-rectangle",
+            shape: "ellipse",
           },
         },
         {
@@ -181,7 +181,7 @@ export function ContactNetwork({
           style: {
             label,
             color: "#b9cec2",
-            "font-size": 12,
+            "font-size": 14,
             "text-valign": "top" as const,
             "text-margin-y": -16,
             "text-background-color": "#12251e",
@@ -195,7 +195,7 @@ export function ContactNetwork({
           style: {
             label: "Paciente cero",
             color: "#f2c6ba",
-            "font-size": 12,
+            "font-size": 14,
             "text-valign": "top",
             "text-margin-y": -13,
             "text-background-color": "#12251e",
@@ -360,8 +360,13 @@ export function ContactNetwork({
         ))}
       </div>
       <div className="network-data-note">
-        Demo temporal guiada · 110 nodos · 20 días · independiente del
+        Demo temporal guiada · 110 personas · 20 días · independiente del
         formulario
+      </div>
+      <div className="network-reading-guide" id={`${pickerId}-guide`}>
+        <span><i className="person-key" aria-hidden="true" /> Cada punto es una persona sintética.</span>
+        <span><i className="contact-key" aria-hidden="true" /> Cada línea es un contacto.</span>
+        <small>Los grupos indican contextos de contacto, no ubicaciones geográficas.</small>
       </div>
       <div className="network-explorer">
         <div className="network-view">
@@ -369,7 +374,8 @@ export function ContactNetwork({
             ref={container}
             className="network-canvas"
             role="img"
-            aria-label="Red de demostración de 110 nodos. Seleccione un nodo en el grafo o use el selector del panel contextual."
+            aria-label="Red de demostración de 110 personas sintéticas. Seleccione una persona en el grafo o use el selector del panel contextual."
+            aria-describedby={`${pickerId}-guide`}
           />
           <div className="graph-mode-label">
             <span />
@@ -414,7 +420,7 @@ export function ContactNetwork({
           aria-label="Panel contextual de nodos"
         >
           <div className="node-inspector-heading">
-            <h3>Inspector de nodo</h3>
+            <h3>Persona seleccionada</h3>
             {detail && (
               <button
                 aria-label="Limpiar selección"
@@ -424,16 +430,16 @@ export function ContactNetwork({
               </button>
             )}
           </div>
-          <label htmlFor={pickerId}>Seleccionar por ID</label>
+          <label htmlFor={pickerId}>Elegir persona por ID</label>
           <select
             id={pickerId}
             value={selectedId}
             onChange={(event) => setSelectedId(event.target.value)}
           >
-            <option value="">Seleccione un nodo</option>
+            <option value="">Seleccione una persona</option>
             {nodes.map(({ data }) => (
               <option key={data.id} value={data.id}>
-                Nodo {data.id.padStart(3, "0")} · {layers[data.group]}
+                Persona {data.id.padStart(3, "0")} · {layers[data.group]}
               </option>
             ))}
           </select>
@@ -441,7 +447,7 @@ export function ContactNetwork({
             {detail ? (
               <>
                 <div className="node-context-id">
-                  Nodo <strong>{detail.id.padStart(3, "0")}</strong>
+                  Persona <strong>{detail.id.padStart(3, "0")}</strong>
                 </div>
                 <div
                   className="node-state-tag"
@@ -453,14 +459,14 @@ export function ContactNetwork({
                   }
                 >
                   <span
-                    className={`seir-shape ${detail.state.toLowerCase()}`}
+                    className="seir-status-dot"
                   />
                   <strong>{detail.state}</strong>
                   {states[detail.state].nodeLabel}
                 </div>
                 <dl>
                   <div>
-                    <dt>Capa</dt>
+                    <dt>Contexto de contacto</dt>
                     <dd>{layers[detail.group]}</dd>
                   </div>
                   <div>
@@ -524,10 +530,10 @@ export function ContactNetwork({
             ) : (
               <div className="node-context-empty">
                 <MousePointer2 size={24} />
-                <h4>Explore una conexión</h4>
+                <h4>¿Con quién tiene contacto?</h4>
                 <p>
-                  Seleccione un nodo para ver su estado, capa y contactos
-                  directos.
+                  Pulse un punto para ver el estado de esa persona, su contexto
+                  y cuántas personas están conectadas con ella.
                 </p>
                 <small>También puede usar el selector con el teclado.</small>
               </div>

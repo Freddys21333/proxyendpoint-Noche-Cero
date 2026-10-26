@@ -2,6 +2,8 @@
 
 ## Committee interface refinement
 
+The contact network now gives more space to the canvas and uses larger circular person markers and labels. A reading guide explains that nodes represent synthetic people and edges represent contacts (TRD section 4.1; agreements D-03); grouping is contextual rather than geographical. The inspector uses person-facing labels and moves below the canvas when the workbench is at most 760px wide, preserving the navigation and configuration columns. No topology, simulation state, fixture, or scientific calculation changes. Build and all 9 tests passed; browser selection of person 008 still reports 9 direct contacts.
+
 The workspace follows `../DESIGN.md`: flat paper surfaces, green navigation and readable scientific controls. The heading and scenario context are simplified; pending experiment statistics use compact availability text; surprise presets prioritize their effect and expose explicit Apply/Applied states. Small CSS text now has a 12px floor, including responsive overrides. Backend, simulation modules, fixtures, and scenario callbacks are unchanged.
 
 Impeccable Live was stopped and its injected script removed. No listener remains on port 8400. Verification: production build/typecheck passed; all 9 existing tests passed; browser readback confirmed the vaccine preset changes to 50 doses and displays its applied state. Automated 1440/768/390 screenshots were unavailable because the inspector's Chrome process failed to start; the integrated browser was used for visual inspection.

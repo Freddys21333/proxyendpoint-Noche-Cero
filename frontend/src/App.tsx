@@ -643,7 +643,7 @@ export default function App() {
                 <div className="network-toolbar">
                   <span>
                     <span className="live-dot" />
-                    110 nodos ilustrativos{" "}
+                    110 personas de ejemplo{" "}
                     <span className="toolbar-divider">/</span> 5 capas de
                     contacto
                   </span>

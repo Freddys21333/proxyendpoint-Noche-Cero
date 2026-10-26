@@ -2023,6 +2023,7 @@ input[type="number"]::-webkit-outer-spin-button {
   min-height: 0;
 }
 .network-workbench {
+  container-type: inline-size;
   background: #fff;
 }
 .network-module-loading {
@@ -2110,7 +2111,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .network-view {
   position: relative;
-  min-height: 505px;
+  min-height: 600px;
   background: #12251e;
   overflow: hidden;
 }
@@ -2120,6 +2121,33 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 100%;
   height: 100%;
   cursor: grab;
+}
+.network-reading-guide {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding: 13px 18px;
+  color: #d8e7de;
+  background: #1c3329;
+  border-bottom: 1px solid #314c3f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.network-reading-guide > span { display: inline-flex; align-items: center; gap: 8px; }
+.network-reading-guide small { flex-basis: 100%; color: #b9cec2; font-size: 12px; }
+.person-key { width: 9px; height: 9px; border-radius: 50%; background: #85b59f; flex-shrink: 0; }
+.contact-key { width: 20px; height: 1px; background: #b9cec2; flex-shrink: 0; }
+@container (max-width: 760px) {
+  .network-workbench .network-explorer { grid-template-columns: minmax(0, 1fr); }
+  .network-workbench .network-view { min-height: 520px; }
+  .network-workbench .node-inspector { border-left: 0; border-top: 1px solid #d9e2d4; padding: 16px 18px; }
+  .node-inspector-heading { margin-bottom: 10px; }
+  .node-inspector > select { max-width: 320px; }
+  .node-context { margin-top: 14px; }
+  .node-context-empty { padding-top: 0; }
+  .node-context-empty > svg { display: none; }
+  .node-context dl { display: flex; flex-wrap: wrap; gap: 16px 28px; }
 }
 .network-view .network-canvas:active {
   cursor: grabbing;

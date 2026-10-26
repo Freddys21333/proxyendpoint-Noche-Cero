@@ -57,7 +57,7 @@ Flat, with borders and tonal separation. Panels use strokes and surface changes 
 
 ## Shapes
 
-Controls commonly use restrained 3px corners. Preserve the network's different node shapes as state information. Small status dots are indicators rather than decorative motifs.
+Controls commonly use restrained 3px corners. Network people and state indicators use circles, as requested by the user. State letters and labels accompany color so interpretation does not depend on color alone.
 
 ## Components
 
@@ -70,7 +70,7 @@ Fields retain visible labels and units. Navigation maintains the green rail and 
 ### Do:
 - Do preserve the existing green navigation and light workspace relationship.
 - Do use borders and tonal separation to group controls.
-- Do preserve letters, shapes, and line patterns alongside scientific colors.
+- Do preserve state letters, labels, and line patterns alongside scientific colors.
 
 ### Don't:
 - Don't replace the flat interface with decorative raised cards.
