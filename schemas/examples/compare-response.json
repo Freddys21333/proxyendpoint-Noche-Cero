@@ -1,0 +1,1575 @@
+{
+  "schemaVersion": "1.0",
+  "engineVersion": "0.1.0",
+  "requestId": "mock-contract-v1",
+  "configuration": {
+    "rootSeed": 20261026,
+    "networkMode": "fixed",
+    "repetitions": 2,
+    "scenario": {
+      "populationSize": 50,
+      "days": 1,
+      "beta": 0,
+      "sigma": 0.333333,
+      "gamma": 0,
+      "initialInfectious": 1,
+      "origin": {
+        "kind": "random",
+        "value": null
+      }
+    },
+    "intervention": {
+      "vaccines": 0,
+      "interventionDay": 0,
+      "vaccineEfficacy": 1.0
+    },
+    "policies": [
+      "none",
+      "random",
+      "targeted"
+    ],
+    "network": {
+      "generatorVersion": "synthetic-manta-v1",
+      "dayZero": "monday",
+      "weights": {
+        "household": 1.0,
+        "school": 0.6,
+        "bus": 0.45,
+        "market": 0.5,
+        "neighborhood": 0.2
+      }
+    }
+  },
+  "graph": {
+    "generatorVersion": "synthetic-manta-v1",
+    "nodes": [
+      {
+        "id": 0,
+        "role": "student",
+        "householdId": "household-0",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 1,
+        "role": "student",
+        "householdId": "household-1",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 2,
+        "role": "student",
+        "householdId": "household-2",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 3,
+        "role": "student",
+        "householdId": "household-3",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 4,
+        "role": "student",
+        "householdId": "household-4",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 5,
+        "role": "student",
+        "householdId": "household-5",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 6,
+        "role": "student",
+        "householdId": "household-6",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 7,
+        "role": "student",
+        "householdId": "household-7",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 8,
+        "role": "student",
+        "householdId": "household-8",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 9,
+        "role": "student",
+        "householdId": "household-9",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 10,
+        "role": "student",
+        "householdId": "household-10",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 11,
+        "role": "student",
+        "householdId": "household-11",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": "school-0",
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 12,
+        "role": "worker",
+        "householdId": "household-12",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": "market-0"
+      },
+      {
+        "id": 13,
+        "role": "worker",
+        "householdId": "household-13",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": "market-0"
+      },
+      {
+        "id": 14,
+        "role": "worker",
+        "householdId": "household-14",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 15,
+        "role": "worker",
+        "householdId": "household-15",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 16,
+        "role": "worker",
+        "householdId": "household-16",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 17,
+        "role": "worker",
+        "householdId": "household-17",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 18,
+        "role": "worker",
+        "householdId": "household-18",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 19,
+        "role": "worker",
+        "householdId": "household-19",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": "bus-0",
+        "marketId": null
+      },
+      {
+        "id": 20,
+        "role": "worker",
+        "householdId": "household-20",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 21,
+        "role": "worker",
+        "householdId": "household-21",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 22,
+        "role": "worker",
+        "householdId": "household-22",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 23,
+        "role": "worker",
+        "householdId": "household-23",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 24,
+        "role": "worker",
+        "householdId": "household-24",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 25,
+        "role": "worker",
+        "householdId": "household-25",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 26,
+        "role": "worker",
+        "householdId": "household-26",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 27,
+        "role": "worker",
+        "householdId": "household-27",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 28,
+        "role": "worker",
+        "householdId": "household-28",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 29,
+        "role": "worker",
+        "householdId": "household-29",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 30,
+        "role": "worker",
+        "householdId": "household-30",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 31,
+        "role": "worker",
+        "householdId": "household-31",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 32,
+        "role": "worker",
+        "householdId": "household-32",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 33,
+        "role": "worker",
+        "householdId": "household-33",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 34,
+        "role": "worker",
+        "householdId": "household-34",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 35,
+        "role": "worker",
+        "householdId": "household-35",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 36,
+        "role": "worker",
+        "householdId": "household-36",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 37,
+        "role": "worker",
+        "householdId": "household-37",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 38,
+        "role": "worker",
+        "householdId": "household-38",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 39,
+        "role": "community",
+        "householdId": "household-39",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 40,
+        "role": "community",
+        "householdId": "household-40",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 41,
+        "role": "community",
+        "householdId": "household-41",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 42,
+        "role": "community",
+        "householdId": "household-42",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 43,
+        "role": "community",
+        "householdId": "household-43",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 44,
+        "role": "community",
+        "householdId": "household-44",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 45,
+        "role": "community",
+        "householdId": "household-45",
+        "neighborhoodId": "neighborhood-0",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 46,
+        "role": "community",
+        "householdId": "household-46",
+        "neighborhoodId": "neighborhood-1",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 47,
+        "role": "community",
+        "householdId": "household-47",
+        "neighborhoodId": "neighborhood-2",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 48,
+        "role": "community",
+        "householdId": "household-48",
+        "neighborhoodId": "neighborhood-3",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      },
+      {
+        "id": 49,
+        "role": "community",
+        "householdId": "household-49",
+        "neighborhoodId": "neighborhood-4",
+        "schoolId": null,
+        "busId": null,
+        "marketId": null
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "u": 0,
+        "v": 1,
+        "context": "school",
+        "weight": 0.6,
+        "activeDays": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "graphHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "manifest": {
+    "engineVersion": "0.1.0",
+    "schemaVersion": "1.0",
+    "buildCommit": "mock-not-a-deployment",
+    "pythonVersion": "3.12.14",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "networkx": "3.7"
+    },
+    "generatorVersion": "synthetic-manta-v1",
+    "rngVersion": "rng-v1",
+    "bitGenerator": "PCG64",
+    "canonicalVersion": "canonical-v1",
+    "networkMode": "fixed",
+    "rootSeed": 20261026,
+    "graphHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "experimentHash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "summaryByPolicy": {
+    "none": {
+      "cumulativeInfected": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakDay": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "finalInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "outbreakDuration": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "p05": null,
+        "p95": null
+      },
+      "vaccinesAssigned": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesEffective": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesUnused": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      }
+    },
+    "random": {
+      "cumulativeInfected": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakDay": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "finalInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "outbreakDuration": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "p05": null,
+        "p95": null
+      },
+      "vaccinesAssigned": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesEffective": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesUnused": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      }
+    },
+    "targeted": {
+      "cumulativeInfected": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "peakDay": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "finalInfectious": {
+        "n": 2,
+        "mean": 1,
+        "median": 1,
+        "p05": 1,
+        "p95": 1
+      },
+      "outbreakDuration": {
+        "n": 0,
+        "mean": null,
+        "median": null,
+        "p05": null,
+        "p95": null
+      },
+      "vaccinesAssigned": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesEffective": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      },
+      "vaccinesUnused": {
+        "n": 2,
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0
+      }
+    }
+  },
+  "pairedComparisons": {
+    "savedVsNone": {
+      "random": {
+        "values": [
+          0,
+          0
+        ],
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0,
+        "bootstrap": null
+      },
+      "targeted": {
+        "values": [
+          0,
+          0
+        ],
+        "mean": 0,
+        "median": 0,
+        "p05": 0,
+        "p95": 0,
+        "bootstrap": null
+      }
+    },
+    "gainVsRandom": {
+      "values": [
+        0,
+        0
+      ],
+      "mean": 0,
+      "median": 0,
+      "p05": 0,
+      "p95": 0,
+      "bootstrap": null
+    },
+    "targetedWinRateVsNone": 0,
+    "targetedWinRateVsRandom": 0
+  },
+  "aggregatedCurves": {
+    "none": [
+      {
+        "day": 0,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      },
+      {
+        "day": 1,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      }
+    ],
+    "random": [
+      {
+        "day": 0,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      },
+      {
+        "day": 1,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      }
+    ],
+    "targeted": [
+      {
+        "day": 0,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      },
+      {
+        "day": 1,
+        "s": {
+          "n": 2,
+          "mean": 49,
+          "median": 49,
+          "p05": 49,
+          "p95": 49
+        },
+        "e": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "i": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        },
+        "r": {
+          "n": 2,
+          "mean": 0,
+          "median": 0,
+          "p05": 0,
+          "p95": 0
+        },
+        "cumulativeInfected": {
+          "n": 2,
+          "mean": 1,
+          "median": 1,
+          "p05": 1,
+          "p95": 1
+        }
+      }
+    ]
+  },
+  "replicates": [
+    {
+      "index": 0,
+      "initialInfectiousNodeIds": [
+        0
+      ],
+      "initialStateHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "randomnessHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "policies": {
+        "none": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": [
+            {
+              "day": 0,
+              "nodeId": 0,
+              "from": "I",
+              "to": "I",
+              "cause": "initial",
+              "sourceNodeId": null,
+              "edgeId": null
+            }
+          ],
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "random": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": [
+            {
+              "day": 0,
+              "nodeId": 0,
+              "from": "I",
+              "to": "I",
+              "cause": "initial",
+              "sourceNodeId": null,
+              "edgeId": null
+            }
+          ],
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "targeted": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": [
+            {
+              "day": 0,
+              "nodeId": 0,
+              "from": "I",
+              "to": "I",
+              "cause": "initial",
+              "sourceNodeId": null,
+              "edgeId": null
+            }
+          ],
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      }
+    },
+    {
+      "index": 1,
+      "initialInfectiousNodeIds": [
+        0
+      ],
+      "initialStateHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "randomnessHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "policies": {
+        "none": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": null,
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "random": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": null,
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        },
+        "targeted": {
+          "metrics": {
+            "cumulativeInfected": 1,
+            "peakInfectious": 1,
+            "peakDay": 0,
+            "finalInfectious": 1,
+            "outbreakDuration": null,
+            "vaccinesAssigned": 0,
+            "vaccinesEffective": 0,
+            "vaccinesUnused": 0
+          },
+          "daily": [
+            {
+              "day": 0,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            },
+            {
+              "day": 1,
+              "s": 49,
+              "e": 0,
+              "i": 1,
+              "r": 0,
+              "cumulativeInfected": 1
+            }
+          ],
+          "selections": [],
+          "events": null,
+          "resultHash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+      }
+    }
+  ],
+  "representative": {
+    "index": 0,
+    "initialSeed": {
+      "rootSeed": 20261026,
+      "replicateIndex": 0,
+      "domain": "initial"
+    },
+    "frames": {
+      "none": [
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ],
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ]
+      ],
+      "random": [
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ],
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ]
+      ],
+      "targeted": [
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ],
+        [
+          "I",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S",
+          "S"
+        ]
+      ]
+    }
+  },
+  "recommendation": {
+    "winner": "tie",
+    "confidence": "descriptive",
+    "reasons": [
+      "Mock de contrato: K=0 y beta=0; políticas empatadas."
+    ],
+    "limitations": [
+      "Ejemplo construido a mano. No proviene del generador ni verifica hashes o impacto."
+    ]
+  },
+  "progress": {
+    "replicatesTotal": 2,
+    "replicatesSucceeded": 2,
+    "replicatesFailed": 0
+  },
+  "generatedAt": "2026-10-26T00:00:00Z"
+}

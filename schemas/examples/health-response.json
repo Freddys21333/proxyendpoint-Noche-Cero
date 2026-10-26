@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0",
+  "engineVersion": "0.1.0",
+  "requestId": "mock-contract-v1",
+  "status": "ok",
+  "region": "us-east-2",
+  "buildCommit": "mock-not-a-deployment",
+  "generatedAt": "2026-10-26T00:00:00Z"
+}

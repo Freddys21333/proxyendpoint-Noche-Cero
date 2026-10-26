@@ -3,7 +3,7 @@
 **Versión:** 1.0 — 26 de octubre de 2026.
 **Estado:** decisiones de diseño adoptadas; implementación y comprobación AWS pendientes.
 
-Este anexo resuelve D-01..D-07 y fija el diseño de infraestructura de D-08. Es parte de [design.md](design.md), [requirements.md](requirements.md) y [tasks.md](tasks.md). Los valores nuevos de generación son supuestos sintéticos del equipo. No representan datos de población o enfermedad real. Los esquemas ejecutables y fixtures se materializan en T-03 siguiendo este contrato; no se afirma que ya exista una API implementada.
+Este anexo resuelve D-01..D-07 y fija el diseño de infraestructura de D-08. Es parte de [design.md](design.md), [requirements.md](requirements.md) y [tasks.md](tasks.md). Los valores nuevos de generación son supuestos sintéticos del equipo. No representan datos de población o enfermedad real. [Los esquemas ejecutables y ejemplos](../schemas/README.md) se materializaron y verificaron en T-03 siguiendo este contrato; todavía no existe una API implementada.
 
 ## 1. Calendario y frontera temporal — D-03/D-05
 

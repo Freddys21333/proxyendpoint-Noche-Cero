@@ -1,0 +1,448 @@
+openapi: 3.1.0
+info:
+  title: Comité de Contención — API base
+  version: 1.0.0
+  description: Contrato de implementación. No hay servicio desplegado. Los ejemplos son mocks construidos
+    a mano; no demuestran simulación ni hashes. Errores de infraestructura fuera del backend pueden no
+    usar el envoltorio de aplicación.
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+servers:
+- url: http://localhost:8000/v1
+  description: Referencia local; servidor no implementado
+security: []
+paths:
+  /health:
+    get:
+      operationId: health
+      summary: health
+      responses:
+        '200':
+          description: Resultado completo; ejemplos solo de contrato.
+          content:
+            application/json:
+              schema:
+                $ref: ./health-result.schema.json
+              examples:
+                health-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/health-response.json
+        '429':
+          description: Error de aplicación saneado.
+          x-error-codes: &id001
+          - RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-429-rate-limited:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-429-rate-limited.json
+          headers:
+            Retry-After:
+              description: Opcional, segundos de espera si el servicio los conoce.
+              schema:
+                type: integer
+                minimum: 0
+        '500':
+          description: Error de aplicación saneado.
+          x-error-codes: &id002
+          - INTERNAL_ERROR
+          - SIMULATION_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-500-internal-error:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-internal-error.json
+                error-500-simulation-failed:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-simulation-failed.json
+        '503':
+          description: Error de aplicación saneado.
+          x-error-codes: &id003
+          - COMPUTE_UNAVAILABLE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-503-compute-unavailable:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-503-compute-unavailable.json
+  /config:
+    get:
+      operationId: config
+      summary: config
+      responses:
+        '200':
+          description: Resultado completo; ejemplos solo de contrato.
+          content:
+            application/json:
+              schema:
+                $ref: ./config-result.schema.json
+              examples:
+                config-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/config-response.json
+        '429':
+          description: Error de aplicación saneado.
+          x-error-codes: *id001
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-429-rate-limited:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-429-rate-limited.json
+          headers:
+            Retry-After:
+              description: Opcional, segundos de espera si el servicio los conoce.
+              schema:
+                type: integer
+                minimum: 0
+        '500':
+          description: Error de aplicación saneado.
+          x-error-codes: *id002
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-500-internal-error:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-internal-error.json
+                error-500-simulation-failed:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-simulation-failed.json
+        '503':
+          description: Error de aplicación saneado.
+          x-error-codes: *id003
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-503-compute-unavailable:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-503-compute-unavailable.json
+  /scenarios/preview:
+    post:
+      operationId: preview
+      summary: preview
+      responses:
+        '200':
+          description: Resultado completo; ejemplos solo de contrato.
+          content:
+            application/json:
+              schema:
+                $ref: ./preview-result.schema.json
+              examples:
+                preview-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/preview-response.json
+          headers:
+            Content-Encoding:
+              description: JSON gzip; navegador descomprime antes de parsear. Base64 solo en proxy Lambda.
+              schema:
+                type: string
+                const: gzip
+        '400':
+          description: Error de aplicación saneado.
+          x-error-codes: &id004
+          - INVALID_JSON
+          - UNKNOWN_FIELD
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-400-invalid-json:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-400-invalid-json.json
+                error-400-unknown-field:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-400-unknown-field.json
+        '404':
+          description: Error de aplicación saneado.
+          x-error-codes: &id005
+          - NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-404-not-found:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-404-not-found.json
+        '409':
+          description: Error de aplicación saneado.
+          x-error-codes: &id006
+          - GRAPH_HASH_MISMATCH
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-409-graph-hash-mismatch:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-409-graph-hash-mismatch.json
+        '413':
+          description: Error de aplicación saneado.
+          x-error-codes: &id007
+          - REQUEST_TOO_LARGE
+          - RESULT_TOO_LARGE
+          - GRAPH_TOO_LARGE
+          - FRAMES_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-413-request-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-request-too-large.json
+                error-413-result-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-result-too-large.json
+                error-413-graph-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-graph-too-large.json
+                error-413-frames-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-frames-too-large.json
+        '422':
+          description: Error de aplicación saneado.
+          x-error-codes: &id008
+          - VALIDATION_ERROR
+          - ORIGIN_EMPTY
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-422-validation:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-422-validation.json
+                error-422-origin-empty:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-422-origin-empty.json
+        '429':
+          description: Error de aplicación saneado.
+          x-error-codes: *id001
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-429-rate-limited:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-429-rate-limited.json
+          headers:
+            Retry-After:
+              description: Opcional, segundos de espera si el servicio los conoce.
+              schema:
+                type: integer
+                minimum: 0
+        '500':
+          description: Error de aplicación saneado.
+          x-error-codes: *id002
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-500-internal-error:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-internal-error.json
+                error-500-simulation-failed:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-simulation-failed.json
+        '503':
+          description: Error de aplicación saneado.
+          x-error-codes: *id003
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-503-compute-unavailable:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-503-compute-unavailable.json
+      requestBody:
+        required: true
+        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de relaciones vacunas<=N,
+          intervención<=T y nodo<N. Los keywords default no modifican el request. Rechazar NaN e infinitos
+          antes del esquema.
+        content:
+          application/json:
+            schema:
+              $ref: ./preview-request.schema.json
+            examples:
+              preview-request:
+                summary: Mock de contrato; no ejecución real
+                externalValue: ./examples/preview-request.json
+              preview-request-minimal:
+                summary: Mock de contrato; no ejecución real
+                externalValue: ./examples/preview-request-minimal.json
+  /simulations/compare:
+    post:
+      operationId: compare
+      summary: compare
+      responses:
+        '200':
+          description: Resultado completo; ejemplos solo de contrato.
+          content:
+            application/json:
+              schema:
+                $ref: ./experiment-result.schema.json
+              examples:
+                compare-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/compare-response.json
+                compare-response-no-frames:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/compare-response-no-frames.json
+                compare-response-vaccines:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/compare-response-vaccines.json
+                compare-response-bootstrap:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/compare-response-bootstrap.json
+          headers:
+            Content-Encoding:
+              description: JSON gzip; navegador descomprime antes de parsear. Base64 solo en proxy Lambda.
+              schema:
+                type: string
+                const: gzip
+        '400':
+          description: Error de aplicación saneado.
+          x-error-codes: *id004
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-400-invalid-json:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-400-invalid-json.json
+                error-400-unknown-field:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-400-unknown-field.json
+        '404':
+          description: Error de aplicación saneado.
+          x-error-codes: *id005
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-404-not-found:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-404-not-found.json
+        '409':
+          description: Error de aplicación saneado.
+          x-error-codes: *id006
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-409-graph-hash-mismatch:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-409-graph-hash-mismatch.json
+        '413':
+          description: Error de aplicación saneado.
+          x-error-codes: *id007
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-413-request-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-request-too-large.json
+                error-413-result-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-result-too-large.json
+                error-413-graph-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-graph-too-large.json
+                error-413-frames-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-frames-too-large.json
+        '422':
+          description: Error de aplicación saneado.
+          x-error-codes: *id008
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-422-validation:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-422-validation.json
+                error-422-origin-empty:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-422-origin-empty.json
+        '429':
+          description: Error de aplicación saneado.
+          x-error-codes: *id001
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-429-rate-limited:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-429-rate-limited.json
+          headers:
+            Retry-After:
+              description: Opcional, segundos de espera si el servicio los conoce.
+              schema:
+                type: integer
+                minimum: 0
+        '500':
+          description: Error de aplicación saneado.
+          x-error-codes: *id002
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-500-internal-error:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-internal-error.json
+                error-500-simulation-failed:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-simulation-failed.json
+        '503':
+          description: Error de aplicación saneado.
+          x-error-codes: *id003
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-503-compute-unavailable:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-503-compute-unavailable.json
+      requestBody:
+        required: true
+        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de relaciones vacunas<=N,
+          intervención<=T y nodo<N. Los keywords default no modifican el request. Rechazar NaN e infinitos
+          antes del esquema.
+        content:
+          application/json:
+            schema:
+              $ref: ./experiment-request.schema.json
+            examples:
+              compare-request:
+                summary: Mock de contrato; no ejecución real
+                externalValue: ./examples/compare-request.json
+              compare-request-minimal:
+                summary: Mock de contrato; no ejecución real
+                externalValue: ./examples/compare-request-minimal.json

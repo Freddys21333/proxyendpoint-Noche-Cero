@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones y entorno inicial del backend preparados. El backend ya tiene dependencias fijadas y herramientas de verificación; motor, API, interfaz y despliegue siguen pendientes.
+**Estado:** especificaciones, entorno backend y contratos estáticos preparados. OpenAPI, JSON Schema y mocks están verificados; motor, API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -13,6 +13,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
+- [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
 
 ## Estructura
 
@@ -31,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). El siguiente paso es materializar sus contratos y ejemplos ejecutables de la API (T-03), se preparan los entornos y se implementa la configuración canónica con TDD. Frontend e infraestructura pueden avanzar según las dependencias de `specs/tasks.md`. Los comandos de instalación, pruebas, reproducción y despliegue se documentarán cuando existan y se hayan verificado.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). El entorno backend y los contratos de T-03 están verificados. El siguiente paso es implementar configuración canónica y validación con TDD (T-04); frontend ya puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
 
 ## Parámetros previstos
 

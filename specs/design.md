@@ -2,7 +2,7 @@
 
 **Versión:** 1.0
 **Fecha:** 26 de octubre de 2026
-**Estado:** decisiones de diseño adoptadas; contratos ejecutables e implementación pendientes.
+**Estado:** diseño adoptado y contratos estáticos T-03 verificados; funcionalidades pendientes.
 **Fuentes:** [PRD](../PRD.md), [TRD](../TRD.md), [Requisitos](requirements.md).
 
 ## 1. Arquitectura y límites
@@ -164,17 +164,17 @@ Unitarias: configuración, riesgo, transiciones, elegibilidad, ranking, semillas
 
 ## 9. Decisiones adoptadas y comprobaciones externas
 
-El contrato normativo completo está en [agreements.md](agreements.md): calendario, generación, sorteos, respuestas, CSV, canonización e interfaz Terraform. Sus decisiones concretan las descripciones de las secciones anteriores y sustituyen las menciones de detalle pendiente. La creación de OpenAPI/JSON Schema y fixtures sigue siendo una tarea de implementación, no una decisión abierta.
+El contrato normativo completo está en [agreements.md](agreements.md): calendario, generación, sorteos, respuestas, CSV, canonización e interfaz Terraform. Sus decisiones concretan las descripciones de las secciones anteriores y sustituyen las menciones de detalle pendiente. OpenAPI/JSON Schema y los ejemplos ya están verificados en T-03; consultar schemas/README.md. La implementación de handlers y dominio sigue pendiente.
 
 | ID | Punto no cerrado por los documentos | Responsable y momento |
 |---|---|---|
-| D-01 | Resuelto: formas HTTP, winner/confidence, CSV, canonización y límites iniciales | Acuerdos §4–6; materializar en T-03 |
+| D-01 | Resuelto: formas HTTP, winner/confidence, CSV, canonización y límites iniciales | Acuerdos §4–6; contratos estáticos verificados en T-03 |
 | D-02 | Resuelto: sorteos por arista, exposición si alguna tuvo éxito | Acuerdos §3; implementar en T-07 |
 | D-03 | Resuelto: lunes día 0, contactos diarios, redondeos y reconexión 0.1 | Acuerdos §1–2; implementar en T-06 |
-| D-04 | Resuelto: configuration.network, origen node entero y null en demás casos | Acuerdos §4; implementar en T-03/04 |
+| D-04 | Resuelto: configuration.network, origen node entero y null en demás casos | Acuerdos §4; esquema verificado en T-03 y normalizador pendiente en T-04 |
 | D-05 | Resuelto: estado registrado tras intervención; extinción exige E+I=0 | Acuerdos §1; implementar en T-07/09 |
 | D-06 | Resuelto: PCG64/entropy, percentiles linear, bootstrap pareado y canonical-v1 | Acuerdos §3/6; implementar en T-05/09 |
-| D-07 | Resuelto: error con engineVersion, exportación y selección trazables | Acuerdos §5–6; implementar en T-03/10/11 |
+| D-07 | Resuelto: error con engineVersion, exportación y selección trazables | Acuerdos §5–6; esquema verificado en T-03, exportador/handlers pendientes en T-10/11 |
 | D-08 | Diseño resuelto: ZIP Linux, handlers, variables/outputs y estado Terraform S3; cuenta/región/Budget requieren comprobación externa | Acuerdos §7–8; comprobar en T-17 antes de desplegar |
 
 Los ejemplos de aceptación del anexo deben convertirse en pruebas TDD por módulo. No se marca implementación completa por haber decidido su contrato.

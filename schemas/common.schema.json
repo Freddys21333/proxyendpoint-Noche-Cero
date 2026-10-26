@@ -1,0 +1,2361 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Contrato compartido v1",
+  "$defs": {
+    "Hash": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "State": {
+      "type": "string",
+      "enum": [
+        "S",
+        "E",
+        "I",
+        "R"
+      ]
+    },
+    "Context": {
+      "type": "string",
+      "enum": [
+        "household",
+        "school",
+        "bus",
+        "market",
+        "neighborhood"
+      ]
+    },
+    "Policy": {
+      "type": "string",
+      "enum": [
+        "none",
+        "random",
+        "targeted"
+      ]
+    },
+    "DateTime": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "OriginInput": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "random",
+            "household",
+            "school",
+            "bus",
+            "market",
+            "neighborhood",
+            "node"
+          ],
+          "default": "random"
+        },
+        "value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1999,
+          "default": null
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "node"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1999
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ScenarioInput": {
+      "type": "object",
+      "properties": {
+        "populationSize": {
+          "type": "integer",
+          "minimum": 50,
+          "default": 1000,
+          "maximum": 2000
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 90,
+          "maximum": 180
+        },
+        "beta": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.08
+        },
+        "sigma": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.333333
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.142857
+        },
+        "initialInfectious": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "maximum": 20
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginInput",
+          "default": {
+            "kind": "random",
+            "value": null
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "InterventionInput": {
+      "type": "object",
+      "properties": {
+        "vaccines": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 100,
+          "maximum": 2000
+        },
+        "interventionDay": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "maximum": 180
+        },
+        "vaccineEfficacy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "WeightsInput": {
+      "type": "object",
+      "properties": {
+        "household": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        },
+        "school": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.6
+        },
+        "bus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.45
+        },
+        "market": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        },
+        "neighborhood": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.2
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "NetworkInput": {
+      "type": "object",
+      "properties": {
+        "generatorVersion": {
+          "const": "synthetic-manta-v1",
+          "default": "synthetic-manta-v1"
+        },
+        "dayZero": {
+          "const": "monday",
+          "default": "monday"
+        },
+        "weights": {
+          "$ref": "#/$defs/WeightsInput",
+          "default": {
+            "household": 1.0,
+            "school": 0.6,
+            "bus": 0.45,
+            "market": 0.5,
+            "neighborhood": 0.2
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "ConfigurationInput": {
+      "type": "object",
+      "properties": {
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 20261026,
+          "maximum": 4294967295
+        },
+        "networkMode": {
+          "const": "fixed",
+          "default": "fixed"
+        },
+        "repetitions": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 30,
+          "maximum": 30
+        },
+        "scenario": {
+          "$ref": "#/$defs/ScenarioInput",
+          "default": {
+            "populationSize": 1000,
+            "days": 90,
+            "beta": 0.08,
+            "sigma": 0.333333,
+            "gamma": 0.142857,
+            "initialInfectious": 1,
+            "origin": {
+              "kind": "random",
+              "value": null
+            }
+          }
+        },
+        "intervention": {
+          "$ref": "#/$defs/InterventionInput",
+          "default": {
+            "vaccines": 100,
+            "interventionDay": 0,
+            "vaccineEfficacy": 1.0
+          }
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Policy"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "default": [
+            "none",
+            "random",
+            "targeted"
+          ]
+        },
+        "network": {
+          "$ref": "#/$defs/NetworkInput",
+          "default": {
+            "generatorVersion": "synthetic-manta-v1",
+            "dayZero": "monday",
+            "weights": {
+              "household": 1.0,
+              "school": 0.6,
+              "bus": 0.45,
+              "market": 0.5,
+              "neighborhood": 0.2
+            }
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Validar relaciones después de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+    },
+    "Origin": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "random",
+            "household",
+            "school",
+            "bus",
+            "market",
+            "neighborhood",
+            "node"
+          ],
+          "default": "random"
+        },
+        "value": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1999,
+          "default": null
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "node"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1999
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Scenario": {
+      "type": "object",
+      "properties": {
+        "populationSize": {
+          "type": "integer",
+          "minimum": 50,
+          "default": 1000,
+          "maximum": 2000
+        },
+        "days": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 90,
+          "maximum": 180
+        },
+        "beta": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.08
+        },
+        "sigma": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.333333
+        },
+        "gamma": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.142857
+        },
+        "initialInfectious": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1,
+          "maximum": 20
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin",
+          "default": {
+            "kind": "random",
+            "value": null
+          }
+        }
+      },
+      "required": [
+        "populationSize",
+        "days",
+        "beta",
+        "sigma",
+        "gamma",
+        "initialInfectious",
+        "origin"
+      ],
+      "additionalProperties": false
+    },
+    "Intervention": {
+      "type": "object",
+      "properties": {
+        "vaccines": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 100,
+          "maximum": 2000
+        },
+        "interventionDay": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "maximum": 180
+        },
+        "vaccineEfficacy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        }
+      },
+      "required": [
+        "vaccines",
+        "interventionDay",
+        "vaccineEfficacy"
+      ],
+      "additionalProperties": false
+    },
+    "Weights": {
+      "type": "object",
+      "properties": {
+        "household": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        },
+        "school": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.6
+        },
+        "bus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.45
+        },
+        "market": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        },
+        "neighborhood": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.2
+        }
+      },
+      "required": [
+        "household",
+        "school",
+        "bus",
+        "market",
+        "neighborhood"
+      ],
+      "additionalProperties": false
+    },
+    "Network": {
+      "type": "object",
+      "properties": {
+        "generatorVersion": {
+          "const": "synthetic-manta-v1",
+          "default": "synthetic-manta-v1"
+        },
+        "dayZero": {
+          "const": "monday",
+          "default": "monday"
+        },
+        "weights": {
+          "$ref": "#/$defs/Weights",
+          "default": {
+            "household": 1.0,
+            "school": 0.6,
+            "bus": 0.45,
+            "market": 0.5,
+            "neighborhood": 0.2
+          }
+        }
+      },
+      "required": [
+        "generatorVersion",
+        "dayZero",
+        "weights"
+      ],
+      "additionalProperties": false
+    },
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 20261026,
+          "maximum": 4294967295
+        },
+        "networkMode": {
+          "const": "fixed",
+          "default": "fixed"
+        },
+        "repetitions": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 30,
+          "maximum": 30
+        },
+        "scenario": {
+          "$ref": "#/$defs/Scenario",
+          "default": {
+            "populationSize": 1000,
+            "days": 90,
+            "beta": 0.08,
+            "sigma": 0.333333,
+            "gamma": 0.142857,
+            "initialInfectious": 1,
+            "origin": {
+              "kind": "random",
+              "value": null
+            }
+          }
+        },
+        "intervention": {
+          "$ref": "#/$defs/Intervention",
+          "default": {
+            "vaccines": 100,
+            "interventionDay": 0,
+            "vaccineEfficacy": 1.0
+          }
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Policy"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "default": [
+            "none",
+            "random",
+            "targeted"
+          ],
+          "const": [
+            "none",
+            "random",
+            "targeted"
+          ]
+        },
+        "network": {
+          "$ref": "#/$defs/Network",
+          "default": {
+            "generatorVersion": "synthetic-manta-v1",
+            "dayZero": "monday",
+            "weights": {
+              "household": 1.0,
+              "school": 0.6,
+              "bus": 0.45,
+              "market": 0.5,
+              "neighborhood": 0.2
+            }
+          }
+        }
+      },
+      "required": [
+        "rootSeed",
+        "networkMode",
+        "repetitions",
+        "scenario",
+        "intervention",
+        "policies",
+        "network"
+      ],
+      "additionalProperties": false,
+      "description": "Validar relaciones después de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+    },
+    "PreviewRequest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "configuration": {
+          "$ref": "#/$defs/ConfigurationInput",
+          "default": {
+            "rootSeed": 20261026,
+            "networkMode": "fixed",
+            "repetitions": 30,
+            "scenario": {
+              "populationSize": 1000,
+              "days": 90,
+              "beta": 0.08,
+              "sigma": 0.333333,
+              "gamma": 0.142857,
+              "initialInfectious": 1,
+              "origin": {
+                "kind": "random",
+                "value": null
+              }
+            },
+            "intervention": {
+              "vaccines": 100,
+              "interventionDay": 0,
+              "vaccineEfficacy": 1.0
+            },
+            "policies": [
+              "none",
+              "random",
+              "targeted"
+            ],
+            "network": {
+              "generatorVersion": "synthetic-manta-v1",
+              "dayZero": "monday",
+              "weights": {
+                "household": 1.0,
+                "school": 0.6,
+                "bus": 0.45,
+                "market": 0.5,
+                "neighborhood": 0.2
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "schemaVersion"
+      ],
+      "additionalProperties": false
+    },
+    "CompareRequest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "configuration": {
+          "$ref": "#/$defs/ConfigurationInput",
+          "default": {
+            "rootSeed": 20261026,
+            "networkMode": "fixed",
+            "repetitions": 30,
+            "scenario": {
+              "populationSize": 1000,
+              "days": 90,
+              "beta": 0.08,
+              "sigma": 0.333333,
+              "gamma": 0.142857,
+              "initialInfectious": 1,
+              "origin": {
+                "kind": "random",
+                "value": null
+              }
+            },
+            "intervention": {
+              "vaccines": 100,
+              "interventionDay": 0,
+              "vaccineEfficacy": 1.0
+            },
+            "policies": [
+              "none",
+              "random",
+              "targeted"
+            ],
+            "network": {
+              "generatorVersion": "synthetic-manta-v1",
+              "dayZero": "monday",
+              "weights": {
+                "household": 1.0,
+                "school": 0.6,
+                "bus": 0.45,
+                "market": 0.5,
+                "neighborhood": 0.2
+              }
+            }
+          }
+        },
+        "expectedGraphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "includeRepresentativeFrames": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "expectedGraphHash",
+        "includeRepresentativeFrames"
+      ],
+      "additionalProperties": false
+    },
+    "HealthResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "ok"
+        },
+        "region": {
+          "type": "string",
+          "minLength": 1
+        },
+        "buildCommit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/DateTime"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "status",
+        "region",
+        "buildCommit",
+        "generatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "Limits": {
+      "type": "object",
+      "properties": {
+        "maxRequestBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxResponseBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxDecodedResponseBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxEdges": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxFrameStates": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "maxRequestBytes",
+        "maxResponseBytes",
+        "maxDecodedResponseBytes",
+        "maxEdges",
+        "maxFrameStates"
+      ],
+      "additionalProperties": false
+    },
+    "ConfigResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "defaults": {
+          "$ref": "#/$defs/Configuration"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "asyncJobs": {
+              "const": false
+            },
+            "representativeFrames": {
+              "const": true
+            }
+          },
+          "required": [
+            "asyncJobs",
+            "representativeFrames"
+          ],
+          "additionalProperties": false
+        },
+        "generatorDescription": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "defaults",
+        "limits",
+        "features",
+        "generatorDescription"
+      ],
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "role": {
+          "enum": [
+            "student",
+            "worker",
+            "community"
+          ]
+        },
+        "householdId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "neighborhoodId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schoolId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "busId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "marketId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "householdId",
+        "neighborhoodId",
+        "schoolId",
+        "busId",
+        "marketId"
+      ],
+      "additionalProperties": false
+    },
+    "Edge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "u": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "v": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "context": {
+          "$ref": "#/$defs/Context"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "activeDays": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 180
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "maxItems": 181
+        }
+      },
+      "required": [
+        "id",
+        "u",
+        "v",
+        "context",
+        "weight",
+        "activeDays"
+      ],
+      "additionalProperties": false
+    },
+    "Graph": {
+      "type": "object",
+      "properties": {
+        "generatorVersion": {
+          "const": "synthetic-manta-v1"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Node"
+          },
+          "minItems": 50,
+          "maxItems": 2000
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Edge"
+          },
+          "maxItems": 100000
+        }
+      },
+      "required": [
+        "generatorVersion",
+        "nodes",
+        "edges"
+      ],
+      "additionalProperties": false
+    },
+    "Position": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "x": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "nodeId",
+        "x",
+        "y"
+      ],
+      "additionalProperties": false
+    },
+    "PreviewResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "configuration": {
+          "$ref": "#/$defs/Configuration"
+        },
+        "graph": {
+          "$ref": "#/$defs/Graph"
+        },
+        "graphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Position"
+          },
+          "minItems": 50,
+          "maxItems": 2000
+        },
+        "initialInfectiousNodeIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1999
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "initialStateHash": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "configuration",
+        "graph",
+        "graphHash",
+        "positions",
+        "initialInfectiousNodeIds",
+        "initialStateHash"
+      ],
+      "additionalProperties": false
+    },
+    "Metrics": {
+      "type": "object",
+      "properties": {
+        "cumulativeInfected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "peakInfectious": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "peakDay": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "finalInfectious": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "outbreakDuration": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "vaccinesAssigned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "vaccinesEffective": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "vaccinesUnused": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        }
+      },
+      "required": [
+        "cumulativeInfected",
+        "peakInfectious",
+        "peakDay",
+        "finalInfectious",
+        "outbreakDuration",
+        "vaccinesAssigned",
+        "vaccinesEffective",
+        "vaccinesUnused"
+      ],
+      "additionalProperties": false
+    },
+    "Daily": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "e": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "i": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "r": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "cumulativeInfected": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        }
+      },
+      "required": [
+        "day",
+        "s",
+        "e",
+        "i",
+        "r",
+        "cumulativeInfected"
+      ],
+      "additionalProperties": false
+    },
+    "Selection": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "nodeId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "stateAtDecision": {
+          "const": "S"
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Context"
+          },
+          "uniqueItems": true,
+          "maxItems": 5
+        },
+        "tieBreak": {
+          "enum": [
+            "nodeIdAsc",
+            "seededRandom"
+          ]
+        },
+        "effective": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "day",
+        "nodeId",
+        "score",
+        "rank",
+        "stateAtDecision",
+        "contexts",
+        "tieBreak",
+        "effective"
+      ],
+      "additionalProperties": false
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "nodeId": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1999
+        },
+        "from": {
+          "$ref": "#/$defs/State"
+        },
+        "to": {
+          "$ref": "#/$defs/State"
+        },
+        "cause": {
+          "enum": [
+            "initial",
+            "contact",
+            "progression",
+            "vaccine"
+          ]
+        },
+        "sourceNodeId": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1999
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "edgeId": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "day",
+        "nodeId",
+        "from",
+        "to",
+        "cause",
+        "sourceNodeId",
+        "edgeId"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "contact"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "sourceNodeId": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1999
+              },
+              "edgeId": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "from": {
+                "const": "S"
+              },
+              "to": {
+                "const": "E"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "sourceNodeId": {
+                "type": "null"
+              },
+              "edgeId": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "vaccine"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "from": {
+                "const": "S"
+              },
+              "to": {
+                "const": "R"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "initial"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "day": {
+                "const": 0
+              },
+              "from": {
+                "const": "I"
+              },
+              "to": {
+                "const": "I"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "cause": {
+                "const": "progression"
+              }
+            }
+          },
+          "then": {
+            "oneOf": [
+              {
+                "properties": {
+                  "from": {
+                    "const": "E"
+                  },
+                  "to": {
+                    "const": "I"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "from": {
+                    "const": "I"
+                  },
+                  "to": {
+                    "const": "R"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "PolicyResult": {
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "$ref": "#/$defs/Metrics"
+        },
+        "daily": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Daily"
+          },
+          "minItems": 2,
+          "maxItems": 181
+        },
+        "selections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Selection"
+          },
+          "maxItems": 2000
+        },
+        "events": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Event"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resultHash": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "metrics",
+        "daily",
+        "selections",
+        "events",
+        "resultHash"
+      ],
+      "additionalProperties": false
+    },
+    "Replicate": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 29
+        },
+        "initialInfectiousNodeIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1999
+          },
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true
+        },
+        "initialStateHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "randomnessHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "policies": {
+          "type": "object",
+          "properties": {
+            "none": {
+              "$ref": "#/$defs/PolicyResult"
+            },
+            "random": {
+              "$ref": "#/$defs/PolicyResult"
+            },
+            "targeted": {
+              "$ref": "#/$defs/PolicyResult"
+            }
+          },
+          "required": [
+            "none",
+            "random",
+            "targeted"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "index",
+        "initialInfectiousNodeIds",
+        "initialStateHash",
+        "randomnessHash",
+        "policies"
+      ],
+      "additionalProperties": false
+    },
+    "Stats": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "mean": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "median": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "p05": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "p95": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2000
+        }
+      },
+      "required": [
+        "n",
+        "mean",
+        "median",
+        "p05",
+        "p95"
+      ],
+      "additionalProperties": false
+    },
+    "NullableStats": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Stats"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "n": {
+              "const": 0
+            },
+            "mean": {
+              "type": "null"
+            },
+            "median": {
+              "type": "null"
+            },
+            "p05": {
+              "type": "null"
+            },
+            "p95": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "n",
+            "mean",
+            "median",
+            "p05",
+            "p95"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "MetricSummary": {
+      "type": "object",
+      "properties": {
+        "cumulativeInfected": {
+          "$ref": "#/$defs/Stats"
+        },
+        "peakInfectious": {
+          "$ref": "#/$defs/Stats"
+        },
+        "peakDay": {
+          "$ref": "#/$defs/Stats"
+        },
+        "finalInfectious": {
+          "$ref": "#/$defs/Stats"
+        },
+        "outbreakDuration": {
+          "$ref": "#/$defs/NullableStats"
+        },
+        "vaccinesAssigned": {
+          "$ref": "#/$defs/Stats"
+        },
+        "vaccinesEffective": {
+          "$ref": "#/$defs/Stats"
+        },
+        "vaccinesUnused": {
+          "$ref": "#/$defs/Stats"
+        }
+      },
+      "required": [
+        "cumulativeInfected",
+        "peakInfectious",
+        "peakDay",
+        "finalInfectious",
+        "outbreakDuration",
+        "vaccinesAssigned",
+        "vaccinesEffective",
+        "vaccinesUnused"
+      ],
+      "additionalProperties": false
+    },
+    "Bootstrap": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "const": 0.95
+        },
+        "resamples": {
+          "const": 2000
+        },
+        "lower": {
+          "type": "number"
+        },
+        "upper": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "level",
+        "resamples",
+        "lower",
+        "upper"
+      ],
+      "additionalProperties": false
+    },
+    "Comparison": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 30
+        },
+        "mean": {
+          "type": "number"
+        },
+        "median": {
+          "type": "number"
+        },
+        "p05": {
+          "type": "number"
+        },
+        "p95": {
+          "type": "number"
+        },
+        "bootstrap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bootstrap"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "values",
+        "mean",
+        "median",
+        "p05",
+        "p95",
+        "bootstrap"
+      ],
+      "additionalProperties": false
+    },
+    "PairedComparisons": {
+      "type": "object",
+      "properties": {
+        "savedVsNone": {
+          "type": "object",
+          "properties": {
+            "random": {
+              "$ref": "#/$defs/Comparison"
+            },
+            "targeted": {
+              "$ref": "#/$defs/Comparison"
+            }
+          },
+          "required": [
+            "random",
+            "targeted"
+          ],
+          "additionalProperties": false
+        },
+        "gainVsRandom": {
+          "$ref": "#/$defs/Comparison"
+        },
+        "targetedWinRateVsNone": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "targetedWinRateVsRandom": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "savedVsNone",
+        "gainVsRandom",
+        "targetedWinRateVsNone",
+        "targetedWinRateVsRandom"
+      ],
+      "additionalProperties": false
+    },
+    "AggregatedDay": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "s": {
+          "$ref": "#/$defs/Stats"
+        },
+        "e": {
+          "$ref": "#/$defs/Stats"
+        },
+        "i": {
+          "$ref": "#/$defs/Stats"
+        },
+        "r": {
+          "$ref": "#/$defs/Stats"
+        },
+        "cumulativeInfected": {
+          "$ref": "#/$defs/Stats"
+        }
+      },
+      "required": [
+        "day",
+        "s",
+        "e",
+        "i",
+        "r",
+        "cumulativeInfected"
+      ],
+      "additionalProperties": false
+    },
+    "Representative": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 29
+        },
+        "initialSeed": {
+          "type": "object",
+          "properties": {
+            "rootSeed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            "replicateIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 29
+            },
+            "domain": {
+              "const": "initial"
+            }
+          },
+          "required": [
+            "rootSeed",
+            "replicateIndex",
+            "domain"
+          ],
+          "additionalProperties": false
+        },
+        "frames": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "none": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/State"
+                    },
+                    "minItems": 50,
+                    "maxItems": 2000
+                  },
+                  "minItems": 2,
+                  "maxItems": 181
+                },
+                "random": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/State"
+                    },
+                    "minItems": 50,
+                    "maxItems": 2000
+                  },
+                  "minItems": 2,
+                  "maxItems": 181
+                },
+                "targeted": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/State"
+                    },
+                    "minItems": 50,
+                    "maxItems": 2000
+                  },
+                  "minItems": 2,
+                  "maxItems": 181
+                }
+              },
+              "required": [
+                "none",
+                "random",
+                "targeted"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "index",
+        "initialSeed",
+        "frames"
+      ],
+      "additionalProperties": false
+    },
+    "Recommendation": {
+      "type": "object",
+      "properties": {
+        "winner": {
+          "enum": [
+            "none",
+            "random",
+            "targeted",
+            "tie"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "descriptive",
+            "inconclusive",
+            "supported"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "winner",
+        "confidence",
+        "reasons",
+        "limitations"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "winner": {
+                "const": "tie"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "confidence": {
+                "enum": [
+                  "descriptive",
+                  "inconclusive"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Manifest": {
+      "type": "object",
+      "properties": {
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "buildCommit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pythonVersion": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^3\\.12\\.\\d+$"
+        },
+        "dependencies": {
+          "type": "object",
+          "minProperties": 2,
+          "required": [
+            "numpy",
+            "networkx"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "generatorVersion": {
+          "const": "synthetic-manta-v1"
+        },
+        "rngVersion": {
+          "const": "rng-v1"
+        },
+        "bitGenerator": {
+          "const": "PCG64"
+        },
+        "canonicalVersion": {
+          "const": "canonical-v1"
+        },
+        "networkMode": {
+          "const": "fixed"
+        },
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "graphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "experimentHash": {
+          "$ref": "#/$defs/Hash"
+        }
+      },
+      "required": [
+        "engineVersion",
+        "schemaVersion",
+        "buildCommit",
+        "pythonVersion",
+        "dependencies",
+        "generatorVersion",
+        "rngVersion",
+        "bitGenerator",
+        "canonicalVersion",
+        "networkMode",
+        "rootSeed",
+        "graphHash",
+        "experimentHash"
+      ],
+      "additionalProperties": false
+    },
+    "Progress": {
+      "type": "object",
+      "properties": {
+        "replicatesTotal": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 30
+        },
+        "replicatesSucceeded": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 30
+        },
+        "replicatesFailed": {
+          "type": "integer",
+          "const": 0
+        }
+      },
+      "required": [
+        "replicatesTotal",
+        "replicatesSucceeded",
+        "replicatesFailed"
+      ],
+      "additionalProperties": false
+    },
+    "CompareResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "configuration": {
+          "$ref": "#/$defs/Configuration"
+        },
+        "manifest": {
+          "$ref": "#/$defs/Manifest"
+        },
+        "graph": {
+          "$ref": "#/$defs/Graph"
+        },
+        "graphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "summaryByPolicy": {
+          "type": "object",
+          "properties": {
+            "none": {
+              "$ref": "#/$defs/MetricSummary"
+            },
+            "random": {
+              "$ref": "#/$defs/MetricSummary"
+            },
+            "targeted": {
+              "$ref": "#/$defs/MetricSummary"
+            }
+          },
+          "required": [
+            "none",
+            "random",
+            "targeted"
+          ],
+          "additionalProperties": false
+        },
+        "pairedComparisons": {
+          "$ref": "#/$defs/PairedComparisons"
+        },
+        "aggregatedCurves": {
+          "type": "object",
+          "properties": {
+            "none": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AggregatedDay"
+              },
+              "minItems": 2,
+              "maxItems": 181
+            },
+            "random": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AggregatedDay"
+              },
+              "minItems": 2,
+              "maxItems": 181
+            },
+            "targeted": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/AggregatedDay"
+              },
+              "minItems": 2,
+              "maxItems": 181
+            }
+          },
+          "required": [
+            "none",
+            "random",
+            "targeted"
+          ],
+          "additionalProperties": false
+        },
+        "replicates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Replicate"
+          },
+          "minItems": 2,
+          "maxItems": 30
+        },
+        "representative": {
+          "$ref": "#/$defs/Representative"
+        },
+        "recommendation": {
+          "$ref": "#/$defs/Recommendation"
+        },
+        "progress": {
+          "$ref": "#/$defs/Progress"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/DateTime"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "configuration",
+        "manifest",
+        "graph",
+        "graphHash",
+        "summaryByPolicy",
+        "pairedComparisons",
+        "aggregatedCurves",
+        "replicates",
+        "representative",
+        "recommendation",
+        "progress",
+        "generatedAt"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "configuration": {
+                "properties": {
+                  "repetitions": {
+                    "maximum": 29
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "recommendation": {
+                "properties": {
+                  "confidence": {
+                    "const": "descriptive"
+                  }
+                }
+              },
+              "pairedComparisons": {
+                "properties": {
+                  "gainVsRandom": {
+                    "properties": {
+                      "bootstrap": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "savedVsNone": {
+                    "properties": {
+                      "random": {
+                        "properties": {
+                          "bootstrap": {
+                            "type": "null"
+                          }
+                        }
+                      },
+                      "targeted": {
+                        "properties": {
+                          "bootstrap": {
+                            "type": "null"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "recommendation": {
+                "properties": {
+                  "confidence": {
+                    "enum": [
+                      "inconclusive",
+                      "supported"
+                    ]
+                  }
+                }
+              },
+              "pairedComparisons": {
+                "properties": {
+                  "gainVsRandom": {
+                    "properties": {
+                      "bootstrap": {
+                        "$ref": "#/$defs/Bootstrap"
+                      }
+                    }
+                  },
+                  "savedVsNone": {
+                    "properties": {
+                      "random": {
+                        "properties": {
+                          "bootstrap": {
+                            "$ref": "#/$defs/Bootstrap"
+                          }
+                        }
+                      },
+                      "targeted": {
+                        "properties": {
+                          "bootstrap": {
+                            "$ref": "#/$defs/Bootstrap"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "enum": [
+                "INVALID_JSON",
+                "UNKNOWN_FIELD",
+                "NOT_FOUND",
+                "GRAPH_HASH_MISMATCH",
+                "REQUEST_TOO_LARGE",
+                "RESULT_TOO_LARGE",
+                "GRAPH_TOO_LARGE",
+                "FRAMES_TOO_LARGE",
+                "VALIDATION_ERROR",
+                "ORIGIN_EMPTY",
+                "RATE_LIMITED",
+                "INTERNAL_ERROR",
+                "SIMULATION_FAILED",
+                "COMPUTE_UNAVAILABLE"
+              ]
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "path",
+                  "reason"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "fields"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "error"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

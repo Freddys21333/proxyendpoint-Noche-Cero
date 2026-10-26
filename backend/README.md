@@ -1,6 +1,6 @@
 # Backend
 
-Entorno inicial de T-02. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. Todavía no hay endpoints, contratos ejecutables ni simulación implementados.
+Entorno inicial de T-02 y contratos estáticos de T-03. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) ya están disponibles. Todavía no hay endpoints ni simulación implementados.
 
 ## Instalación en Windows (PowerShell)
 
@@ -30,7 +30,7 @@ Desde `backend/`, sin activar manualmente el entorno virtual:
 ..\.tools\bin\uv.exe run --locked --offline --cache-dir ../.uv-cache pytest tests
 ```
 
-El modo offline requiere haber instalado las dependencias primero. Actualmente `pytest tests` devuelve **5: no hay pruebas**; no significa que una suite haya pasado. No normalizar ese código en el pipeline futuro: al agregar comportamiento se deben incorporar pruebas reales y exigir código 0. Para inspeccionar la colección se puede ejecutar `pytest --collect-only tests` con el mismo prefijo uv.
+El modo offline requiere haber instalado las dependencias primero. `pytest tests` ejecuta las pruebas de contrato y debe devolver código **0**. T-02 todavía no tenía pruebas; T-03 incorpora la suite estática de esquemas y ejemplos, sin pruebas de un motor que aún no existe. Para inspeccionar la colección se puede ejecutar `pytest --collect-only tests` con el mismo prefijo uv.
 
 La estructura `src/domain`, `src/simulation`, `src/strategies` y `src/api` es importable. Pytest agrega `src` a su ruta de importación; no hace falta instalar un paquete editable. La distribución de Lambda conservará esos módulos en la raíz del ZIP.
 
@@ -38,10 +38,14 @@ La estructura `src/domain`, `src/simulation`, `src/strategies` y `src/api` es im
 
 Dependencias principales verificadas: NumPy 2.5.4 y NetworkX 3.7. Herramientas: pytest 9.1.1, Ruff 0.17.2, mypy 1.20.2 y types-networkx 3.6.1.20261024. uv usado: 0.13.5.
 
+T-03 agrega validadores de desarrollo fijados: jsonschema[format] 4.26.0, openapi-spec-validator 0.9.0, PyYAML 6.0.3 y referencing 0.37.0. Se usan para pruebas, no se agregan al ZIP de producción. La dependencia de validación que use el backend real se decidirá en T-04 y deberá declararse como runtime si corresponde.
+
 Cuando se cambie una dependencia, actualizar su versión en `pyproject.toml`, ejecutar `uv lock`, sincronizar y verificar. No editar `uv.lock` manualmente ni actualizarlo silenciosamente al ejecutar checks. Cualquier cambio que altere resultados del motor necesitará evidencia y versión coherentes con el manifiesto.
 
 ## Siguiente tarea
 
-T-03: materializar [los acuerdos](../specs/agreements.md) en OpenAPI, JSON Schema y ejemplos. Después, T-04 implementa configuración canónica con pruebas que fallen primero por el comportamiento ausente. No se agregan tests artificiales de carpetas ni un motor de ejemplo para cerrar T-02.
+T-04 implementa configuración canónica y validación de relaciones sobre [los contratos compartidos](../schemas/README.md), con pruebas que fallen primero por el comportamiento ausente. El backend vuelve a validar entradas aunque el frontend también las valide. No se añade simulación hasta resolver configuración y semillas.
 
 Resultado observado de esta preparación: [evidencia de T-02](../docs/evidencia/backend-entorno.md).
+
+Validación de contratos: [evidencia de T-03](../docs/evidencia/backend-contratos.md).
