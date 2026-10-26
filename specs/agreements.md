@@ -54,6 +54,8 @@ Así la probabilidad agregada es exactamente `1-product(1-p_edge)` del TRD. No h
 
 Progresión: generar matriz (T,N,2), orden C día/nodo/canal. Canal 0 decide E→I con sigma; canal 1 decide I→R con gamma. Transmisión: matriz (T,edgeCount), orden C. Eficacia: matriz (T+1,N), orden C, umbral vaccineEfficacy. Crear potenciales aunque no se consuman según el estado. Solo mantener una réplica en memoria.
 
+Concreción binaria T-07: randomnessHash recorre transmission/progression/vaccine. Para cada matriz agrega longitud del encabezado como uint64 little-endian, encabezado canonical-v1 `{name,shape}` y bytes de la matriz float64 little-endian en orden C. El SHA-256 con prefijo identifica estos potenciales y no depende de políticas ni de si un sorteo se usa.
+
 Initial: primer nodo uniforme entre candidatos ordenados; restantes en toda población menos primero, sin reemplazo, y registrar ids ordenados. Random: choice sin reemplazo sobre elegibles por id con policy-random; ordenar selección para serializar. Targeted calcula todos los scores desde un solo snapshot antes de vacunar y ordena (-score,id); no recalcula después de cada dosis.
 
 Percentiles: método linear, índice (n−1)q e interpolación entre vecinos, incluidos P05/P95. Bootstrap: vector de diferencias pareadas por índice de réplica; 2.000 muestras de tamaño R, con reemplazo, índices generados como una matriz (2000,R) por dominio bootstrap. Calcular medias por fila y percentiles 2.5/97.5 con linear; usar los mismos índices para todas las comparaciones. R<30 devuelve bootstrap=null, no un intervalo inventado.

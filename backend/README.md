@@ -1,6 +1,6 @@
 # Backend
 
-Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. Todavía no hay endpoints ni simulación implementados.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor sin intervención de T-07 ya es ejecutable localmente; no hay endpoints ni comparación de políticas.
 
 ## Instalación en Windows (PowerShell)
 
@@ -76,7 +76,15 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-07 implementa el motor SEIR y eventos diarios sobre la red T-06. Todavía no hay simulador ni endpoints.
+T-08 incorpora vacunación y políticas pareadas none/random/targeted. El motor sin intervención ya funciona; todavía no hay endpoints.
+
+## Motor SEIR T-07
+
+`simulation.engine.simulate_none(configuration, graph, replicate_index=0)` ejecuta la referencia sin intervención. Devuelve SimulationTrace con daily, events, frames, entry_days y randomness_hash; registra T+1 estados. No aplica las vacunas de configuration: esta función representa exclusivamente none. La comparación se implementará en T-08/09.
+
+`generate_potentials(configuration, edge_count, replicate_index=0)` crea matrices de transmisión, progresión y eficacia por dominio con acceso de solo lectura. Pueden compartirse entre ejecuciones mediante potentials=; no se consumen ni modifican. `step_day` permite probar la transición desde un snapshot, sin mutarlo. Los eventos iniciales son I→I; contactos y progresiones se etiquetan con d+1 y la menor arista exitosa explica cada contacto.
+
+randomnessHash incluye nombres, dimensiones y bytes float64 little-endian según agreements.md §3. Entrada de uniformes incompatible se rechaza. La traza conserva tiempos individuales sin incluirlos en el contrato HTTP todavía. [Evidencia T-07](../docs/evidencia/backend-motor.md): 210 pruebas aprobadas y smoke N=1000/T=90. Esto no verifica rendimiento AWS ni impacto de estrategias.
 
 ## Red y origen T-06
 

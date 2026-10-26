@@ -1,6 +1,6 @@
 # Contratos compartidos — T-03
 
-Contrato base v1 para frontend y backend. Los artefactos describen la API futura; **no hay endpoints ni simulación implementados**. Desde T-04 existe el normalizador de dominio y lector de requests que reutiliza estos contratos.
+Contrato base v1 para frontend y backend. Los artefactos describen la API futura; **todavía no hay endpoints**. T-07 implementa el motor SEIR local sin intervención; comparación e integración HTTP siguen pendientes. Desde T-04 existe el normalizador de dominio y lector de requests que reutiliza estos contratos.
 
 ## Archivos y fuente de verdad
 
