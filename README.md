@@ -1,6 +1,6 @@
 # Comité de Contención de Manta
 
-Proyecto de Freddy_Bajaña para SpookyThon 2026, Track B: La Plaga Zombie.
+Simulador de propagación y comparación de estrategias de contención sobre una población sintética.
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
@@ -10,7 +10,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
-- [Plan de especificaciones](specs/README.md).
+- [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
 - [Costos y evidencia pendiente](docs/costos.md).
 
 ## Estructura
@@ -19,7 +19,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - `backend/tests/`: pruebas del motor y contratos.
 - `frontend/src/`: interfaz prevista en React y TypeScript.
 - `schemas/`: futuros contratos OpenAPI y JSON Schema.
-- `infra/`: futura infraestructura AWS SAM.
+- `infra/`: futura infraestructura AWS con Terraform.
 - `scripts/`: futuras utilidades de reproducción.
 - `specs/`: especificaciones incrementales antes de implementar.
 - `docs/evidencia/`: futuras verificaciones y resultados observados.
@@ -30,7 +30,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-El siguiente incremento será la spec de contratos y configuración canónica. Luego se incorporarán herramientas, dependencias fijadas y pruebas ejecutables. Los comandos de instalación, pruebas, reproducción y despliegue se documentarán cuando existan y se hayan verificado.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). El siguiente paso es materializar sus contratos y ejemplos ejecutables de la API (T-03), se preparan los entornos y se implementa la configuración canónica con TDD. Frontend e infraestructura pueden avanzar según las dependencias de `specs/tasks.md`. Los comandos de instalación, pruebas, reproducción y despliegue se documentarán cuando existan y se hayan verificado.
 
 ## Parámetros previstos
 
@@ -49,11 +49,11 @@ El siguiente incremento será la spec de contratos y configuración canónica. L
 
 La configuración completa y las fórmulas están en el TRD. Estos valores aún no producen resultados ejecutables. No se afirma que la estrategia supere las líneas base hasta medirlo.
 
-## AWS y entregables pendientes
+## AWS y pendientes técnicos
 
 Región prevista según PRD/TRD: `us-east-2`; el enunciado menciona `us-east-1` por confirmar, por lo que se debe verificar la aceptación de Ohio con la organización antes de desplegar.
 
-El diagrama lógico está en la sección 2 del TRD. Falta exportar el diagrama de entrega a SVG y conservar su fuente editable. También están pendientes la URL pública, resultados, benchmark, pitch y estimación mensual.
+El diagrama lógico está en la sección 2 del TRD. Falta exportar el diagrama de entrega a SVG y conservar su fuente editable. También están pendientes la URL pública, resultados, benchmark y estimación mensual.
 
 ### AWS Budget — evidencia provisional
 

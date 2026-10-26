@@ -1,0 +1,59 @@
+# Plan de tareas — versión base
+
+**Fecha:** 26 de octubre de 2026
+**Estado:** planificación; todas las casillas de implementación están pendientes.
+**Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
+
+## 1. Reparto y flujo de trabajo
+
+Las tareas se agrupan por frente técnico: **backend**, **frontend** e **infraestructura con Terraform**. No se asignan personas. Los contratos y verificaciones de integración son compartidos entre los frentes que intervienen.
+
+Una tarea es una unidad revisable, no necesariamente un único commit. Crear ramas cortas desde main actualizado, por ejemplo `feat/backend-configuracion`, `feat/frontend-formulario`, `chore/infra-base`. No compartir rama de implementación. Mensajes en español `tipo(ámbito): descripción (RF/CA)`; integrar por pull request con revisión del contrato si corresponde.
+
+Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-xx de agreements.md. Ejecutar rojo/verde/refactor localmente para comportamiento. No marcar casillas por tener solo código, mocks o una spec. Registrar comandos, resultados, limitaciones y evidencia real; publicar con checks disponibles pasando.
+
+## 2. Acuerdo inicial y contratos
+
+- [ ] **T-01 — Revisar estas specs y acordar interfaces.** Frente: backend + frontend + infraestructura. Dependencias: ninguna. Revisar alcance base, D-01..D-08, exclusión PRO e interfaces compartidas en schemas/README. Salida: acuerdos técnicos y decisiones pendientes registrados; estado documental listo para trabajo, no software verificado. Referencias: TRD §18; REQ-01..12.
+- [ ] **T-02 — Preparar entorno backend.** Frente: backend. Dep.: T-01. Configurar Python 3.12, dependencias fijadas, runner de pruebas, lint/tipos y comandos reproducibles sin AWS. Salida: instalación limpia y verificación mínima real del entorno; no tests que solo comprueben directorios. Ref.: TRD §1/15; RNF-01.
+- [ ] **T-03 — Materializar contrato base y ejemplos.** Frente: backend + frontend. Dep.: T-01. Aplicar D-01/04/07 y D-06 de agreements.md sin rediseñar campos de manera independiente. Crear `schemas/openapi.yaml`, request/result schemas y fixtures de health/config/preview/compare/errores con campos completos; distinguir ejemplos de resultados reales. Salida: ejemplos válidos y pruebas de contrato, reglas de origen/límites/defaults, errores y exportación acordados. Ref.: REQ-01/02/05/06/07/08/09; RF-01/02/03/07/08/09/10/11/12/13/19; CA-08/09/10/11.
+- [ ] **T-04 — Configuración canónica y validación.** Frente: backend. Dep.: T-02/03. Implementar tipos, defaults, tasas, límites relacionados con N/T, rechazo de desconocidos/NaN/infinitos y configuración exportable. Salida: pruebas de fronteras, incompatibilidad de vacunas al bajar N, origen y normalización; comandos documentados. Ref.: REQ-01; RF-01/02; CA-08.
+
+## 3. Backend: núcleo científico
+
+- [ ] **T-05 — Semillas y canonización versionadas.** Frente: backend. Dep.: T-04; aplicar D-06. Implementar derivación por dominio, bitGenerator fijado, JSON canónico y hashes no volátiles. Salida: fixtures estables y aislamiento de RNG; tres procesos con hash idéntico para entradas conocidas. Ref.: REQ-09; CA-06/07.
+- [ ] **T-06 — Grafo, calendario y origen.** Frente: backend. Dep.: T-05; aplicar D-03/04. Implementar capas TRD §4.2, pesos, calendario, aristas canónicas, preview y selección inicial sin reemplazo. Salida: misma red/origen por semilla, roles/grupos coherentes, sin candidatos ORIGIN_EMPTY, ID inválido rechazado, layout independiente. Ref.: REQ-02; RF-03; RNF-01/03.
+- [ ] **T-07 — Motor SEIR y eventos diarios.** Frente: backend. Dep.: T-06; aplicar D-02/05. Implementar snapshot, exposición, progresión simultánea, día 0..T y eventos necesarios para métricas. Salida: conservación, R absorbente, beta=0/sin aristas, tasas 0/1, nuevos E sin progresión inmediata y prueba de frontera T. Ref.: REQ-03; RF-04; CA-01/04.
+- [ ] **T-08 — Vacunación y políticas pareadas.** Frente: backend. Dep.: T-07. Implementar none/random/targeted, eficacia por nodo/día, inventario y explicación. Salida: E/I/R nunca vacunados, K=0 idéntico, K mayor a elegibles usa min, eficacia 0/1, empate por id, dosis consumida al fallar y orden de políticas independiente. Ref.: REQ-04/08; RF-05/06/12; CA-02/03/05/07.
+- [ ] **T-09 — Experimentos y agregación.** Frente: backend. Dep.: T-08; aplicar D-05/06. Ejecutar réplicas, métricas, diferencias pareadas, P05/P95, bootstrap 2.000 y réplica representativa. Salida: fixture numérico conocido, acumulados no incluyen inmunizados por vacuna, primer día del pico, recomendación gana/empata/pierde y fallos sin resumen final falso. Ref.: REQ-05/06/07/08; CA-09/10.
+- [ ] **T-10 — Exportar y reproducir.** Frente: backend. Dep.: T-09. Implementar JSON/CSV con manifiesto completo y `scripts/reproduce.py`, reutilizando el motor. Salida: exportación de experimento real reimportada en otro proceso con igual hash; curvas, nodos seleccionados y semillas trazables; archivos CSV documentados. Ref.: REQ-09; RF-13/19; CA-06/07/11.
+- [ ] **T-11 — API base integrada.** Frente: backend. Dep.: T-03/10. Conectar health/config/preview/compare, validar hash esperado, límites y errores saneados. Salida: integración handler→motor→schema, políticas incompletas rechazadas, hash ajeno 409 y resultado completo sin progreso inventado. Ref.: REQ-01..09/11; RF-19/20; CA-13/15.
+
+## 4. Frontend: avance paralelo tras acordar contratos
+
+- [ ] **T-12 — Entorno, cliente y fixtures.** Frente: frontend. Dep.: T-03. Preparar React/TypeScript/Vite, dependencias fijadas, comandos, cliente tipado y mocks explícitos validados contra schemas. Salida: build/tipos y manejo de éxito/error de contrato; modo mock identificado. Puede avanzar en paralelo con T-04..11. Ref.: REQ-01/11; TRD §10.
+- [ ] **T-13 — Formulario y preview.** Frente: frontend. Dep.: T-12. Controles agrupados, unidades, tasas/duraciones explicadas, semilla, origen, leyenda, grafo y paciente cero; invalidar preview al cambiar red. Salida: pruebas de interacción, error conserva valores, teclado/foco y sin RNG epidemiológico frontend. Ref.: REQ-01/02; RF-02/03; CA-08.
+- [ ] **T-14 — Comparación y estados.** Frente: frontend. Dep.: T-13. Curvas/tabla, rangos empíricos, dosis, recomendación/explicaciones y versiones; ejecución síncrona indeterminada, fallos y descarte de respuestas obsoletas. Salida: casos éxito/empate/pérdida/error/parcial, no recomendación final parcial ni datos mock presentados como reales. Ref.: REQ-05/06/07/08; RF-07..12/19; CA-09/10.
+- [ ] **T-15 — Sorpresas, exportación y representativa.** Frente: frontend + backend. Dep.: T-14; usar contratos T-03, integrar con T-10/11. Cuatro presets, edición manual y exportación; animación identificada por réplica y diff base/sorpresa como DEBERÍA. Salida: transformaciones exactas sin acumulación accidental, descarga con configuración/semilla y limitaciones visibles si no hay animación. Ref.: REQ-09/10/12; RF-13..18; CA-11/12.
+- [ ] **T-16 — Integración real y accesibilidad.** Frente: frontend + backend. Dep.: T-11/15. Sustituir mocks por API real y probar configurar→preview→comparar→sorpresa→exportar. Salida: E2E con errores y semilla nueva, teclado/tabla/contraste y prueba moderada ≤3 min. Ref.: REQ-01..12; CA-08..12; RNF-05/06.
+
+## 5. Infraestructura, costos y evidencia
+
+- [ ] **T-17 — Comprobar viabilidad de cuenta y región.** Frente: infraestructura. Dep.: T-01. Comprobar la parte externa de D-08: región aceptada, permisos para Terraform/roles/servicios y restricción de Budget en cuenta simplificada. El diseño de empaquetado, handlers, variables/outputs y state ya está fijado en agreements.md §7. Salida: decisión documentada, cuotas/permisos comprobados y verificación de correos resuelta o bloqueo reportado. No cambiar a plan de pago sin autorización explícita. Ref.: REQ-11; CA-14/15.
+- [ ] **T-18 — Infraestructura base y pipeline.** Frente: infraestructura. Dep.: T-03/17; puede preparar IaC en paralelo con backend. Crear configuración Terraform, CORS exacto, roles por función, límites, logs/alarmas y configuración Amplify. Salida: terraform fmt -check, terraform validate y revisión del plan, revisión IAM/secretos y checks de código/build/contrato; sin desplegar todavía. Ref.: REQ-11; CA-15; RNF-07/09.
+- [ ] **T-19 — Desplegar staging y medir.** Frente: infraestructura + backend. Dep.: T-11/18 y autorización explícita de despliegue. Ejecutar build/deploy, smoke y benchmark TRD §15.3; medir backend ≤25 s y total p95 ≤60 s con N=1000/R=30/T=90. Salida: commit, región, entorno, memoria/CPU, tiempos y tamaños reales registrados. Si falla, revisar límites/arquitectura sin prometer PRO disponible. Ref.: REQ-11; CA-13; RNF-04.
+- [ ] **T-20 — Publicar frontend y verificar integración.** Frente: infraestructura + frontend. Dep.: T-16/19 y autorización de publicación. Configurar API/origen real y promover tras smoke. Salida: URL pública y health desde sesión limpia, semilla nueva y evidencia; verificar disponibilidad durante las pruebas de integración. Ref.: REQ-11; RF-20; CA-13.
+- [ ] **T-21 — Arquitectura, costos y README verificables.** Frente: infraestructura + backend + frontend. Dep.: T-01 para borradores; T-17/19/20 para cierre. Exportar arquitectura SVG y fuente, documentar partes públicas, supuestos, versiones/comandos, semilla, tarifas fechadas, estimación mensual y gasto real. Actualizar Budget cuando se verifiquen destinatarios; no llamar completado al estado provisional. Salida: enlaces y comandos comprobados, tablas de costos, runbook/apagado y límites. Ref.: REQ-11; RF-21/22; CA-14/15; RNF-08/10.
+
+## 6. Validación técnica integral
+
+- [ ] **T-22 — Fijar matriz experimental antes de resultados finales.** Frente: backend. Dep.: T-03 para fijar protocolo; T-09/10 para ejecutar. Registrar lista y derivación de semillas antes de observar impacto, incluir casos adversos y conservar pérdidas. Salida: protocolo y exportaciones, menor media targeted frente a none/random y diferencia pareada positiva o reporte explícito del gate fallido. Ref.: PRD §7.5; REQ-04/07/08/09.
+- [ ] **T-23 — Validar escenarios y reproducibilidad.** Frente: backend + frontend + infraestructura. Dep.: T-20/21/22. Ejecutar semilla externa, cuatro sorpresas, verificar recursos/estados y explicar resultados. Salida: flujo sorpresa <5 min, evidencia y pendientes; ninguna garantía de victoria por semilla. Ref.: REQ-10/11; CA-01..15 según matriz de requirements.
+
+## 7. Condición de terminado y paralelismo
+
+Una tarea se cierra con criterios de aceptación cubiertos, verificación ejecutada, comandos/resultados registrados, documentación coherente, sin secretos, revisión de integración y limitaciones explícitas. Un bloqueo externo mantiene abierta la parte afectada.
+
+Orden crítico backend: T-02→T-04→T-05→T-06→T-07→T-08→T-09→T-10→T-11. T-03 precede configuración y mocks. Frontend T-12..15 avanza con contrato mientras backend implementa núcleo; integración real exige T-11. Infra T-17/18 y documentación técnica T-21 pueden preparar borradores en paralelo; despliegue depende del código y viabilidad de cuenta. La revisión inicial no obliga a esperar a terminar todo backend para comenzar UI/IaC.
+
+PRO-1..7 queda fuera de estas casillas, **no iniciado**. Solo abrir tareas PRO después de verificar base; crear pruebas/contratos propios para jobs, persistencia, permisos, costos e idempotencia antes de anunciar procesamiento asíncrono.

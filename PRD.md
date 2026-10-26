@@ -5,6 +5,8 @@
 **Estado:** especificación lista para implementación
 **Documento complementario:** `TRD.md`
 
+**Acuerdos técnicos:** [specs/agreements.md](specs/agreements.md) concreta calendario, generación sintética, sorteos, extinción (E+I=0), formatos de API/exportación e integración Terraform. Estos son supuestos versionados de implementación, no evidencia de funcionamiento. El registro del día d incluye la intervención de ese día, antes de los contactos [d,d+1); no hay transmisión después de T. Los requisitos de producto y sus identificadores se conservan.
+
 ## 1. Propósito y autoridad del documento
 
 Este producto permite simular, día a día, una plaga tipo zombie sobre una población sintética inspirada en Manta y recomendar dónde y cuándo usar recursos limitados para minimizar los contagios. Debe demostrar con números cuántas personas se salvan frente a dos líneas base: no intervenir e intervenir al azar con exactamente los mismos recursos.

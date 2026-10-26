@@ -1,6 +1,6 @@
 # TRD — Comité de Contención de Manta
 
-**Versión:** 1.1
+**Versión:** 1.2
 **Fecha:** 26 de octubre de 2026
 **Estado:** especificación técnica lista para implementación
 **Fuente funcional:** `PRD.md`
@@ -8,6 +8,8 @@
 ## 1. Propósito, principios y decisiones cerradas
 
 Este documento define una implementación verificable del producto descrito en `PRD.md`. Las decisiones son deliberadamente simples y explicables por el equipo.
+
+Los acuerdos concretos de calendario, generación, aleatoriedad, contrato HTTP/exportación y despliegue Terraform se fijan en [specs/agreements.md](specs/agreements.md), parte normativa de este TRD. Las formas HTTP completas de ese anexo sustituyen los ejemplos resumidos anteriores. El diseño está decidido; las verificaciones de cuenta/región/Budget no se declaran realizadas.
 
 Principios:
 
@@ -31,7 +33,7 @@ Decisiones cerradas:
 | Orquestación PRO | Step Functions Standard + Distributed Map | El requisito opcional pide miles de réplicas y un flujo visual/auditable |
 | Hosting | AWS Amplify Hosting conectado al repositorio | Despliegues atómicos de una SPA React y URL pública |
 | Región | `us-east-2` (Ohio), autorizada | Decisión final del equipo; configuración, IaC, evidencias y costos deben coincidir |
-| IaC | AWS SAM/CloudFormation para backend; configuración Amplify documentada | Menor superficie conceptual para el equipo y recursos revisables |
+| IaC | Terraform para infraestructura AWS y configuración de Amplify | Menor superficie conceptual para el equipo y recursos revisables |
 
 No se usa Lambda Durable Functions porque PRO requiere explícitamente Distributed Map y una máquina de estados visible. No se usa ECS/Fargate/Batch mientras cada réplica quepa en Lambda: añadir contenedores aumentaría operación y costo sin una necesidad medida.
 
@@ -93,7 +95,10 @@ PRD.md
 TRD.md
 specs/
   README.md
-  # NNN-nombre.md se agrega antes de cada implementación
+  requirements.md
+  design.md
+  tasks.md
+  agreements.md
 docs/
   arquitectura.svg
   arquitectura.mmd
@@ -114,14 +119,17 @@ schemas/
   experiment-request.schema.json
   experiment-result.schema.json
 infra/
-  template.yaml
+  main.tf
+  variables.tf
+  outputs.tf
+  versions.tf
 scripts/
   reproduce.py
 ```
 
 La lógica de dominio no importa AWS. Los handlers adaptan eventos HTTP a funciones puras. Los tests del motor se ejecutan sin una cuenta AWS.
 
-Este árbol describe la estructura objetivo. En la preparación inicial solo se versionan documentación y carpetas mediante `.gitkeep`; los contratos, scripts, plantilla SAM y diagrama se incorporarán en sus respectivos incrementos. La carpeta `src/` raíz vacía del boceto se sustituye conceptualmente por `backend/src/` y `frontend/src/`.
+Este árbol describe la estructura objetivo. En la preparación inicial solo se versionan documentación y carpetas mediante `.gitkeep`; los contratos, scripts, configuración Terraform y diagrama se incorporarán en sus respectivos incrementos. La carpeta `src/` raíz vacía del boceto se sustituye conceptualmente por `backend/src/` y `frontend/src/`.
 
 ## 4. Modelo de dominio
 
@@ -206,7 +214,7 @@ p_exposure(v,d) = 1 - product(1 - clamp(beta * weight(edge) * activity(context,d
 
 ### 5.2 Transiciones
 
-- `S -> E` si el sorteo de exposición es menor que `p_exposure`.
+- `S -> E` si al menos una arista activa hacia un I supera su sorteo independiente de transmisión. La probabilidad resultante es `p_exposure`; no se añade otro sorteo agregado por nodo.
 - `E -> I` con probabilidad diaria `sigma`.
 - `I -> R` con probabilidad diaria `gamma`.
 - `R` permanece `R` durante el horizonte.
@@ -215,18 +223,15 @@ El motor conserva los tiempos individuales de entrada a cada estado y el origen 
 
 ### 5.3 Orden diario normativo
 
-Para cada día `d`:
+El estado registrado B[d] contiene d intervalos de transmisión y la intervención del día d ya aplicada. Día 0 es lunes. Inicializar, vacunar si corresponde a 0 y registrar B[0]. Para d=0..T−1:
 
-1. Leer el estado inmutable al inicio del día.
-2. Aplicar recursos que llegan ese día.
-3. Si `d` es día de decisión, seleccionar elegibles y aplicar intervención.
-4. Activar capas según calendario y cierres.
-5. Calcular todas las exposiciones desde el snapshot posterior a intervención.
-6. Calcular progresión `E -> I` e `I -> R` desde el snapshot inicial; un nuevo `E` no progresa el mismo día.
-7. Aplicar todas las transiciones simultáneamente.
-8. Registrar eventos, conteos y métricas diarias.
+1. Leer B[d] y activar contactos del día d.
+2. Calcular exposición, E→I e I→R desde ese snapshot; nuevos E/I no progresan otra vez en el mismo intervalo.
+3. Aplicar las transiciones simultáneamente al llegar a d+1.
+4. Si interventionDay=d+1, seleccionar y vacunar S del nuevo estado antes del registro.
+5. Registrar B[d+1], eventos y métricas.
 
-El día 0 contiene el estado inicial y la intervención si `interventionDay=0`; la primera transmisión produce el día 1.
+Vacunar en d protege desde [d,d+1), no revierte exposiciones anteriores. Vacunar en T se registra y consume recursos sin transmitir después de T. Hay exactamente T+1 estados. Calendario y casos frontera se detallan en specs/agreements.md §1.
 
 ### 5.4 Invariantes
 
@@ -324,7 +329,7 @@ cumulativeInfected = count(node ever in E or initially I)
 peakInfectious      = max_d I[d]
 peakDay             = first argmax_d I[d]
 finalInfectious     = I[T]
-outbreakDuration    = first day after last I, else null
+outbreakDuration    = first day with E + I == 0, else null
 vaccinesAssigned / vaccinesEffective / vaccinesUnused
 ```
 
@@ -372,30 +377,49 @@ El preset guarda `baseConfigHash`, transformación y `surpriseConfigHash`.
 | `POST /v1/scenarios/preview` | `200` | Config normalizada, grafo, posiciones y `graphHash` |
 | `POST /v1/simulations/compare` | `200` | Hasta 30 réplicas y tres políticas |
 
-Solicitud resumida:
+Solicitud de preview con configuración completa (compare añade expectedGraphHash obtenido de preview e includeRepresentativeFrames boolean):
 
 ```json
 {
   "schemaVersion": "1.0",
-  "rootSeed": 20261026,
-  "repetitions": 30,
-  "scenario": {
-    "populationSize": 1000,
-    "days": 90,
-    "beta": 0.08,
-    "sigma": 0.333333,
-    "gamma": 0.142857,
-    "initialInfectious": 1,
-    "origin": { "kind": "market", "value": null }
-  },
-  "intervention": {
-    "vaccines": 100,
-    "interventionDay": 0,
-    "vaccineEfficacy": 1.0
-  },
-  "policies": ["none", "random", "targeted"],
-  "expectedGraphHash": "sha256:...",
-  "includeRepresentativeFrames": true
+  "configuration": {
+    "rootSeed": 20261026,
+    "networkMode": "fixed",
+    "repetitions": 30,
+    "scenario": {
+      "populationSize": 1000,
+      "days": 90,
+      "beta": 0.08,
+      "sigma": 0.333333,
+      "gamma": 0.142857,
+      "initialInfectious": 1,
+      "origin": {
+        "kind": "market",
+        "value": null
+      }
+    },
+    "intervention": {
+      "vaccines": 100,
+      "interventionDay": 0,
+      "vaccineEfficacy": 1.0
+    },
+    "policies": [
+      "none",
+      "random",
+      "targeted"
+    ],
+    "network": {
+      "generatorVersion": "synthetic-manta-v1",
+      "dayZero": "monday",
+      "weights": {
+        "household": 1.0,
+        "school": 0.6,
+        "bus": 0.45,
+        "market": 0.5,
+        "neighborhood": 0.2
+      }
+    }
+  }
 }
 ```
 
@@ -429,6 +453,7 @@ Estados: `QUEUED -> RUNNING -> AGGREGATING -> SUCCEEDED|FAILED|CANCELLED`. No ha
 {
   "schemaVersion": "1.0",
   "requestId": "opaque-id",
+  "engineVersion": "0.1.0",
   "error": {
     "code": "VALIDATION_ERROR",
     "message": "La configuración contiene valores inválidos.",
@@ -551,13 +576,13 @@ Alarmas mínimas:
 1. Instalar dependencias desde locks.
 2. Lint y typecheck frontend/backend.
 3. Ejecutar unitarias, integración y build.
-4. Validar OpenAPI, JSON Schema y `sam validate`.
+4. Validar OpenAPI, JSON Schema y `terraform fmt -check` y `terraform validate`.
 5. Escanear secretos y revisar bundle.
-6. `sam build` y `sam deploy` a staging con credenciales temporales.
+6. Empaquetar artefactos Lambda, ejecutar `terraform plan` y aplicar el plan revisado a staging con credenciales temporales.
 7. Smoke test; promoción manual a producción.
 8. Desplegar Amplify y registrar commit, URL, región y hora.
 
-La región de despliegue es `us-east-2`; antes de desplegar solo queda confirmar permisos y cuotas de la cuenta. La aplicación debe permanecer funcional hasta el pitch.
+La región de despliegue es `us-east-2`; antes de desplegar solo queda confirmar permisos y cuotas de la cuenta. La disponibilidad de la aplicación debe comprobarse durante la validación técnica.
 
 ## 15. Pruebas y evidencia
 
@@ -643,8 +668,8 @@ El README raíz contiene, en este orden:
 - Cada commit representa un cambio pequeño, coherente y revisable. Separar documentación, estructura, contratos y funcionalidades cuando sean unidades independientes; evitar un único commit final o particiones artificiales del mismo cambio.
 - El desarrollo de comportamiento sigue TDD: **rojo** (escribir y ejecutar una prueba que falle por el comportamiento ausente), **verde** (implementar lo mínimo) y **refactorización** (mejorar manteniendo las pruebas). Registrar el comando y el resultado observado; una herramienta ausente no demuestra la fase roja.
 - El ciclo rojo/verde se realiza localmente. Los commits que se publican deben dejar pasando las pruebas disponibles; no subir pruebas rotas solo para demostrar TDD. Para documentación y estructura sin comportamiento ejecutable se revisan enlaces, diferencias y coherencia, sin inventar tests.
-- Antes de implementar cada capacidad, crear su especificación en `specs/NNN-nombre.md`: objetivo, RF/CA del PRD, alcance y exclusiones, entradas/salidas, ejemplos, casos límite, pruebas previstas y criterio de terminado. Estados: `borrador`, `lista`, `en implementación`, `verificada`.
-- El siguiente incremento prepara `specs/001-contratos-configuracion.md` para esquemas, tipos y configuración canónica. Después siguen grafo/semillas, motor SEIR, políticas y agregación según la sección 19. Estos archivos se crean progresivamente; su planificación no significa que ya existan.
+- Las especificaciones compartidas se organizan en `specs/requirements.md`, `specs/design.md` y `specs/tasks.md`. Antes de implementar cada capacidad, detallar en ellas objetivo, RF/CA del PRD, alcance y exclusiones, entradas/salidas, ejemplos, casos límite, pruebas previstas y criterio de terminado. Estados: `borrador`, `lista`, `en implementación`, `verificada`. Se pueden añadir anexos por capacidad si el detalle lo requiere.
+- El siguiente incremento revisa estas specs y cierra contratos, esquemas y ejemplos ejecutables antes de implementar configuración canónica. Después siguen grafo/semillas, motor SEIR, políticas y agregación según la sección 19 y las dependencias de `specs/tasks.md`. Una tarea planificada no significa que esté implementada.
 - Las specs detallan PRD/TRD y no los sustituyen. Si cambia una regla acordada, actualizar los documentos afectados y las pruebas antes de marcar la spec como verificada.
 
 ### 18.2 Reglas de implementación
@@ -680,8 +705,8 @@ Definición de terminado para una tarea:
 5. Agregación, exportación y reproducción CLI.
 6. API base y pruebas de contrato.
 7. UI completa y E2E.
-8. SAM, AWS staging, seguridad, observabilidad y costos.
-9. Prueba de fuego, sorpresa y pitch.
+8. Terraform, AWS staging, seguridad, observabilidad y costos.
+9. Validación integral, perturbaciones de parámetros y reproducibilidad.
 10. Solo entonces: trabajos PRO, Distributed Map e intervenciones combinadas.
 
 Cada paso termina con evidencia antes de iniciar el siguiente. Si el plazo obliga a recortar, se elimina PRO antes de reducir comparación, repetición, reproducibilidad, AWS, README o entregables.
