@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** preparación documental y estructura inicial. No hay motor, interfaz, dependencias instalables ni despliegue disponible todavía. Los requisitos descritos son objetivos pendientes.
+**Estado:** especificaciones y entorno inicial del backend preparados. El backend ya tiene dependencias fijadas y herramientas de verificación; motor, API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -12,6 +12,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
 - [Costos y evidencia pendiente](docs/costos.md).
+- [Instalación y verificación del backend](backend/README.md).
 
 ## Estructura
 

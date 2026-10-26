@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 26 de octubre de 2026
-**Estado:** planificación; todas las casillas de implementación están pendientes.
+**Estado:** entorno backend T-02 verificado; contratos y funcionalidades pendientes.
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -15,7 +15,7 @@ Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-
 ## 2. Acuerdo inicial y contratos
 
 - [ ] **T-01 — Revisar estas specs y acordar interfaces.** Frente: backend + frontend + infraestructura. Dependencias: ninguna. Revisar alcance base, D-01..D-08, exclusión PRO e interfaces compartidas en schemas/README. Salida: acuerdos técnicos y decisiones pendientes registrados; estado documental listo para trabajo, no software verificado. Referencias: TRD §18; REQ-01..12.
-- [ ] **T-02 — Preparar entorno backend.** Frente: backend. Dep.: T-01. Configurar Python 3.12, dependencias fijadas, runner de pruebas, lint/tipos y comandos reproducibles sin AWS. Salida: instalación limpia y verificación mínima real del entorno; no tests que solo comprueben directorios. Ref.: TRD §1/15; RNF-01.
+- [x] **T-02 — Preparar entorno backend.** Frente: backend. Dep.: acuerdos técnicos de T-01 adoptados en agreements.md; revisión conjunta de T-01 conservada como tarea. Python 3.12.14, versiones directas fijadas y uv.lock, pytest, Ruff y mypy configurados y ejecutados sin AWS. [Evidencia](../docs/evidencia/backend-entorno.md). No hay suite de comportamiento todavía: colección pytest vacía, código 5 esperado en esta preparación. Ref.: TRD §1/15; RNF-01.
 - [ ] **T-03 — Materializar contrato base y ejemplos.** Frente: backend + frontend. Dep.: T-01. Aplicar D-01/04/07 y D-06 de agreements.md sin rediseñar campos de manera independiente. Crear `schemas/openapi.yaml`, request/result schemas y fixtures de health/config/preview/compare/errores con campos completos; distinguir ejemplos de resultados reales. Salida: ejemplos válidos y pruebas de contrato, reglas de origen/límites/defaults, errores y exportación acordados. Ref.: REQ-01/02/05/06/07/08/09; RF-01/02/03/07/08/09/10/11/12/13/19; CA-08/09/10/11.
 - [ ] **T-04 — Configuración canónica y validación.** Frente: backend. Dep.: T-02/03. Implementar tipos, defaults, tasas, límites relacionados con N/T, rechazo de desconocidos/NaN/infinitos y configuración exportable. Salida: pruebas de fronteras, incompatibilidad de vacunas al bajar N, origen y normalización; comandos documentados. Ref.: REQ-01; RF-01/02; CA-08.
 
