@@ -1,8 +1,8 @@
 # TRD — Comité de Contención de Manta
 
-**Versión:** 1.1  
-**Fecha:** 26 de octubre de 2026  
-**Estado:** especificación técnica lista para implementación  
+**Versión:** 1.1
+**Fecha:** 26 de octubre de 2026
+**Estado:** especificación técnica lista para implementación
 **Fuente funcional:** `PRD.md`
 
 ## 1. Propósito, principios y decisiones cerradas
@@ -697,4 +697,3 @@ Cada paso termina con evidencia antes de iniciar el siguiente. Si el plazo oblig
 - [AWS Lambda: cuotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 
 Los límites, runtimes, cuotas y precios se vuelven a verificar en las fuentes oficiales antes del despliegue; no se copian como constantes permanentes en la documentación.
-

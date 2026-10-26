@@ -1,8 +1,8 @@
 # PRD — Comité de Contención de Manta
 
-**Versión:** 1.0  
-**Fecha:** 26 de octubre de 2026  
-**Estado:** especificación lista para implementación  
+**Versión:** 1.0
+**Fecha:** 26 de octubre de 2026
+**Estado:** especificación lista para implementación
 **Documento complementario:** `TRD.md`
 
 ## 1. Propósito y autoridad del documento
@@ -289,4 +289,3 @@ Si el gate falla, se reporta el resultado real y se ajusta la estrategia o el es
 - Límite medido de `N` y `R` que cumple RNF-04 en la cuenta del evento.
 - Datos abiertos y permiso de uso si se implementa calibración PRO.
 - Qué funciones PRO pasan de “opcional” a compromiso antes del cierre del 27 de octubre.
-

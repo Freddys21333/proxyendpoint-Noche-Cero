@@ -1,0 +1,28 @@
+# Dependencias y compilación
+node_modules/
+dist/
+build/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage/
+.coverage
+htmlcov/
+# Configuración local y credenciales
+.env
+.env.*
+!.env.example
+.aws/
+*.pem
+*.key
+# Artefactos locales
+.aws-sam/
+.DS_Store
+Thumbs.db
+# Capturas originales pendientes de anonimizar
+/docs/budget.png
+/docs/budget2.png
