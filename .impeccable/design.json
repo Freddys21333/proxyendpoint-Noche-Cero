@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T21:23:32.578Z",
+  "title": "Design System: The Containment Desk",
+  "extensions": {
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "0.15s",
+        "purpose": "Button background and color transitions."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "html": "<button class=\"ds-item-0\">Ejecutar</button>",
+      "css": ".ds-item-0{font-family:\"IBM Plex Sans\",sans-serif;background:var(--green,#173e32);color:white;border:1px solid transparent;padding:9px 16px;border-radius:3px}.ds-item-0:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-0:hover{filter:brightness(.97)}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "html": "<button class=\"ds-item-1\">Restablecer</button>",
+      "css": ".ds-item-1{font-family:\"IBM Plex Sans\",sans-serif;background:transparent;color:var(--green,#173e32);border:1px solid #b8c6b8;padding:8px 12px;border-radius:3px}.ds-item-1:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-1:hover{filter:brightness(.97)}"
+    },
+    {
+      "name": "Scenario Field",
+      "kind": "input",
+      "html": "<input class=\"ds-item-2\" aria-label=\"Vacunas\" type=\"number\" value=\"100\">",
+      "css": ".ds-item-2{font-family:\"IBM Plex Sans\",sans-serif;background:white;color:var(--ink,#202c28);border:1px solid var(--line,#dce2da);padding:8px;border-radius:3px}.ds-item-2:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-2:hover{filter:brightness(.97)}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "html": "<nav class=\"ds-item-3\">Consola</nav>",
+      "css": ".ds-item-3{font-family:\"IBM Plex Sans\",sans-serif;background:var(--green,#173e32);color:#e2ebe4;padding:16px}.ds-item-3:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-3:hover{filter:brightness(.97)}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "html": "<span class=\"ds-item-4\">Demostración</span>",
+      "css": ".ds-item-4{font-family:\"IBM Plex Sans\",sans-serif;display:inline-block;background:#e8ede3;color:#274b36;padding:6px 8px;border:1px solid #d3dccd}.ds-item-4:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-4:hover{filter:brightness(.97)}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "html": "<section class=\"ds-item-5\">Configuración del escenario</section>",
+      "css": ".ds-item-5{font-family:\"IBM Plex Sans\",sans-serif;background:white;color:var(--ink,#202c28);border:1px solid var(--line,#dce2da);padding:16px}.ds-item-5:focus-visible{outline:3px solid #478274;outline-offset:3px}.ds-item-5:hover{filter:brightness(.97)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Containment Desk",
+    "overview": "Technical, focused, analytical. The existing interface treats scenario controls, contact networks, and comparison data as scientific instruments. Controls feel practical and confident.",
+    "keyCharacteristics": [
+      "Flat surfaces with borders and tonal separation.",
+      "A dark green navigation rail beside a light workspace.",
+      "Sans-serif labels with monospaced identifiers and data."
+    ]
+  }
+}
