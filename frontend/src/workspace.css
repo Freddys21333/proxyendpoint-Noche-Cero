@@ -2760,6 +2760,13 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* Committee workspace: clear hierarchy and action-led perturbations. */
+.temporal-series-legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 4px 0 12px; font-size: 12px; color: var(--ink); }
+.temporal-series-legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.temporal-series-legend strong { font-weight: 500; font-variant-numeric: tabular-nums; }
+@container (max-width: 760px) {
+  .temporal-chart-panel .temporal-chart-heading { flex-wrap: wrap; }
+  .temporal-chart-panel .temporal-chart-heading > div { flex-basis: 100%; }
+}
 .main-sheet:has(.compact-heading) { padding-top: 16px; }
 .page-heading.compact-heading { align-items: center; padding: 0; margin-bottom: 12px; }
 .page-heading.compact-heading h1 { font-size: 24px; }

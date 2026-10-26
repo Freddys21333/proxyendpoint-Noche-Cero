@@ -2,6 +2,8 @@
 
 ## Committee interface refinement
 
+The temporal chart's state selector includes “Todos los estados”, displaying Sano, Mordido, Zombie and Exorcizado together. Each line has its own color and dash pattern; a legend shows counts for the current playback day. Individual-state views, the synchronized day boundary, and the complete data table remain available. Browser verification observed four series in the combined view and one after selecting Zombie; build and all 9 existing tests passed.
+
 The contact network now gives more space to the canvas and uses larger circular person markers and labels. A reading guide explains that nodes represent synthetic people and edges represent contacts (TRD section 4.1; agreements D-03); grouping is contextual rather than geographical. The inspector uses person-facing labels and moves below the canvas when the workbench is at most 760px wide, preserving the navigation and configuration columns. No topology, simulation state, fixture, or scientific calculation changes. Build and all 9 tests passed; browser selection of person 008 still reports 9 direct contacts.
 
 The workspace follows `../DESIGN.md`: flat paper surfaces, green navigation and readable scientific controls. The heading and scenario context are simplified; pending experiment statistics use compact availability text; surprise presets prioritize their effect and expose explicit Apply/Applied states. Small CSS text now has a 12px floor, including responsive overrides. Backend, simulation modules, fixtures, and scenario callbacks are unchanged.
