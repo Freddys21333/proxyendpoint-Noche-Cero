@@ -3,15 +3,16 @@
 import hashlib
 import math
 import struct
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
-from domain.models import Configuration
+from domain.models import Configuration, Policy
 from domain.reproducibility import canonical_json, create_rng
 from simulation.network import select_initial
+from strategies.vaccination import vaccinate
 
 FloatArray = NDArray[np.float64]
 STATES = ("S", "E", "I", "R")
@@ -43,6 +44,10 @@ class SimulationTrace:
     frames: list[list[str]]
     entry_days: list[dict[str, int]]
     randomness_hash: str
+    selections: list[dict[str, Any]] = field(default_factory=list)
+    vaccines_assigned: int = 0
+    vaccines_effective: int = 0
+    vaccines_unused: int = 0
 
 
 def generate_potentials(
@@ -135,14 +140,17 @@ def step_day(
     return updated, events
 
 
-def simulate_none(
+def simulate_policy(
     configuration: Configuration,
     graph: dict[str, Any],
     *,
+    policy: Policy,
     replicate_index: int = 0,
     potentials: Potentials | None = None,
 ) -> SimulationTrace:
-    """Solo none; vacunación y otras políticas corresponden a T-08."""
+    """Una política con intervención única y potenciales compartibles (T-08)."""
+    if policy not in ("none", "random", "targeted"):
+        raise ValueError("Política desconocida.")
     n, t = configuration.scenario.population_size, configuration.scenario.days
     if [node["id"] for node in graph["nodes"]] != list(range(n)):
         raise ValueError("La red debe tener IDs consecutivos de la población configurada.")
@@ -174,6 +182,8 @@ def simulate_none(
     frames: list[list[str]] = []
     daily: list[dict[str, int]] = []
     cumulative = len(initial)
+    selections: list[dict[str, Any]] = []
+    policy_rng = create_rng(configuration.root_seed, "policy-random", replicate_index)
     for day in range(t + 1):
         if day:
             states, changes = step_day(
@@ -191,6 +201,20 @@ def simulate_none(
                 if event["cause"] == "contact":
                     cumulative += 1
             events.extend(changes)
+        if day == configuration.intervention.intervention_day:
+            states, selections, vaccine_events = vaccinate(
+                states,
+                edges,
+                policy=policy,
+                vaccines=configuration.intervention.vaccines,
+                day=day,
+                efficacy=configuration.intervention.vaccine_efficacy,
+                potentials=p.vaccine[day],
+                rng=policy_rng,
+            )
+            for event in vaccine_events:
+                entries[event["nodeId"]]["R"] = day
+            events.extend(vaccine_events)
         frames.append(states.copy())
         daily.append(
             {
@@ -202,4 +226,54 @@ def simulate_none(
                 "cumulativeInfected": cumulative,
             }
         )
-    return SimulationTrace(daily, events, frames, entries, p.randomness_hash)
+    events.sort(key=lambda event: (event["day"], event["nodeId"], event["cause"]))
+    return SimulationTrace(
+        daily,
+        events,
+        frames,
+        entries,
+        p.randomness_hash,
+        selections,
+        len(selections),
+        sum(row["effective"] for row in selections),
+        configuration.intervention.vaccines - len(selections),
+    )
+
+
+def simulate_none(
+    configuration: Configuration,
+    graph: dict[str, Any],
+    *,
+    replicate_index: int = 0,
+    potentials: Potentials | None = None,
+) -> SimulationTrace:
+    """Referencia sin intervención sobre el mismo motor de políticas."""
+    return simulate_policy(
+        configuration, graph, policy="none", replicate_index=replicate_index, potentials=potentials
+    )
+
+
+def simulate_paired(
+    configuration: Configuration,
+    graph: dict[str, Any],
+    *,
+    replicate_index: int = 0,
+    policy_order: tuple[Policy, ...] = ("none", "random", "targeted"),
+) -> dict[Policy, SimulationTrace]:
+    """Una réplica, una red y unos potenciales; orden de ejecución independiente."""
+    if len(policy_order) != 3 or set(policy_order) != {"none", "random", "targeted"}:
+        raise ValueError("Se requieren exactamente las tres políticas.")
+    potentials = generate_potentials(
+        configuration, len(graph["edges"]), replicate_index=replicate_index
+    )
+    results = {
+        policy: simulate_policy(
+            configuration,
+            graph,
+            policy=policy,
+            replicate_index=replicate_index,
+            potentials=potentials,
+        )
+        for policy in policy_order
+    }
+    return {policy: results[policy] for policy in configuration.policies}

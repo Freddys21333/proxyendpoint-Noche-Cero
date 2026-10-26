@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y motor SEIR sin intervención verificados. El backend valida configuración, genera red/calendario/origen y registra estados/eventos diarios; vacunación, comparación, API, interfaz y despliegue siguen pendientes.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y motor SEIR con vacunación y políticas pareadas verificados. El backend valida configuración, genera red/calendario/origen y ejecuta none/random/targeted por réplica; agregación estadística, API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -32,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-07 están verificados. El siguiente paso backend es vacunación y políticas pareadas (T-08); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-08 están verificados. El siguiente paso backend es experimentos y agregación (T-09); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
 
 ## Parámetros previstos
 
@@ -49,7 +49,7 @@ Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos
 | Duración infecciosa media | 7 días | Supuesto del equipo |
 | Semilla | 20261026 | Supuesto del equipo |
 
-La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente la referencia sin intervención; la comparación de políticas sigue pendiente. No se afirma que la estrategia supere las líneas base hasta medirlo.
+La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente las tres políticas por réplica; el resumen Monte Carlo sigue pendiente. No se afirma que la estrategia supere las líneas base hasta medirlo.
 
 ## AWS y pendientes técnicos
 

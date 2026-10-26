@@ -1,6 +1,6 @@
 # Backend
 
-Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor sin intervención de T-07 ya es ejecutable localmente; no hay endpoints ni comparación de políticas.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; todavía no hay endpoints ni agregación Monte Carlo.
 
 ## Instalación en Windows (PowerShell)
 
@@ -76,11 +76,19 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-08 incorpora vacunación y políticas pareadas none/random/targeted. El motor sin intervención ya funciona; todavía no hay endpoints.
+T-09 incorpora experimentos, métricas, agregación estadística y recomendación. Las tres políticas ya funcionan por réplica; todavía no hay endpoints.
+
+## Vacunación y ejecución pareada T-08
+
+`simulation.engine.simulate_paired(configuration, graph, replicate_index=0)` devuelve las tres trazas con condiciones y potenciales compartidos. `simulate_policy(..., policy="targeted")` ejecuta una política individual; `simulate_none` conserva su interfaz previa. `policy_order` en simulate_paired permite invertir ejecución y debe incluir las tres políticas exactamente una vez. El resultado siempre se ordena none/random/targeted.
+
+Cada SimulationTrace agrega selections, vaccines_assigned, vaccines_effective y vaccines_unused. La intervención se aplica una sola vez en interventionDay, después de transiciones y antes del registro del día. Solo S es elegible; una dosis fallida queda consumida. efficacy=0 conserva las curvas none y K=0 conserva trazas idénticas. No se añaden vacunados al acumulado de infectados.
+
+`strategies.vaccination.select_candidates` decide sin ver el futuro. targeted calcula scores desde un único snapshot; random conserva el rank del muestreo, aunque las filas se serializan por ID. `vaccinate` aplica el sorteo por nodo y genera únicamente eventos de éxitos. contexts identifica capas activas hacia vecinos S. [Evidencia T-08](../docs/evidencia/backend-vacunacion.md). Los resúmenes, métricas y recomendación quedan para T-09.
 
 ## Motor SEIR T-07
 
-`simulation.engine.simulate_none(configuration, graph, replicate_index=0)` ejecuta la referencia sin intervención. Devuelve SimulationTrace con daily, events, frames, entry_days y randomness_hash; registra T+1 estados. No aplica las vacunas de configuration: esta función representa exclusivamente none. La comparación se implementará en T-08/09.
+`simulation.engine.simulate_none(configuration, graph, replicate_index=0)` ejecuta la referencia sin intervención. Devuelve SimulationTrace con daily, events, frames, entry_days y randomness_hash; registra T+1 estados. No aplica las vacunas de configuration: esta función representa exclusivamente none. La ejecución pareada está implementada en T-08; el resumen estadístico queda en T-09.
 
 `generate_potentials(configuration, edge_count, replicate_index=0)` crea matrices de transmisión, progresión y eficacia por dominio con acceso de solo lectura. Pueden compartirse entre ejecuciones mediante potentials=; no se consumen ni modifican. `step_day` permite probar la transición desde un snapshot, sin mutarlo. Los eventos iniciales son I→I; contactos y progresiones se etiquetan con d+1 y la menor arista exitosa explica cada contacto.
 

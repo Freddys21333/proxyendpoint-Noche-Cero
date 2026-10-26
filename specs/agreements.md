@@ -58,6 +58,8 @@ Concreción binaria T-07: randomnessHash recorre transmission/progression/vaccin
 
 Initial: primer nodo uniforme entre candidatos ordenados; restantes en toda población menos primero, sin reemplazo, y registrar ids ordenados. Random: choice sin reemplazo sobre elegibles por id con policy-random; ordenar selección para serializar. Targeted calcula todos los scores desde un solo snapshot antes de vacunar y ordena (-score,id); no recalcula después de cada dosis.
 
+Concreción T-08: el score suma con math.fsum los pesos de aristas activas hacia S en orden edgeId. contexts enumera las capas de esas aristas, sin duplicados y en orden lexicográfico. El rank empieza en 1; random lo asigna en orden de muestreo antes de serializar por nodeId. La política decide sin recibir potenciales futuros; la eficacia se aplica después por (día,nodo). Ninguna política reintenta dosis fallidas en días siguientes.
+
 Percentiles: método linear, índice (n−1)q e interpolación entre vecinos, incluidos P05/P95. Bootstrap: vector de diferencias pareadas por índice de réplica; 2.000 muestras de tamaño R, con reemplazo, índices generados como una matriz (2000,R) por dominio bootstrap. Calcular medias por fila y percentiles 2.5/97.5 con linear; usar los mismos índices para todas las comparaciones. R<30 devuelve bootstrap=null, no un intervalo inventado.
 
 ## 4. Configuración, origen y límites — D-01/D-04
