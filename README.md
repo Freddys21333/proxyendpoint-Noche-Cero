@@ -55,6 +55,18 @@ Región prevista según PRD/TRD: `us-east-2`; el enunciado menciona `us-east-1` 
 
 El diagrama lógico está en la sección 2 del TRD. Falta exportar el diagrama de entrega a SVG y conservar su fuente editable. También están pendientes la URL pública, resultados, benchmark, pitch y estimación mensual.
 
-Las capturas locales del Budget muestran USD 20 mensuales y alertas reales de 25/50/75/100 % y prevista de 100 %. No se publican aún porque incluyen el nombre del titular. Una captura indica `0/2` correos verificados: queda pendiente verificar destinatarios y preparar imágenes sin datos personales antes de incorporarlas aquí. Una alerta no detiene automáticamente el gasto.
+### AWS Budget — evidencia provisional
+
+Presupuesto `SpookyThon2026-PRO` configurado por **USD 20 mensuales**, con umbrales de costo real al **25/50/75/100 %** y de costo previsto al **100 %**.
+
+**Pendiente:** la captura muestra `0/2` destinatarios verificados. El envío de verificación está bloqueado por permisos de `notifications-contacts` en la experiencia simplificada de AWS; al intentar modificar el rol, la consola solicita activar características avanzadas. La recepción de notificaciones aún no está confirmada y el requisito de alerta operativa no se declara completado.
+
+Las siguientes capturas documentan la configuración observada, no una consulta en tiempo real ni el gasto final del evento. No muestran las direcciones de correo de los destinatarios; la barra superior conserva el nombre visible del titular.
+
+![Detalle del AWS Budget: USD 20 mensuales y destinatarios pendientes de verificación](docs/budget.png)
+
+![Cinco umbrales configurados para alertas de costo real y previsto](docs/budget2.png)
+
+Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
 Todas las funciones PRO están **no iniciadas**. No se han ejecutado simulaciones ni creado recursos AWS en esta preparación.

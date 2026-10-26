@@ -23,6 +23,3 @@ htmlcov/
 .aws-sam/
 .DS_Store
 Thumbs.db
-# Capturas originales pendientes de anonimizar
-/docs/budget.png
-/docs/budget2.png
