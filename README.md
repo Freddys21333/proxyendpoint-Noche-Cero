@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend y contratos estáticos preparados. OpenAPI, JSON Schema y mocks están verificados; motor, API, interfaz y despliegue siguen pendientes.
+**Estado:** especificaciones, entorno backend, contratos y normalizador de configuración verificados. El backend ya valida defaults, tipos, límites y relaciones entre campos; motor, API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -32,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). El entorno backend y los contratos de T-03 están verificados. El siguiente paso es implementar configuración canónica y validación con TDD (T-04); frontend ya puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02, T-03 y T-04 están verificados. El siguiente paso backend es derivación de semillas, canonización JSON y hashes (T-05); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
 
 ## Parámetros previstos
 

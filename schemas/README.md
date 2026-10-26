@@ -1,6 +1,6 @@
 # Contratos compartidos — T-03
 
-Contrato base v1 para frontend y backend. Los artefactos describen la API futura; **no hay endpoints ni simulación implementados** en este incremento.
+Contrato base v1 para frontend y backend. Los artefactos describen la API futura; **no hay endpoints ni simulación implementados**. Desde T-04 existe el normalizador de dominio y lector de requests que reutiliza estos contratos.
 
 ## Archivos y fuente de verdad
 
@@ -43,7 +43,7 @@ La red es una muestra mínima de estructura; no fue producida por `synthetic-man
 
 JSON Schema comprueba tipos, campos requeridos/desconocidos, enums, rangos absolutos, políticas únicas y algunas condiciones locales: origen node requiere entero; otros orígenes requieren null; estados causales válidos; bootstrap nulo y confianza descriptiva cuando R<30; bootstrap presente cuando R=30.
 
-JSON Schema **no aplica defaults** ni compara valores entre campos. Se implementarán en T-04 relaciones como `vaccines<=populationSize`, `interventionDay<=days` y `origin.value<populationSize`, además de JSON estricto y rechazo de números no finitos en el adapter. T-04 deberá distinguir forma/campo desconocido de errores de valor y usar los estados HTTP acordados. La normalización y validación del dominio no se sustituyen por estas pruebas estáticas.
+JSON Schema **no aplica defaults** ni compara valores entre campos. Desde T-04 `domain.configuration` completa defaults y verifica `vaccines<=populationSize`, `interventionDay<=days` y `origin.value<populationSize`; su lector JSON rechaza claves duplicadas, números no finitos y JSON inválido. Entrega errores tipados con los estados acordados para que el futuro adapter HTTP los envuelva. Las pruebas estáticas de schemas se mantienen separadas de las pruebas del normalizador.
 
 La correspondencia de conteos con frames, n de estadísticas, extinción, orden, índices, hash real, recomendación y coherencia entre réplicas pertenece al motor/API y sus pruebas futuras. Los tests actuales revisan esas relaciones solo sobre mocks de muestra. El 200 de compare exige resultado completo; 413 no trunca grafos ni devuelve éxito parcial.
 

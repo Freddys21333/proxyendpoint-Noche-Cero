@@ -192,6 +192,8 @@ Los porcentajes y pesos aparecen en README bajo “supuestos del equipo”. Una 
 
 Se rechazan `NaN`, infinitos, campos desconocidos, valores fuera de rango y cuerpos mayores al límite configurado. La UI no es una frontera de seguridad: el backend vuelve a validar.
 
+T-04 concreta la entrada estricta: rechazar claves JSON duplicadas y desbordamiento numérico como INVALID_JSON; null explícito no activa defaults. Los números integrales como 1000.0 se normalizan a enteros según JSON Schema; strings y booleanos no se convierten. El normalizador reutiliza el contrato local y verifica las relaciones entre parámetros; el build debe incluir `schemas/common.schema.json` en el ZIP.
+
 ### 4.4 Selección del paciente cero
 
 - `random`: uniforme entre todos los nodos.

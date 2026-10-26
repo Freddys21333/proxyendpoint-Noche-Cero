@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 26 de octubre de 2026
-**Estado:** entorno T-02 y contratos estáticos T-03 verificados; funcionalidades pendientes.
+**Estado:** T-02, T-03 y configuración/validación T-04 verificados; semillas, grafo y motor pendientes.
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -17,7 +17,7 @@ Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-
 - [ ] **T-01 — Revisar estas specs y acordar interfaces.** Frente: backend + frontend + infraestructura. Dependencias: ninguna. Revisar alcance base, D-01..D-08, exclusión PRO e interfaces compartidas en schemas/README. Salida: acuerdos técnicos y decisiones pendientes registrados; estado documental listo para trabajo, no software verificado. Referencias: TRD §18; REQ-01..12.
 - [x] **T-02 — Preparar entorno backend.** Frente: backend. Dep.: acuerdos técnicos de T-01 adoptados en agreements.md; revisión conjunta de T-01 conservada como tarea. Python 3.12.14, versiones directas fijadas y uv.lock, pytest, Ruff y mypy configurados y ejecutados sin AWS. [Evidencia](../docs/evidencia/backend-entorno.md). No hay suite de comportamiento todavía: colección pytest vacía, código 5 esperado en esta preparación. Ref.: TRD §1/15; RNF-01.
 - [x] **T-03 — Materializar contrato base y ejemplos.** Frente: backend + frontend. Dep.: acuerdos adoptados de T-01; revisión conjunta conservada. [Contratos](../schemas/README.md) implementados: OpenAPI 3.1.0, nueve JSON Schemas y 26 ejemplos explícitamente mock. Defaults, límites, origen, errores, respuestas y exportación JSON acordados; relaciones entre campos y normalización se implementan en T-04. 74 pruebas de contrato/consistencia y validación OpenAPI aprobadas. [Evidencia](../docs/evidencia/backend-contratos.md). Ref.: REQ-01/02/05/06/07/08/09; RF-01/02/03/07/08/09/10/11/12/13/19; CA-08/09/10/11.
-- [ ] **T-04 — Configuración canónica y validación.** Frente: backend. Dep.: T-02/03. Implementar tipos, defaults, tasas, límites relacionados con N/T, rechazo de desconocidos/NaN/infinitos y configuración exportable. Salida: pruebas de fronteras, incompatibilidad de vacunas al bajar N, origen y normalización; comandos documentados. Ref.: REQ-01; RF-01/02; CA-08.
+- [x] **T-04 — Configuración canónica y validación.** Frente: backend. Dep.: T-02/03. Modelos inmutables, defaults desde schemas, políticas ordenadas, JSON estricto y errores saneados implementados; sin coerción de strings/booleanos ni recorte de K. Se validan vacunas/N, intervención/T y nodo/N. 65 pruebas nuevas y 139 totales aprobadas, lint/formato/tipos y OpenAPI correctos. [Evidencia](../docs/evidencia/backend-configuracion.md). Hashes y canonización para hashing siguen en T-05; CA-08 de UI no se declara completo por este trabajo backend. Ref.: REQ-01; RF-01/02; CA-08.
 
 ## 3. Backend: núcleo científico
 

@@ -1,6 +1,6 @@
 # Backend
 
-Entorno inicial de T-02 y contratos estáticos de T-03. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) ya están disponibles. Todavía no hay endpoints ni simulación implementados.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. Todavía no hay endpoints ni simulación implementados.
 
 ## Instalación en Windows (PowerShell)
 
@@ -38,14 +38,40 @@ La estructura `src/domain`, `src/simulation`, `src/strategies` y `src/api` es im
 
 Dependencias principales verificadas: NumPy 2.5.4 y NetworkX 3.7. Herramientas: pytest 9.1.1, Ruff 0.17.2, mypy 1.20.2 y types-networkx 3.6.1.20261024. uv usado: 0.13.5.
 
-T-03 agrega validadores de desarrollo fijados: jsonschema[format] 4.26.0, openapi-spec-validator 0.9.0, PyYAML 6.0.3 y referencing 0.37.0. Se usan para pruebas, no se agregan al ZIP de producción. La dependencia de validación que use el backend real se decidirá en T-04 y deberá declararse como runtime si corresponde.
+Desde T-04, jsonschema 4.26.0 es dependencia de runtime para reutilizar el contrato compartido. Los extras de formatos, openapi-spec-validator 0.9.0, PyYAML 6.0.3, referencing como herramienta directa de tests y types-jsonschema 4.26.0.20261006 son dependencias de desarrollo. El ZIP futuro incluye dependencias transitivas de runtime y `schemas/common.schema.json`, además de los módulos de `src/`; no incluye herramientas de desarrollo.
+
+## Configuración de dominio
+
+Desde el código del backend o pruebas con `src/` en la ruta de importación:
+
+```python
+from domain.configuration import normalize_configuration, parse_request
+
+configuration = normalize_configuration({
+    "scenario": {"populationSize": 50, "beta": 0},
+    "intervention": {"vaccines": 10},
+})
+assert configuration.scenario.population_size == 50
+wire_configuration = configuration.to_dict()  # Copia completa con claves camelCase.
+request = parse_request('{"schemaVersion":"1.0"}', operation="preview")
+```
+
+Los modelos son dataclasses inmutables; las políticas siempre quedan como `none`, `random`, `targeted`. Los defaults provienen del JSON Schema compartido, no de una segunda tabla mantenida en Python. Omitir configuración permite defaults; pasar null explícito es error. No se limita K silenciosamente: N=50 sin vacunas explícitas conserva el default 100 y se rechaza.
+
+`parse_request` acepta texto o bytes UTF-8, aplica 64 KiB de límite y rechaza JSON inválido, claves duplicadas, NaN/Infinity y desbordamiento numérico. `normalize_configuration` valida tipos/rangos y relaciones K≤N, intervención≤T y nodo<N, sin mutar la entrada ni consultar la red. Aún no puede verificar `ORIGIN_EMPTY` ni hashes reales: esas reglas requieren generador/API.
+
+Los errores `ConfigurationError` exponen `code`, `status_code` y `fields` con rutas/reasons saneadas. No devuelven valores recibidos. Se distinguen 400 INVALID_JSON/UNKNOWN_FIELD, 413 REQUEST_TOO_LARGE y 422 VALIDATION_ERROR; la construcción de respuestas HTTP con versiones y requestId se implementará en T-11.
+
+Las rutas de los esquemas se resuelven desde el módulo, no desde el directorio actual. Se probó importar el dominio en un proceso aislado con `domain/` y `schemas/common.schema.json` copiados fuera del checkout; esto no sustituye probar el ZIP de Lambda en Linux.
 
 Cuando se cambie una dependencia, actualizar su versión en `pyproject.toml`, ejecutar `uv lock`, sincronizar y verificar. No editar `uv.lock` manualmente ni actualizarlo silenciosamente al ejecutar checks. Cualquier cambio que altere resultados del motor necesitará evidencia y versión coherentes con el manifiesto.
 
 ## Siguiente tarea
 
-T-04 implementa configuración canónica y validación de relaciones sobre [los contratos compartidos](../schemas/README.md), con pruebas que fallen primero por el comportamiento ausente. El backend vuelve a validar entradas aunque el frontend también las valide. No se añade simulación hasta resolver configuración y semillas.
+T-05 implementa derivación de semillas por dominio, canonización JSON y hashes versionados. La configuración T-04 ya produce una representación completa y estable, pero no calcula hashes ni implementa aleatoriedad. El motor se incorpora después de semillas y generación de grafo.
 
 Resultado observado de esta preparación: [evidencia de T-02](../docs/evidencia/backend-entorno.md).
 
 Validación de contratos: [evidencia de T-03](../docs/evidencia/backend-contratos.md).
+
+Configuración y entrada estricta: [evidencia de T-04](../docs/evidencia/backend-configuracion.md).
