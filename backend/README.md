@@ -1,6 +1,6 @@
 # Backend
 
-Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; todavía no hay endpoints ni agregación Monte Carlo.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; todavía no hay endpoints ni exportación reproducible.
 
 ## Instalación en Windows (PowerShell)
 
@@ -76,7 +76,17 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-09 incorpora experimentos, métricas, agregación estadística y recomendación. Las tres políticas ya funcionan por réplica; todavía no hay endpoints.
+T-10 incorpora exportación JSON/CSV, manifiesto y reproducción CLI. Los experimentos ya agregan métricas y producen recomendación local; todavía no hay endpoints.
+
+## Experimentos y agregación T-09
+
+`simulation.experiments.run_experiment(configuration, include_representative_frames=True)` genera una red fija y ejecuta todas las réplicas. Devuelve datos de dominio: configuración, grafo/hash, resultados por réplica, métricas, resúmenes, curvas agregadas, diferencias pareadas, representativa y recomendación. No es todavía la respuesta HTTP/exportación completa: faltan manifiesto y envoltorio T-10/11.
+
+`statistics` usa percentiles linear, omite duraciones null y devuelve n efectivo. `metrics` toma el primer pico, exige E+I=0 para extinción y conserva inventario. `aggregate` calcula diferencias que pueden ser negativas y utiliza una matriz bootstrap (2000,R) compartida cuando R≥30; para R<30 devuelve bootstrap=null. Las tasas de victoria solo cuentan diferencias positivas.
+
+La recomendación usa menor media con empate absoluto 1e-9 y confidence supported solo si los dos intervalos frente a competidores tienen límite inferior positivo. Esto no garantiza superioridad en otras semillas. La representativa es la más cercana a la mediana targeted con desempate por índice, no el promedio. Solo esa réplica transporta eventos/frames; puede omitirse frames sin alterar resultHash. Se procesa una réplica a la vez y se regenera la representativa para evitar conservar todos los frames. Un fallo aborta con SIMULATION_FAILED, sin resultado parcial.
+
+`replicate_order` y `policy_order` permiten verificar invariancia del orden; los resultados siempre se ordenan canónicamente. [Evidencia T-09](../docs/evidencia/backend-experimentos.md): 252 pruebas aprobadas, incluidos contratos con 2/30 réplicas y tres procesos.
 
 ## Vacunación y ejecución pareada T-08
 
@@ -84,11 +94,11 @@ T-09 incorpora experimentos, métricas, agregación estadística y recomendació
 
 Cada SimulationTrace agrega selections, vaccines_assigned, vaccines_effective y vaccines_unused. La intervención se aplica una sola vez en interventionDay, después de transiciones y antes del registro del día. Solo S es elegible; una dosis fallida queda consumida. efficacy=0 conserva las curvas none y K=0 conserva trazas idénticas. No se añaden vacunados al acumulado de infectados.
 
-`strategies.vaccination.select_candidates` decide sin ver el futuro. targeted calcula scores desde un único snapshot; random conserva el rank del muestreo, aunque las filas se serializan por ID. `vaccinate` aplica el sorteo por nodo y genera únicamente eventos de éxitos. contexts identifica capas activas hacia vecinos S. [Evidencia T-08](../docs/evidencia/backend-vacunacion.md). Los resúmenes, métricas y recomendación quedan para T-09.
+`strategies.vaccination.select_candidates` decide sin ver el futuro. targeted calcula scores desde un único snapshot; random conserva el rank del muestreo, aunque las filas se serializan por ID. `vaccinate` aplica el sorteo por nodo y genera únicamente eventos de éxitos. contexts identifica capas activas hacia vecinos S. [Evidencia T-08](../docs/evidencia/backend-vacunacion.md). Los resúmenes, métricas y recomendación están implementados en T-09.
 
 ## Motor SEIR T-07
 
-`simulation.engine.simulate_none(configuration, graph, replicate_index=0)` ejecuta la referencia sin intervención. Devuelve SimulationTrace con daily, events, frames, entry_days y randomness_hash; registra T+1 estados. No aplica las vacunas de configuration: esta función representa exclusivamente none. La ejecución pareada está implementada en T-08; el resumen estadístico queda en T-09.
+`simulation.engine.simulate_none(configuration, graph, replicate_index=0)` ejecuta la referencia sin intervención. Devuelve SimulationTrace con daily, events, frames, entry_days y randomness_hash; registra T+1 estados. No aplica las vacunas de configuration: esta función representa exclusivamente none. La ejecución pareada está implementada en T-08; el resumen estadístico está implementado en T-09.
 
 `generate_potentials(configuration, edge_count, replicate_index=0)` crea matrices de transmisión, progresión y eficacia por dominio con acceso de solo lectura. Pueden compartirse entre ejecuciones mediante potentials=; no se consumen ni modifican. `step_day` permite probar la transición desde un snapshot, sin mutarlo. Los eventos iniciales son I→I; contactos y progresiones se etiquetan con d+1 y la menor arista exitosa explica cada contacto.
 
