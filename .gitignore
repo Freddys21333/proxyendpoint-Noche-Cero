@@ -23,3 +23,11 @@ htmlcov/
 .aws-sam/
 .DS_Store
 Thumbs.db
+# Terraform: conservar .terraform.lock.hcl en Git
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
