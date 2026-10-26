@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración y primitivas de reproducibilidad verificados. El backend ya valida defaults, tipos, límites y relaciones entre campos; motor, API, interfaz y despliegue siguen pendientes.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y generador de población verificados. El backend ya valida configuración y genera red, calendario y origen reproducibles; motor SEIR, API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -32,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02, T-03, T-04 y T-05 están verificados. El siguiente paso backend es grafo, calendario y origen (T-06); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-06 están verificados. El siguiente paso backend es motor SEIR y eventos diarios (T-07); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
 
 ## Parámetros previstos
 

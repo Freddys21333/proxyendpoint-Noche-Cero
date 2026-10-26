@@ -76,7 +76,26 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-06 implementa grafo, calendario y selección de origen sobre estas primitivas. Todavía no hay simulador ni endpoints.
+T-07 implementa el motor SEIR y eventos diarios sobre la red T-06. Todavía no hay simulador ni endpoints.
+
+## Red y origen T-06
+
+`simulation.network.generate_graph(configuration)` devuelve grupos y contactos hasta T inclusive. `select_initial(configuration, graph, replicate_index=0)` selecciona infectados sin reemplazo. `build_preview(configuration)` devuelve payload de dominio con configuración, grafo, posiciones y hashes reales; el adapter HTTP se implementará en T-11.
+
+El límite de unión es 100.000 aristas; un exceso genera GRAPH_TOO_LARGE (413), sin truncar. initialStateHash cubre graphHash e IDs iniciales ordenados, antes de vacunar. Los supuestos y orden de muestreo están en agreements.md §2. [Evidencia T-06](../docs/evidencia/backend-grafo.md).
+
+## Checkov local
+
+Checkov 3.3.30 se instala en un entorno separado porque sus dependencias difieren del motor (por ejemplo NetworkX). Desde la raíz, después de preparar el backend:
+
+```powershell
+.\.tools\bin\uv.exe venv .tools/checkov-env --python backend/.venv/Scripts/python.exe
+.\.tools\bin\uv.exe pip install --python .tools/checkov-env/Scripts/python.exe checkov==3.3.30 --cache-dir .uv-cache
+.\scripts\checkov.ps1 --version
+.\scripts\checkov.ps1 -d infra --framework terraform --skip-download
+```
+
+Se verificó instalación y versión. infra aún no contiene Terraform; no se declara infraestructura segura ni una auditoría aprobada por instalar la herramienta. El wrapper usa Python explícito, sin depender de la asociación .py de Windows. Ningún token ni conexión a una plataforma es necesario para el uso local.
 
 Resultado observado de esta preparación: [evidencia de T-02](../docs/evidencia/backend-entorno.md).
 

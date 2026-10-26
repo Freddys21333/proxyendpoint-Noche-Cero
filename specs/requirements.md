@@ -44,7 +44,7 @@ Defaults y límites provienen de TRD §4.3; son supuestos del equipo salvo el ca
 | `gamma` | 0.142857 | Finito 0..1 |
 | `initialInfectious` | 1 | Entero 1..min(20,N) |
 | `origin.kind` | `random` | `random`, `household`, `school`, `bus`, `market`, `neighborhood`, `node` |
-| `origin.value` | null | String/entero/null según contrato; ID de nodo y pertenencia validados |
+| `origin.value` | null | Entero para node; null para otros orígenes; pertenencia validada |
 | `vaccines` | 100 | Entero 0..N; si N baja de 100, no aceptar el default incompatible silenciosamente |
 | `interventionDay` | 0 | Entero 0..T |
 | `vaccineEfficacy` | 1.0 | Finito 0..1 |

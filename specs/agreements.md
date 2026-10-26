@@ -40,6 +40,8 @@ Generar los grupos primero y los contactos después, por día ascendente, contex
 
 Grafo canónico: `{generatorVersion,nodes,edges}`; nodo incluye id, role, householdId, neighborhoodId, schoolId/busId/marketId anulables. marketId significa vendedor o visitante al menos un día de 0..T. Edge incluye id,u,v,context,weight,activeDays. graphHash cubre grupos y calendario entero, no posiciones. La red se mantiene igual para todas las réplicas.
 
+Concreción T-06: crear grupos en orden hogares, roles, salones, buses, vendedores, barrios. Permutar candidatos ordenados y conservar la permutación para dividir bloques; ordenar cada bloque para contactos. Extraer la semilla NetworkX como entero uint32 del flujo graph. Crear contactos fijos al procesar su contexto en día 0 y reutilizarlos. Los pares de cada contexto se recorren globalmente en orden lexicográfico antes de sortear contactos diarios. `initialStateHash` es el hash canónico de `{graphHash,initialInfectiousNodeIds}` antes de vacunación; IDs ordenados. Diferentes parámetros que produzcan exactamente el mismo estado pueden conservar este hash, que identifica contenido y no la petición.
+
 El layout base no requiere otro algoritmo: ordenar nodos por id sobre círculo unitario, x=round(cos(2πid/N),6), y=round(sin(2πid/N),6). Su salida es visual y se excluye de graphHash. El frontend puede reubicar nodos sin cambiar el experimento.
 
 ## 3. Sorteos y reproducibilidad — D-02/D-06
