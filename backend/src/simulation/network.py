@@ -194,9 +194,9 @@ def select_initial(
     return sorted([first, *(int(i) for i in extra)])
 
 
-def build_preview(configuration: Configuration) -> dict[str, Any]:
+def build_preview(configuration: Configuration, *, max_edges: int = MAX_EDGES) -> dict[str, Any]:
     """Payload de dominio para T-11, sin envoltorio HTTP ni valores ficticios."""
-    graph = generate_graph(configuration)
+    graph = generate_graph(configuration, max_edges=max_edges)
     graph_hash = json_hash(graph)
     initial = select_initial(configuration, graph)
     n = configuration.scenario.population_size

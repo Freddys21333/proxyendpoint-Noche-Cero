@@ -166,6 +166,7 @@ def run_experiment(
     include_representative_frames: bool = True,
     replicate_order: tuple[int, ...] | None = None,
     policy_order: tuple[Policy, ...] = ("none", "random", "targeted"),
+    graph: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Dominio síncrono completo o error; sin respuesta parcial ni manifiesto ficticio."""
     n = configuration.repetitions
@@ -176,7 +177,7 @@ def run_experiment(
         raise ValueError("Se requieren las tres políticas.")
     if type(include_representative_frames) is not bool:
         raise ValueError("La opción de frames debe ser booleana.")
-    graph = generate_graph(configuration)
+    graph = generate_graph(configuration) if graph is None else graph
     graph_hash = json_hash(graph)
     replicates: list[dict[str, Any]] = []
     try:

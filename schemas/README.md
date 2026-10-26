@@ -1,6 +1,6 @@
 # Contratos compartidos — T-03
 
-Contrato base v1 para frontend y backend. Los artefactos describen la API futura; **todavía no hay endpoints**. T-07/08 implementan el motor SEIR y políticas pareadas locales; T-09 agrega estadísticas y recomendación. T-10 completa el JSON exportable con manifiesto y hashes verificados contra CompareResponse. La integración HTTP sigue pendiente. Desde T-04 existe el normalizador de dominio y lector de requests que reutiliza estos contratos.
+Contrato base v1 para frontend y backend. Los artefactos describen los cuatro handlers Lambda T-11, ya integrados y verificados localmente; **no hay despliegue AWS ni URL pública todavía**. T-07/08 implementan el motor SEIR y políticas pareadas locales; T-09 agrega estadísticas y recomendación. T-10 completa el JSON exportable con manifiesto y hashes verificados contra CompareResponse. La integración handler→motor→schema está verificada en T-11; smoke público y empaquetado Linux siguen pendientes. Desde T-04 existe el normalizador de dominio y lector de requests que reutiliza estos contratos.
 
 ## Archivos y fuente de verdad
 
@@ -31,7 +31,7 @@ La definición funcional y las relaciones de dominio están en [agreements.md](.
 
 Los ejemplos mínimos de request muestran configuración omitida; los futuros handlers deberán completarla con defaults. No están emparejados con la respuesta ligera de 50 personas: un request mínimo usa por defecto 1.000 personas, 90 días y 30 réplicas.
 
-Servidor de referencia en OpenAPI: `http://localhost:8000/v1`, todavía no implementado. Las rutas del documento son `/health`, `/config`, `/scenarios/preview` y `/simulations/compare`; no duplicar `/v1` al construir URLs. El despliegue inyectará la base real mediante `VITE_API_BASE_URL`.
+Servidor de referencia en OpenAPI: `http://localhost:8000/v1`; es una URL ilustrativa, no se inicia un servidor HTTP con los handlers Lambda. T-11 prueba eventos payload v2 directamente. La URL pública la entregará Terraform tras desplegar. Las rutas del documento son `/health`, `/config`, `/scenarios/preview` y `/simulations/compare`; no duplicar `/v1` al construir URLs. El despliegue inyectará la base real mediante `VITE_API_BASE_URL`.
 
 Health/config/errores son JSON ordinario. Preview/compare se documentan como JSON con `Content-Encoding: gzip`; los ejemplos contienen el JSON ya descomprimido que recibe el cliente. Base64 corresponde únicamente al adapter Lambda, no al payload de la aplicación. No hay jobs, polling ni progreso en vivo en la base.
 

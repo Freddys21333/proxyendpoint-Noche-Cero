@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 26 de octubre de 2026
-**Estado:** T-02..T-10 verificados; API pendiente.
+**Estado:** T-02..T-11 verificados localmente; frontend/infra, despliegue y gate científico pendientes.
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -27,7 +27,7 @@ Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-
 - [x] **T-08 — Vacunación y políticas pareadas.** Frente: backend. Dep.: T-07. Implementar none/random/targeted, eficacia por nodo/día, inventario y explicación. Salida verificada: E/I/R nunca vacunados, K=0 idéntico, K mayor a elegibles usa min, eficacia 0/1/parcial compartida por nodo, empate por id, dosis fallida consumida, fronteras 0/T y orden de políticas/réplicas independiente. [Evidencia](../docs/evidencia/backend-vacunacion.md). Métricas y agregado en T-09. Ref.: REQ-04/08; RF-05/06/12; CA-02/03/05/07.
 - [x] **T-09 — Experimentos y agregación.** Frente: backend. Dep.: T-08; aplicar D-05/06. Ejecutar réplicas, métricas, diferencias pareadas, P05/P95, bootstrap 2.000 y réplica representativa. Salida verificada: fixtures numéricos, acumulados sin vacunados, primer pico, censura E+I, bootstrap compartido, recomendación gana/empata/pierde, representativa determinista y fallo sin resultado parcial. 252 pruebas aprobadas. [Evidencia](../docs/evidencia/backend-experimentos.md). Manifiesto/exportación en T-10; gate científico T-22 pendiente. Ref.: REQ-05/06/07/08; CA-09/10.
 - [x] **T-10 — Exportar y reproducir.** Frente: backend. Dep.: T-09. Implementar JSON/CSV con manifiesto completo y `scripts/reproduce.py`, reutilizando el motor. Salida verificada: JSON de experimento real validado contra CompareResponse y reproducido por CLI en otro proceso con igual hash; manifiesto/versiones reales, resultHash/experimentHash y ZIP CSV documentados. Alteraciones y entorno incompatible se rechazan. [Evidencia](../docs/evidencia/backend-exportacion.md). ZIP local de referencia; descarga cliente en T-15, sin endpoint nuevo. Ref.: REQ-09; RF-13/19; CA-06/07/11.
-- [ ] **T-11 — API base integrada.** Frente: backend. Dep.: T-03/10. Conectar health/config/preview/compare, validar hash esperado, límites y errores saneados. Salida: integración handler→motor→schema, políticas incompletas rechazadas, hash ajeno 409 y resultado completo sin progreso inventado. Ref.: REQ-01..09/11; RF-19/20; CA-13/15.
+- [x] **T-11 — API base integrada.** Frente: backend. Dep.: T-03/10. Conectar health/config/preview/compare, validar hash esperado, límites y errores saneados. Salida verificada localmente: integración handler→motor→schema, cuatro handlers payload v2, políticas incompletas rechazadas, hash ajeno 409, límites y resultado completo sin progreso inventado. [Evidencia](../docs/evidencia/backend-api.md). CA-13 público y CA-15 desplegado siguen pendientes de T-19/20; no se afirma despliegue por estos tests. Ref.: REQ-01..09/11; RF-19/20; CA-13/15.
 
 ## 4. Frontend: avance paralelo tras acordar contratos
 

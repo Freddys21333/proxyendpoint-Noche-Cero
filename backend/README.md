@@ -1,6 +1,6 @@
 # Backend
 
-Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; la exportación y reproducción T-10 ya están verificadas; todavía no hay endpoints.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; la exportación y reproducción T-10 ya están verificadas; los cuatro handlers Lambda T-11 ya están integrados y verificados localmente, sin despliegue AWS.
 
 ## Instalación en Windows (PowerShell)
 
@@ -60,7 +60,7 @@ Los modelos son dataclasses inmutables; las políticas siempre quedan como `none
 
 `parse_request` acepta texto o bytes UTF-8, aplica 64 KiB de límite y rechaza JSON inválido, claves duplicadas, NaN/Infinity y desbordamiento numérico. `normalize_configuration` valida tipos/rangos y relaciones K≤N, intervención≤T y nodo<N, sin mutar la entrada ni consultar la red. Aún no puede verificar `ORIGIN_EMPTY` ni hashes reales: esas reglas requieren generador/API.
 
-Los errores `ConfigurationError` exponen `code`, `status_code` y `fields` con rutas/reasons saneadas. No devuelven valores recibidos. Se distinguen 400 INVALID_JSON/UNKNOWN_FIELD, 413 REQUEST_TOO_LARGE y 422 VALIDATION_ERROR; la construcción de respuestas HTTP con versiones y requestId se implementará en T-11.
+Los errores `ConfigurationError` exponen `code`, `status_code` y `fields` con rutas/reasons saneadas. No devuelven valores recibidos. Se distinguen 400 INVALID_JSON/UNKNOWN_FIELD, 413 REQUEST_TOO_LARGE y 422 VALIDATION_ERROR; T-11 construye respuestas HTTP con versiones y requestId.
 
 Las rutas de los esquemas se resuelven desde el módulo, no desde el directorio actual. Se probó importar el dominio en un proceso aislado con `domain/` y `schemas/common.schema.json` copiados fuera del checkout; esto no sustituye probar el ZIP de Lambda en Linux.
 
@@ -76,7 +76,32 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-11 conecta health/config/preview/compare con el motor y aplica límites/errores HTTP. Los experimentos y su exportación/reproducción ya funcionan localmente.
+El núcleo backend T-02..11 está verificado localmente. Falta integración con frontend T-16, build Linux y benchmark/despliegue T-19, y gate científico T-22. No hay URL pública todavía.
+
+## API Lambda T-11
+
+Handlers exactos: `api.health.handler`, `api.config.handler`, `api.preview.handler`, `api.compare.handler`. Aceptan eventos HTTP API payload 2.0 y context; no inician un servidor local ni crean recursos AWS.
+
+| Método/ruta | Comportamiento |
+|---|---|
+| GET /v1/health | Estado, región configurada, build, versiones y fecha UTC |
+| GET /v1/config | Defaults normalizados, límites efectivos, características y descripción del generador |
+| POST /v1/scenarios/preview | Request validado, configuración, grafo/hash, posiciones y origen/hash |
+| POST /v1/simulations/compare | Hash esperado obligatorio, experimento real completo y manifiesto |
+
+Preview/compare devuelven body base64 de gzip (mtime=0), isBase64Encoded=true y Content-Encoding:gzip. El consumidor local primero decodifica base64 y luego gzip; API Gateway entrega bytes gzip al navegador, que los descomprime. Health/config/errores son JSON ordinario. El cliente de exportación T-10 consume el JSON ya descomprimido.
+
+Configuración: AWS_REGION del runtime (default local us-east-2), BUILD_COMMIT (unknown si falta), ENGINE_VERSION=0.1.0 y SCHEMA_VERSION=1.0. Si se especifican versiones incompatibles se devuelve 503 COMPUTE_UNAVAILABLE; no se inventan versiones. Los límites MAX_REQUEST_BYTES=65536, MAX_RESPONSE_BYTES=5242880, MAX_DECODED_RESPONSE_BYTES=33554432, MAX_EDGES=100000 y MAX_FRAME_STATES=400000 se pueden reducir mediante entorno, sin exceder los máximos del contrato. MAX_RESPONSE_BYTES requiere al menos 1024 para informar errores. Los errores pequeños conservan JSON ordinario para poder explicar un exceso del límite de datos.
+
+El adapter limita bytes UTF-8/base64 antes del dominio, usa la validación compartida, rechaza grafo desactualizado con 409 antes de simular y aplica límites de frames/grafo/JSON/envoltorio (medición conservadora con JSON ASCII y espacios). El grafo generado y validado en compare se reutiliza al experimentar. Solo devuelve 200 si las réplicas están completas y el schema valida. Devuelve 400/404/409/413/422/500/503 saneados según el fallo; el motor no genera progreso ficticio. Un contexto Lambda con menos de un segundo disponible impide empezar trabajo pesado; esto no sustituye el benchmark de timeout real.
+
+CORS pertenece a HTTP API, sin wildcard en handlers. Logs JSON incluyen requestId, versión, fase, estado/error, duración y conteos cuando están disponibles; no contienen cuerpos, grafos, semillas ni secretos. Para verificar localmente:
+
+```powershell
+.\.tools\bin\uv.exe run --locked --offline --project backend --cache-dir .uv-cache pytest backend/tests/test_api.py -q
+```
+
+Las pruebas recorren preview→compare→descompresión→schema→reproducción real. [Evidencia T-11](../docs/evidencia/backend-api.md). El ZIP Linux, CORS real, roles y latencia en API Gateway/Lambda se verificarán con infraestructura; el test local no cierra CA-13 público ni CA-15 desplegado.
 
 ## Exportación y reproducción T-10
 
@@ -98,7 +123,7 @@ experimentHash cubre configuration, graph, versiones semánticas/entorno y resul
 
 ## Experimentos y agregación T-09
 
-`simulation.experiments.run_experiment(configuration, include_representative_frames=True)` genera una red fija y ejecuta todas las réplicas. Devuelve datos de dominio: configuración, grafo/hash, resultados por réplica, métricas, resúmenes, curvas agregadas, diferencias pareadas, representativa y recomendación. T-10 completa estos datos con manifiesto y envoltorio de exportación; el adapter HTTP corresponde a T-11.
+`simulation.experiments.run_experiment(configuration, include_representative_frames=True)` genera una red fija y ejecuta todas las réplicas. Devuelve datos de dominio: configuración, grafo/hash, resultados por réplica, métricas, resúmenes, curvas agregadas, diferencias pareadas, representativa y recomendación. T-10 completa estos datos con manifiesto y envoltorio de exportación; T-11 integra el adapter HTTP.
 
 `statistics` usa percentiles linear, omite duraciones null y devuelve n efectivo. `metrics` toma el primer pico, exige E+I=0 para extinción y conserva inventario. `aggregate` calcula diferencias que pueden ser negativas y utiliza una matriz bootstrap (2000,R) compartida cuando R≥30; para R<30 devuelve bootstrap=null. Las tasas de victoria solo cuentan diferencias positivas.
 
@@ -124,7 +149,7 @@ randomnessHash incluye nombres, dimensiones y bytes float64 little-endian según
 
 ## Red y origen T-06
 
-`simulation.network.generate_graph(configuration)` devuelve grupos y contactos hasta T inclusive. `select_initial(configuration, graph, replicate_index=0)` selecciona infectados sin reemplazo. `build_preview(configuration)` devuelve payload de dominio con configuración, grafo, posiciones y hashes reales; el adapter HTTP se implementará en T-11.
+`simulation.network.generate_graph(configuration)` devuelve grupos y contactos hasta T inclusive. `select_initial(configuration, graph, replicate_index=0)` selecciona infectados sin reemplazo. `build_preview(configuration)` devuelve payload de dominio con configuración, grafo, posiciones y hashes reales; T-11 integra este payload con HTTP API v2.
 
 El límite de unión es 100.000 aristas; un exceso genera GRAPH_TOO_LARGE (413), sin truncar. initialStateHash cubre graphHash e IDs iniciales ordenados, antes de vacunar. Los supuestos y orden de muestreo están en agreements.md §2. [Evidencia T-06](../docs/evidencia/backend-grafo.md).
 

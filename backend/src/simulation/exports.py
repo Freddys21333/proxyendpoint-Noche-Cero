@@ -11,6 +11,7 @@ from importlib.metadata import version
 from typing import Any, cast
 
 from domain.configuration import decode_json_document, normalize_configuration, validate_contract
+from domain.errors import ConfigurationError
 from domain.reproducibility import (
     BIT_GENERATOR,
     CANONICAL_VERSION,
@@ -135,7 +136,7 @@ def export_experiment(result: dict[str, Any], *, build_commit: str = "unknown") 
     manifest["experimentHash"] = experiment_hash(document)
     _validate(document)
     if len(canonical_json(document)) > MAX_DOCUMENT_BYTES:
-        raise ValueError("El resultado supera 32 MiB.")
+        raise ConfigurationError("RESULT_TOO_LARGE", 413, "El resultado supera 32 MiB.")
     return document
 
 
