@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Motor reproducible de simulación y contención SEIR sobre grafos."
 requires-python = "==3.12.*"
 dependencies = [
+    "jsonschema==4.26.0",
     "networkx==3.7",
     "numpy==2.5.4",
 ]
@@ -17,6 +18,7 @@ dev = [
     "pyyaml==6.0.3",
     "referencing==0.37.0",
     "ruff==0.17.2",
+    "types-jsonschema==4.26.0.20261006",
     "types-networkx==3.6.1.20261024",
 ]
 
