@@ -239,6 +239,29 @@ def _unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return result
 
 
+def decode_json_document(body: bytes, *, max_bytes: int) -> Any:
+    """Lector JSON estricto compartido por importación de experimentos."""
+    if len(body) > max_bytes:
+        raise ValueError("El documento supera el límite permitido.")
+    try:
+        return json.loads(
+            body.decode("utf-8"),
+            parse_constant=_reject_constant,
+            parse_float=_strict_float,
+            object_pairs_hook=_unique_keys,
+        )
+    except (ValueError, UnicodeError, RecursionError):
+        raise ValueError("El documento debe ser JSON UTF-8 estricto.") from None
+
+
+def validate_contract(value: object, definition: str) -> None:
+    """Valida un documento contra el contrato local compartido, sin red."""
+    _validate(value, definition)
+    formatted = _validator(definition).evolve(format_checker=Draft202012Validator.FORMAT_CHECKER)
+    if not formatted.is_valid(value):
+        raise ValueError("El documento contiene un formato inválido.")
+
+
 @overload
 def parse_request(
     body: str | bytes,

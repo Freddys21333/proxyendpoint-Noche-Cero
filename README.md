@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con vacunación, agregación y recomendación verificados localmente. El backend ejecuta none/random/targeted por réplica y resume sus resultados; exportación reproducible, API, interfaz y despliegue siguen pendientes.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso; API, interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -32,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-09 están verificados. El siguiente paso backend es exportar y reproducir (T-10); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; reproducción y despliegue se documentarán al implementarse y verificarse.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-10 están verificados. El siguiente paso backend es API base integrada (T-11); frontend puede usar los mocks de `schemas/examples/`. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; exportación/reproducción ya están documentadas; despliegue se documentará al implementarse y verificarse.
 
 ## Parámetros previstos
 

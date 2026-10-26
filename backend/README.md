@@ -1,6 +1,6 @@
 # Backend
 
-Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; todavía no hay endpoints ni exportación reproducible.
+Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, NumPy y NetworkX para el motor; pytest para TDD, Ruff para lint/formato y mypy en modo estricto. [OpenAPI, JSON Schema y ejemplos](../schemas/README.md) están disponibles. El motor y las políticas pareadas T-07/08 ya son ejecutables localmente; la exportación y reproducción T-10 ya están verificadas; todavía no hay endpoints.
 
 ## Instalación en Windows (PowerShell)
 
@@ -76,11 +76,29 @@ La canonización conserva listas, normaliza floats integrales y cero negativo, r
 
 ## Siguiente tarea
 
-T-10 incorpora exportación JSON/CSV, manifiesto y reproducción CLI. Los experimentos ya agregan métricas y producen recomendación local; todavía no hay endpoints.
+T-11 conecta health/config/preview/compare con el motor y aplica límites/errores HTTP. Los experimentos y su exportación/reproducción ya funcionan localmente.
+
+## Exportación y reproducción T-10
+
+Desde la raíz, con el entorno instalado, se pueden exportar los defaults versionados (N=1000, T=90, R=30). Para un smoke pequeño usar un archivo de configuración con N=50, days=3, repetitions=2 y vaccines=10, como hacen las pruebas CLI.
+
+```powershell
+New-Item -ItemType Directory -Force build
+.\backend\.venv\Scripts\python.exe scripts/export_experiment.py schemas/examples/configuration-default.json build/experiment.json --no-frames --build-commit (git rev-parse HEAD)
+.\backend\.venv\Scripts\python.exe scripts/reproduce.py build/experiment.json
+```
+
+La primera orden produce JSON completo más experiment.zip con CSV; requiere rutas nuevas y no sobrescribe archivos existentes. La configuración es un objeto configuration directo, sin envolver en request. Se registra el commit proporcionado o BUILD_COMMIT; sin ambos se declara unknown. Ambos CLI funcionan desde otro directorio con rutas absolutas. La salida exitosa incluye experimentHash; un error devuelve código no cero sin traza interna. build/ está excluido de Git.
+
+`simulation.exports.export_experiment(result, build_commit=...)` agrega manifiesto y metadatos reales, valida CompareResponse y aplica 32 MiB al JSON. `load_export(bytes)` exige JSON estricto, sin claves duplicadas/no finitos, hashes coherentes y tamaño permitido. `reproduce(document)` exige las mismas versiones de Python/dependencias/motor y vuelve a ejecutar; compara hash y derivados/eventos/frames presentes. Frames omitidos no impiden reproducción.
+
+experimentHash cubre configuration, graph, versiones semánticas/entorno y resultados por réplica; excluye fechas, requestId, buildCommit, frames, eventos opcionales y hashes derivados. Los resultados estadísticos fuera de la proyección también se verifican al reproducir.
+
+`export_zip(document)` es la referencia local de archivos/columnas para el futuro cliente T-15, sin endpoint nuevo. Incluye configuration.json, manifest.json, comparison-summary.json y ocho CSV (nodes, edges, daily, metrics, selections, events, summary, comparisons). Null es celda vacía; arrays son JSON; eventos solo de representativa y su alcance se declara en exportMetadata dentro del manifest del ZIP. Timestamps ZIP fijos hacen la salida estable para el mismo documento/entorno. [Evidencia T-10](../docs/evidencia/backend-exportacion.md).
 
 ## Experimentos y agregación T-09
 
-`simulation.experiments.run_experiment(configuration, include_representative_frames=True)` genera una red fija y ejecuta todas las réplicas. Devuelve datos de dominio: configuración, grafo/hash, resultados por réplica, métricas, resúmenes, curvas agregadas, diferencias pareadas, representativa y recomendación. No es todavía la respuesta HTTP/exportación completa: faltan manifiesto y envoltorio T-10/11.
+`simulation.experiments.run_experiment(configuration, include_representative_frames=True)` genera una red fija y ejecuta todas las réplicas. Devuelve datos de dominio: configuración, grafo/hash, resultados por réplica, métricas, resúmenes, curvas agregadas, diferencias pareadas, representativa y recomendación. T-10 completa estos datos con manifiesto y envoltorio de exportación; el adapter HTTP corresponde a T-11.
 
 `statistics` usa percentiles linear, omite duraciones null y devuelve n efectivo. `metrics` toma el primer pico, exige E+I=0 para extinción y conserva inventario. `aggregate` calcula diferencias que pueden ser negativas y utiliza una matriz bootstrap (2000,R) compartida cuando R≥30; para R<30 devuelve bootstrap=null. Las tasas de victoria solo cuentan diferencias positivas.
 
