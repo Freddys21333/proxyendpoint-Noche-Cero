@@ -66,9 +66,17 @@ Las rutas de los esquemas se resuelven desde el módulo, no desde el directorio 
 
 Cuando se cambie una dependencia, actualizar su versión en `pyproject.toml`, ejecutar `uv lock`, sincronizar y verificar. No editar `uv.lock` manualmente ni actualizarlo silenciosamente al ejecutar checks. Cualquier cambio que altere resultados del motor necesitará evidencia y versión coherentes con el manifiesto.
 
+## Reproducibilidad T-05
+
+`domain.reproducibility` ofrece `create_rng(root_seed, domain, replicate_index=0)`, `seed_entropy(...)`, `canonical_json(value)` y `json_hash(value)`. Se fijan rng-v1, PCG64 y canonical-v1. Cada generador es nuevo e independiente; conservar la instancia mientras se consume un flujo. graph/layout/bootstrap usan índice 0.
+
+La canonización conserva listas, normaliza floats integrales y cero negativo, rechaza no finitos y claves no textuales. No muta entradas. El llamador ordena entidades y construye la proyección sin campos volátiles ni su propio hash; no se eliminan claves automáticamente. Los hashes de grafo/resultados/matrices y manifiesto se conectarán con sus productores.
+
+164 pruebas aprobadas y evidencia en [T-05](../docs/evidencia/backend-reproducibilidad.md).
+
 ## Siguiente tarea
 
-T-05 implementa derivación de semillas por dominio, canonización JSON y hashes versionados. La configuración T-04 ya produce una representación completa y estable, pero no calcula hashes ni implementa aleatoriedad. El motor se incorpora después de semillas y generación de grafo.
+T-06 implementa grafo, calendario y selección de origen sobre estas primitivas. Todavía no hay simulador ni endpoints.
 
 Resultado observado de esta preparación: [evidencia de T-02](../docs/evidencia/backend-entorno.md).
 

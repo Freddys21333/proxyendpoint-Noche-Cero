@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 26 de octubre de 2026
-**Estado:** T-02, T-03 y configuración/validación T-04 verificados; semillas, grafo y motor pendientes.
+**Estado:** T-02..T-05 verificados; grafo y motor pendientes.
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -21,7 +21,7 @@ Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-
 
 ## 3. Backend: núcleo científico
 
-- [ ] **T-05 — Semillas y canonización versionadas.** Frente: backend. Dep.: T-04; aplicar D-06. Implementar derivación por dominio, bitGenerator fijado, JSON canónico y hashes no volátiles. Salida: fixtures estables y aislamiento de RNG; tres procesos con hash idéntico para entradas conocidas. Ref.: REQ-09; CA-06/07.
+- [x] **T-05 — Semillas y canonización versionadas.** Frente: backend. Dep.: T-04; aplicar D-06. Implementar derivación por dominio, bitGenerator fijado, JSON canónico y hashes no volátiles. Salida verificada: fixtures estables, aislamiento de RNG y tres procesos con hash idéntico; 164 pruebas totales y controles aprobados. [Evidencia](../docs/evidencia/backend-reproducibilidad.md). Proyecciones de hashes de resultados se integran al existir sus productores T-06..11. Ref.: REQ-09; CA-06/07.
 - [ ] **T-06 — Grafo, calendario y origen.** Frente: backend. Dep.: T-05; aplicar D-03/04. Implementar capas TRD §4.2, pesos, calendario, aristas canónicas, preview y selección inicial sin reemplazo. Salida: misma red/origen por semilla, roles/grupos coherentes, sin candidatos ORIGIN_EMPTY, ID inválido rechazado, layout independiente. Ref.: REQ-02; RF-03; RNF-01/03.
 - [ ] **T-07 — Motor SEIR y eventos diarios.** Frente: backend. Dep.: T-06; aplicar D-02/05. Implementar snapshot, exposición, progresión simultánea, día 0..T y eventos necesarios para métricas. Salida: conservación, R absorbente, beta=0/sin aristas, tasas 0/1, nuevos E sin progresión inmediata y prueba de frontera T. Ref.: REQ-03; RF-04; CA-01/04.
 - [ ] **T-08 — Vacunación y políticas pareadas.** Frente: backend. Dep.: T-07. Implementar none/random/targeted, eficacia por nodo/día, inventario y explicación. Salida: E/I/R nunca vacunados, K=0 idéntico, K mayor a elegibles usa min, eficacia 0/1, empate por id, dosis consumida al fallar y orden de políticas independiente. Ref.: REQ-04/08; RF-05/06/12; CA-02/03/05/07.
