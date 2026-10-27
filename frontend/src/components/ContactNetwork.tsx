@@ -38,7 +38,7 @@ import {
 import "./ContactNetwork.css";
 import { seirColors } from "./seir-colors";
 import type { PreviewResponse, CompareResponse } from "@/lib/api";
-import { PreviewNetwork } from "./PreviewNetwork";
+import { SimulationWorkspace } from "./SimulationWorkspace";
 
 const elements = buildDemoNetwork();
 const FIT_PADDING = 16;
@@ -65,7 +65,7 @@ export function ContactNetwork(props: { resetKey: number; layer: string; childre
   const lastPreview = useRef<PreviewResponse | null>(null);
   if (props.preview) lastPreview.current = props.preview;
   return lastPreview.current
-    ? <PreviewNetwork {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
+    ? <SimulationWorkspace {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
     : <DemoContactNetwork {...props} />;
 }
 

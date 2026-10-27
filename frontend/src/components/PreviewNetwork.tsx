@@ -9,34 +9,24 @@ import { Button } from './ui/button'
 import { vaccinationsAtDay } from '@/lib/vaccination'
 import { VaccinationDetails, VaccinationPerson } from './VaccinationDetails'
 import { seirColors } from './seir-colors'
+import type { SimulationPlayback } from '@/lib/simulation-playback'
 import './ContactNetwork.css'
 
 const labels = { S: 'Sano', E: 'Mordido', I: 'Zombie', R: 'Exorcizado' }
 const noSelections: VaccinationSelection[] = []
 const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado'], ['neighborhoodId', 'Barrio'] ] as const
 
-export function PreviewNetwork({ preview, layer, resetKey, children, active = true, comparison = null }: {
+export type PreviewNetworkProps = {
   preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; active?: boolean; comparison?: CompareResponse | null
-}) {
+}
+
+export function PreviewNetwork({ preview, layer, resetKey, children, active = true, comparison = null, playback }: PreviewNetworkProps & { playback: SimulationPlayback }) {
   const inspector = useRef<HTMLDetailsElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const network = useRef<cytoscape.Core | null>(null)
   const [layout, setLayout] = useState<NetworkLayout>('neighborhoodId')
   const [selected, setSelected] = useState('')
-  const [day, setDay] = useState(0)
-  const [policy, setPolicy] = useState<Policy>('targeted')
-  const [playing, setPlaying] = useState(false)
-  const [speed, setSpeed] = useState(700)
-  const frames = active ? comparison?.representative.frames : null
-  const lastDay = frames ? comparison!.configuration.scenario.days : 0
-  const currentDay = Math.min(day, lastDay)
-  const frame = frames?.[policy][currentDay]
-  useEffect(() => { setDay(0); setPlaying(false) }, [comparison, active])
-  useEffect(() => {
-    if (!playing || !frames || currentDay >= lastDay) { setPlaying(false); return }
-    const timer = window.setTimeout(() => setDay(value => value + 1), speed)
-    return () => window.clearTimeout(timer)
-  }, [playing, frames, currentDay, lastDay, speed])
+  const { day: currentDay, policy, playing, speed, frames, lastDay, frame, dispatch } = playback
   const selections = active && comparison ? comparison!.replicates[comparison!.representative.index].policies[policy].selections : noSelections
   const applied = useMemo(() => vaccinationsAtDay(selections, currentDay), [selections, currentDay])
   const dose = applied.find(row => String(row.nodeId) === selected)
@@ -116,7 +106,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
       <header className="network-demo-heading"><h2>Red de contactos</h2><span>{frames ? `Réplica ${comparison!.representative.index} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
       <p className="network-meaning">{graph.edges.length} contactos activos visibles. Cada punto es una persona; cada línea, un contacto.</p>
       <div className="network-layout-control">
-        <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); setPlaying(false) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); dispatch({ type: 'pause' }) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
         <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>
       </div>
       <div className="seir-instrument" aria-label="Estados de la población en el día seleccionado">
@@ -155,20 +145,20 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         <h3>{frames ? 'Réplica representativa' : 'Estado inicial'}</h3>
         {frames ? <>
           <p>Trayectoria real de una réplica. Los promedios y rangos están en Comparación.</p>
-          <label>Estrategia <select aria-label="Estrategia de la animación" value={policy} onChange={event => { setPolicy(event.target.value as Policy); setPlaying(false) }}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
-          <p><label>Día {currentDay} de {lastDay}<input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => { setDay(Number(event.target.value)); setPlaying(false) }} /></label></p>
+          <label>Estrategia <select aria-label="Estrategia de la animación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
+          <p><label>Día {currentDay} de {lastDay}<input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label></p>
           <div className="configuration-actions">
-            <Button type="button" variant="outline" onClick={() => { if (currentDay >= lastDay) setDay(0); setPlaying(value => !value) }}>{playing ? 'Pausar' : 'Reproducir'}</Button>
-            <Button type="button" variant="outline" disabled={currentDay >= lastDay} onClick={() => { setPlaying(false); setDay(currentDay + 1) }}>Día siguiente</Button>
-            <Button type="button" variant="outline" onClick={() => { setPlaying(false); setDay(0) }}>Volver al día 0</Button>
+            <Button type="button" variant="outline" onClick={() => dispatch({ type: 'toggle' })}>{playing ? 'Pausar' : 'Reproducir'}</Button>
+            <Button type="button" variant="outline" disabled={currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}>Día siguiente</Button>
+            <Button type="button" variant="outline" onClick={() => dispatch({ type: 'reset' })}>Volver al día 0</Button>
           </div>
-          <label>Velocidad <select aria-label="Velocidad de reproducción" value={speed} onChange={event => setSpeed(Number(event.target.value))}><option value={1400}>Lenta</option><option value={700}>Normal</option><option value={250}>Rápida</option></select></label>
+          <label>Velocidad <select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>Lenta</option><option value={700}>Normal</option><option value={250}>Rápida</option></select></label>
           <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
           <p>R incluye personas recuperadas o inmunizadas. Las vacunas se aplican al registrar el día {comparison!.configuration.intervention.interventionDay}.</p>
         </> : <><p>{!active ? 'Consulta la red para obtener un nuevo estado inicial.' : comparison ? 'Comparación disponible sin animación: el servidor limitó el tamaño de los estados diarios. El grafo conserva el preview inicial; abajo puedes consultar el registro completo de vacunación de la réplica.' : 'Ejecuta Comparar estrategias para cargar una trayectoria real.'}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}
       </section>
-      {active && comparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => setPolicy(event.target.value as Policy)}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
-      {active && comparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); setPlaying(false); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
+      {active && comparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
+      {active && comparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); dispatch({ type: 'pause' }); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
       {children}
     </div>
   </div>

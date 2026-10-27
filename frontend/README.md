@@ -10,6 +10,12 @@ Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otr
 
 Verificado: build/tipos, 23 pruebas frontend y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md).
 
+## Shared real-simulation playback
+
+`ContactNetwork` routes real previews through `SimulationWorkspace`, which owns day, policy, playback status and speed, and schedules one cancellable tick. `PreviewNetwork` consumes that controller; future views can consume the same frame without creating another clock. The existing controls, markup and camera behavior are preserved. The authored demo retains its independent reducer and timer.
+
+Changing the preview, comparison or active status resets playback to day 0 and pauses, preserving the chosen policy and speed. `resetKey` only fits the network camera. Comparisons without representative frames remain available without playback. The pure controller and timer cleanup checks run with `npm test` alongside the existing network, API and demo tests.
+
 ## Minimal simulator dashboard
 
 SEIR person markers use vivid green/yellow/red/blue, with contrasting strokes from one shared presentation palette. State-indicator circles are 14px without borders. Evolution curves and their legend use solid colored lines, with labels and the daily data table retained. State totals use equal centered columns; chart-legend values have fixed alignment. The contact filter is labeled Tipo de contacto / Todos los tipos; its internal values and behavior are unchanged.
