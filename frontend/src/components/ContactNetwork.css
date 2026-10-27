@@ -617,8 +617,8 @@
 
 
 /* Follow the actual inventory height so wrapping never puts controls over doses. */
-.floating-simulation-controls { top: var(--controls-top, 24px); bottom: 16px; max-height: none; }
-.floating-simulation-controls:not([open]) { bottom: auto; }
+.floating-simulation-controls { top: var(--controls-top, 24px); overflow: hidden; }
+.floating-simulation-controls[open] { height: var(--controls-height, 480px); }
 .floating-simulation-controls > summary { flex-shrink: 0; }
-.simulator-workbench .floating-controls-body.simulator-control-column { flex: 1; }
-.floating-simulation-controls[open] > .floating-controls-body { max-height: none; }
+.simulator-workbench .floating-controls-body.simulator-control-column { flex: none; }
+.floating-simulation-controls[open] > .floating-controls-body { height: calc(var(--controls-height, 480px) - 50px); max-height: calc(var(--controls-height, 480px) - 50px); scrollbar-gutter: stable; }

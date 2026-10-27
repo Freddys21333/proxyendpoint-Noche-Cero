@@ -10,12 +10,15 @@ export function FloatingSimulationControls({ children }: { children: ReactNode }
     if (!element || !workspace) return
     const inventory = workspace.querySelector('.population-inventory-summary')
     const position = () => {
-      const top = inventory ? inventory.getBoundingClientRect().bottom - workspace.getBoundingClientRect().top + 12 : 24
+      const bounds = workspace.getBoundingClientRect()
+      const scene = workspace.querySelector('.network-view:not([hidden])')?.getBoundingClientRect()
+      const top = Math.max(inventory ? inventory.getBoundingClientRect().bottom - bounds.top + 12 : 24, scene ? scene.top - bounds.top + 12 : 24)
       element.style.setProperty('--controls-top', `${top}px`)
+      element.style.setProperty('--controls-height', `${Math.max(160, (scene?.bottom ?? bounds.bottom) - bounds.top - top - 12)}px`)
     }
     const observer = new ResizeObserver(position)
     observer.observe(workspace)
-    workspace.querySelectorAll('.network-demo-heading, .network-meaning, .population-inventory-summary').forEach(node => observer.observe(node))
+    workspace.querySelectorAll('.network-demo-heading, .network-meaning, .population-inventory-summary, .network-view').forEach(node => observer.observe(node))
     position()
     return () => observer.disconnect()
   }, [])
