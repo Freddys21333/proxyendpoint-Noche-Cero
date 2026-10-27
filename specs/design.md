@@ -150,6 +150,8 @@ JSON UTF-8, camelCase y enums minúsculos. Todas las respuestas, también los er
 
 ## 6. Frontend y coordinación
 
+Integración incremental I-01: servidor de desarrollo `scripts/serve_api.py` en 127.0.0.1:8000 que traduce HTTP a eventos v2 y devuelve bytes reales (incluido gzip) de los cuatro handlers. Sin CORS wildcard ni servidor de producción; Vite proxy /v1 mantiene mismo origen. Entrada acotada a 64 KiB, errores y límites pertenecen al adapter existente. Prueba HTTP real health/preview/error en puerto efímero antes de implementar. Cierre independiente con commit y push antes de conectar la interfaz.
+
 Pantallas: configurar → preview → ejecutar → comparar → sorpresa → exportar. Estados: idle, validating, previewing, ready, running, partial, succeeded, failed y cancelled (cancelación de trabajo pertenece a PRO). Conservar valores ante fallos; invalidar resultados al cambiar configuración y evitar mostrar respuesta antigua como resultado del escenario actual.
 
 En base, HTTP síncrono no transmite avance por réplica: mostrar ejecución indeterminada y conteos reales al terminar. No fingir porcentaje ni añadir polling de jobs PRO. Si se necesita progreso vivo, acordar cambio de contrato/arquitectura antes.

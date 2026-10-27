@@ -87,3 +87,13 @@ Play, pausa, paso, reinicio, búsqueda y velocidades 0,5×/1×/2×/4× usan un s
 Pruebas nuevas: conservación por día, un caso inicial, transiciones y causalidad sobre aristas existentes, vacunas solo de susceptibles, reconstrucción hacia atrás y acciones del reproductor. RED antes de crear el módulo y GREEN tras implementarlo. Comprobación en navegador: día 3 con S=102/E=2/I=3/R=3 y curva I=3, búsqueda a 20 con paso deshabilitado y regreso a 0 sin eventos futuros.
 
 Verificación final de la demo temporal: build y tipos correctos, 9 pruebas correctas, lint Taste con 0 fallos y 2 avisos de estilo. Verificación independiente del reloj, ciclos de limpieza y coherencia temporal sin bloqueos; sus probes se ejecutaron en una copia temporal fuera del repositorio. La visibilidad del navegador y Strict Mode fueron inspeccionados estructuralmente, no mediante un E2E automatizado.
+# Integración local incremental
+
+Primer incremento: servidor real de desarrollo y proxy de Vite. Desde la raíz, en una terminal:
+
+```powershell
+.\backend\.venv\Scripts\python.exe scripts/serve_api.py
+```
+
+En otra terminal, ejecutar `.\scripts\frontend.ps1 run dev` desde la raíz (o `npm run dev` desde frontend si Node/npm están instalados). Las llamadas `/v1/*` del navegador pasan al backend en 127.0.0.1:8000 sin necesitar CORS. El puente conserva gzip y errores de los handlers Lambda. Es un servidor local secuencial para desarrollo; no reemplaza API Gateway/Lambda ni valida rendimiento de producción. Este primer incremento todavía conserva la demo visual y sus datos.
+
