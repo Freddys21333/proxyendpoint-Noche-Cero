@@ -26,15 +26,16 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 
 | Área | Estado comprobable |
 |---|---|
-| Base local | 324 pruebas backend y 111 frontend; Ruff, mypy, typecheck y build correctos. |
+| Base local | 356 pruebas backend y 116 frontend; Ruff, mypy, typecheck y build correctos. |
 | Motor por defecto | `N=1000`, `T=90`, `R=30`, semilla `20261026`; `none=723,7`, `random=575,1`, `targeted=378,1`; ganancia pareada `196,97` con IC bootstrap `81,62–309,59`; 22 victorias, 6 empates y 2 derrotas frente a random. |
-| Rendimiento | **377,9 s** para el escenario por defecto sin frames, frente a objetivos de ~25 s backend y ~60 s total. |
-| Gate científico | Protocolo T-22 congelado, pero **no ejecutado**. |
+| Rendimiento | **44,3 s** para el escenario por defecto sin frames, frente a objetivos de ~25 s backend y ~60 s total. |
+| Gate científico | Protocolo T-22 congelado; **controles PASA**, primaria/contrastes pendientes. |
 | P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. |
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
-| P-02 | Parcial: solo las brigadas recalculan destinatarios; faltan reglas generales, motivos y observabilidad. |
-| P-03/P-04 | No iniciados: no hay jobs, manifiestos, progreso, cancelación ni Distributed Map. |
+| P-02 | Backend verificado localmente: `adaptive-v1`, reglas, anillo, motivos, exportación y reproducción. Falta UI. |
+| P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, progreso, cancelación, idempotencia y resultado reproducible. Falta pantalla. |
+| P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
 | P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
 | P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
 | P-08 | No iniciado: no hay informe PDF determinista. |
@@ -77,7 +78,7 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico no está ejecutado.
 
-**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22 pendiente. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md).
+**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22: protocolo congelado y **cinco controles técnicos PASA**; matriz primaria y contrastes pendientes. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md) y [protocolo T-22](../specs/validation/t22-v1/README.md).
 
 **Alcance:**
 
@@ -100,6 +101,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 ### I-02 — P-02: decisiones adaptativas al brote
 
 **Problema:** las brigadas ya se recalculan, pero vacunas y cierres siguen calendarios fijos. No hay una política adaptativa explícita, versionada ni observable.
+
+**Estado 2026-10-27:** backend y contrato cliente verificados localmente (`adaptive-v1`, decisiones, motivos, exportación y reproducción). Falta editor/historial visual y aceptación UI; I-02 sigue abierta.
 
 **Alcance:**
 
@@ -143,6 +146,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 ### I-04 — P-03: jobs Monte Carlo locales
 
 **Problema:** el endpoint síncrono no sirve para lotes grandes ni para calibración; no hay manifiesto, progreso, cancelación ni idempotencia.
+
+**Estado 2026-10-27:** backend y cliente verificados localmente: cuatro rutas, cola, token, idempotencia, cancelación y resultado reproducible. Falta conectar la pantalla de jobs y cerrar P-04; I-04 sigue abierta.
 
 **Alcance:**
 
@@ -309,11 +314,13 @@ Reglas heredadas que no se pueden romper:
 |---|---|---|---|
 | I-00 | Completada | `git log --grep=I-00` | `docs/evidencia/auditoria-pro-2026-10-27.md` |
 | I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
-| I-02 | Pendiente | — | — |
+| I-02 | Parcial: backend/cliente verificados; UI pendiente | `5861407` / `ac2ded7` | `docs/evidencia/p02-adaptive.md` |
 | I-03 | Pendiente | — | — |
-| I-04 | Pendiente | — | — |
+| I-04 | Parcial: backend/cliente verificados; UI y P-04 pendientes | `5861407` / `ac2ded7` | `docs/evidencia/p03-jobs-local.md` |
 | I-05 | Pendiente | — | — |
 | I-06 | Pendiente | — | — |
 | I-07 | Pendiente | — | — |
 | I-08 | Pendiente | — | — |
 | I-09 | Pendiente | — | — |
+
+**Nota post-merge (2026-10-27):** `5861407` integró P-02/P-03 backend y cliente. La verificación posterior dio 356 pruebas backend, 116 frontend y hashes base preservados; el detalle y todo lo pendiente están en [estado post-merge](evidencia/estado-post-merge-2026-10-27.md).

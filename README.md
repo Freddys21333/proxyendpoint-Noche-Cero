@@ -8,13 +8,15 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 
 ## Documentación
 
+- [Traspaso operativo para agentes](AGENTS.md) y [contexto detallado](docs/traspaso-agentes.md).
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
-- [Protocolo científico T-22 preparado](specs/validation/t22-v1/README.md).
+- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado; controles técnicos ejecutados y PASA; matriz primaria pendiente.
 - [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Auditoría PRO de partida](docs/evidencia/auditoria-pro-2026-10-27.md).
+- [Estado y pendientes después del merge P-02/P-03](docs/evidencia/estado-post-merge-2026-10-27.md).
 - [Plan de iteraciones PRO](docs/plan-pro-iteraciones.md): orden, aceptación, commits y contexto para agentes.
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
@@ -42,7 +44,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es cerrar el rendimiento y ejecutar T-22 (I-01); después siguen P-02 y P-05. El protocolo T-22 v1 está preparado y congelado; su ejecución y resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es cerrar T-22 (I-01) con la matriz primaria/contrastes y decidir el límite de rendimiento; después siguen la UI de P-02/P-03 y P-05. El protocolo T-22 v1 está preparado y congelado; sus cinco controles técnicos ya pasaron, pero la matriz primaria/contrastes y el resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
 
 ## Parámetros previstos
 
@@ -81,4 +83,4 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
-PRO tiene **P-01 y P-09 verificados localmente**; **P-02 y P-07 están en progreso parcial**; **P-03, P-04, P-05, P-06 y P-08 siguen pendientes**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+PRO tiene **P-01, P-09 y los backends de P-02/P-03 verificados localmente**; **P-02/P-03 tienen UI pendiente y P-07 está parcial**; **P-04, P-05, P-06 y P-08 siguen pendientes**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
