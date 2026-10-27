@@ -56,8 +56,11 @@ class LocalHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Connection", "close")
         self.end_headers()
-        self.wfile.write(data)
         self.close_connection = True
+        try:
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # El navegador puede cancelar un preview al editar parámetros.
 
     def do_GET(self) -> None:
         self._handle()

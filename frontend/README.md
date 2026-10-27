@@ -1,5 +1,15 @@
 # Frontend environment
 
+## Estado de integración I-02
+
+Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
+
+**La red dibujada, el reproductor temporal y la gráfica comparativa todavía muestran demos.** El siguiente incremento conectará la red visual a los nodos/aristas reales; después se conectarán compare y exportación de resultados. El botón Exportar aún descarga un borrador, no resultados reales. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
+
+Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
+
+Verificado: build/tipos, pruebas de cliente y navegador con preview N=50/T=3 (50 nodos/322 contactos). [Evidencia incremental](../docs/evidencia/integracion-local.md).
+
 ## Minimal simulator dashboard
 
 SEIR person markers use vivid green/yellow/red/blue, with contrasting strokes from one shared presentation palette. State-indicator circles are 14px without borders. Evolution curves and their legend use solid colored lines, with labels and the daily data table retained. State totals use equal centered columns; chart-legend values have fixed alignment. The contact filter is labeled Tipo de contacto / Todos los tipos; its internal values and behavior are unchanged.
@@ -96,4 +106,3 @@ Primer incremento: servidor real de desarrollo y proxy de Vite. Desde la raíz, 
 ```
 
 En otra terminal, ejecutar `.\scripts\frontend.ps1 run dev` desde la raíz (o `npm run dev` desde frontend si Node/npm están instalados). Las llamadas `/v1/*` del navegador pasan al backend en 127.0.0.1:8000 sin necesitar CORS. El puente conserva gzip y errores de los handlers Lambda. Es un servidor local secuencial para desarrollo; no reemplaza API Gateway/Lambda ni valida rendimiento de producción. Este primer incremento todavía conserva la demo visual y sus datos.
-

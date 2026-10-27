@@ -1,14 +1,16 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { defaults, validateScenario, type Scenario } from "@/lib/scenario";
+import { ApiError, createApiClient, toConfiguration, type PreviewResponse } from "@/lib/api";
 
 const ContactNetwork = lazy(() =>
   import("@/components/ContactNetwork").then((module) => ({ default: module.ContactNetwork })),
 );
 const ComparisonChart = lazy(() => import("@/components/ComparisonChart"));
 const nf = new Intl.NumberFormat("es-EC");
+const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
 type Modal = "help" | "export" | "run" | null;
 type WorkspaceView = "simulator" | "results";
 
@@ -59,13 +61,36 @@ export default function App() {
   const [advanced, setAdvanced] = useState(false);
   const [notice, setNotice] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [serverStatus, setServerStatus] = useState<"checking" | "ready" | "offline">("checking");
+  const [remotePreview, setRemotePreview] = useState<PreviewResponse | null>(null);
+  const [pending, setPending] = useState(false);
+  const previewController = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    Promise.all([api.health(controller.signal), api.config(controller.signal)])
+      .then(() => { if (!controller.signal.aborted) setServerStatus("ready"); })
+      .catch(() => { if (!controller.signal.aborted) setServerStatus("offline"); });
+    return () => { controller.abort(); previewController.current?.abort(); };
+  }, []);
+
+  const invalidatePreview = () => {
+    previewController.current?.abort();
+    previewController.current = null;
+    setRemotePreview(null);
+    setPending(false);
+    setModal((current) => current === "run" ? null : current);
+  };
+
 
   const update = (key: keyof Scenario, value: number | string) => {
+    invalidatePreview();
     setScenario((current) => ({ ...current, [key]: value }));
-    setNotice("Configuración modificada. La demo no cambia con estos parámetros.");
+    setNotice("Configuración modificada. La vista previa anterior quedó invalidada.");
     setErrors([]);
   };
   const reset = () => {
+    invalidatePreview();
     setScenario({ ...defaults });
     setErrors([]);
     setNotice("Configuración base restaurada.");
@@ -91,7 +116,7 @@ export default function App() {
     setModal(null);
     setNotice("Borrador descargado. No incluye resultados de simulación.");
   };
-  const run = () => {
+  const run = async () => {
     const issues = validateScenario(scenario);
     setErrors(
       issues.map((message) =>
@@ -115,7 +140,31 @@ export default function App() {
           .replace("Choose a valid origin.", "Seleccione un origen válido."),
       ),
     );
-    if (!issues.length) setModal("run");
+    if (issues.length) return;
+    previewController.current?.abort();
+    const controller = new AbortController();
+    previewController.current = controller;
+    setRemotePreview(null);
+    setPending(true);
+    try {
+      const result = await api.preview(toConfiguration(scenario), controller.signal);
+      if (controller.signal.aborted) return;
+      setRemotePreview(result);
+      setServerStatus("ready");
+      setModal("run");
+      setNotice("Vista previa recibida del servidor. El explorador conserva la demo visual.");
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      setErrors(error instanceof ApiError
+        ? [error.message, ...error.fields.map((field) => `${field.path}: ${field.reason}`)]
+        : ["No se pudo consultar la red. Inténtalo nuevamente."]);
+      if (error instanceof ApiError && error.status === 0) setServerStatus("offline");
+    } finally {
+      if (previewController.current === controller) {
+        previewController.current = null;
+        setPending(false);
+      }
+    }
   };
 
   const parameterPanel = (
@@ -174,7 +223,7 @@ export default function App() {
           </div>
         )}
         <div className="configuration-actions">
-          <Button type="submit" className="validate-button">Validar configuración</Button>
+          <Button type="submit" className="validate-button" disabled={pending}>{pending ? "Consultando red…" : "Consultar red"}</Button>
           <button type="button" className="plain-action" onClick={() => setModal("export")}>
             <ArrowDownToLine size={17} /> Exportar
           </button>
@@ -194,7 +243,7 @@ export default function App() {
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
           <button type="button" onClick={() => setModal("help")}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status">Demo · API sin conectar</span>
+        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · Demo visual</span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -244,13 +293,13 @@ export default function App() {
           <Dialog.Backdrop className="modal-dimmer" />
           <Dialog.Popup className="modal minimal-dialog">
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
-            <Dialog.Title>{modal === "help" ? "Acerca de esta demo" : modal === "run" ? "Configuración validada" : "Exportar configuración"}</Dialog.Title>
+            <Dialog.Title>{modal === "help" ? "Acerca de esta demo" : modal === "run" ? "Vista previa de la población" : "Exportar configuración"}</Dialog.Title>
             <p>{modal === "help"
               ? "La red y la curva muestran una demo independiente de los parámetros. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) representan los estados del modelo SEIR. La comparación real de estrategias requiere conectar el motor de simulación."
               : modal === "run"
-                ? "Los parámetros son válidos. La API aún no está conectada: no se ha ejecutado un experimento y la demo no cambia."
+                ? "La red se calculó en el servidor con tus parámetros. El explorador de la pantalla sigue mostrando datos de demostración; todavía no se ejecutó una comparación."
                 : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
-            {modal === "run" && <div className="run-summary"><span>{nf.format(scenario.population)} personas</span><span>{scenario.days} días</span><span>{scenario.repetitions} réplicas</span></div>}
+            {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
               {modal === "export" && <Button onClick={exportConfig}><ArrowDownToLine size={17} /> Descargar borrador</Button>}
