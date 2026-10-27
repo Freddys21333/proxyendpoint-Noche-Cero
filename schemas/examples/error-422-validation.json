@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "engineVersion": "0.1.0",
+  "requestId": "mock-contract-v1",
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Ejemplo de contrato: VALIDATION_ERROR",
+    "fields": [
+      {
+        "path": "configuration.scenario.beta",
+        "reason": "Debe estar entre 0 y 1."
+      }
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 **Versión:** 1.0 — 26 de octubre de 2026.
 **Estado:** decisiones de diseño adoptadas; implementación y comprobación AWS pendientes.
 
-Este anexo resuelve D-01..D-07 y fija el diseño de infraestructura de D-08. Es parte de [design.md](design.md), [requirements.md](requirements.md) y [tasks.md](tasks.md). Los valores nuevos de generación son supuestos sintéticos del equipo. No representan datos de población o enfermedad real. Los esquemas ejecutables y fixtures se materializan en T-03 siguiendo este contrato; no se afirma que ya exista una API implementada.
+Este anexo resuelve D-01..D-07 y fija el diseño de infraestructura de D-08. Es parte de [design.md](design.md), [requirements.md](requirements.md) y [tasks.md](tasks.md). Los valores nuevos de generación son supuestos sintéticos del equipo. No representan datos de población o enfermedad real. [Los esquemas ejecutables y ejemplos](../schemas/README.md) se materializaron y verificaron en T-03 siguiendo este contrato; todavía no existe una API implementada.
 
 ## 1. Calendario y frontera temporal — D-03/D-05
 
@@ -40,6 +40,8 @@ Generar los grupos primero y los contactos después, por día ascendente, contex
 
 Grafo canónico: `{generatorVersion,nodes,edges}`; nodo incluye id, role, householdId, neighborhoodId, schoolId/busId/marketId anulables. marketId significa vendedor o visitante al menos un día de 0..T. Edge incluye id,u,v,context,weight,activeDays. graphHash cubre grupos y calendario entero, no posiciones. La red se mantiene igual para todas las réplicas.
 
+Concreción T-06: crear grupos en orden hogares, roles, salones, buses, vendedores, barrios. Permutar candidatos ordenados y conservar la permutación para dividir bloques; ordenar cada bloque para contactos. Extraer la semilla NetworkX como entero uint32 del flujo graph. Crear contactos fijos al procesar su contexto en día 0 y reutilizarlos. Los pares de cada contexto se recorren globalmente en orden lexicográfico antes de sortear contactos diarios. `initialStateHash` es el hash canónico de `{graphHash,initialInfectiousNodeIds}` antes de vacunación; IDs ordenados. Diferentes parámetros que produzcan exactamente el mismo estado pueden conservar este hash, que identifica contenido y no la petición.
+
 El layout base no requiere otro algoritmo: ordenar nodos por id sobre círculo unitario, x=round(cos(2πid/N),6), y=round(sin(2πid/N),6). Su salida es visual y se excluye de graphHash. El frontend puede reubicar nodos sin cambiar el experimento.
 
 ## 3. Sorteos y reproducibilidad — D-02/D-06
@@ -52,7 +54,11 @@ Así la probabilidad agregada es exactamente `1-product(1-p_edge)` del TRD. No h
 
 Progresión: generar matriz (T,N,2), orden C día/nodo/canal. Canal 0 decide E→I con sigma; canal 1 decide I→R con gamma. Transmisión: matriz (T,edgeCount), orden C. Eficacia: matriz (T+1,N), orden C, umbral vaccineEfficacy. Crear potenciales aunque no se consuman según el estado. Solo mantener una réplica en memoria.
 
+Concreción binaria T-07: randomnessHash recorre transmission/progression/vaccine. Para cada matriz agrega longitud del encabezado como uint64 little-endian, encabezado canonical-v1 `{name,shape}` y bytes de la matriz float64 little-endian en orden C. El SHA-256 con prefijo identifica estos potenciales y no depende de políticas ni de si un sorteo se usa.
+
 Initial: primer nodo uniforme entre candidatos ordenados; restantes en toda población menos primero, sin reemplazo, y registrar ids ordenados. Random: choice sin reemplazo sobre elegibles por id con policy-random; ordenar selección para serializar. Targeted calcula todos los scores desde un solo snapshot antes de vacunar y ordena (-score,id); no recalcula después de cada dosis.
+
+Concreción T-08: el score suma con math.fsum los pesos de aristas activas hacia S en orden edgeId. contexts enumera las capas de esas aristas, sin duplicados y en orden lexicográfico. El rank empieza en 1; random lo asigna en orden de muestreo antes de serializar por nodeId. La política decide sin recibir potenciales futuros; la eficacia se aplica después por (día,nodo). Ninguna política reintenta dosis fallidas en días siguientes.
 
 Percentiles: método linear, índice (n−1)q e interpolación entre vecinos, incluidos P05/P95. Bootstrap: vector de diferencias pareadas por índice de réplica; 2.000 muestras de tamaño R, con reemplazo, índices generados como una matriz (2000,R) por dominio bootstrap. Calcular medias por fila y percentiles 2.5/97.5 con linear; usar los mismos índices para todas las comparaciones. R<30 devuelve bootstrap=null, no un intervalo inventado.
 
@@ -65,6 +71,7 @@ En requests, configuration es objeto con rootSeed, networkMode, repetitions, sce
 - origin.kind=node requiere value entero 0..N−1. Para random o contexto, value debe ser null. En base se elige entre todos los grupos del contexto; selección de grupo específico queda fuera. Si contexto vacío, 422 ORIGIN_EMPTY.
 - network incluye generatorVersion=`synthetic-manta-v1`, dayZero=`monday` y weights con las cinco claves del TRD, cada una finita 0..1. El calendario y porcentajes quedan fijados por versión, no editables en base. Incluirlos y su descripción en `/config` y manifiesto. La UI puede editar pesos, pero no es un control obligatorio de la primera pantalla.
 - Configuración omitida se completa recursivamente con defaults antes de validar relaciones. Si N<100 y no se especifican vacunas, el default 100 genera 422; no recortar silenciosamente. No aceptar campos desconocidos, NaN/infinitos, strings numéricos ni booleanos como enteros.
+- Entrada estricta concretada en T-04: claves JSON duplicadas y desbordamiento a infinito se rechazan como 400 INVALID_JSON; null explícito no equivale a configuración omitida. Números integrales escritos como `1000.0` cumplen el tipo integer de JSON Schema y se normalizan a enteros; no se convierten strings ni booleanos.
 - Límites iniciales: request 64 KiB UTF-8; aristas de unión 100.000; frames representativos N*(T+1)≤400.000 estados; JSON sin comprimir ≤32 MiB y respuesta proxy completa ≤5 MiB tras compresión/base64. Son límites de aplicación conservadores, no afirmaciones sobre cuotas AWS. Exceso: 413, sin truncamiento ni resultado de éxito parcial. Publicarlos en `/config`; benchmark puede reducirlos con cambio de contrato registrado.
 
 Preview recibe `{schemaVersion,configuration}` y devuelve configuración normalizada y red. Compare recibe `{schemaVersion,configuration,expectedGraphHash,includeRepresentativeFrames}`. expectedGraphHash obligatorio, patrón `^sha256:[0-9a-f]{64}$`; frames boolean obligatorio. No aceptar `sha256:...`.
@@ -104,6 +111,8 @@ canonical-v1: JSON UTF-8 sin BOM, claves ordenadas lexicográficamente, sin espa
 
 Hash=`sha256:`+hex SHA-256. Arrays de entidades ordenados por id, curvas por día y réplicas por índice; policies orden none/random/targeted. resultHash cubre metrics/daily/selections de esa política. experimentHash cubre configuration, graph y resultados de réplicas, excluye eventos opcionales, frames, sus propios campos hash, requestId, generatedAt y manifest.buildCommit. Engine/schema/generator/rng/canonicalVersion sí se incluyen como objeto versions para invalidar cambios semánticos. La derivación de resultHash y graphHash no usa objetos que contengan su propio hash. randomnessHash usa bytes little-endian float64, shapes y nombres de matrices en orden transmission/progression/vaccine.
 
+Concreción T-10: la proyección experimentHash es `{configuration,graph,versions,replicates}`. versions incluye engineVersion/schemaVersion/generatorVersion/rngVersion/canonicalVersion, bitGenerator, pythonVersion y dependencies del manifiesto. Cada réplica aporta index, initialInfectiousNodeIds, randomnessHash y policies con metrics/daily/selections. initialStateHash/resultHash/graphHash se verifican por separado y no se duplican en esta proyección. Resúmenes, recomendación, eventos/frames presentes y progreso se contrastan con una nueva ejecución al reproducir. Las versiones de entorno deben coincidir; el commit puede variar sin alterar contenido. Sin commit proporcionado por build/CLI se registra unknown, sin inventarlo.
+
 JSON de descarga: respuesta completa de compare, incluyendo grafo, eventos de la representativa y manifiesto. Un exportador debe poder reproducirlo aun si representative.frames=null; eventos completos se regeneran desde configuración/semilla. El CLI recibe ruta JSON y usa el motor; compara experimentHash y sale con error si no coincide.
 
 CSV: descarga ZIP generado en cliente a partir de la respuesta, sin endpoint nuevo. UTF-8, encabezado, separador coma y escape estándar con comillas dobles. Incluir `configuration.json`, `manifest.json`, `nodes.csv`, `edges.csv`, `daily.csv`, `metrics.csv`, `selections.csv`, `events.csv`, `summary.csv`, `comparisons.csv`:
@@ -122,6 +131,8 @@ Null se escribe como celda vacía; listas como JSON. El JSON es la fuente de rep
 ## 7. Interfaz Terraform–backend–frontend — D-08 (diseño cerrado)
 
 Backend entrega `build/backend.zip` compilado en entorno Linux compatible con Lambda Python 3.12 x86_64; dependencias nativas y código en raíz de importación. Paquete incluye módulos `domain/`, `simulation/`, `strategies/`, `api/`. Handlers exactos: `api.health.handler`, `api.config.handler`, `api.preview.handler`, `api.compare.handler`. HTTP API usa payload format 2.0; adapters aceptan event/context y devuelven statusCode, headers y body. Sin framework HTTP obligatorio.
+
+Desde T-04 el ZIP también debe incluir `schemas/common.schema.json` como recurso junto a esas carpetas y jsonschema con sus dependencias de runtime. El dominio carga solo ese recurso local; no descarga schemas. No mantener una copia editada dentro de backend: el build copia el archivo compartido desde `schemas/`.
 
 Health/config/errores usan body JSON string sin codificación binaria. Preview/compare usan JSON UTF-8 comprimido gzip (mtime=0), body base64, isBase64Encoded=true y headers Content-Type:application/json, Content-Encoding:gzip. Limitar el envoltorio proxy completo a 5 MiB; el navegador descomprime antes de parsear JSON. Cliente local/CLI debe soportar gzip. Verificar esta integración en smoke y contrato; no depender de compresión automática de API Gateway. JSON descargado queda descomprimido, con límite 32 MiB. La compresión evita transportar sin necesidad el gran calendario y todos los frames como texto bruto.
 

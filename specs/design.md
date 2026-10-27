@@ -2,7 +2,7 @@
 
 **Versión:** 1.0
 **Fecha:** 26 de octubre de 2026
-**Estado:** decisiones de diseño adoptadas; contratos ejecutables e implementación pendientes.
+**Estado:** diseño adoptado y contratos estáticos T-03 verificados; funcionalidades pendientes.
 **Fuentes:** [PRD](../PRD.md), [TRD](../TRD.md), [Requisitos](requirements.md).
 
 ## 1. Arquitectura y límites
@@ -41,6 +41,18 @@ El navegador presenta resultados y descarga exportaciones; no recalcula el motor
 
 ## 3. Dominio y flujo de cálculo
 
+Incremento T-11 (RF-19/20, CA-13/15 local): cuatro handlers payload v2 `api.health/config/preview/compare.handler`, rutas GET health/config y POST scenarios/preview/simulations/compare bajo /v1. Adapter común parsea JSON/base64 con límite antes del dominio, sanea errores, aplica límites de grafo/frames/JSON/envoltorio y comprime preview/compare con gzip mtime=0 + base64. CORS se delega a HTTP API. Versiones de entorno incompatibles o límites inválidos producen COMPUTE_UNAVAILABLE; MAX_RESPONSE_BYTES debe admitir al menos 1024 bytes para una respuesta de error. Compare verifica expectedGraphHash antes de simular y reutiliza el grafo generado. La salida se valida con schema y no devuelve éxito parcial. Pruebas de integración reales handler→motor→schema, errores de contrato/hash/límites/base64, fallo interno sin secretos y reproducción de compare. No incluye despliegue ni benchmark Lambda.
+
+Incremento T-10 (RF-13/19, CA-06/07/11): `simulation.exports` completa resultado con manifiesto/versions reales, experimentHash no volátil y JSON validado. La proyección incluye configuration, graph, versions y réplicas (índice, IDs iniciales, randomnessHash y metrics/daily/selections por política); excluye hashes derivados, eventos/frames y metadatos volátiles. La reproducción exige entorno/versiones compatibles, verifica hashes y vuelve a ejecutar el motor; compara también campos derivados y eventos/frames presentes para detectar manipulación fuera del hash. Límite de importación/exportación JSON 32 MiB con lector estricto. `scripts/reproduce.py` verifica un JSON en otro proceso y sale no cero ante diferencia. `scripts/export_experiment.py` crea JSON/ZIP local, sin endpoint ni cambiar que el ZIP de la UI será generado por cliente en T-15. ZIP UTF-8 con columnas acordadas y exportMetadata solo en su manifest.json; no usa timestamps variables. Pruebas: schema CompareResponse real, roundtrip nuevo proceso sin frames, metadatos ignorados por hash, resultados/versión alterados rechazados, JSON duplicado/no finito, ZIP/CSV encabezados, null/listas/escapes y reproducibilidad de orden.
+
+Incremento T-09 (CA-09/10): `simulation.experiments` calcula métricas desde trazas, estadísticas linear, diferencias pareadas y bootstrap compartido de 2.000 remuestras; selecciona representativa por distancia a mediana targeted/índice. `run_experiment` genera una red fija, procesa una réplica a la vez y conserva resultados compactos; reejecuta solo la representativa para eventos/frames. Devuelve datos de dominio, sin envoltorio HTTP/manifiesto de exportación T-10/11. Un fallo aborta con SIMULATION_FAILED 500 sin resumen parcial. Pruebas previstas: vectores conocidos, extinción E+I, primer pico, vacunados excluidos de acumulados, censura, diferencias negativas, recomendación gana/empata/pierde, bootstrap R<30/30 y aislamiento de orden/semillas. ResultHash cubre metrics/daily/selections. Terminado exige suite y evidencia observadas; no equivale al gate científico T-22.
+
+Incremento T-08 (RF-05/06/12, CA-02/03/05/07): `strategies.vaccination` separa selección por snapshot de aplicación de eficacia. `select_candidates` solo recibe estados, aristas activas, recursos y RNG policy-random; no ve potenciales futuros. targeted suma pesos hacia S con math.fsum en orden estable y desempata por ID. contexts enumera contextos que contribuyen al score, ordenados; random conserva rank de muestreo aunque serialice por ID. `simulate_policy` reutiliza el motor T-07 y vacuna una única vez tras transiciones y antes del registro del día de intervención (también 0/T). `simulate_paired` valida las tres políticas, crea potenciales una sola vez por réplica y retorna trazas en orden canónico. Inventario en traza: assigned/effective/unused; none conserva K sin usar. Terminado: TDD, no elegibles, empate, K=0, K>elegibles, eficacia 0/1/parcial, dosis fallida consumida, frontera 0/T y orden invertido de políticas/réplicas. Métricas/agregación/HTTP se mantienen en T-09..11.
+
+Incremento T-07 (RF-04, CA-01/04): `simulation.engine` genera potenciales por réplica con shapes transmission=(T,aristas), progression=(T,N,2), vaccine=(T+1,N), en orden C e independientes del consumo. `step_day` opera sobre un snapshot S/E/I/R, devuelve nuevo estado y eventos sin mutar entrada; transmisión por arista activa, causal menor edgeId y transiciones simultáneas. `simulate_none` ejecuta exclusivamente la referencia sin intervención, registra T+1 frames/conteos, acumulados y tiempos de entrada por nodo; no implementa aún políticas ni métricas agregadas T-08/09. randomnessHash enmarca cada matriz con longitud uint64 little-endian del encabezado JSON canónico `{name,shape}`, encabezado y bytes float64 little-endian, orden transmission/progression/vaccine. Pruebas previstas: conservación, R absorbente, fronteras 0/T, beta/pesos/tasas extremos, no transmisión secundaria ni progresión doble, causalidad mínima, calendario, shapes/RNG compartido y tres procesos. Terminado exige controles y evidencia real.
+
+Incremento T-06 (RF-03, RNF-01/03): `simulation.network` ofrece `generate_graph(configuration, max_edges=100000)`, `select_initial(configuration, graph, replicate_index=0)` y `build_preview(configuration)` sin transporte HTTP. Genera exactamente D-03/04 con contactos hasta T inclusive. Orden de grupos: hogares, roles, salones, buses, vendedores, barrios; contactos fijos se crean al primer día y se reutilizan. Dentro de cada grupo se sortean candidatos ascendentes, después se conserva la permutación para agrupar; cada bloque se ordena para generar pares. Semilla NetworkX uint32 desde graph. Preview devuelve configuración, grafo/hash, posiciones y origen/hash; el envoltorio de versiones/requestId pertenece a T-11. initialStateHash cubre `{graphHash,initialInfectiousNodeIds}` antes de vacunas; cambios que producen idéntico estado conservan hash. Casos: domingo/lunes, cliques, pertenencias y roles, origen vacío/ID inválido, sin reemplazo, pesos, límite de aristas, layout excluido y tres procesos. No incluye transmisión ni endpoints.
+
 Identidades estables: `NodeId=0..N−1`; estados `S/E/I/R`; contextos `household/school/bus/market/neighborhood`; políticas `none/random/targeted`. Nodo: id, rol, hogar, barrio y grupos. Arista: extremos, contexto y peso. Conservar capas distintas entre un par sin duplicar personas.
 
 El generador sigue TRD §4.2: hogares con distribución acordada, roles 25/55/20 %, salones hasta 25 y grado objetivo 6, buses del 40 % de población hasta 40 por ruta, vendedores del 10 % de trabajadores, mercado grado objetivo 8, cinco barrios y probabilidad vecinal 0.02. Canonizar aristas por `(min(u,v), max(u,v), context)` antes del hash.
@@ -62,6 +74,8 @@ budget = min(vaccines, cantidad de elegibles S)
 El motor respeta TRD §5.3: snapshot inicial, recursos/intervención, actividad, exposiciones, progresión desde snapshot y aplicación simultánea. R es absorbente. El día 0 contiene inicialización y vacunación si corresponde; primera transmisión produce día 1. Registrar T+1 conteos, eventos y tiempos de transición. La frontera de intervención y sus ejemplos están fijados en agreements.md §1.
 
 ## 4. Aleatoriedad, métricas y reproducción
+
+Incremento T-05 (CA-06/07): `domain.reproducibility` expone `seed_entropy(root_seed, domain, replicate_index=0)`, `create_rng(...)`, `canonical_json(value)` (bytes UTF-8) y `json_hash(value)` (sha256 hexadecimal con prefijo). Acepta únicamente árboles JSON con claves string, rechaza números no finitos y no modifica entradas. Conserva orden de listas: cada productor debe ordenar entidades/días/réplicas según el contrato. No elimina campos automáticamente; el productor construye la proyección no volátil antes de llamar al hash. Grafo, matrices, resultados y manifiesto se conectan en T-06..11; este incremento no fabrica resultados. Pruebas: vector conocido SHA-256, derivación independiente SHA-256/PCG64, dominios/índices aislados y tres procesos con PYTHONHASHSEED distinto. Raíz uint32 e índice entero no negativo, sin booleanos; graph/layout/bootstrap fuerzan índice 0. Terminado exige suite y controles aprobados y evidencia registrada.
 
 Usar `numpy.random.Generator` y `SeedSequence` con dominios separados `graph`, `initial`, `transmission`, `progression`, `vaccine`, `policy-random`, `layout`, `bootstrap`. Derivar etiquetas mediante UTF-8/SHA-256 junto a raíz e índice; no usar `hash()` ni RNG global. El mapeo exacto y PCG64 se fijan en agreements.md §3; convertirlos en fixtures al implementar.
 
@@ -164,17 +178,17 @@ Unitarias: configuración, riesgo, transiciones, elegibilidad, ranking, semillas
 
 ## 9. Decisiones adoptadas y comprobaciones externas
 
-El contrato normativo completo está en [agreements.md](agreements.md): calendario, generación, sorteos, respuestas, CSV, canonización e interfaz Terraform. Sus decisiones concretan las descripciones de las secciones anteriores y sustituyen las menciones de detalle pendiente. La creación de OpenAPI/JSON Schema y fixtures sigue siendo una tarea de implementación, no una decisión abierta.
+El contrato normativo completo está en [agreements.md](agreements.md): calendario, generación, sorteos, respuestas, CSV, canonización e interfaz Terraform. Sus decisiones concretan las descripciones de las secciones anteriores y sustituyen las menciones de detalle pendiente. OpenAPI/JSON Schema y los ejemplos ya están verificados en T-03; consultar schemas/README.md. La implementación de handlers y dominio sigue pendiente.
 
 | ID | Punto no cerrado por los documentos | Responsable y momento |
 |---|---|---|
-| D-01 | Resuelto: formas HTTP, winner/confidence, CSV, canonización y límites iniciales | Acuerdos §4–6; materializar en T-03 |
+| D-01 | Resuelto: formas HTTP, winner/confidence, CSV, canonización y límites iniciales | Acuerdos §4–6; contratos estáticos verificados en T-03 |
 | D-02 | Resuelto: sorteos por arista, exposición si alguna tuvo éxito | Acuerdos §3; implementar en T-07 |
 | D-03 | Resuelto: lunes día 0, contactos diarios, redondeos y reconexión 0.1 | Acuerdos §1–2; implementar en T-06 |
-| D-04 | Resuelto: configuration.network, origen node entero y null en demás casos | Acuerdos §4; implementar en T-03/04 |
+| D-04 | Resuelto: configuration.network, origen node entero y null en demás casos | Acuerdos §4; esquema verificado en T-03 y normalizador pendiente en T-04 |
 | D-05 | Resuelto: estado registrado tras intervención; extinción exige E+I=0 | Acuerdos §1; implementar en T-07/09 |
 | D-06 | Resuelto: PCG64/entropy, percentiles linear, bootstrap pareado y canonical-v1 | Acuerdos §3/6; implementar en T-05/09 |
-| D-07 | Resuelto: error con engineVersion, exportación y selección trazables | Acuerdos §5–6; implementar en T-03/10/11 |
+| D-07 | Resuelto: error con engineVersion, exportación y selección trazables | Acuerdos §5–6; esquema verificado en T-03, exportador/handlers pendientes en T-10/11 |
 | D-08 | Diseño resuelto: ZIP Linux, handlers, variables/outputs y estado Terraform S3; cuenta/región/Budget requieren comprobación externa | Acuerdos §7–8; comprobar en T-17 antes de desplegar |
 
 Los ejemplos de aceptación del anexo deben convertirse en pruebas TDD por módulo. No se marca implementación completa por haber decidido su contrato.

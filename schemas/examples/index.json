@@ -1,0 +1,206 @@
+{
+  "kind": "handcrafted-contract-examples",
+  "description": "Mocks locales sin despliegue, generación real, hashes verificables ni evidencia científica.",
+  "examples": [
+    {
+      "file": "configuration-default.json",
+      "schema": "configuration.schema.json"
+    },
+    {
+      "file": "health-response.json",
+      "schema": "health-result.schema.json",
+      "path": "/health",
+      "method": "get",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "config-response.json",
+      "schema": "config-result.schema.json",
+      "path": "/config",
+      "method": "get",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "preview-request.json",
+      "schema": "preview-request.schema.json",
+      "path": "/scenarios/preview",
+      "method": "post",
+      "direction": "request"
+    },
+    {
+      "file": "preview-request-minimal.json",
+      "schema": "preview-request.schema.json",
+      "path": "/scenarios/preview",
+      "method": "post",
+      "direction": "request"
+    },
+    {
+      "file": "preview-response.json",
+      "schema": "preview-result.schema.json",
+      "path": "/scenarios/preview",
+      "method": "post",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "compare-request.json",
+      "schema": "experiment-request.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "request"
+    },
+    {
+      "file": "compare-request-minimal.json",
+      "schema": "experiment-request.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "request"
+    },
+    {
+      "file": "compare-response.json",
+      "schema": "experiment-result.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "compare-response-no-frames.json",
+      "schema": "experiment-result.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "compare-response-vaccines.json",
+      "schema": "experiment-result.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "compare-response-bootstrap.json",
+      "schema": "experiment-result.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "error-400-invalid-json.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 400
+    },
+    {
+      "file": "error-400-unknown-field.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 400
+    },
+    {
+      "file": "error-404-not-found.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 404
+    },
+    {
+      "file": "error-409-graph-hash-mismatch.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 409
+    },
+    {
+      "file": "error-413-request-too-large.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 413
+    },
+    {
+      "file": "error-413-result-too-large.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 413
+    },
+    {
+      "file": "error-413-graph-too-large.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 413
+    },
+    {
+      "file": "error-413-frames-too-large.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 413
+    },
+    {
+      "file": "error-422-validation.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 422
+    },
+    {
+      "file": "error-422-origin-empty.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 422
+    },
+    {
+      "file": "error-429-rate-limited.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 429
+    },
+    {
+      "file": "error-500-internal-error.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 500
+    },
+    {
+      "file": "error-500-simulation-failed.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 500
+    },
+    {
+      "file": "error-503-compute-unavailable.json",
+      "schema": "error.schema.json",
+      "path": "/simulations/compare",
+      "method": "post",
+      "direction": "response",
+      "status": 503
+    }
+  ]
+}

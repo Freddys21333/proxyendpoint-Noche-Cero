@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "engineVersion": "0.1.0",
+  "requestId": "mock-contract-v1",
+  "defaults": {
+    "rootSeed": 20261026,
+    "networkMode": "fixed",
+    "repetitions": 30,
+    "scenario": {
+      "populationSize": 1000,
+      "days": 90,
+      "beta": 0.08,
+      "sigma": 0.333333,
+      "gamma": 0.142857,
+      "initialInfectious": 1,
+      "origin": {
+        "kind": "random",
+        "value": null
+      }
+    },
+    "intervention": {
+      "vaccines": 100,
+      "interventionDay": 0,
+      "vaccineEfficacy": 1.0
+    },
+    "policies": [
+      "none",
+      "random",
+      "targeted"
+    ],
+    "network": {
+      "generatorVersion": "synthetic-manta-v1",
+      "dayZero": "monday",
+      "weights": {
+        "household": 1.0,
+        "school": 0.6,
+        "bus": 0.45,
+        "market": 0.5,
+        "neighborhood": 0.2
+      }
+    }
+  },
+  "limits": {
+    "maxRequestBytes": 65536,
+    "maxResponseBytes": 5242880,
+    "maxDecodedResponseBytes": 33554432,
+    "maxEdges": 100000,
+    "maxFrameStates": 400000
+  },
+  "features": {
+    "asyncJobs": false,
+    "representativeFrames": true
+  },
+  "generatorDescription": "Población sintética; calendario lunes día 0. Mock de contrato, no simulación."
+}

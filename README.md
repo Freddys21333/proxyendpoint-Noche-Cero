@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** preparación documental y estructura inicial. No hay motor, interfaz, dependencias instalables ni despliegue disponible todavía. Los requisitos descritos son objetivos pendientes.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; interfaz y despliegue siguen pendientes.
 
 ## Documentación
 
@@ -12,6 +12,8 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
 - [Costos y evidencia pendiente](docs/costos.md).
+- [Instalación y verificación del backend](backend/README.md).
+- [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
 
 ## Estructura
 
@@ -30,7 +32,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). El siguiente paso es materializar sus contratos y ejemplos ejecutables de la API (T-03), se preparan los entornos y se implementa la configuración canónica con TDD. Frontend e infraestructura pueden avanzar según las dependencias de `specs/tasks.md`. Los comandos de instalación, pruebas, reproducción y despliegue se documentarán cuando existan y se hayan verificado.
+Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-11 están verificados localmente. Frontend puede avanzar con T-12..16 y los contratos/mocks de `schemas/examples/`; infraestructura debe cerrar T-17/18 antes de desplegar. El gate científico T-22 sigue pendiente. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; exportación/reproducción ya están documentadas; despliegue se documentará al implementarse y verificarse.
 
 ## Parámetros previstos
 
@@ -47,7 +49,7 @@ Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos
 | Duración infecciosa media | 7 días | Supuesto del equipo |
 | Semilla | 20261026 | Supuesto del equipo |
 
-La configuración completa y las fórmulas están en el TRD. Estos valores aún no producen resultados ejecutables. No se afirma que la estrategia supere las líneas base hasta medirlo.
+La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; el gate científico de T-22 y el benchmark AWS siguen pendientes. No se afirma que la estrategia supere las líneas base hasta medirlo.
 
 ## AWS y pendientes técnicos
 
@@ -69,4 +71,4 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
-Todas las funciones PRO están **no iniciadas**. No se han ejecutado simulaciones ni creado recursos AWS en esta preparación.
+Todas las funciones PRO están **no iniciadas**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS.

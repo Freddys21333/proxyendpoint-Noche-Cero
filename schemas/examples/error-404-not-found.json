@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "engineVersion": "0.1.0",
+  "requestId": "mock-contract-v1",
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Ejemplo de contrato: NOT_FOUND",
+    "fields": []
+  }
+}
