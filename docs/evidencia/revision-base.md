@@ -69,3 +69,10 @@ Primera ejecución backend bajo aislamiento: 288 aprobadas, 12 errores de tmp_pa
 4. Fijar protocolo T-22 antes de evaluar resultados; ejecutar y reportar el gate real.
 5. Preparar T-17/18; luego despliegue autorizado T-19/20, mediciones y documentación T-21/23. Se puede preparar IaC en paralelo, sin declarar servicio público antes de comprobarlo.
 6. Solo tras verificar la base, abrir tareas PRO con alcance/contratos/pruebas propios.
+
+
+## Actualización I-09 — preview y config corregidos
+
+Los hallazgos 2 y 3 anteriores describen e17f4d7 y se conservan como historial. I-09 rechaza discrepancias petición/preview, valida población/IDs/posiciones/aristas/calendario/origen y los metadatos necesarios para dibujar. Config se valida, se conserva y aplica defaults solo a campos no editados; Restablecer usa defaults del servidor y las solicitudes conservan su configuración de red. El contrato /config publica límites de transporte/grafo/frames, no nuevos rangos de N/tasas: se consumen maxRequestBytes, maxDecodedResponseBytes, maxEdges y maxFrameStates en sus respectivos pasos; maxResponseBytes comprimido lo controla el backend. Los rangos de formulario siguen el esquema base.
+
+Verificación I-09: 69 pruebas frontend y build/tipos correctos. No cierra la matriz E2E completa ni T-13..16. Siguen pendientes presets RF-15, aceptación integral, gate científico y AWS. El diagnóstico N51/N50 ahora se rechaza. Siguiente trabajo funcional: reconciliar/conectar presets de sorpresa.

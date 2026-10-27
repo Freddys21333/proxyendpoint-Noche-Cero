@@ -1,3 +1,4 @@
+import type { ConfigurationInput } from './api.ts'
 export const defaults = {
   population: 1000, days: 90, beta: 0.08, sigma: 0.333333, gamma: 0.142857,
   initial: 1, vaccines: 100, interventionDay: 0, efficacy: 1, repetitions: 30,
@@ -34,4 +35,17 @@ export function validateScenario(s: Scenario): string[] {
   if (!['random', 'household', 'school', 'bus', 'market', 'neighborhood', 'node'].includes(s.origin)) errors.push('Choose a valid origin.')
   if (s.origin === 'node') integer(s.node, 0, s.population - 1, 'Node ID')
   return errors
+}
+
+export function fromConfiguration(c: ConfigurationInput): Scenario {
+  return { population: c.scenario.populationSize, days: c.scenario.days, beta: c.scenario.beta,
+    sigma: c.scenario.sigma, gamma: c.scenario.gamma, initial: c.scenario.initialInfectious,
+    vaccines: c.intervention.vaccines, interventionDay: c.intervention.interventionDay,
+    efficacy: c.intervention.vaccineEfficacy, repetitions: c.repetitions, seed: c.rootSeed,
+    origin: c.scenario.origin.kind, node: c.scenario.origin.value ?? 0 }
+}
+
+export function applyServerDefaults(current: Scenario, configuration: ConfigurationInput, edited: ReadonlySet<keyof Scenario>): Scenario {
+  const incoming = fromConfiguration(configuration)
+  return Object.fromEntries((Object.keys(incoming) as (keyof Scenario)[]).map(key => [key, edited.has(key) ? current[key] : incoming[key]])) as Scenario
 }

@@ -3,8 +3,8 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { defaults, validateScenario, type Scenario } from "@/lib/scenario";
-import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse } from "@/lib/api";
+import { defaults, validateScenario, fromConfiguration, applyServerDefaults, type Scenario } from "@/lib/scenario";
+import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 
 const ContactNetwork = lazy(() =>
   import("@/components/ContactNetwork").then((module) => ({ default: module.ContactNetwork })),
@@ -55,6 +55,8 @@ function Field({
 
 export default function App() {
   const [scenario, setScenario] = useState<Scenario>({ ...defaults });
+  const [serverConfig, setServerConfig] = useState<ConfigResponse | null>(null);
+  const editedFields = useRef(new Set<keyof Scenario>());
   const [view, setView] = useState<WorkspaceView>("simulator");
   const [layer, setLayer] = useState("All layers");
   const [resetKey, setResetKey] = useState(0);
@@ -76,8 +78,8 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController();
     Promise.all([api.health(controller.signal), api.config(controller.signal)])
-      .then(([health]) => { if (!controller.signal.aborted) { setServerStatus("ready"); setServerHealth(health); } })
-      .catch(() => { if (!controller.signal.aborted) setServerStatus("offline"); });
+      .then(([health, config]) => { if (!controller.signal.aborted) { setServerStatus("ready"); setServerHealth(health); setServerConfig(config); setScenario(current => applyServerDefaults(current, config.defaults, editedFields.current)); } })
+      .catch(() => { if (!controller.signal.aborted) { setServerStatus("offline"); setErrors(["No se pudo cargar la configuración del servidor. Tus entradas se conservan; vuelve a abrir la página para reintentar."]); } });
     return () => { controller.abort(); previewController.current?.abort(); comparisonController.current?.abort(); };
   }, []);
 
@@ -100,6 +102,7 @@ export default function App() {
 
 
   const update = (key: keyof Scenario, value: number | string) => {
+    editedFields.current.add(key);
     invalidatePreview();
     setScenario((current) => ({ ...current, [key]: value }));
     setNotice("Configuración modificada. La vista previa y los resultados anteriores quedaron invalidados.");
@@ -107,7 +110,8 @@ export default function App() {
   };
   const reset = () => {
     invalidatePreview();
-    setScenario({ ...defaults });
+    editedFields.current.clear();
+    setScenario(serverConfig ? fromConfiguration(serverConfig.defaults) : { ...defaults });
     setErrors([]);
     setNotice("Configuración base restaurada.");
   };
@@ -149,6 +153,7 @@ export default function App() {
     }
   };
   const run = async () => {
+    if (!serverConfig) { setErrors(["Espera a que se cargue la configuración del servidor."]); return; }
     const issues = validateScenario(scenario);
     setErrors(
       issues.map((message) =>
@@ -180,7 +185,7 @@ export default function App() {
     setRemotePreview(null);
     setPending(true);
     try {
-      const result = await api.preview(toConfiguration(scenario), controller.signal);
+      const result = await api.preview(toConfiguration(scenario, serverConfig.defaults), controller.signal, serverConfig.limits);
       if (controller.signal.aborted) return;
       setRemotePreview(result);
       setServerStatus("ready");
@@ -211,7 +216,7 @@ export default function App() {
     setView("results");
     setModal(null);
     try {
-      const result = await api.compareForPlayback(remotePreview.configuration, remotePreview.graphHash, controller.signal);
+      const result = await api.compareForPlayback(remotePreview.configuration, remotePreview.graphHash, controller.signal, serverConfig?.limits);
       if (controller.signal.aborted) return;
       setComparison(result);
       setNotice("Comparación completada con resultados reales del motor.");
@@ -234,6 +239,7 @@ export default function App() {
           <RotateCcw size={16} /> Restablecer
         </button>
       </div>
+      <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
       <form onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
           <Field label="Población" value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
@@ -282,7 +288,7 @@ export default function App() {
           </div>
         )}
         <div className="configuration-actions">
-          <Button type="submit" className="validate-button" disabled={pending}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+          <Button type="submit" className="validate-button" disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
           <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
           <button type="button" className="plain-action" onClick={() => setModal("export")}>
             <ArrowDownToLine size={17} /> Exportar

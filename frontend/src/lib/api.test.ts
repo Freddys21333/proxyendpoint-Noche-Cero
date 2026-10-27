@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
+import type { PreviewResponse, ConfigResponse } from './api.ts'
 import { createApiClient, toConfiguration } from './api.ts'
 import { defaults } from './scenario.ts'
 
@@ -16,16 +18,17 @@ test('scenario maps to the shared backend request without mutating UI inputs', (
 })
 
 test('client uses the provided /v1 base once and submits actual configuration', async () => {
-  const calls: { url: string, body: string | null }[] = []
-  const fetcher: typeof fetch = async (input, init) => {
-    calls.push({ url: String(input), body: typeof init?.body === 'string' ? init.body : null })
-    return Response.json({ schemaVersion: '1.0', engineVersion: '0.1.0', requestId: 'test',
-      configuration: toConfiguration(defaults), graphHash: `sha256:${'a'.repeat(64)}`,
-      graph: { generatorVersion: 'synthetic-manta-v1', nodes: [], edges: [] }, positions: [], initialInfectiousNodeIds: [], initialStateHash: `sha256:${'b'.repeat(64)}` })
-  }
-  await createApiClient('http://127.0.0.1:8000/v1/', fetcher).preview(toConfiguration(defaults))
-  assert.equal(calls[0].url, 'http://127.0.0.1:8000/v1/scenarios/preview')
-  assert.deepEqual(JSON.parse(calls[0].body!), { schemaVersion: '1.0', configuration: toConfiguration(defaults) })
+  const source = previewFixture()
+  let body: unknown
+  const client = createApiClient('http://127.0.0.1:8000/v1/', async (url, init) => {
+    assert.equal(url, 'http://127.0.0.1:8000/v1/scenarios/preview')
+    body = JSON.parse(String(init?.body))
+    return Response.json(source)
+  })
+  const request = structuredClone(source.configuration)
+  delete request.network
+  await client.preview(request)
+  assert.deepEqual(body, { schemaVersion: '1.0', configuration: request })
 })
 
 test('HTTP validation errors keep sane field reasons and do not become a mock success', async () => {
@@ -51,4 +54,56 @@ test('an aborted request keeps its cancellation and forwards the signal', async 
     throw new DOMException('Aborted', 'AbortError')
   }
   await assert.rejects(createApiClient('/v1', fetcher).health(controller.signal), { name: 'AbortError' })
+})
+
+const previewFixture = (): PreviewResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/preview-response.json', import.meta.url), 'utf8'))
+const configFixture = (): ConfigResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/config-response.json', import.meta.url), 'utf8'))
+
+for (const defect of ['configuration', 'population', 'node', 'edge', 'schedule', 'position', 'missingPosition', 'initial', 'duplicateInitial', 'initialHash'] as const) {
+  test(`preview rejects inconsistent ${defect}`, async () => {
+    const source = previewFixture(), request = structuredClone(source.configuration)
+    if (defect === 'configuration') request.scenario.populationSize++
+    if (defect === 'population') source.graph.nodes.pop()
+    if (defect === 'node') source.graph.nodes[1].id = source.graph.nodes[0].id
+    if (defect === 'edge') source.graph.edges[0].v = 9999
+    if (defect === 'schedule') source.graph.edges[0].activeDays = [-1]
+    if (defect === 'position') source.positions[0].nodeId = 9999
+    if (defect === 'missingPosition') source.positions.pop()
+    if (defect === 'initial') source.initialInfectiousNodeIds = [9999]
+    if (defect === 'duplicateInitial') source.initialInfectiousNodeIds.push(source.initialInfectiousNodeIds[0])
+    if (defect === 'initialHash') source.initialStateHash = 'wrong'
+    await assert.rejects(createApiClient('/v1', async () => Response.json(source)).preview(request), /contrato/i)
+  })
+}
+
+test('valid config is accepted; missing, negative and inconsistent defaults/limits are rejected', async () => {
+  const source = configFixture()
+  await createApiClient('/v1', async () => Response.json(source)).config()
+  for (const mutate of [
+    (value: ConfigResponse) => { delete (value.limits as Partial<typeof value.limits>).maxEdges },
+    (value: ConfigResponse) => { value.limits.maxFrameStates = -1 },
+    (value: ConfigResponse) => { value.defaults.intervention.vaccines = value.defaults.scenario.populationSize + 1 },
+  ]) {
+    const invalid = structuredClone(source); mutate(invalid)
+    await assert.rejects(createApiClient('/v1', async () => Response.json(invalid)).config(), /contrato/i)
+  }
+})
+
+test('published request/preview limits are enforced without an invalid network success', async () => {
+  const source = previewFixture(), limits = configFixture().limits
+  let calls = 0
+  const client = createApiClient('/v1', async () => { calls++; return Response.json(source) })
+  await assert.rejects(client.preview(source.configuration, undefined, { ...limits, maxRequestBytes: 1 }), /tamaño/)
+  assert.equal(calls, 0)
+  source.graph.edges.push({ ...source.graph.edges[0], id: 1, v: 2 })
+  await assert.rejects(client.preview(source.configuration, undefined, { ...limits, maxEdges: 1 }), /contrato/)
+  await assert.rejects(client.preview(source.configuration, undefined, { ...limits, maxDecodedResponseBytes: 1 }), /tamaño/)
+})
+
+test('frame budget avoids requesting known oversized animation while retaining comparison', async () => {
+  const source = JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response-no-frames.json', import.meta.url), 'utf8'))
+  const limits = configFixture().limits
+  let included: unknown
+  await createApiClient('/v1', async (_url, init) => { included = JSON.parse(String(init?.body)).includeRepresentativeFrames; return Response.json(source) }).compareForPlayback(source.configuration, source.graphHash, undefined, { ...limits, maxFrameStates: 1 })
+  assert.equal(included, false)
 })

@@ -33,7 +33,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. El siguiente trabajo es reconciliar RF-15/CA-12 con la retirada de los presets de la UI, consumir la configuración publicada y completar la validación integral. Infraestructura T-17/18, despliegue T-19/20 y gate científico T-22 siguen pendientes. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. El siguiente trabajo es reconciliar RF-15/CA-12 con la retirada de los presets de la UI y completar la validación integral. Infraestructura T-17/18, despliegue T-19/20 y gate científico T-22 siguen pendientes. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
 
 ## Parámetros previstos
 

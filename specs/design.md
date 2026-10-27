@@ -212,3 +212,6 @@ Incremento I-07 (presentación de red): network-layout produce solo coordenadas 
 
 
 Incremento I-08 (RF-13): export-experiment adapta la respuesta vigente a los once archivos ZIP definidos en agreements §5, sin recalcular datos. CSV UTF-8/CRLF con escape estándar, arrays JSON, booleanos minúsculos y null vacío. Filas réplica ascendente/políticas canónicas, métricas y columnas del exportador Python de referencia. Manifest ZIP agrega exportMetadata con alcance representativo sin mutar el experimento. fflate genera ZIP con fecha fija. Acceso desde resultados y diálogo Exportar, nunca desde borrador; errores de generación se informan y JSON permanece disponible. No añade endpoint ni cambia hashes.
+
+
+I-09: validConfig/validPreview completan guardas de contrato; preview requiere correspondencia con petición, estructura coherente y posiciones seguras para Cytoscape. fromConfiguration/applyServerDefaults separan defaults publicados de campos editados; ref de campos modificados evita sobrescribir ediciones durante la carga. Config válida habilita consulta, Restablecer usa defaults publicados y toConfiguration conserva network. Límites publicados de bytes/grafo/frames aplicados sin confundir transporte comprimido con JSON descomprimido ni inventar rangos de formulario. No cambia modelo ni hashes.

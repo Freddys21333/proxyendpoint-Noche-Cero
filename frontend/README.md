@@ -1,6 +1,6 @@
 # Frontend environment
 
-## Estado de integración I-08
+## Estado de integración I-09
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
@@ -135,3 +135,10 @@ Las posiciones agrupadas son deterministas por IDs/pertenencia y se mantienen al
 ## Exportación ZIP/CSV (I-08)
 
 Después de comparar, Descargar ZIP con CSV está disponible en Comparación y en el diálogo Exportar del simulador. Incluye configuration.json, manifest.json, comparison-summary.json y ocho CSV: nodes, edges, daily, metrics, selections, events, summary, comparisons. UTF-8, coma, encabezados/orden del contrato, CRLF, null vacío y listas JSON. Solo exporta eventos de la representativa; manifest.json declara ese alcance. No recalcula estadísticas ni modifica el JSON original. Conserva el JSON completo para reproducir; el ZIP facilita análisis. Sin comparación vigente solo se permite el borrador JSON. fflate está fijado en package.json/lockfile y genera el ZIP localmente sin endpoint nuevo.
+
+
+## Configuración publicada y preview coherente (I-09)
+
+La UI espera config válida antes de habilitar Consultar red. Permite editar mientras carga; defaults recibidos solo completan campos no modificados. Restablecer usa defaults publicados. Si la carga falla conserva entradas y muestra error. Los requests incluyen la configuración de red publicada. Los rangos de N/tasas siguen el esquema; config publica límites de transporte/grafo/frames: se valida tamaño de request y JSON descomprimido, máximo de aristas y presupuesto de animación. Si el presupuesto no admite frames, se solicita directamente comparación sin animación; un rechazo posterior permite fallback acotado solo si se habían pedido frames.
+
+Preview debe coincidir con todos los parámetros solicitados (se permiten campos normalizados adicionales), conservar N, IDs, pertenencias, posiciones finitas y completas, aristas/calendario válidos, IDs iniciales únicos/cantidad coherente y hashes con formato válido. Esta validación de contrato no sustituye la validación del backend ni recalcula el hash científico.

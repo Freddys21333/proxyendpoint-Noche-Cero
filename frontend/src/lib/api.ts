@@ -1,4 +1,4 @@
-import type { Scenario } from './scenario.ts'
+import { fromConfiguration, validateScenario, type Scenario } from './scenario.ts'
 
 export type ConfigurationInput = {
   rootSeed: number; networkMode: 'fixed'; repetitions: number;
@@ -6,6 +6,7 @@ export type ConfigurationInput = {
     initialInfectious: number; origin: { kind: string; value: number | null } };
   intervention: { vaccines: number; interventionDay: number; vaccineEfficacy: number };
   policies: ['none', 'random', 'targeted'];
+  network?: { generatorVersion: 'synthetic-manta-v1'; dayZero: 'monday'; weights: Record<'household' | 'school' | 'bus' | 'market' | 'neighborhood', number> };
 }
 
 type Metadata = { schemaVersion: '1.0'; engineVersion: string; requestId: string }
@@ -30,7 +31,8 @@ export type CompareResponse = Metadata & {
   representative: { index: number; frames: Record<Policy, PersonState[][]> | null; [key: string]: unknown };
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
-export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: Record<string, number>; generatorDescription: string }
+export type ServerLimits = Record<'maxRequestBytes' | 'maxResponseBytes' | 'maxDecodedResponseBytes' | 'maxEdges' | 'maxFrameStates', number>
+export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string }
 export type PreviewResponse = Metadata & {
   configuration: ConfigurationInput; graphHash: string; initialStateHash: string;
   graph: { generatorVersion: string; nodes: { id: number; role: string; householdId: string; neighborhoodId: string;
@@ -57,6 +59,36 @@ function containsRequested(actual: unknown, expected: unknown): boolean {
   if (object(expected)) return object(actual) && Object.entries(expected).every(([key, value]) => containsRequested(actual[key], value))
   return actual === expected
 }
+const contexts = ['household', 'school', 'bus', 'market', 'neighborhood']
+const hash = (value: unknown) => typeof value === 'string' && /^sha256:[0-9a-f]{64}$/.test(value)
+const integerIn = (value: unknown, low: number, high: number) => finite(value) && Number.isInteger(value) && value >= low && value <= high
+function validConfiguration(value: unknown): value is ConfigurationInput {
+  if (!object(value) || !object(value.scenario) || !object(value.scenario.origin) || !object(value.intervention) || value.networkMode !== 'fixed' || !containsRequested(value.policies, policies)) return false
+  const origin = value.scenario.origin
+  if (origin.kind !== 'node' && origin.value !== null) return false
+  if (validateScenario(fromConfiguration(value as unknown as ConfigurationInput)).length) return false
+  const network = value.network
+  return object(network) && network.generatorVersion === 'synthetic-manta-v1' && network.dayZero === 'monday' && object(network.weights) && contexts.every(key => object(network.weights) && finite(network.weights[key]) && network.weights[key] >= 0 && network.weights[key] <= 1)
+}
+function validConfig(data: Record<string, unknown>): boolean {
+  return validConfiguration(data.defaults) && object(data.limits) && ['maxRequestBytes', 'maxResponseBytes', 'maxDecodedResponseBytes', 'maxEdges', 'maxFrameStates'].every(key => object(data.limits) && integerIn(data.limits[key], 1, Number.MAX_SAFE_INTEGER)) && typeof data.generatorDescription === 'string'
+}
+function validPreview(data: Record<string, unknown>, requested: ConfigurationInput, limits?: ServerLimits): boolean {
+  if (!validConfiguration(data.configuration) || !containsRequested(data.configuration, requested) || !hash(data.graphHash) || !hash(data.initialStateHash) || !object(data.graph)) return false
+  const { nodes, edges } = data.graph, positions = data.positions, initial = data.initialInfectiousNodeIds
+  const n = requested.scenario.populationSize, days = requested.scenario.days
+  if (data.graph.generatorVersion !== data.configuration.network!.generatorVersion || !Array.isArray(nodes) || nodes.length !== n || !Array.isArray(edges) || edges.length > (limits?.maxEdges ?? 100000)) return false
+  if (!nodes.every((node, id) => object(node) && node.id === id && ['student', 'worker', 'community'].includes(String(node.role)) && ['householdId', 'neighborhoodId'].every(key => typeof node[key] === 'string' && node[key].length > 0) && ['schoolId', 'busId', 'marketId'].every(key => node[key] === null || typeof node[key] === 'string' && node[key].length > 0))) return false
+  const edgeKeys = new Set<string>()
+  if (!edges.every((edge, id) => {
+    if (!object(edge) || edge.id !== id || !integerIn(edge.u, 0, n - 1) || !integerIn(edge.v, Number(edge.u) + 1, n - 1) || !contexts.includes(String(edge.context)) || !finite(edge.weight) || edge.weight < 0 || edge.weight > 1 || !Array.isArray(edge.activeDays) || !edge.activeDays.length || !edge.activeDays.every((day, index, all) => integerIn(day, 0, days) && (index === 0 || day > all[index - 1]))) return false
+    const key = `${edge.u}:${edge.v}:${edge.context}`
+    if (edgeKeys.has(key)) return false
+    edgeKeys.add(key); return true
+  })) return false
+  return Array.isArray(positions) && positions.length === n && new Set(positions.map(p => object(p) ? p.nodeId : null)).size === n && positions.every(p => object(p) && integerIn(p.nodeId, 0, n - 1) && finite(p.x) && finite(p.y)) && Array.isArray(initial) && initial.length === requested.scenario.initialInfectious && new Set(initial).size === initial.length && initial.every(id => integerIn(id, 0, n - 1)) && (requested.scenario.origin.kind !== 'node' || initial.includes(requested.scenario.origin.value))
+}
+
 function validStats(value: unknown, n: number, censored = false): boolean {
   if (!object(value) || !finite(value.n) || !Number.isInteger(value.n) || value.n < 0 || value.n > n || (!censored && value.n !== n)) return false
   const count = value.n
@@ -111,7 +143,8 @@ function validFrames(data: Record<string, unknown>, configuration: Configuration
 
 export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) {
   const base = baseUrl.replace(/\/+$/, '')
-  async function request<T extends Metadata>(path: string, init: RequestInit, valid: (data: Record<string, unknown>) => boolean): Promise<T> {
+  async function request<T extends Metadata>(path: string, init: RequestInit, valid: (data: Record<string, unknown>) => boolean, limits?: ServerLimits): Promise<T> {
+    if (typeof init.body === 'string' && limits && new TextEncoder().encode(init.body).length > limits.maxRequestBytes) throw new ApiError(413, 'REQUEST_TOO_LARGE', 'La configuración supera el tamaño permitido por el servidor.')
     let response: Response
     try { response = await fetcher(`${base}${path}`, { ...init, credentials: 'omit', headers: { Accept: 'application/json', ...init.headers } }) }
     catch (error) {
@@ -119,7 +152,9 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
       throw new ApiError(0, 'NETWORK_ERROR', 'No se pudo conectar con el servidor. Comprueba que esté iniciado.')
     }
     let data: unknown
-    try { data = await response.json() }
+    const raw = await response.text()
+    if (limits && new TextEncoder().encode(raw).length > limits.maxDecodedResponseBytes) throw new ApiError(413, 'RESULT_TOO_LARGE', 'La respuesta supera el tamaño permitido por el servidor.')
+    try { data = JSON.parse(raw) }
     catch { throw new ApiError(response.status, 'INVALID_RESPONSE', 'El servidor devolvió una respuesta inválida.') }
     if (!response.ok) {
       const failure = object(data) && object(data.error) ? data.error : null
@@ -132,28 +167,29 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     }
     return data as T
   }
-  const compare = (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false) => request<CompareResponse>('/simulations/compare', {
+  const compare = (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<CompareResponse>('/simulations/compare', {
     method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration, expectedGraphHash: graphHash, includeRepresentativeFrames: includeFrames }),
-  }, data => completeComparison(data, configuration, graphHash, includeFrames))
+  }, data => completeComparison(data, configuration, graphHash, includeFrames), limits)
   return {
     compare,
-    compareForPlayback: async (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal) => {
-      try { return await compare(configuration, graphHash, signal, true) }
+    compareForPlayback: async (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, limits?: ServerLimits) => {
+      const includeFrames = !limits || configuration.scenario.populationSize * (configuration.scenario.days + 1) <= limits.maxFrameStates
+      try { return await compare(configuration, graphHash, signal, includeFrames, limits) }
       catch (error) {
-        if (signal?.aborted || !(error instanceof ApiError) || error.status !== 413 || !['FRAMES_TOO_LARGE', 'RESULT_TOO_LARGE'].includes(error.code)) throw error
-        return compare(configuration, graphHash, signal)
+        if (!includeFrames || signal?.aborted || !(error instanceof ApiError) || error.status !== 413 || !['FRAMES_TOO_LARGE', 'RESULT_TOO_LARGE'].includes(error.code)) throw error
+        return compare(configuration, graphHash, signal, false, limits)
       }
     },
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
-    config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, data => object(data.defaults) && object(data.limits)),
-    preview: (configuration: ConfigurationInput, signal?: AbortSignal) => request<PreviewResponse>('/scenarios/preview', {
+    config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, validConfig),
+    preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => request<PreviewResponse>('/scenarios/preview', {
       method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration }),
-    }, data => object(data.configuration) && object(data.graph) && Array.isArray(data.graph.nodes) && Array.isArray(data.graph.edges) && Array.isArray(data.positions) && Array.isArray(data.initialInfectiousNodeIds) && typeof data.graphHash === 'string' && /^sha256:[0-9a-f]{64}$/.test(data.graphHash)),
+    }, data => validPreview(data, configuration, limits), limits),
   }
 }
 
-export function toConfiguration(s: Scenario): ConfigurationInput {
-  return { rootSeed: s.seed, networkMode: 'fixed', repetitions: s.repetitions,
+export function toConfiguration(s: Scenario, base?: ConfigurationInput): ConfigurationInput {
+  return { ...base, rootSeed: s.seed, networkMode: 'fixed', repetitions: s.repetitions,
     scenario: { populationSize: s.population, days: s.days, beta: s.beta, sigma: s.sigma, gamma: s.gamma,
       initialInfectious: s.initial, origin: { kind: s.origin, value: s.origin === 'node' ? s.node : null } },
     intervention: { vaccines: s.vaccines, interventionDay: s.interventionDay, vaccineEfficacy: s.efficacy },
