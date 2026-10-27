@@ -82,7 +82,7 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
   const features = [...data.features].sort((a, b) => a.properties.sectorId < b.properties.sectorId ? -1 : 1)
   const nodes = [...preview.graph.nodes].sort((a, b) => a.id - b.id)
   if (new Set(nodes.map(n => n.id)).size !== nodes.length) throw new Error('Identificadores de agentes duplicados.')
-  const key = `mantalab-geography-v2:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
+  const key = `mantalab-geography-v3:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
   const sectorOrder = [...features]
   const shuffle = randomStream(`${key}:sectors`)
   for (let i = sectorOrder.length - 1; i > 0; i--) {
@@ -98,9 +98,20 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
   const used = new Set<string>()
   const agents: GeographicAgent[] = []
   let householdIndex = 0
-  const anchors = new Map<string, Coordinate[]>()
+  const anchors: Coordinate[] = []
+  const footprints = sectorOrder.map(feature => {
+    const ring = feature.geometry.coordinates[0]
+    let area = 0
+    for (let i = 1; i < ring.length - 1; i++) area += cross(ring[0], ring[i], ring[i + 1])
+    return { feature, area: Math.abs(area), households: 0 }
+  })
   for (const [household, members] of [...households].sort(([a], [b]) => a < b ? -1 : 1)) {
-    const feature = sectorOrder[householdIndex++ % sectorOrder.length]
+    // Cover each footprint first, then balance household density by usable area.
+    const footprint = householdIndex < footprints.length ? footprints[householdIndex] :
+      footprints.reduce((best, next) => next.households / next.area < best.households / best.area ? next : best)
+    householdIndex++
+    footprint.households++
+    const feature = footprint.feature
     const ring = feature.geometry.coordinates[0]
     const xs = ring.map(c => c[0]), ys = ring.map(c => c[1])
     const west = Math.min(...xs), south = Math.min(...ys)
@@ -109,26 +120,34 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
     let anchor: Coordinate | undefined
     let bestDistance = -1
     let candidates = 0
-    const previous = anchors.get(feature.properties.sectorId) ?? []
     for (let attempt = 0; attempt < 4096; attempt++) {
       const point: Coordinate = [west + random() * width, south + random() * height]
       if (!insideRing(point, ring)) continue
-      const distance = previous.length ? Math.min(...previous.map(p => (p[0] - point[0]) ** 2 + (p[1] - point[1]) ** 2)) : 1
+      const distance = anchors.length ? Math.min(...anchors.map(p => (p[0] - point[0]) ** 2 + (p[1] - point[1]) ** 2)) : 1
       if (distance > bestDistance) { anchor = point; bestDistance = distance }
-      if (++candidates === 16) break
+      if (++candidates === 64) break
     }
     if (!anchor) throw new Error('No se encontró terreno permitido para el grupo sintético.')
-    previous.push(anchor)
-    anchors.set(feature.properties.sectorId, previous)
+    anchors.push(anchor)
     const radius = Math.min(Math.min(width, height) * 0.4, 0.0009)
     for (const node of members) {
       let coordinate: Coordinate | undefined
+      let separation = -1
+      let memberCandidates = 0
       for (let attempt = 0; attempt < 512; attempt++) {
+        if (members.length === 1 && !used.has(anchor.join(','))) {
+          const point: Coordinate = [Number(anchor[0].toFixed(8)), Number(anchor[1].toFixed(8))]
+          if (insideRing(point, ring) && !used.has(point.join(','))) { coordinate = point; break }
+        }
         const point: Coordinate = [Number((anchor[0] + (random() - 0.5) * radius).toFixed(8)), Number((anchor[1] + (random() - 0.5) * radius).toFixed(8))]
         const identity = point.join(',')
-        if (insideRing(point, ring) && !used.has(identity)) { coordinate = point; used.add(identity); break }
+        if (!insideRing(point, ring) || used.has(identity)) continue
+        const distance = agents.length ? Math.min(...agents.map(a => (a.lng - point[0]) ** 2 + (a.lat - point[1]) ** 2)) : 1
+        if (distance > separation) { coordinate = point; separation = distance }
+        if (++memberCandidates === 8) break
       }
       if (!coordinate) throw new Error('No se pudo ubicar un agente dentro del área permitida.')
+      used.add(coordinate.join(','))
       agents.push({ ...node, nodeId: node.id, lng: coordinate[0], lat: coordinate[1], sectorId: feature.properties.sectorId, state: infected.has(node.id) ? 'I' : 'S' })
     }
   }

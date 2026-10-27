@@ -6,7 +6,7 @@ import { SimulationWorkspace } from './SimulationWorkspace'
 import { FloatingSimulationControls } from './FloatingSimulationControls'
 import './ContactNetwork.css'
 
-export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; panelActions?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState }) {
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; panelActions?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState; renderTools?: (view: 'network' | 'map') => ReactNode }) {
   const lastPreview = useRef<PreviewResponse | null>(null)
   if (props.preview) lastPreview.current = props.preview
   if (lastPreview.current) return <SimulationWorkspace {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
@@ -23,6 +23,6 @@ export function ContactNetwork(props: { resetKey: number; layer: string; childre
       <div className="empty-steps"><span><b>01</b> Configura</span><span><b>02</b> Consulta la red</span><span><b>03</b> Compara</span></div>
       <p className="simulation-empty-note">Las personas y ubicaciones son sintéticas. Esta ilustración no muestra resultados.</p>
     </section>
-    <FloatingSimulationControls actions={props.panelActions}>{props.children}</FloatingSimulationControls>
+    <FloatingSimulationControls actions={props.panelActions}>{props.renderTools?.('network')}{props.children}</FloatingSimulationControls>
   </div>
 }

@@ -16,9 +16,11 @@ const preview = (population = 50): PreviewResponse => {
   return value
 }
 
-test('the versioned OSM resource has thirteen simple terrestrial residential polygons and source evidence', () => {
+test('the versioned OSM resource expands to twenty-two residential polygons across western Manta', () => {
   const data = resource()
-  assert.equal(data.features.length, 13)
+  assert.equal(data.features.length, 22)
+  assert.equal(data.resourceVersion, 'manta-residential-osm-v3')
+  assert.ok(Math.min(...data.features.flatMap(f => f.geometry.coordinates[0].map(p => p[0]))) < -80.75)
   assert.ok(data.source.extractedAt.endsWith('Z'))
   for (const feature of data.features) {
     assert.equal(feature.properties.landuse, 'residential')
@@ -26,6 +28,25 @@ test('the versioned OSM resource has thirteen simple terrestrial residential pol
     assert.match(feature.properties.sourceUrl, /^https:\/\/api.openstreetmap.org\//)
   }
   assert.equal(insideRing([-80.71, -0.9], data.features[0].geometry.coordinates[0]), false)
+})
+
+test('larger footprints receive more households while anchors remain separated and every sector is used', () => {
+  const data = structuredClone(resource())
+  data.features = data.features.slice(0, 2)
+  data.features[0].geometry.coordinates = [[[-80.72, -0.98], [-80.719, -0.98], [-80.719, -0.979], [-80.72, -0.979], [-80.72, -0.98]]]
+  data.features[1].geometry.coordinates = [[[-80.71, -0.98], [-80.702, -0.98], [-80.702, -0.972], [-80.71, -0.972], [-80.71, -0.98]]]
+  const source = preview(1000)
+  // One person per household makes observed positions the household anchors.
+  source.graph.nodes.forEach(node => { node.householdId = `household-${node.id}` })
+  const agents = assignGeographicAgents(source, data)
+  const small = agents.filter(a => a.sectorId === data.features[0].properties.sectorId)
+  const large = agents.filter(a => a.sectorId === data.features[1].properties.sectorId)
+  assert.ok(small.length > 0 && small.length < 30, `small footprint contains ${small.length} households`)
+  assert.ok(large.length > 970)
+  const nearest = large.map((a, index) => Math.sqrt(Math.min(...large.filter((_, i) => i !== index)
+    .map(b => (a.lng - b.lng) ** 2 + (a.lat - b.lat) ** 2))))
+  nearest.sort((a, b) => a - b)
+  assert.ok(nearest[Math.floor(nearest.length / 2)] > 0.0001, 'households must use the available footprint instead of clustering')
 })
 
 test('all original IDs receive deterministic interior positions without mutating the experiment', () => {

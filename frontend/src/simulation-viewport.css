@@ -1,0 +1,151 @@
+/* The simulator uses the viewport; other routes keep their document layout. */
+.minimal-workspace.noche-cero.simulator-page {
+  height: 100dvh;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+.simulator-page .simulation-header { position: relative; top: auto; }
+.noche-cero.simulator-page .simulation-main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.noche-cero.simulator-page .simulation-notice {
+  position: absolute; top: 76px; left: 16px; right: 380px; z-index: 1100; margin: 0;
+}
+.noche-cero.simulator-page .simulator-workbench.network-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 0;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+}
+.noche-cero.simulator-page .simulator-workbench.network-workbench .network-demo-panel {
+  height: 100%; min-height: 0; min-width: 0; border: 0; border-radius: 0;
+}
+.noche-cero.simulator-page .simulator-workbench.network-workbench .simulation-empty { padding: 24px; }
+.noche-cero.simulator-page .simulation-visualizer-content { position: relative; display: block; height: 100%; }
+.noche-cero.simulator-page .simulator-workbench.network-workbench :is(.network-view, .geographic-map-view) {
+  position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; flex: none;
+}
+.noche-cero.simulator-page .network-canvas { width: 100%; height: 100%; }
+.noche-cero.simulator-page .simulator-workbench .network-demo-heading {
+  position: absolute; top: 12px; right: 16px; left: auto; z-index: 800;
+  width: auto; margin: 0; padding: 0; background: transparent;
+}
+.noche-cero.simulator-page .network-demo-heading :is(h2, span) { display: none; }
+.noche-cero.simulator-page .simulator-workbench .network-meaning { padding: 16px; margin: 0; line-height: 1.5; }
+.noche-cero.simulator-page .simulator-workbench .population-inventory-summary {
+  position: absolute; left: 16px; right: 16px; bottom: 40px; z-index: 700;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px;
+  margin: 0; padding: 12px 16px; border: 1px solid var(--night-border);
+  pointer-events: none;
+}
+.noche-cero.simulator-page .population-inventory-summary .seir-instrument {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+  padding: 0; border: 0; min-width: 0;
+}
+.noche-cero.simulator-page .population-inventory-summary .seir-instrument > div { min-width: 0; }
+.noche-cero.simulator-page .population-inventory-summary .vaccine-inventory {
+  width: auto; display: grid; grid-template-columns: auto; gap: 2px;
+  padding: 0 0 0 16px; border: 0; border-left: 1px solid var(--night-border);
+}
+.noche-cero.simulator-page .vaccine-inventory > small { grid-column: auto; }
+.noche-cero.simulator-page .simulator-workbench .network-playback-status {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 700;
+  margin: 0; padding: 6px 12px; min-height: 28px; border: 0;
+  background: var(--night-raised); color: #c4b9c8; font-size: 11px; line-height: 1.4;
+}
+.noche-cero.simulator-page .simulator-workbench .floating-simulation-controls,
+.noche-cero.simulator-page .simulator-workbench .floating-simulation-controls[open] {
+  position: relative; inset: auto; order: initial; width: 100%; height: 100%; min-height: 0;
+  margin: 0; border: 0; border-left: 1px solid var(--night-border); border-radius: 0;
+  box-shadow: none; overflow: hidden;
+}
+.noche-cero.simulator-page .floating-simulation-controls[open] { display: flex; flex-direction: column; }
+.noche-cero.simulator-page .floating-simulation-controls[open]::details-content { display: contents; }
+.noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > summary { flex: 0 0 50px; }
+.noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > .floating-controls-inner {
+  display: flex; flex-direction: column; flex: 1 1 0; height: auto; min-height: 0; overflow: hidden;
+}
+.noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > .floating-controls-inner > .floating-controls-body {
+  flex: 1 1 0; height: auto; min-height: 0; max-height: none;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable;
+}
+.noche-cero.simulator-page .floating-controls-body > * { flex-shrink: 0; }
+.noche-cero.simulator-page .floating-controls-footer { flex: 0 0 auto; }
+.noche-cero.simulator-page .advanced-toggle { color: #d8ccd8; }
+.noche-cero.simulator-page .persistent-playback { padding: 16px; }
+.noche-cero.simulator-page .floating-controls-transport { flex: 0 0 auto; border-bottom: 1px solid var(--night-border); background: var(--night-card); }
+.noche-cero.simulator-page .floating-controls-transport .persistent-playback { padding: 10px 16px; }
+.noche-cero.simulator-page .floating-controls-transport #playback-availability { font-size: 11px; line-height: 1.4; }
+.persistent-playback .playback-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.persistent-playback .playback-heading h3 { margin: 0; font-size: 15px; }
+.persistent-playback .playback-time { display: flex; align-items: baseline; gap: 5px; margin: 0; font-size: 11px; }
+.persistent-playback .playback-time strong { font-size: 16px; }
+.persistent-playback .playback-actions { display: flex; gap: 4px; margin-top: 12px; }
+.persistent-playback .playback-actions > button { flex: 0 0 32px; width: 32px; min-width: 32px; height: 34px; padding: 6px; }
+.persistent-playback .playback-actions > .playback-primary { flex: 1; min-width: 0; gap: 6px; padding-inline: 8px; font-size: 12px; }
+.persistent-playback .playback-settings { min-width: 0; margin: 12px 0 0; padding: 0; border: 0; }
+.persistent-playback .playback-settings:disabled { opacity: .6; }
+.persistent-playback #playback-availability { margin: 10px 0 0; }
+.noche-cero.simulator-page .configuration-actions .cancel-comparison { grid-column: 1 / -1; justify-content: center; min-height: 30px; }
+.noche-cero.simulator-page .contact-filter-help { margin: 8px 0 0; color: #b9afbe; font-size: 12px; line-height: 1.5; }
+.noche-cero.simulator-page .geographic-agent-legend { top: 12px; right: 164px; font-size: 12px; }
+.noche-cero.simulator-page .geographic-agent-picker { bottom: 142px; left: 16px; padding: 0; max-width: calc(100% - 32px); }
+.geographic-agent-picker > summary { display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; list-style: none; }
+.geographic-agent-picker > summary::-webkit-details-marker { display: none; }
+.geographic-agent-picker > form { padding: 0 12px 12px; width: min(300px, 100%); }
+.geographic-agent-picker label { display: block; margin-bottom: 7px; font-size: 12px; }
+.geographic-person-search-row { display: flex; gap: 8px; }
+.geographic-person-search-row input { min-width: 0; width: 110px; padding: 7px 9px; color: var(--map-ink); background: var(--map-surface); border: 1px solid var(--map-border); border-radius: 4px; }
+.geographic-person-search-row button { padding: 7px 10px; color: var(--map-ink); background: var(--map-surface); border: 1px solid var(--map-border); border-radius: 4px; white-space: nowrap; }
+.geographic-person-clear { display: flex; align-items: center; gap: 5px; margin-top: 10px; background: transparent; border: 0; color: var(--map-ink); font-size: 12px; }
+.geographic-agent-picker [role="alert"] { max-width: 260px; margin: 8px 0 0; color: var(--map-ink); font-size: 12px; }
+.geographic-agent-picker :is(summary, input, button):focus-visible { outline: 2px solid var(--map-link); outline-offset: 2px; }
+
+@media (max-height: 650px) {
+  .noche-cero.simulator-page .empty-network-art { width: 120px; height: 120px; margin-bottom: 10px; }
+  .noche-cero.simulator-page .simulator-workbench .simulation-empty h2 { font-size: 24px; margin-top: 4px; }
+  .noche-cero.simulator-page .empty-steps { margin: 10px 0; }
+}
+
+@media (min-width: 1600px) {
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr) 390px; }
+}
+@media (max-width: 1100px) {
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr) 320px; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument-label { font-size: 10px; }
+  .noche-cero.simulator-page .population-inventory-summary .vaccine-inventory-label { font-size: 11px; }
+  .noche-cero.simulator-page .simulator-workbench .population-inventory-summary { gap: 10px; padding: 10px; left: 12px; right: 12px; }
+}
+@media (max-width: 700px) {
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(240px, 44%) minmax(0, 1fr); }
+  .noche-cero.simulator-page .simulation-notice { top: 64px; right: 12px; left: 12px; }
+  .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls { border-left: 0; border-top: 1px solid var(--night-border); }
+  .noche-cero.simulator-page .simulator-workbench .network-demo-heading { right: 12px; }
+  .noche-cero.simulator-page .geographic-agent-legend { left: 64px; right: 12px; top: 60px; font-size: 10px; padding: 6px 8px; }
+  .noche-cero.simulator-page .geographic-agent-legend strong { font-size: 10px; }
+  .noche-cero.simulator-page .geographic-agent-legend > div { gap: 3px 8px; }
+  .noche-cero.simulator-page .simulator-workbench .population-inventory-summary { bottom: 42px; gap: 8px; padding: 7px 8px; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument-label b { display: none; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument-label { font-size: 9px; gap: 3px; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument strong { font-size: 17px; }
+  .noche-cero.simulator-page .population-inventory-summary .vaccine-inventory { padding-left: 8px; }
+  .noche-cero.simulator-page .vaccine-inventory-label { font-size: 9px; }
+  .noche-cero.simulator-page .vaccine-inventory-label svg { display: none; }
+  .noche-cero.simulator-page .vaccine-inventory-value strong { font-size: 17px; }
+  .noche-cero.simulator-page .vaccine-inventory :is(small, .vaccine-inventory-value small) { font-size: 9px; }
+  .noche-cero.simulator-page .simulator-workbench .network-playback-status { font-size: 9px; }
+  .noche-cero.simulator-page .geographic-agent-picker { bottom: 124px; left: 12px; font-size: 11px; }
+  .noche-cero.simulator-page .geographic-agent-picker > summary { padding: 7px 9px; }
+}

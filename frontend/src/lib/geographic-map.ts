@@ -12,7 +12,16 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
   let map: LeafletMap | undefined
   let tiles: TileLayer | undefined
   let agents: ReturnType<typeof createGeographicAgentLayer> | undefined
+  let pendingBounds: [number, number][] | null = null
+  let agentBounds: [number, number][] | null = null
   let destroyed = false
+  const fitAgents = () => {
+    if (!pendingBounds || !container.clientWidth || !container.clientHeight) return
+    map!.fitBounds(pendingBounds, {
+      paddingTopLeft: [24, 76], paddingBottomRight: [24, 112], maxZoom: 16, animate: false,
+    })
+    pendingBounds = null
+  }
   const failedTiles = new Set<HTMLElement>()
   const report = () => { if (!destroyed) onError(failedTiles.size ? tileError : null) }
   const events = {
@@ -24,6 +33,8 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
     if (destroyed) return
     destroyed = true
     agents?.destroy()
+    pendingBounds = null
+    agentBounds = null
     tiles?.off(events)
     map?.remove()
     failedTiles.clear()
@@ -31,7 +42,7 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
 
   try {
     map = leaflet.map(container, {
-      scrollWheelZoom: false, dragging: true, zoomControl: true, attributionControl: true,
+      scrollWheelZoom: false, dragging: true, zoomControl: true, attributionControl: true, zoomSnap: 0.25,
     })
     map.setView(mantaCenter, 13)
     tiles = leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -50,10 +61,23 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
       if (destroyed) return
       agents?.destroy()
       agents = createGeographicAgentLayer(map!, leaflet, values, popup, onSelect)
+      agentBounds = values.length ? values.map(agent => [agent.lat, agent.lng]) : null
+      pendingBounds = agentBounds
+      fitAgents()
     },
     selectAgent: (id: number | null) => { if (!destroyed) agents?.select(id) },
+    recenter: () => {
+      if (destroyed) return
+      pendingBounds = agentBounds
+      fitAgents()
+    },
+    focusAgent: (agent: GeographicAgent) => {
+      if (destroyed) return
+      map!.setView([agent.lat, agent.lng], Math.max(map!.getZoom(), 16), { animate: false })
+      agents?.select(agent.nodeId)
+    },
     updateAgents: (presentation: AgentPresentation) => { if (!destroyed) agents?.update(presentation) },
-    resize: () => { if (!destroyed) map!.invalidateSize({ pan: false }) },
+    resize: () => { if (!destroyed) { map!.invalidateSize({ pan: false }); fitAgents() } },
     retry: () => {
       if (destroyed) return
       failedTiles.clear()

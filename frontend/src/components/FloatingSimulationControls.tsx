@@ -1,13 +1,15 @@
 import { useId, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 
-export function FloatingSimulationControls({ children, actions }: { children: ReactNode; actions?: ReactNode }) {
+export function FloatingSimulationControls({ children, actions, transport }: { children: ReactNode; actions?: ReactNode; transport?: ReactNode }) {
   const id = useId()
   const panel = useRef<HTMLDetailsElement>(null)
   useLayoutEffect(() => {
     const element = panel.current
     const workspace = element?.parentElement
     if (!element || !workspace) return
+    // The viewport layout owns sizing; floating-position measurements do not apply.
+    if (workspace.closest('.simulator-page')) return
     const inventory = workspace.querySelector('.population-inventory-summary')
     const position = () => {
       const bounds = workspace.getBoundingClientRect()
@@ -34,6 +36,7 @@ export function FloatingSimulationControls({ children, actions }: { children: Re
       <span>Controles</span>
       <ChevronDown size={17} className="floating-controls-chevron" aria-hidden="true" />
     </summary>
+    {transport && <div className="floating-controls-transport">{transport}</div>}
     <div className="floating-controls-inner">
       <div id={id} className="floating-controls-body simulator-control-column">{children}</div>
       {actions && <div className="floating-controls-footer">{actions}</div>}

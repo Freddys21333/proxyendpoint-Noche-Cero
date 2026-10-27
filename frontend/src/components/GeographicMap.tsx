@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as leaflet from 'leaflet'
+import { Search, X } from 'lucide-react'
 import { mountGeographicMap } from '@/lib/geographic-map'
 import { assignGeographicAgents, type GeographicAgent } from '@/lib/manta-geography'
 import type { PreviewResponse } from '@/lib/api'
@@ -13,7 +14,7 @@ import './GeographicMap.css'
 
 const stateLabels = { S: 'Sano', E: 'Mordido', I: 'Zombie', R: 'Exorcizado (recuperado o inmune)' }
 const describeAgent = (agent: GeographicAgent, presentation: AgentPresentation) => [
-  `Agente ${agent.nodeId}`, `Día ${presentation.day} · ${presentation.mode === 'representative' ? policyLabels[presentation.policy] : 'Estado inicial'}`,
+  `Persona ${agent.nodeId}`, `Día ${presentation.day} · ${presentation.mode === 'representative' ? policyLabels[presentation.policy] : 'Estado inicial'}`,
   `Estado: ${agent.state} · ${stateLabels[agent.state]}`,
   ...(presentation.mode === 'representative' ? [`Réplica representativa: ${presentation.representativeIndex}`] : []),
   `Hogar sintético: ${agent.householdId}`, `Barrio sintético: ${agent.neighborhoodId}`,
@@ -32,16 +33,21 @@ function agentPopup(agent: GeographicAgent, presentation: AgentPresentation) {
   return content
 }
 
-export default function GeographicMap({ visible, preview, playback }: { visible: boolean; preview: PreviewResponse; playback: SimulationPresentation }) {
+export default function GeographicMap({ visible, preview, playback, resetKey, selectedPersonId, onSelectPerson, focusRequest }: {
+  visible: boolean; preview: PreviewResponse; playback: SimulationPresentation; resetKey: number;
+  selectedPersonId: string; onSelectPerson: (id: string) => void; focusRequest: { id: number; version: number } | null;
+}) {
   const container = useRef<HTMLDivElement>(null)
   const controller = useRef<ReturnType<typeof mountGeographicMap> | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const selectedId = selectedPersonId === '' ? null : Number(selectedPersonId)
+  const lastResetKey = useRef(resetKey)
+  const [personQuery, setPersonQuery] = useState('')
+  const [searchError, setSearchError] = useState<string | null>(null)
   const placement = useMemo(() => {
     try { return { agents: assignGeographicAgents(preview, geographicResource), error: null } }
     catch { return { agents: [], error: 'No se pudieron validar las ubicaciones sintéticas. Se conserva solamente el mapa base.' } }
   }, [preview])
-  const agentOptions = useMemo(() => placement.agents.map(agent => <option key={agent.nodeId} value={agent.nodeId}>Agente {agent.nodeId}</option>), [placement.agents])
 
   useEffect(() => {
     if (!container.current) return
@@ -67,15 +73,28 @@ export default function GeographicMap({ visible, preview, playback }: { visible:
 
   useEffect(() => { if (visible) controller.current?.resize() }, [visible])
   useEffect(() => {
-    setSelectedId(null)
-    try { controller.current?.setAgents(placement.agents, agentPopup, setSelectedId) }
+    setPersonQuery('')
+    setSearchError(null)
+    try { controller.current?.setAgents(placement.agents, agentPopup, id => {
+      onSelectPerson(String(id)); setPersonQuery(String(id)); setSearchError(null)
+    }) }
     catch { setError('No se pudieron dibujar los agentes. La vista Red sigue disponible.') }
-  }, [placement])
+  }, [placement, onSelectPerson])
   useEffect(() => {
     try { controller.current?.updateAgents(playback) }
     catch { setError('No se pudo actualizar la trayectoria individual. La vista Red sigue disponible.') }
   }, [playback, placement])
-  useEffect(() => { controller.current?.selectAgent(selectedId) }, [selectedId])
+  useEffect(() => { controller.current?.selectAgent(visible ? selectedId : null) }, [visible, selectedId, placement])
+  useEffect(() => {
+    if (lastResetKey.current === resetKey) return
+    lastResetKey.current = resetKey
+    controller.current?.recenter()
+  }, [resetKey])
+  useEffect(() => {
+    if (!visible || !focusRequest || focusRequest.id !== selectedId) return
+    const person = placement.agents.find(agent => agent.nodeId === focusRequest.id)
+    if (person) { controller.current?.focusAgent(person); setPersonQuery(String(person.nodeId)); setSearchError(null) }
+  }, [focusRequest, visible, placement, selectedId])
 
   return <div className="geographic-map">
     <div ref={container} className="geographic-map-canvas" role="region" aria-label="Mapa interactivo de Manta, Ecuador" />
@@ -85,12 +104,29 @@ export default function GeographicMap({ visible, preview, playback }: { visible:
         <i aria-hidden="true" style={{ background: seirColors[state].marker }} />{state} · {stateLabels[state]}
       </span>)}</div>
     </div>
-    {placement.agents.length > 0 && <label className="geographic-agent-picker">Explorar agente
-      <select aria-label="Agente en el mapa" value={selectedId ?? ''} onChange={event => setSelectedId(event.target.value === '' ? null : Number(event.target.value))}>
-        <option value="">Selecciona un identificador</option>
-        {agentOptions}
-      </select>
-    </label>}
+    {placement.agents.length > 0 && <details className="geographic-agent-picker">
+      <summary><Search size={15} aria-hidden="true" />Buscar persona</summary>
+      <form noValidate onSubmit={event => {
+        event.preventDefault()
+        const value = personQuery.trim()
+        const person = /^\d+$/.test(value) ? placement.agents.find(agent => agent.nodeId === Number(value)) : undefined
+        if (!person) { setSearchError('Escribe el número de una persona de este escenario.'); return }
+        setSearchError(null); onSelectPerson(String(person.nodeId)); controller.current?.focusAgent(person)
+      }}>
+        <label htmlFor="map-person-search">Número de persona</label>
+        <div className="geographic-person-search-row">
+          <input id="map-person-search" type="search" inputMode="numeric" autoComplete="off"
+            placeholder={`Ej. ${placement.agents[0].nodeId}`} value={personQuery}
+            aria-invalid={Boolean(searchError)} aria-describedby={searchError ? 'map-person-search-error' : undefined}
+            onChange={event => { setPersonQuery(event.target.value); setSearchError(null) }} />
+          <button type="submit">Ver persona</button>
+        </div>
+        {searchError && <p id="map-person-search-error" role="alert">{searchError}</p>}
+        {selectedId !== null && <button type="button" className="geographic-person-clear" onClick={() => {
+          onSelectPerson(''); setPersonQuery(''); setSearchError(null)
+        }}><X size={13} aria-hidden="true" />Quitar selección</button>}
+      </form>
+    </details>}
     {(error || placement.error) && <div className="geographic-map-error" role="status">
       <p>{error || placement.error}</p>
       {controller.current && <button type="button" onClick={() => controller.current?.retry()}>Reintentar mapa</button>}

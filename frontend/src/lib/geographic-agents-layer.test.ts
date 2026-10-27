@@ -29,7 +29,7 @@ test('Canvas markers retain each original ID, initial state color and selection 
   } as unknown as AgentMapRuntime
   const selected: number[] = []
   const described: number[] = []
-  const layer = createGeographicAgentLayer({} as LeafletMap, runtime, agents,
+  const layer = createGeographicAgentLayer({ getZoom: () => 13, on() {}, off() {} } as unknown as LeafletMap, runtime, agents,
     agent => { described.push(agent.nodeId); return {} as HTMLElement }, id => selected.push(id))
   assert.equal(records.length, agents.length)
   assert.equal(records[2].front, true)
@@ -77,7 +77,12 @@ test('live frames update retained markers and the open selection without moving 
           openPopup() { open = true; record.opened++; record.content = describe(); return this } }
       },
     } as unknown as AgentMapRuntime
-    const map = { closePopup() { records.forEach(record => record.close()) } } as unknown as LeafletMap
+    let zoom = 13
+    const mapEvents: Record<string, () => void> = {}
+    const map = { getZoom: () => zoom,
+      on(event: string, handler: () => void) { mapEvents[event] = handler },
+      off(event: string) { delete mapEvents[event] },
+      closePopup() { records.forEach(record => record.close()) } } as unknown as LeafletMap
     const layer = createGeographicAgentLayer(map, runtime, agents,
       (agent, context) => ({ id: agent.nodeId, state: agent.state, day: context.day, policy: context.policy }) as unknown as HTMLElement,
       id => { selected = id })
@@ -96,6 +101,18 @@ test('live frames update retained markers and the open selection without moving 
     assert.deepEqual(records[selection].content, { id: selection, state: frame[selection], day: 1, policy: 'targeted' })
     assert.equal(records[selection].opened, 1)
     assert.equal(records[selection].popup.options.autoPan, true)
+    const cityRadius = records[0].options.radius
+    assert.ok(cityRadius <= 2, 'city overview uses small markers')
+    assert.equal(typeof mapEvents.zoomend, 'function')
+    zoom = 17
+    mapEvents.zoomend()
+    assert.ok(records[0].options.radius > cityRadius)
+    assert.ok(records[2].options.radius > records[0].options.radius)
+    assert.equal(records.length, size)
+    assert.equal(records[selection].opened, 1)
+    zoom = 11
+    mapEvents.zoomend()
+    assert.ok(records[0].options.radius < cityRadius)
     const updates = records.reduce((total, record) => total + record.styles, 0)
     layer.update({ ...context })
     assert.equal(records.reduce((total, record) => total + record.styles, 0), updates)
@@ -122,6 +139,7 @@ test('live frames update retained markers and the open selection without moving 
     layer.select(null)
     assert.equal(records[selection].popup.isOpen(), false)
     layer.destroy()
+    assert.deepEqual(mapEvents, {})
     layer.update(context)
     assert.equal(renderers, 1); assert.equal(groups, 1); assert.equal(removed, 1)
     assert.ok(records.every(record => record.clicks === 0))
