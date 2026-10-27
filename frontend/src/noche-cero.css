@@ -210,6 +210,25 @@
 .noche-cero .simulator-workbench .playback-time strong { color: var(--pumpkin-soft); }
 .noche-cero .simulator-workbench .playback-timeline span,
 .noche-cero .simulator-workbench .playback-speed span { color: #c4b8c6; }
+.noche-cero .real-playback .playback-settings { color: var(--ink); }
+.noche-cero .real-playback .playback-timeline input[type="range"] { accent-color: var(--pumpkin); }
+.noche-cero .real-playback :is(.playback-speed, .policy-selector) select,
+.noche-cero .real-playback select { color: var(--ink); background: #171620; border-color: #5a505d; }
+.noche-cero .real-playback select:focus-visible { outline-color: var(--pumpkin); }
+.noche-cero .vaccination-details { color: var(--ink); background: #24212d; border-color: var(--night-border); }
+.noche-cero .vaccination-details :is(h3, h4),
+.noche-cero .vaccination-person h4 { color: var(--ink); }
+.noche-cero .vaccination-details p,
+.noche-cero .vaccination-person p { color: #c4b8c6; }
+.noche-cero .vaccination-details [aria-label="Inventario de dosis"] { color: var(--lime); }
+.noche-cero .vaccination-person { border-color: var(--night-border); }
+.noche-cero .vaccination-details .chart-table { color: var(--ink); background: #211e29; border-color: var(--night-border); }
+.noche-cero .vaccination-details .chart-table summary { color: #ffc39e; background: #302832; }
+.noche-cero .vaccination-details .chart-table summary:hover { background: #40303a; }
+.noche-cero .vaccination-details :is(th, td) { color: var(--ink); border-color: var(--night-border); background: transparent; }
+.noche-cero .vaccination-details :is(caption, .chart-table caption) { color: #c4b8c6; }
+.noche-cero .vaccination-details .plain-action { color: #ffc39e; }
+.noche-cero .vaccination-details .plain-action:hover { color: #ffe1cc; }
 .noche-cero .geographic-map { --map-surface: #201d28; --map-ink: #f1ece4; --map-border: #534959; --map-link: #ffb281; }
 .noche-cero .geographic-map .leaflet-tile-pane { filter: brightness(.65) saturate(.8) sepia(.1); }
 .noche-cero .simulation-update-overlay { background: #111019a8; }
