@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import type { PreviewResponse } from './api.ts'
+import { networkPositions } from './network-layout.ts'
 import { previewNetwork } from './preview-network.ts'
 
 const fixture = (): PreviewResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/preview-response.json', import.meta.url), 'utf8'))
@@ -65,4 +66,31 @@ test('vaccination markers follow actual dose outcomes and do not replace SEIR st
   assert.deepEqual(graph.nodes.slice(0, 2).map(node => node.data.vaccination), ['effective', 'ineffective'])
   assert.deepEqual(graph.nodes.map(node => node.data.state), previewNetwork(source, 'All layers').nodes.map(node => node.data.state))
   assert.ok(previewNetwork(source, 'All layers').nodes.every(node => node.data.vaccination === 'none'))
+})
+
+for (const mode of ['householdId', 'schoolId', 'busId', 'marketId', 'neighborhoodId'] as const) {
+  test(`layout ${mode} preserves people and creates deterministic finite separated positions`, () => {
+    const source = fixture()
+    const before = JSON.stringify(source)
+    const layout = networkPositions(source, mode)
+    assert.equal(layout.length, source.graph.nodes.length)
+    assert.equal(new Set(layout.map(p => p.nodeId)).size, source.graph.nodes.length)
+    assert.equal(new Set(layout.map(p => `${p.x},${p.y}`)).size, source.graph.nodes.length)
+    assert.ok(layout.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)))
+    assert.deepEqual(networkPositions(source, mode), layout)
+    assert.deepEqual(networkPositions({ ...source, graph: { ...source.graph, nodes: [...source.graph.nodes].reverse() } }, mode), layout)
+    assert.equal(layout.filter(p => p.label).length, new Set(source.graph.nodes.map(n => n[mode])).size)
+    assert.equal(JSON.stringify(source), before)
+  })
+}
+
+test('circular layout preserves backend preview coordinates and handles unassigned memberships', () => {
+  const source = fixture()
+  const circle = networkPositions(source, 'circle')
+  const radius = Math.max(230, source.graph.nodes.length * 3)
+  assert.deepEqual(circle.map(p => [p.x, p.y]), source.positions.map(p => [p.x * radius, p.y * radius]))
+  source.graph.nodes.forEach(node => { node.schoolId = null })
+  const grouped = networkPositions(source, 'schoolId')
+  assert.equal(grouped.filter(p => p.label).length, 1)
+  assert.match(grouped.find(p => p.label)!.label, /Sin colegio/)
 })

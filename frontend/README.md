@@ -1,6 +1,6 @@
 # Frontend environment
 
-## Estado de integración I-06
+## Estado de integración I-07
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
@@ -123,3 +123,10 @@ El cliente verifica hash/configuración, total de réplicas, longitud de series,
 Tras comparar, vuelve a Simulador y avanza al día de intervención. El panel Vacunación muestra asignadas/efectivas/sin usar y la lista de personas en orden de selección. Pulsa una persona para abrir su explicación; también funciona el selector del inspector. El borde violeta distingue dosis efectivas (continuo) de fallidas (discontinuo); el color interior conserva S/E/I/R. Una selección fallida consume una dosis y no atribuye inmunidad.
 
 Cambiar estrategia o retroceder actualiza los registros sin recomputar decisiones. Antes de la intervención no se revelan seleccionados futuros. El estado elegible al decidir se conserva separado del estado actual. Sin frames, el registro completo de la representativa sigue disponible con su selector de estrategia; el grafo permanece identificado como preview inicial.
+
+
+## Distribuciones visuales reales (I-07)
+
+El selector Organizar personas por ofrece Barrios (predeterminado), Hogares, Colegios, Rutas de bus, Mercados y Circular. Cada grupo conserva su identificador y cantidad; las personas sin pertenencia se agrupan explícitamente como Sin colegio/Sin ruta de bus/etc. Las etiquetas pertenecen a personas existentes, sin añadir nodos epidemiológicos. Son grupos de una población sintética, no coordenadas geográficas.
+
+Las posiciones agrupadas son deterministas por IDs/pertenencia y se mantienen al cambiar día, estrategia o filtro de contactos. Cambiar distribución pausa la reproducción y ajusta el encuadre; no invalida resultados ni hace otra petición. El círculo conserva las posiciones originales del preview. El filtro Tipo de contacto controla aristas por separado. Zoom, selección, inspector, estados SEIR y bordes de dosis siguen disponibles.

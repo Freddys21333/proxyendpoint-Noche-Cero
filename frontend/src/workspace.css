@@ -2993,3 +2993,8 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .vaccination-details h3, .vaccination-person h4 { margin: 0 0 .6rem; font-weight: 600; }
 .vaccination-details p, .vaccination-person p { margin: .6rem 0; line-height: 1.5; }
 .vaccination-person { border-top: 1px solid #dce2da; padding-top: 1rem; margin-top: 1rem; }
+
+.network-layout-control { padding: 0 20px 16px; }
+.network-layout-control label { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.network-layout-control select { padding: .5rem; background: white; border: 1px solid #cbd5cf; border-radius: .4rem; max-width: 100%; }
+.network-layout-control p { margin: .6rem 0 0; font-size: 15px; color: #65746b; }

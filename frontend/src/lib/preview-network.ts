@@ -27,7 +27,7 @@ export function previewNetwork(preview: PreviewResponse, layer: string, day = 0,
     const position = positions.get(node.id)
     if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) throw new Error('Missing graph position')
     neighbors[String(node.id)] = [...(sets.get(node.id) ?? [])].sort((a, b) => a - b).map(String)
-    return { data: { id: String(node.id), state: (frame ? frame[node.id] : initial.has(node.id) ? 'I' : 'S') as DemoState,
+    return { data: { id: String(node.id), groupLabel: '', state: (frame ? frame[node.id] : initial.has(node.id) ? 'I' : 'S') as DemoState,
       vaccination: doses.get(node.id) ?? 'none', initial: initial.has(node.id) ? 1 : 0, inLayer: !context || sets.has(node.id) },
       position: { x: position.x * radius, y: position.y * radius } }
   })

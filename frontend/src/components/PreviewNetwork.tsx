@@ -3,6 +3,7 @@ import cytoscape from 'cytoscape'
 import { Crosshair, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
+import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
 import { previewNetwork } from '@/lib/preview-network'
 import { Button } from './ui/button'
 import { vaccinationsAtDay } from '@/lib/vaccination'
@@ -20,6 +21,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const inspector = useRef<HTMLDetailsElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const network = useRef<cytoscape.Core | null>(null)
+  const [layout, setLayout] = useState<NetworkLayout>('neighborhoodId')
   const [selected, setSelected] = useState('')
   const [day, setDay] = useState(0)
   const [policy, setPolicy] = useState<Policy>('targeted')
@@ -40,6 +42,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const dose = applied.find(row => String(row.nodeId) === selected)
   const pickerId = useId()
   const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections), [preview, layer, currentDay, frame, selections])
+  const positions = useMemo(() => networkPositions(preview, layout), [preview, layout])
   const detail = preview.graph.nodes.find(n => String(n.id) === selected)
   const selectedState = graph.nodes.find(n => n.data.id === selected)?.data.state ?? 'S'
 
@@ -48,7 +51,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     const cy = cytoscape({ container: container.current, elements: graph.elements,
       layout: { name: 'preset' }, minZoom: 0.01, maxZoom: 5, boxSelectionEnabled: false, selectionType: 'single',
       style: [
-        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#334155' } },
+        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#334155', label: 'data(groupLabel)', 'font-size': 15, 'text-valign': 'top', 'text-margin-y': -14, 'text-background-color': '#ffffff', 'text-background-opacity': 0.9, 'text-background-padding': '4px' } },
         { selector: 'node[state="I"]', style: { width: 23, height: 23, 'background-color': seirColors.I.marker, 'font-size': 14, 'text-valign': 'top', 'text-margin-y': -10, 'text-background-color': '#ffffff', 'text-background-opacity': 0.9 } },
         { selector: 'node[state="E"]', style: { 'background-color': seirColors.E.marker } },
         { selector: 'node[state="R"]', style: { 'background-color': seirColors.R.marker } },
@@ -74,12 +77,28 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     if (!cy) return
     cy.batch(() => {
       cy.edges().remove()
-      for (const node of graph.nodes) cy.getElementById(node.data.id).data(node.data)
+      for (const node of graph.nodes) {
+        const visual = cy.getElementById(node.data.id)
+        visual.data({ ...node.data, groupLabel: visual.data('groupLabel') ?? '' })
+      }
       cy.add(graph.edges)
     })
   }, [graph, active])
 
-  useEffect(() => { network.current?.fit(undefined, 20) }, [resetKey])
+  useEffect(() => {
+    const cy = network.current
+    if (!cy) return
+    cy.batch(() => {
+      for (const position of positions) {
+        const node = cy.getElementById(String(position.nodeId))
+        node.position({ x: position.x, y: position.y })
+        node.data('groupLabel', position.label)
+      }
+    })
+    cy.fit(undefined, 45)
+  }, [positions, active])
+
+  useEffect(() => { network.current?.fit(undefined, 45) }, [resetKey])
   useEffect(() => {
     const cy = network.current
     if (!cy) return
@@ -96,6 +115,10 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     {!active ? <section className="network-demo-panel" aria-label="Vista previa pendiente"><h2>Vista previa pendiente</h2><p>La configuración cambió. Consulta la red para mostrar la población actual.</p></section> : <section className="network-demo-panel" aria-label="Red real de la vista previa">
       <header className="network-demo-heading"><h2>Red de contactos</h2><span>{frames ? `Réplica ${comparison!.representative.index} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
       <p className="network-meaning">{graph.edges.length} contactos activos visibles. Cada punto es una persona; cada línea, un contacto.</p>
+      <div className="network-layout-control">
+        <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); setPlaying(false) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>
+      </div>
       <div className="seir-instrument" aria-label="Estados de la población en el día seleccionado">
         {(Object.keys(labels) as (keyof typeof labels)[]).map(state => <div key={state} aria-label={`${labels[state]}: ${graph.counts[state]}`} style={{ '--state-color': seirColors[state].marker } as CSSProperties}>
           <span className="seir-instrument-label"><span className="seir-status-dot" aria-hidden="true" /><b>{state}</b> {labels[state]}</span><strong>{graph.counts[state]}</strong>
