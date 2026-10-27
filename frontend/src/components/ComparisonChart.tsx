@@ -12,7 +12,10 @@ export default function ComparisonChart({ result, metric }: { result: CompareRes
       <CartesianGrid vertical={false} stroke="#edf0ee" />
       <XAxis dataKey="day" type="number" domain={[0, result.configuration.scenario.days]} tickLine={false} axisLine={false} />
       <YAxis domain={[0, 'auto']} allowDecimals={false} tickLine={false} axisLine={false} />
-      <Tooltip labelFormatter={value => `Día ${value}`} />
+      <Tooltip labelFormatter={value => `Día ${value}`} formatter={value => {
+        const format = (item: unknown) => typeof item === "number" ? item.toLocaleString("es-EC", { maximumFractionDigits: 3 }) : String(item ?? "");
+        return Array.isArray(value) ? value.map(format).join(" – ") : format(value);
+      }} />
       {policies.map(policy => <Area key={`${policy}-range`} type="linear" dataKey={`${policy}Range`} name={`${policyLabels[policy]} P05–P95`} fill={colors[policy]} fillOpacity={0.08} stroke="none" isAnimationActive={false} />)}
       {policies.map(policy => <Line key={policy} type="linear" dataKey={policy} name={`${policyLabels[policy]} media`} stroke={colors[policy]} strokeWidth={2.5} strokeDasharray={policy === "none" ? "7 4" : policy === "random" ? "3 3" : undefined} dot={false} isAnimationActive={false} />)}
     </ComposedChart></ResponsiveContainer></div>
