@@ -1,7 +1,7 @@
 import { toConfiguration } from './api.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { defaults, applyPreset, validateScenario, applyServerDefaults, fromConfiguration } from './scenario.ts'
+import { defaults, applyPreset, validateScenario, applyServerDefaults, fromConfiguration, matchesLoadedScenario } from './scenario.ts'
 
 test('each surprise transforms a copy of the base without accumulating changes', () => {
   assert.equal(applyPreset(defaults, 'double_beta').beta, 0.16)
@@ -29,4 +29,21 @@ test('published defaults fill untouched fields and preserve edits without clampi
   assert.equal(result.seed, 77)
   assert.ok(validateScenario(result).some(message => message.includes('Vaccines')))
   assert.deepEqual(applyServerDefaults(current, published, new Set()), fromConfiguration(published))
+})
+
+test('returning to loaded parameters restores only the same valid scenario', () => {
+  const configuration = toConfiguration(defaults)
+  assert.equal(matchesLoadedScenario({ ...defaults }, configuration), true)
+  for (const key of ['population', 'days', 'beta', 'sigma', 'gamma', 'initial', 'vaccines', 'interventionDay', 'efficacy', 'repetitions', 'seed'] as const) {
+    const edited = { ...defaults, [key]: defaults[key] + 1 }
+    assert.equal(matchesLoadedScenario(edited, configuration), false, key)
+    assert.equal(matchesLoadedScenario({ ...edited, [key]: defaults[key] }, configuration), true, key)
+  }
+  assert.equal(matchesLoadedScenario({ ...defaults, population: NaN }, configuration), false)
+  assert.equal(matchesLoadedScenario({ ...defaults, node: 12 }, configuration), true)
+  assert.equal(matchesLoadedScenario({ ...defaults, origin: 'market' }, configuration), false)
+  const nodeScenario = { ...defaults, origin: 'node', node: 12 }
+  const nodeConfiguration = toConfiguration(nodeScenario)
+  assert.equal(matchesLoadedScenario(nodeScenario, nodeConfiguration), true)
+  assert.equal(matchesLoadedScenario({ ...nodeScenario, node: 13 }, nodeConfiguration), false)
 })

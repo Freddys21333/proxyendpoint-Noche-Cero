@@ -45,6 +45,13 @@ export function fromConfiguration(c: ConfigurationInput): Scenario {
     origin: c.scenario.origin.kind, node: c.scenario.origin.value ?? 0 }
 }
 
+export function matchesLoadedScenario(scenario: Scenario, configuration: ConfigurationInput): boolean {
+  if (validateScenario(scenario).length) return false
+  const loaded = fromConfiguration(configuration)
+  return (Object.keys(loaded) as (keyof Scenario)[]).every(key =>
+    key === 'node' && scenario.origin !== 'node' || scenario[key] === loaded[key])
+}
+
 export function applyServerDefaults(current: Scenario, configuration: ConfigurationInput, edited: ReadonlySet<keyof Scenario>): Scenario {
   const incoming = fromConfiguration(configuration)
   return Object.fromEntries((Object.keys(incoming) as (keyof Scenario)[]).map(key => [key, edited.has(key) ? current[key] : incoming[key]])) as Scenario

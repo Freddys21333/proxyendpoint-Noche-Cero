@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { defaults, validateScenario, fromConfiguration, applyServerDefaults, type Scenario } from "@/lib/scenario";
+import { defaults, validateScenario, fromConfiguration, applyServerDefaults, matchesLoadedScenario, type Scenario } from "@/lib/scenario";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 
 const ContactNetwork = lazy(() =>
@@ -75,6 +75,7 @@ export default function App() {
   const [comparisonErrors, setComparisonErrors] = useState<string[]>([]);
   const [serverHealth, setServerHealth] = useState<HealthResponse | null>(null);
   const comparisonController = useRef<AbortController | null>(null);
+  const loadedScenario = useRef<{ preview: PreviewResponse; comparison: CompareResponse | null } | null>(null);
 
 
   useEffect(() => {
@@ -103,19 +104,26 @@ export default function App() {
   };
 
 
-  const update = (key: keyof Scenario, value: number | string) => {
-    editedFields.current.add(key);
+  const applyScenario = (next: Scenario) => {
     invalidatePreview();
-    setScenario((current) => ({ ...current, [key]: value }));
-    setNotice("Configuración modificada. La vista previa y los resultados anteriores quedaron invalidados.");
+    setScenario(next);
+    const loaded = loadedScenario.current;
+    if (loaded && matchesLoadedScenario(next, loaded.preview.configuration)) {
+      setRemotePreview(loaded.preview);
+      setComparison(loaded.comparison);
+      setNotice("Parámetros del escenario cargado restaurados. La visualización vuelve a estar disponible.");
+    } else {
+      setNotice("Configuración modificada. Consulta la red para aplicar los nuevos parámetros.");
+    }
     setErrors([]);
   };
+  const update = (key: keyof Scenario, value: number | string) => {
+    editedFields.current.add(key);
+    applyScenario({ ...scenario, [key]: value });
+  };
   const reset = () => {
-    invalidatePreview();
     editedFields.current.clear();
-    setScenario(serverConfig ? fromConfiguration(serverConfig.defaults) : { ...defaults });
-    setErrors([]);
-    setNotice("Configuración base restaurada.");
+    applyScenario(serverConfig ? fromConfiguration(serverConfig.defaults) : { ...defaults });
   };
   const exportConfig = () => {
     const payload = comparison ?? {
@@ -189,6 +197,7 @@ export default function App() {
     try {
       const result = await api.preview(toConfiguration(scenario, serverConfig.defaults), controller.signal, serverConfig.limits);
       if (controller.signal.aborted) return;
+      loadedScenario.current = { preview: result, comparison: null };
       setRemotePreview(result);
       setServerStatus("ready");
       dialogReturn.current = 'preview';
@@ -221,6 +230,7 @@ export default function App() {
     try {
       const result = await api.compareForPlayback(remotePreview.configuration, remotePreview.graphHash, controller.signal, serverConfig?.limits);
       if (controller.signal.aborted) return;
+      loadedScenario.current = { preview: remotePreview, comparison: result };
       setComparison(result);
       setNotice("Comparación completada con resultados reales del motor.");
     } catch (error) {
@@ -228,7 +238,7 @@ export default function App() {
       const issues = error instanceof ApiError ? [error.message, ...error.fields.map(field => `${field.path}: ${field.reason}`)] : ["No se pudo completar la comparación."];
       setComparisonErrors(issues);
       setErrors(issues);
-      if (error instanceof ApiError && error.status === 409) setRemotePreview(null);
+      if (error instanceof ApiError && error.status === 409) { setRemotePreview(null); loadedScenario.current = null; }
     } finally {
       if (comparisonController.current === controller) { comparisonController.current = null; setComparisonPending(false); }
     }
