@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --experimental-strip-types --test src/lib/scenario.test.ts src/lib/contact-network.test.ts src/lib/temporal-demo.test.ts src/lib/api.test.ts src/lib/api-errors.test.ts src/lib/preview-network.test.ts src/lib/comparison.test.ts src/lib/export-experiment.test.ts src/lib/simulation-playback.test.ts src/lib/geographic-map.test.ts src/lib/manta-geography.test.ts src/lib/geographic-agents-layer.test.ts src/pro/jobs-model.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/scenario.test.ts src/lib/contact-network.test.ts src/lib/temporal-demo.test.ts src/lib/api.test.ts src/lib/api-errors.test.ts src/lib/preview-network.test.ts src/lib/comparison.test.ts src/lib/export-experiment.test.ts src/lib/simulation-playback.test.ts src/lib/geographic-map.test.ts src/lib/manta-geography.test.ts src/lib/geographic-agents-layer.test.ts src/lib/adaptive.test.ts src/pro/jobs-model.test.ts",
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",

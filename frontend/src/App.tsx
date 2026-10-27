@@ -322,7 +322,7 @@ export default function App() {
         {errors.length > 0 && (
           <div className="configuration-errors" role="alert">
             <strong>Revise la configuración</strong>
-            <ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul>
+            <ul>{errors.map((error, index) => <li key={`${index}-${error}`}>{error}</li>)}</ul>
           </div>
         )}
         {apiFailure && (apiFailure.operation === "startup" || apiFailure.operation === "preview") && <ApiErrorPanel

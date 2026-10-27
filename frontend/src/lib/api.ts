@@ -8,6 +8,14 @@ export type InventoryDaily = { vaccinesDeliveredToday: number; vaccinesReceivedT
 
 export type AdaptiveStrategy = { modelVersion: 'adaptive-policy-v1'; closureInfectionThreshold: number; reopenInfectionThreshold: number; ringVaccinationPriority: boolean; enabled?: boolean }
 export type AdaptiveDecisions = { enabled: boolean; triggers: string[]; infectiousFraction: number; closureActive: boolean | null; brigadesAllowed: boolean; ringVaccinationActive: boolean }
+export type DailyRow = {
+  day: number; s: number; e: number; i: number; r: number; cumulativeInfected: number;
+  budgetRemainingCents?: number; spentCents?: number; spentTodayCents?: number;
+  closedContext?: string | null; brigadesActive?: number; brigadeNodeIds?: number[];
+  vaccinesDeliveredToday?: number; vaccinesReceivedTotal?: number; vaccinesUsedToday?: number; vaccinesAvailable?: number;
+  brigadeSuppliesDeliveredToday?: number; brigadeSuppliesReceivedTotal?: number; brigadeSuppliesUsedToday?: number; brigadeSuppliesAvailable?: number;
+  adaptiveDecisions?: AdaptiveDecisions;
+}
 export type CombinedPlan = {
   modelVersion: 'combined-educational-v1'; budgetCents: number; vaccineCostCents: number;
   closureCostCents: number; closureContext: 'household' | 'school' | 'bus' | 'market' | 'neighborhood';
@@ -45,7 +53,7 @@ export type CompareResponse = Metadata & {
     targetedWinRateVsNone: number; targetedWinRateVsRandom: number };
   recommendation: { winner: Policy | 'tie'; confidence: 'descriptive' | 'supported' | 'inconclusive'; reasons: string[]; limitations: string[] };
   manifest: { experimentHash: string; engineVersion: string; schemaVersion: string; buildCommit: string; rootSeed: number; [key: string]: unknown };
-  replicates: { index: number; policies: Record<Policy, { metrics: Record<Metric, number | null>; daily: unknown[]; selections: VaccinationSelection[]; events: unknown[] | null; resultHash: string }> }[];
+  replicates: { index: number; policies: Record<Policy, { metrics: Record<Metric, number | null>; daily: DailyRow[]; selections: VaccinationSelection[]; events: unknown[] | null; resultHash: string }> }[];
   representative: { index: number; frames: Record<Policy, PersonState[][]> | null; [key: string]: unknown };
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }

@@ -1,4 +1,5 @@
 import type { CombinedPlan } from '@/lib/api'
+import { AdaptiveStrategyEditor } from './AdaptiveStrategyEditor'
 import { ResourceScheduleEditor } from './ResourceScheduleEditor'
 
 export function CombinedInterventions({ value, onChange, days, population }: {
@@ -29,6 +30,9 @@ export function CombinedInterventions({ value, onChange, days, population }: {
       <details open><summary>Brigadas simuladas</summary><p>Reducen temporalmente la transmisión de contactos de personas susceptibles atendidas. No curan ni inmunizan.</p>
         <div className="configuration-fields">{number('Costo por persona y día (USD)', 'brigadeCostCents', 10000, true)}{number('Personas atendidas por día', 'brigadeDailyCapacity', population)}{number('Reducción de transmisión (%)', 'brigadeReduction', 100, false, true)}{number('Inicio de brigadas', 'brigadeStart', days)}{number('Días de brigadas (0 desactiva)', 'brigadeDays', days)}</div>
       </details>
+      <AdaptiveStrategyEditor value={value.adaptiveStrategy} onChange={adaptiveStrategy => {
+        const next = { ...value }; if (adaptiveStrategy) next.adaptiveStrategy = adaptiveStrategy; else delete next.adaptiveStrategy; onChange(next)
+      }} />
       <p>Orden diario: dosis, cierre y brigadas. Cada acción se aplica solo si alcanza el saldo. Aleatoria y Dirigida comparten el mismo presupuesto; sus decisiones pueden producir gastos distintos.</p>
     </>}
   </section>

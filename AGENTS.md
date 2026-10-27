@@ -25,7 +25,7 @@ Rama de integración: `feat/pro`. Último commit integrado: `5861407` (`merge(pr
 | Rendimiento | Benchmark por defecto `N=1000/T=90/R=30`: **44,3 s** sin frames, 8,5× mejor que 377,9 s. | Objetivo backend ≤25 s no alcanzado; benchmark AWS no ejecutado. |
 | T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
-| P-02 | Backend verificado localmente: `adaptive-v1`, reglas, anillo, motivos, exportación y reproducción. | Editor/historial visual y aceptación UI. |
+| P-02 | Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. | Aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles. |
 | P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible. | Pantalla de jobs, sesión de credenciales y P-04 AWS. |
 | P-04 | No iniciado. | Distributed Map, S3, IAM, cuotas, costos y evidencia de miles de réplicas. |
 | P-05/P-06 | No iniciados. | Dataset real trazable de dengue/Manabí, modelo, calibración y validación fuera de muestra. |
@@ -85,7 +85,7 @@ Detalle, dependencias y evidencia en [specs/tasks.md](specs/tasks.md).
 Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto en [specs/pro-workstreams.md](specs/pro-workstreams.md).
 
 - [x] P-01: llegadas diarias e inventario, verificado localmente.
-- [ ] P-02: backend local verificado; falta editor/historial visual y aceptación UI.
+- [ ] P-02: backend, cliente y UI locales verificados; falta aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles.
 - [ ] P-03: backend y cliente local verificados; falta pantalla de jobs y P-04.
 - [ ] P-04: miles de réplicas en AWS; no iniciado.
 - [ ] P-05: datos reales de dengue en Manabí; no iniciado.
@@ -105,7 +105,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - API Lambda local con health/config/preview/compare, gzip, validación de hash, límites y errores.
 - Interfaz Noche Cero: preview real, red, filtros, comparación, curvas, tabla, dosis, explicación de selección, reproducción, mapa OSM y exportaciones.
 - P-01: calendario de llegadas, inventario, capacidad, costos educativos y exportación.
-- P-02: política adaptativa backend (`adaptive-v1`), decisiones, motivos, exportación y reproducción.
+- P-02: política adaptativa completa en local (`adaptive-v1`): decisiones, motivos, exportación, reproducción, editor de la variante e historial diario de decisiones.
 - P-03: trabajos Monte Carlo locales con `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible.
 - P-09: mapa de Manta con polígonos OSM versionados y posiciones sintéticas deterministas.
 
@@ -114,7 +114,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 Prioridad inmediata:
 
 1. **Terminar T-22.** Ejecutar las cinco raíces primarias y los cinco contrastes; conservar JSON/ZIP/logs; reproducir cada JSON y `base-root-0` tres veces; validar controles y generar informe. No editar el protocolo.
-2. **P-02 UI.** El backend `adaptive-v1` ya está verificado localmente; falta editor/historial visual, aceptación UI y prueba con escenarios nuevos.
+2. **P-02, cierre de aceptación.** El editor, la etiqueta de variante y el historial diario ya funcionan contra el motor real ([evidencia](docs/evidencia/p02-ui-2026-10-27.md)). Falta la aceptación humana T-13..T-16 y repetir en UI los escenarios de saldo agotado y sin elegibles.
 3. **P-03 UI + P-04.** Las rutas `/v1/jobs` y el cliente ya están verificados localmente; falta conectar la pantalla PRO (hoy con fixtures), sesión de credenciales y después P-04 AWS.
 4. **P-05.** Dataset real trazable de dengue/Manabí: URL, edición, fecha, corte, licencia, hash, tabla normalizada, faltantes y límites. Si no alcanza, dejar P-06 pendiente.
 5. **P-06.** Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre y preset versionado.
@@ -179,7 +179,7 @@ Antes de ejecutar, leer [specs/validation/t22-v1/README.md](specs/validation/t22
 - **`scripts/run_t22.py` no ha corrido la matriz completa.** Su compilación, Ruff y controles funcionaron; aun así, revisarlo antes de confiar en él para primaria/contrastes.
 - **La API es síncrona y limitada a 2..30 réplicas.** No presentar `repetitions` como jobs asíncronos.
 - **P-03 en la UI es demo.** `/v1/jobs` existe localmente, pero la pantalla PRO sigue con fixtures rotulados.
-- **P-01/P-09 no cierran PRO.** P-02 y P-03 tienen backend local; P-02..P-08 siguen abiertos por UI, AWS o evidencia.
+- **P-01/P-09 no cierran PRO.** P-02 tiene backend, cliente y UI locales verificados; P-03 tiene backend y cliente. P-02, P-03 y P-04..P-08 siguen abiertos por aceptación humana, AWS o evidencia.
 - **El mapa no es evidencia epidemiológica.** OSM y posiciones sintéticas no prueban riesgo ni movilidad real.
 - **El Budget no está operativo.** 0/2 destinatarios verificados; una alerta no detiene el gasto.
 - **No hay URL pública ni AWS desplegado.** `infra/` está vacío.

@@ -37,7 +37,7 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 - El backend no implementa tendencia de casos nuevos ni aprendizaje por refuerzo; observa I/N, contactos activos, elegibles e inventario/presupuesto. No lee el futuro.
 - Solo `targeted` con la variante habilitada usa la política adaptativa; no redefine silenciosamente la dirigida fija.
 
-**Pendiente P-02:** editor/historial visual, nombre de variante en la UI, comparación visual del historial diario y aceptación de escenarios. El contrato backend ya existe.
+**Pendiente P-02 (actualizado 2026-10-27):** el editor, el nombre de variante y el historial diario ya están implementados y aceptados contra el motor real; ver [p02-ui-2026-10-27](p02-ui-2026-10-27.md). Resta la aceptación humana integral de T-13..T-16 y la corrida E2E, no el código de la variante.
 
 ### 2.2 P-03 — trabajos Monte Carlo locales
 
@@ -67,11 +67,11 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 ### I-02 — P-02 UI
 
-- [ ] Controles para habilitar/versionar la variante adaptativa y editar umbrales.
-- [ ] Distinguir la variante en vistas, curvas, tabla y explicación de selección.
-- [ ] Historial diario de decisiones y acciones realmente ejecutadas/omitidas.
-- [ ] Aceptación con brote ascendente/descendente, saldo agotado, sin elegibles, cambio de prioridad, I=0/E>0 y reglas deshabilitadas.
-- [ ] Pruebas de UI y evidencia con escenario nuevo.
+- [x] Controles para habilitar/versionar la variante adaptativa y editar umbrales.
+- [x] Distinguir la variante en vistas, curvas, tabla y explicación de selección.
+- [x] Historial diario de decisiones y acciones realmente ejecutadas/omitidas.
+- [ ] Aceptación con brote ascendente/descendente, saldo agotado, sin elegibles, cambio de prioridad, I=0/E>0 y reglas deshabilitadas. Cubierto en backend (`test_adaptive_regression.py`) y en el barrido real (`scripts/verify_adaptive_triggers.mjs`); en UI se aceptaron umbral de cierre/reapertura, pausa por I=0, anillo, reglas deshabilitadas y umbrales inválidos. Falta repetir saldo agotado y sin elegibles en la interfaz.
+- [x] Pruebas de UI y evidencia con escenario nuevo: [p02-ui-2026-10-27](p02-ui-2026-10-27.md).
 
 ### I-03 — P-05 datos reales de dengue/Manabí
 
@@ -155,7 +155,7 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 - No reescribir el protocolo T-22 ni cambiar semillas para obtener un resultado favorable.
 - No duplicar validación, SEIR, métricas, agregados, costos o decisiones en el frontend.
 - No presentar fixtures de `frontend/src/pro/` como resultados reales.
-- No afirmar que P-02/P-03 están cerrados: backend verificado no equivale a UI aceptada ni a AWS.
+- No afirmar que P-02/P-03 están cerrados: P-02 tiene backend y UI locales verificados, pero la aceptación humana integral (T-13..T-16) y AWS siguen pendientes; P-03 tiene backend y cliente, pero le falta la pantalla y P-04.
 
 ---
 
@@ -177,7 +177,7 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 1. Commit y push de esta documentación y del runner T-22.
 2. Cerrar T-22: primaria, contrastes, reproducciones, informe y gate.
-3. Conectar P-02 UI y aceptar escenarios adaptativos.
+3. Repetir en UI los escenarios de saldo agotado y sin elegibles de P-02; el resto de I-02 ya está verificado localmente.
 4. Conectar P-03 UI y cerrar la aceptación local de jobs.
 5. P-05 y P-06 con datos reales y validación fuera de muestra.
 6. P-08 desde un experimento validado.

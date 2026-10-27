@@ -39,12 +39,13 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-02 — Política adaptativa observable (PRO-3)
 
-- [x] Estado: **backend verificado localmente; interfaz específica pendiente**. Dependencia: P-01 y decisiones de modelo compatibles.
+- [x] Estado: **backend, contrato cliente y UI verificados localmente**. Dependencia: P-01 y decisiones de modelo compatibles.
 - Formalizar reglas para reasignar dosis, brigadas y cierres según S/E/I/R observados, nuevos casos, contactos activos y saldo. Especificar frecuencia, umbrales y desempates; la primera versión puede ser una heurística voraz explicable.
 - Mantener las estrategias actuales identificadas. Si la nueva regla cambia su significado, añadir nombre/versionado, no sustituir silenciosamente `targeted`. Comparar sin intervención, azar con recursos equivalentes y política propuesta; aclarar cuándo una regla observa estados completos como supuesto educativo.
 - Exportar entradas observadas, acción, motivo, puntuación, recursos/costo y acciones omitidas por límites. No leer eventos futuros, futuros uniformes ni resultados de otras políticas.
 - Aceptación: brote ascendente/descendente, saldo agotado, ausencia de elegibles, cambios de prioridad, reglas estables y límites. Verificar independencia del orden de políticas y semillas por dominio. Recalcular solo brigadas diariamente no cierra esta tarea.
-- **Verificado 2026-10-27:** contrato de registros y anillo, conservación, exportación/reproducción, independencia de orden y cliente HTTP. Alcance exacto y límites en [P-02](p02-adaptive-policy.md); resultados y pendientes P-03 en [evidencia](../docs/evidencia/p02-adaptive.md).
+- **Verificado 2026-10-27 (backend):** contrato de registros y anillo, conservación, exportación/reproducción, independencia de orden y cliente HTTP. Alcance exacto y límites en [P-02](p02-adaptive-policy.md); resultados en [evidencia](../docs/evidencia/p02-adaptive.md).
+- **Verificado 2026-10-27 (UI):** editor de la variante con umbrales validados, etiqueta de variante en comparación/vacunación, historial diario de la réplica representativa con acciones ejecutadas y omitidas, y barrido real de motivos etiquetados. Evidencia y límites en [p02-ui-2026-10-27](../docs/evidencia/p02-ui-2026-10-27.md); la aceptación humana integral sigue en T-13..T-16.
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 

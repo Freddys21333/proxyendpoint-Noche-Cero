@@ -34,7 +34,7 @@ test('both views consume each representative frame by ID with its own daily coun
       const graph = previewNetwork(preview, 'All layers', day, presentation.frame)
       assert.deepEqual(graph.counts, presentation.counts)
       assert.deepEqual(graph.nodes.map(node => node.data.state), presentation.frame)
-      const daily = comparison.replicates[comparison.representative.index].policies[policy].daily[day] as Record<string, number>
+      const daily = comparison.replicates[comparison.representative.index].policies[policy].daily[day] as unknown as Record<string, number>
       for (const state of ['S', 'E', 'I', 'R'] as const) assert.equal(presentation.counts[state], daily[state.toLowerCase()])
     }
   }
@@ -74,7 +74,7 @@ test('a different graph or epidemiological configuration cannot animate an old s
 test('a frame inconsistent with its representative daily row is rejected without inventing individual states', () => {
   const { preview, comparison } = backendFixture()
   const source = getSimulationSource(preview, comparison, true, 'idle')
-  const row = comparison.replicates[comparison.representative.index].policies.targeted.daily[0] as Record<string, number>
+  const row = comparison.replicates[comparison.representative.index].policies.targeted.daily[0] as unknown as Record<string, number>
   row.s++
   const shown = readSimulationPresentation(preview, source, 0, 'targeted')
   assert.equal(shown.mode, 'error')

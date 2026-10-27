@@ -1,6 +1,6 @@
 # P-02: política adaptativa observable
 
-Estado: **backend verificado localmente**. El cliente acepta el contrato y exporta sus registros; el editor visual y la presentación del historial quedan para el frente frontend. Referencia: PRO-3, P-01 y [división de trabajo](pro-workstreams.md).
+Estado: **backend, contrato cliente y UI verificados localmente**. El cliente acepta el contrato, exporta sus registros, ofrece editor de la variante, etiqueta la política y presenta el historial diario de decisiones. La aceptación humana integral de T-13..T-16 sigue abierta. Referencia: PRO-3, P-01 y [división de trabajo](pro-workstreams.md). Evidencia UI: [p02-ui-2026-10-27](../docs/evidencia/p02-ui-2026-10-27.md).
 
 ## Contrato vigente
 
@@ -54,7 +54,7 @@ Schema autoritativo: `schemas/common.schema.json`, definiciones `AdaptiveStrateg
 
 El cliente TypeScript admite la configuración, reconoce cierres fuera de la ventana fija únicamente para la variante adaptativa, valida registros y conserva su CSV. La explicación de vacunación reconoce el anillo y su cantidad de contactos. Comparar configuraciones por valor evita mostrar una vista obsoleta al restaurar la misma regla.
 
-Pendiente del frente frontend: controles para habilitar/versionar la variante, editar umbrales, distinguir su nombre en vistas y comparar el historial diario con acciones realmente realizadas. Puede diseñarse sobre este contrato sin modificar la lógica científica. No se añadió ese editor como parte del cierre backend.
+Entregado al frontend (2026-10-27): `AdaptiveStrategyEditor` habilita/versiona la variante, edita ambos umbrales en porcentaje y la prioridad de anillo, y rechaza reapertura mayor que cierre; `policyVariantLabel` distingue «Dirigida · adaptativa v1» en recomendación, tabla, vacunación de la réplica y encabezado del historial; `AdaptiveDecisionsPanel` muestra el resumen (cierres pagados vs. solicitados, pausas por I=0, días con anillo, omisiones) y la tabla diaria de la réplica representativa con cierre solicitado/ejecutado, brigadas permitidas/atendidas, anillo y motivos. Con `enabled:false` la UI muestra la insignia «(inactiva)» y un aviso, sin inventar filas. Evidencia y límites: [p02-ui-2026-10-27](../docs/evidencia/p02-ui-2026-10-27.md).
 
 ## Verificación
 

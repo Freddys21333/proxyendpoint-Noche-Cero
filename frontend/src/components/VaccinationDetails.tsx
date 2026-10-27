@@ -1,6 +1,6 @@
-import type { Policy, VaccinationSelection } from '@/lib/api'
+import type { ConfigurationInput, Policy, VaccinationSelection } from '@/lib/api'
 import { selectionReason, vaccinationContexts, vaccinationsAtDay } from '@/lib/vaccination'
-import { policyLabels } from '@/lib/comparison'
+import { policyVariantLabel } from '@/lib/adaptive'
 
 export function VaccinationPerson({ selection }: { selection: VaccinationSelection }) {
   return <section className="vaccination-person" aria-label="Detalle de la dosis">
@@ -12,13 +12,14 @@ export function VaccinationPerson({ selection }: { selection: VaccinationSelecti
   </section>
 }
 
-export function VaccinationDetails({ selections, day, interventionDay, vaccines, policy, onSelect, selectedId }: {
-  selections: VaccinationSelection[]; day: number; interventionDay: number; vaccines: number; policy: Policy; onSelect: (id: string) => void; selectedId?: string
+export function VaccinationDetails({ selections, day, interventionDay, vaccines, policy, configuration, onSelect, selectedId }: {
+  selections: VaccinationSelection[]; day: number; interventionDay: number; vaccines: number; policy: Policy;
+  configuration?: ConfigurationInput; onSelect: (id: string) => void; selectedId?: string
 }) {
   const applied = vaccinationsAtDay(selections, day)
   const effective = applied.filter(row => row.effective).length
   return <section className="vaccination-details" aria-label="Vacunación de la réplica">
-    <h3>Vacunación · {policyLabels[policy]}</h3>
+    <h3>Vacunación · {policyVariantLabel(policy, configuration)}</h3>
     {policy === 'none' ? <p>Esta estrategia no aplica vacunas.</p> : day < interventionDay ? <p>Intervención pendiente: se aplica al registrar el día {interventionDay}. Aún no se ha administrado ninguna dosis.</p> : <p>Se seleccionaron susceptibles al decidir. Cada selección consume una dosis, incluso si no es efectiva.</p>}
     <p aria-label="Inventario de dosis">Asignadas: {applied.length} · Efectivas: {effective} · Sin usar: {vaccines - applied.length}</p>
     {applied.length > 0 && <>
