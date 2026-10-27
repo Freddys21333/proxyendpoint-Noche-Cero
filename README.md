@@ -11,6 +11,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
+- [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
 - [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
@@ -19,12 +20,12 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 
 - `backend/src/`: dominio, simulación, estrategias y adaptadores HTTP.
 - `backend/tests/`: pruebas del motor y contratos.
-- `frontend/src/`: interfaz prevista en React y TypeScript.
-- `schemas/`: futuros contratos OpenAPI y JSON Schema.
+- `frontend/src/`: interfaz React/TypeScript con API, grafo, resultados y exportación reales.
+- `schemas/`: contratos OpenAPI/JSON Schema y ejemplos mock.
 - `infra/`: futura infraestructura AWS con Terraform.
-- `scripts/`: futuras utilidades de reproducción.
+- `scripts/`: reproducción/exportación, servidor API local y utilidades de entorno.
 - `specs/`: especificaciones incrementales antes de implementar.
-- `docs/evidencia/`: futuras verificaciones y resultados observados.
+- `docs/evidencia/`: verificaciones locales y resultados observados.
 
 Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/` no tiene contenido que versionar y no forma parte de la estructura acordada.
 
@@ -32,7 +33,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces y decisiones de diseño están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-11 están verificados localmente. Frontend puede avanzar con T-12..16 y los contratos/mocks de `schemas/examples/`; infraestructura debe cerrar T-17/18 antes de desplegar. El gate científico T-22 sigue pendiente. Infraestructura puede avanzar según las dependencias de `specs/tasks.md`. Los comandos locales del backend están documentados; exportación/reproducción ya están documentadas; despliegue se documentará al implementarse y verificarse.
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. El siguiente trabajo es reconciliar RF-15/CA-12 con la retirada de los presets de la UI, consumir la configuración publicada y completar la validación integral. Infraestructura T-17/18, despliegue T-19/20 y gate científico T-22 siguen pendientes. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
 
 ## Parámetros previstos
 
