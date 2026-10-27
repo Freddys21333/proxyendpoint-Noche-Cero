@@ -50,16 +50,16 @@ class LocalHandler(BaseHTTPRequestHandler):
             if result["isBase64Encoded"]
             else result["body"].encode("utf-8")
         )
-        self.send_response(result["statusCode"])
-        for name, value in result["headers"].items():
-            self.send_header(name, value)
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Connection", "close")
-        self.end_headers()
         self.close_connection = True
         try:
+            self.send_response(result["statusCode"])
+            for name, value in result["headers"].items():
+                self.send_header(name, value)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Connection", "close")
+            self.end_headers()
             self.wfile.write(data)
-        except (BrokenPipeError, ConnectionResetError):
+        except ConnectionError:
             pass  # El navegador puede cancelar un preview al editar parámetros.
 
     def do_GET(self) -> None:

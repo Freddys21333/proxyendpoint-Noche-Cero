@@ -47,3 +47,7 @@ Flujo real en navegador: N=50/T=10/K=10/R=2, semilla 20261026, preview→compara
 Interop real: cliente TypeScript → Vite → API local → archivo JSON compacto en .tools/integration-experiment.json → scripts/reproduce.py en proceso Python nuevo. Ambos produjeron sha256:7c0f3a4c73824b0335c698590728f781b6e25c6d90cab6126a363d3a2376c5ad. Archivo temporal ignorado, no se versiona como resultado final.
 
 Prueba adicional por HTTP con N=50/T=3/R=30: 30 réplicas válidas, bootstrap de 2000 remuestras con intervalo [-0.06666666666666667, 0.5] para gainVsRandom y confianza inconclusive. Se comprueba transporte de incertidumbre real, sin atribuir superioridad universal. No se ejecutó benchmark AWS ni se cerró T-22.
+
+### Corrección local de cierres de conexión (I-04.1)
+
+Se observó ConnectionAbortedError/WinError 10053 al revisar el servidor local durante cancelaciones. El puente ahora captura ConnectionError al enviar tanto cabeceras como cuerpo; incluye cierre abortado, reset y broken pipe. No altera handlers, resultados ni límites. La nueva prueba inyecta el aborto en end_headers, exige ausencia de error no manejado y verifica una petición siguiente correcta. Contra la versión anterior del script falló (errors=[True]); restaurada la corrección, pasó. Resultado específico servidor+API: 33 pruebas aprobadas; lint y mypy correctos. El archivo anterior se probó temporalmente y se restauró automáticamente; no se publicaron pruebas rotas.
