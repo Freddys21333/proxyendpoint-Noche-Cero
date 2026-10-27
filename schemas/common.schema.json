@@ -2505,6 +2505,9 @@
         },
         "resourceSchedule": {
           "$ref": "#/$defs/ResourceSchedule"
+        },
+        "adaptiveStrategy": {
+          "$ref": "#/$defs/AdaptiveStrategy"
         }
       },
       "required": [
@@ -2580,6 +2583,43 @@
         "vaccineDailyCapacity",
         "initialBrigadeSupplies",
         "deliveries"
+      ],
+      "additionalProperties": false
+    },
+    "AdaptiveStrategy": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "const": "adaptive-policy-v1",
+          "type": "string",
+          "default": "adaptive-policy-v1"
+        },
+        "closureInfectionThreshold": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.05
+        },
+        "reopenInfectionThreshold": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.02
+        },
+        "ringVaccinationPriority": {
+          "type": "boolean",
+          "default": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "modelVersion",
+        "closureInfectionThreshold",
+        "reopenInfectionThreshold",
+        "ringVaccinationPriority"
       ],
       "additionalProperties": false
     }

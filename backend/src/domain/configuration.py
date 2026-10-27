@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 from domain.errors import ConfigurationError, FieldIssue
 from domain.models import (
+    AdaptiveStrategy,
     CombinedIntervention,
     CompareRequest,
     Configuration,
@@ -251,6 +252,16 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                 for day, q in sorted(deliveries.items())
             ),
         )
+    adaptive_strategy: AdaptiveStrategy | None = None
+    if combined and combined.get("adaptiveStrategy"):
+        ad = combined["adaptiveStrategy"]
+        adaptive_strategy = AdaptiveStrategy(
+            model_version="adaptive-policy-v1",
+            closure_infection_threshold=_float(ad.get("closureInfectionThreshold", 0.05)),
+            reopen_infection_threshold=_float(ad.get("reopenInfectionThreshold", 0.02)),
+            ring_vaccination_priority=bool(ad.get("ringVaccinationPriority", True)),
+            enabled=bool(ad.get("enabled", True)),
+        )
     weights = candidate["network"]["weights"]
     result = Configuration(
         root_seed=int(candidate["rootSeed"]),
@@ -286,6 +297,7 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                 brigade_start=combined["brigadeStart"],
                 brigade_days=combined["brigadeDays"],
                 resource_schedule=resource_schedule,
+                adaptive_strategy=adaptive_strategy,
             )
             if combined
             else None,
