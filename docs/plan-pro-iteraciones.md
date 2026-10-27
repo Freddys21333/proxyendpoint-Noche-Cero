@@ -77,6 +77,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico no está ejecutado.
 
+**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22 pendiente. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md).
+
 **Alcance:**
 
 - Medir y registrar un benchmark reproducible antes/después.
@@ -306,7 +308,7 @@ Reglas heredadas que no se pueden romper:
 | Iteración | Estado | Commit | Evidencia |
 |---|---|---|---|
 | I-00 | Completada | `git log --grep=I-00` | `docs/evidencia/auditoria-pro-2026-10-27.md` |
-| I-01 | Pendiente | — | — |
+| I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
 | I-02 | Pendiente | — | — |
 | I-03 | Pendiente | — | — |
 | I-04 | Pendiente | — | — |

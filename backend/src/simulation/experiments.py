@@ -9,7 +9,7 @@ from numpy.typing import NDArray
 from domain.errors import ConfigurationError
 from domain.models import Configuration, Policy
 from domain.reproducibility import create_rng, json_hash
-from simulation.engine import SimulationTrace, simulate_paired
+from simulation.engine import SimulationTrace, _EdgeIndex, simulate_paired
 from simulation.network import generate_graph
 
 POLICIES: tuple[Policy, ...] = ("none", "random", "targeted")
@@ -179,11 +179,16 @@ def run_experiment(
         raise ValueError("La opción de frames debe ser booleana.")
     graph = generate_graph(configuration) if graph is None else graph
     graph_hash = json_hash(graph)
+    edge_index = _EdgeIndex(graph["edges"], configuration.scenario.population_size)
     replicates: list[dict[str, Any]] = []
     try:
         for index in order:
             traces = simulate_paired(
-                configuration, graph, replicate_index=index, policy_order=policy_order
+                configuration,
+                graph,
+                replicate_index=index,
+                policy_order=policy_order,
+                _edge_index=edge_index,
             )
             initial = [
                 event["nodeId"] for event in traces["none"].events if event["cause"] == "initial"
@@ -204,7 +209,11 @@ def run_experiment(
         result = aggregate(replicates, configuration.root_seed)
         selected = result.pop("representativeIndex")
         traces = simulate_paired(
-            configuration, graph, replicate_index=selected, policy_order=policy_order
+            configuration,
+            graph,
+            replicate_index=selected,
+            policy_order=policy_order,
+            _edge_index=edge_index,
         )
         for policy in POLICIES:
             if (

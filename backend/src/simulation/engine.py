@@ -4,6 +4,7 @@ import hashlib
 import math
 import struct
 from dataclasses import dataclass, field
+from functools import cached_property
 from typing import Any
 
 import numpy as np
@@ -17,6 +18,8 @@ from strategies.vaccination import vaccinate
 
 FloatArray = NDArray[np.float64]
 STATES = ("S", "E", "I", "R")
+_STATE_CODE = {"S": 0, "E": 1, "I": 2, "R": 3}
+_EMPTY_POSITIONS = np.empty(0, dtype=np.int32)
 
 
 @dataclass(frozen=True)
@@ -25,7 +28,7 @@ class Potentials:
     progression: FloatArray
     vaccine: FloatArray
 
-    @property
+    @cached_property
     def randomness_hash(self) -> str:
         """Enmarca shapes y bytes para evitar concatenaciones ambiguas."""
         digest = hashlib.sha256()
@@ -91,6 +94,54 @@ def _event(
     }
 
 
+class _EdgeIndex:
+    """Vista NumPy de aristas; se construye una vez por simulación."""
+
+    __slots__ = ("u", "v", "edge_ids", "weights", "active_by_day", "edge_count")
+
+    def __init__(self, edges: list[dict[str, Any]], node_count: int) -> None:
+        count = len(edges)
+        self.edge_count = count
+        self.u = np.empty(count, dtype=np.int64)
+        self.v = np.empty(count, dtype=np.int64)
+        self.edge_ids = np.empty(count, dtype=np.int64)
+        self.weights = np.empty(count, dtype=np.float64)
+        active: dict[int, list[int]] = {}
+        for position, edge in enumerate(edges):
+            u, v, edge_id = edge["u"], edge["v"], edge["id"]
+            if not (0 <= u < node_count and 0 <= v < node_count and 0 <= edge_id < count):
+                raise ValueError("Arista ajena a la población o potenciales.")
+            self.u[position] = u
+            self.v[position] = v
+            self.edge_ids[position] = edge_id
+            self.weights[position] = edge["weight"]
+            for active_day in edge["activeDays"]:
+                if isinstance(active_day, (int, np.integer)) and int(active_day) >= 0:
+                    active.setdefault(int(active_day), []).append(position)
+        self.active_by_day = {
+            active_day: np.asarray(positions, dtype=np.int32)
+            for active_day, positions in active.items()
+        }
+
+    def refresh_weights(self, edges: list[dict[str, Any]]) -> None:
+        if len(edges) != self.edge_count:
+            raise ValueError("Arista ajena a la población o potenciales.")
+        self.weights = np.fromiter(
+            (edge["weight"] for edge in edges), dtype=np.float64, count=self.edge_count
+        )
+
+    def with_weights_copy(self) -> "_EdgeIndex":
+        """Comparte topología y días activos; aísla los pesos de cada política."""
+        clone = object.__new__(_EdgeIndex)
+        clone.u = self.u
+        clone.v = self.v
+        clone.edge_ids = self.edge_ids
+        clone.weights = self.weights.copy()
+        clone.active_by_day = self.active_by_day
+        clone.edge_count = self.edge_count
+        return clone
+
+
 def step_day(
     states: list[str],
     edges: list[dict[str, Any]],
@@ -101,8 +152,14 @@ def step_day(
     gamma: float,
     transmission: FloatArray,
     progression: FloatArray,
+    _edge_index: _EdgeIndex | None = None,
 ) -> tuple[list[str], list[dict[str, Any]]]:
-    """Lee B[d], aplica simultáneamente y etiqueta eventos con d+1."""
+    """Lee B[d], aplica simultáneamente y etiqueta eventos con d+1.
+
+    La versión vectorizada conserva la semántica de la referencia: una arista
+    transmite de I a S, gana la arista de menor id por destino y E nunca
+    progresa el mismo día en que se expone.
+    """
     if any(state not in STATES for state in states):
         raise ValueError("Estado SEIR inválido.")
     if type(day) is not int or day < 0:
@@ -111,34 +168,80 @@ def step_day(
         raise ValueError("Tasa inválida.")
     if transmission.shape != (len(edges),) or progression.shape != (len(states), 2):
         raise ValueError("Dimensiones de potenciales incompatibles.")
+    index = _EdgeIndex(edges, len(states)) if _edge_index is None else _edge_index
+    if index.edge_count != len(edges):
+        raise ValueError("Arista ajena a la población o potenciales.")
+
+    state_codes = np.fromiter(
+        (_STATE_CODE[state] for state in states), dtype=np.int8, count=len(states)
+    )
+    updated_codes = state_codes.copy()
+    contact_events: list[tuple[int, dict[str, Any]]] = []
+
+    positions = index.active_by_day.get(day, _EMPTY_POSITIONS)
+    if len(positions):
+        u = index.u[positions]
+        v = index.v[positions]
+        edge_ids = index.edge_ids[positions]
+        u_infectious = state_codes[u] == 2
+        v_infectious = state_codes[v] == 2
+        u_susceptible = state_codes[u] == 0
+        v_susceptible = state_codes[v] == 0
+        valid = (u_infectious & v_susceptible) | (v_infectious & u_susceptible)
+        if valid.any():
+            u = u[valid]
+            v = v[valid]
+            edge_ids = edge_ids[valid]
+            weights = index.weights[positions][valid]
+            forward = (state_codes[u] == 2) & (state_codes[v] == 0)
+            targets = np.where(forward, v, u)
+            sources = np.where(forward, u, v)
+            probability = np.clip(beta * weights, 0.0, 1.0)
+            success = transmission[edge_ids] < probability
+            if success.any():
+                targets = targets[success]
+                sources = sources[success]
+                edge_ids = edge_ids[success]
+                order = np.lexsort((edge_ids, targets))
+                targets = targets[order]
+                sources = sources[order]
+                edge_ids = edge_ids[order]
+                first = np.empty(len(targets), dtype=bool)
+                first[0] = True
+                first[1:] = targets[1:] != targets[:-1]
+                selected_targets = targets[first]
+                selected_sources = sources[first]
+                selected_ids = edge_ids[first]
+                updated_codes[selected_targets] = 1
+                contact_events = [
+                    (
+                        int(node),
+                        _event(day + 1, int(node), "S", "E", "contact", int(source), int(edge_id)),
+                    )
+                    for node, source, edge_id in zip(
+                        selected_targets, selected_sources, selected_ids, strict=True
+                    )
+                ]
+
+    progress_e = (state_codes == 1) & (progression[:, 0] < sigma)
+    progress_i = (state_codes == 2) & (progression[:, 1] < gamma)
+    updated_codes[progress_e] = 2
+    updated_codes[progress_i] = 3
+
+    events = contact_events
+    events.extend(
+        (int(node), _event(day + 1, int(node), "E", "I", "progression"))
+        for node in np.flatnonzero(progress_e)
+    )
+    events.extend(
+        (int(node), _event(day + 1, int(node), "I", "R", "progression"))
+        for node in np.flatnonzero(progress_i)
+    )
+    events.sort(key=lambda item: item[0])
     updated = states.copy()
-    causes: dict[int, tuple[int, int]] = {}
-    for edge in edges:
-        u, v, edge_id = edge["u"], edge["v"], edge["id"]
-        if not (0 <= u < len(states) and 0 <= v < len(states) and 0 <= edge_id < len(edges)):
-            raise ValueError("Arista ajena a la población o potenciales.")
-        if day not in edge["activeDays"]:
-            continue
-        source, target = (u, v) if states[u] == "I" and states[v] == "S" else (v, u)
-        if states[source] != "I" or states[target] != "S":
-            continue
-        probability = max(0.0, min(1.0, beta * edge["weight"]))
-        if transmission[edge_id] < probability:
-            if target not in causes or edge_id < causes[target][0]:
-                causes[target] = (edge_id, source)
-    events: list[dict[str, Any]] = []
-    for node, before in enumerate(states):
-        if before == "S" and node in causes:
-            edge_id, source = causes[node]
-            updated[node] = "E"
-            events.append(_event(day + 1, node, "S", "E", "contact", source, edge_id))
-        elif before == "E" and progression[node, 0] < sigma:
-            updated[node] = "I"
-            events.append(_event(day + 1, node, "E", "I", "progression"))
-        elif before == "I" and progression[node, 1] < gamma:
-            updated[node] = "R"
-            events.append(_event(day + 1, node, "I", "R", "progression"))
-    return updated, events
+    for node in np.flatnonzero(updated_codes != state_codes):
+        updated[int(node)] = STATES[int(updated_codes[node])]
+    return updated, [event for _, event in events]
 
 
 def simulate_policy(
@@ -148,6 +251,7 @@ def simulate_policy(
     policy: Policy,
     replicate_index: int = 0,
     potentials: Potentials | None = None,
+    _edge_index: _EdgeIndex | None = None,
 ) -> SimulationTrace:
     """Una política con intervención única y potenciales compartibles (T-08)."""
     if policy not in ("none", "random", "targeted"):
@@ -158,6 +262,12 @@ def simulate_policy(
     edges = graph["edges"]
     if sorted(edge["id"] for edge in edges) != list(range(len(edges))):
         raise ValueError("Los IDs de aristas deben ser consecutivos y únicos.")
+    if _edge_index is None:
+        edge_index = _EdgeIndex(edges, n)
+    else:
+        if _edge_index.edge_count != len(edges):
+            raise ValueError("Arista ajena a la población o potenciales.")
+        edge_index = _edge_index.with_weights_copy()
     p = (
         potentials
         if potentials is not None
@@ -209,6 +319,8 @@ def simulate_policy(
         received_brigades += delivered_brigades
         used_vaccines = 0
         if day:
+            if interval_edges is not edges:
+                edge_index.refresh_weights(interval_edges)
             states, changes = step_day(
                 states,
                 interval_edges,
@@ -218,6 +330,7 @@ def simulate_policy(
                 gamma=configuration.scenario.gamma,
                 transmission=p.transmission[day - 1],
                 progression=p.progression[day - 1],
+                _edge_index=edge_index,
             )
             for event in changes:
                 entries[event["nodeId"]][event["to"]] = day
@@ -338,10 +451,16 @@ def simulate_paired(
     *,
     replicate_index: int = 0,
     policy_order: tuple[Policy, ...] = ("none", "random", "targeted"),
+    _edge_index: _EdgeIndex | None = None,
 ) -> dict[Policy, SimulationTrace]:
     """Una réplica, una red y unos potenciales; orden de ejecución independiente."""
     if len(policy_order) != 3 or set(policy_order) != {"none", "random", "targeted"}:
         raise ValueError("Se requieren exactamente las tres políticas.")
+    edge_index = (
+        _EdgeIndex(graph["edges"], configuration.scenario.population_size)
+        if _edge_index is None
+        else _edge_index
+    )
     potentials = generate_potentials(
         configuration, len(graph["edges"]), replicate_index=replicate_index
     )
@@ -352,6 +471,7 @@ def simulate_paired(
             policy=policy,
             replicate_index=replicate_index,
             potentials=potentials,
+            _edge_index=edge_index,
         )
         for policy in policy_order
     }

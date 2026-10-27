@@ -38,6 +38,17 @@ El modo offline requiere haber instalado las dependencias primero. `pytest tests
 
 La estructura `src/domain`, `src/simulation`, `src/strategies` y `src/api` es importable. Pytest agrega `src` a su ruta de importación; no hace falta instalar un paquete editable. La distribución de Lambda conservará esos módulos en la raíz del ZIP.
 
+## Benchmark local del motor
+
+Desde la raíz, sin frames:
+
+```sh
+backend/.venv/bin/python scripts/benchmark_engine.py --repetitions 30 \
+  --output docs/evidencia/benchmark-default-2026-10-27-after.json
+```
+
+La corrida del 2026-10-27 midió **44,3 s** para el escenario por defecto, con los mismos hashes y resultados que la versión anterior. Objetivo local de ≤60 s cumplido; el objetivo de ≤25 s backend sigue pendiente. [Evidencia I-01](../docs/evidencia/i01-rendimiento.md).
+
 ## Dependencias y actualizaciones
 
 Dependencias principales verificadas: NumPy 2.5.4 y NetworkX 3.7. Herramientas: pytest 9.1.1, Ruff 0.17.2, mypy 1.20.2 y types-networkx 3.6.1.20261024. uv usado: 0.13.5.
