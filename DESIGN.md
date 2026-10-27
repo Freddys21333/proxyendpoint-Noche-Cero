@@ -1,77 +1,51 @@
 ---
-name: The Containment Desk
-description: Technical, focused, analytical scientific operations interface.
+name: Noche Cero
+description: A nocturnal contact-network workspace for a fictional Halloween outbreak.
 colors:
-  containment-green: "#173e32"
-  paper: "#f5f5f0"
-  alert-clay: "#c45c47"
-  ink: "#202c28"
-  muted: "#5f6b64"
-  line: "#dce2da"
-  surface: "#ffffff"
+  night: "#111019"
+  raised: "#1a1822"
+  card: "#24212d"
+  pumpkin: "#ff8250"
+  lime: "#bde76b"
+  amber: "#f4c45e"
+  infectious: "#ff7354"
+  recovered: "#87c7e5"
+  ink: "#f1ece4"
+  muted: "#b6aebd"
+  line: "#403a4a"
 typography:
-  headline:
-    fontFamily: "IBM Plex Sans, sans-serif"
-    fontSize: "23px"
-    fontWeight: 500
-    lineHeight: 1.2
-    letterSpacing: "-0.4px"
-  body:
-    fontFamily: "IBM Plex Sans, sans-serif"
-  data:
-    fontFamily: "IBM Plex Mono, monospace"
+  interface: "IBM Plex Sans, sans-serif"
+  identifiers: "IBM Plex Mono, monospace"
+  displayWeight: 600
+  trackingFloor: "-0.04em"
 rounded:
-  control: "3px"
+  control: "5px"
+  panel: "10px"
 spacing:
   compact: "8px"
   panel: "16px"
 ---
-# Design System: The Containment Desk
 
-## Overview
+# Noche Cero
 
-**Creative North Star: "The Containment Desk"**
+## Scene and purpose
 
-Technical, focused, analytical. The existing interface treats scenario controls, contact networks, and comparison data as scientific instruments. Controls feel practical and confident.
+A committee explores a fictional outbreak on a laptop during a short scenario exercise. The interface feels like an illuminated night map: charcoal violet ground, pumpkin actions, small signals, and clear connections. The network is the main task surface, not a decoration. Manta names the synthetic setting, not a measured local outbreak.
 
-**Key Characteristics:**
-- Flat surfaces with borders and tonal separation.
-- A compact top navigation above a light simulation workspace.
-- Sans-serif labels with monospaced identifiers and data.
+## First viewport
 
-## Colors
+One familiar web navigation leads to Explorar red, Comparación, PRO and Ayuda. A compact statement introduces the task. The primary work area is a network stage with a stable parameter column. Before a preview, the stage explicitly says no data are loaded and shows a decorative signal diagram. After a preview, the real graph, day, SEIR counts, inventory and selected person replace that empty state. Red is the initial view; Mapa is available beside it.
 
-Containment Green anchors navigation and headings; Paper supports the working area; Alert Clay marks warnings and emphasis. Ink supplies primary text, Muted supports secondary labels, Line separates panels, and Surface carries white containers. SEIR states use vivid green, yellow, red and blue from the shared presentation palette, with contrasting chart strokes and explicit labels.
+On narrow screens, controls precede the empty state so a scenario can be created. With an active preview, the network moves before controls. The primary action stays visible on short desktop viewports; long forms scroll inside their panel. The geographic map, comparison and PRO use the same surface colors and control shapes.
 
-## Typography
+## Color and information
 
-IBM Plex Sans carries interface text and headings. Field labels and inputs use 16px; supporting text uses 15px. IBM Plex Mono distinguishes identifiers and data where useful. Preserve readable labels and the implemented hierarchy rather than turning every label into a miniature caption.
+Pumpkin orange marks the primary action and active navigation. S, E, I and R use lime, amber, coral and ice blue with their letters and names shown next to every count. Purple dose borders retain their separate effective/ineffective meanings. Focus has a lime outline. Errors use a distinct coral surface and name the recovery action. All core copy remains legible on the dark ground. No glow, route or placement may suggest a transmission event that the motor did not calculate.
 
-## Layout
+## Typography and controls
 
-Desktop uses a compact top navigation with Simulador, Comparación and Ayuda. The dominant light network canvas sits on the left; synchronized evolution and scenario parameters share the right column. Playback sits beneath the network, while person details use a disclosure. The top bar is 72px tall; the main workspace uses 28px horizontal padding. Narrow layouts stack the workbench, wrap controls and retain visible navigation labels.
+IBM Plex Sans carries headings, labels and controls; IBM Plex Mono is reserved for identifiers and measured metadata. Headings use weight and short lines for emphasis. Buttons, selects, forms, disclosures and dialogs retain standard affordances with visible hover, focus, disabled and loading states. Motion is limited to short state transitions; reduced-motion settings are respected.
 
-## Elevation & Depth
+## Product truth
 
-Flat, with borders and tonal separation. Panels use strokes and surface changes for grouping. Dialog overlays are functional layers, not a reason to add shadows to every container.
-
-## Shapes
-
-Controls commonly use restrained 3px corners. Network people and state indicators use circles, as requested by the user. State letters and labels accompany color so interpretation does not depend on color alone.
-
-## Components
-
-Buttons, fields, navigation, chips, and panels are practical and confident. Primary actions use the established green; secondary actions use outlined or transparent treatments. Focus-visible controls use a 3px green outline with a 3px offset. Button color and background transitions last 0.15s.
-
-Fields retain visible labels and units, with person-facing terms such as Origen aleatorio, Número de persona and Tipo de contacto. Navigation uses a clear active underline. White containers use the Line border. State totals sit in equal centered columns beneath their labels; indicator circles are 14px without borders. Evolution displays the four SEIR series together with solid colored lines, a labeled legend and an equivalent daily table. Network controls and temporal playback remain visibly distinct from scientific experiment results. Complete-network fit uses 16px padding and native wheel sensitivity.
-
-## Do's and Don'ts
-
-### Do:
-- Do preserve the green identity, restrained top navigation and light workspace.
-- Do use borders and tonal separation to group controls.
-- Do preserve state letters, labels, and the daily table alongside scientific colors.
-
-### Don't:
-- Don't replace the flat interface with decorative raised cards.
-- Don't present illustrative network or curve data as measured simulation output.
+The frontend presents backend preview and comparison data without recomputing epidemiology. The empty stage never displays invented people, counts or edges. Results identify empirical ranges and the representative trajectory separately. PRO job data remain labeled as fixtures until the jobs contract is integrated. Synthetic locations never imply household addresses or real neighborhood risk.

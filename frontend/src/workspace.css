@@ -2911,6 +2911,19 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .minimal-workspace .validate-button--secondary:hover { background: #edf3ee; }
 .minimal-workspace .configuration-errors { margin-top: 16px; padding: 12px; background: #faf0eb; color: #803b2e; font-size: 15px; }
 .minimal-workspace .configuration-errors ul { margin: 8px 0 0; padding-left: 20px; }
+.minimal-workspace .api-error-panel { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; margin: 16px 0; padding: 16px; border: 1px solid #dfbdb4; background: #fffaf8; color: #202c28; }
+.minimal-workspace .api-error-icon { display: grid; place-items: center; width: 32px; height: 32px; color: #9d4637; }
+.minimal-workspace .api-error-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 16px; }
+.minimal-workspace .api-error-heading h2 { margin: 0; color: #702f25; font-size: 17px; font-weight: 600; line-height: 1.35; }
+.minimal-workspace .api-error-heading > span { color: #803b2e; font-family: "IBM Plex Mono", monospace; font-size: 12px; font-variant-numeric: tabular-nums; }
+.minimal-workspace .api-error-content > p { margin: 6px 0 0; color: #4b514e; font-size: 15px; line-height: 1.5; }
+.minimal-workspace .api-error-fields { display: grid; gap: 6px; margin: 12px 0; padding-left: 20px; color: #4b514e; font-size: 14px; line-height: 1.45; }
+.minimal-workspace .api-error-fields strong { color: #202c28; }
+.minimal-workspace .api-error-action { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; margin-top: 12px; padding: 8px 12px; border: 1px solid #9c5547; border-radius: 3px; background: #fff; color: #702f25; font-size: 14px; font-weight: 600; }
+.minimal-workspace .api-error-action:hover { background: #f8ece8; }
+.minimal-workspace .api-error-details { margin-top: 12px; color: #5f6b64; font-size: 13px; }
+.minimal-workspace .api-error-details summary { width: fit-content; min-height: 32px; padding: 6px 0; cursor: pointer; }
+.minimal-workspace .api-error-details p { margin: 4px 0 0; font-family: "IBM Plex Mono", monospace; font-size: 12px; }
 .minimal-workspace .simulation-footer { margin-top: 18px; padding-top: 14px; color: #5f6b64; font-size: 15px; }
 .minimal-workspace .results-view { max-width: 1040px; margin: 6px auto 30px; }
 .minimal-workspace .results-heading { margin-bottom: 22px; }

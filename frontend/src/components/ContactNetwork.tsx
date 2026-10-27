@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react'
-import { MapPinned } from 'lucide-react'
+import { Network } from 'lucide-react'
 import type { PreviewResponse, CompareResponse } from '@/lib/api'
 import type { ComparisonState } from '@/lib/simulation-playback'
 import { SimulationWorkspace } from './SimulationWorkspace'
@@ -12,11 +12,16 @@ export function ContactNetwork(props: { resetKey: number; layer: string; childre
   if (lastPreview.current) return <SimulationWorkspace {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
   return <div className="simulator-workbench network-workbench">
     <section className="network-demo-panel simulation-empty" aria-label="Preparar simulación real">
-      <div className="simulation-empty-icon"><MapPinned size={40} aria-hidden="true" /></div>
-      <h2>Tu escenario empieza aquí</h2>
-      <p>Ajusta los parámetros y pulsa <strong>Consultar red</strong> para ver tu población sintética en el mapa.</p>
-      <ol><li>Configura la población y los contactos.</li><li>Consulta el escenario en el mapa.</li><li>Compara estrategias para reproducir una réplica real.</li></ol>
-      <p className="simulation-empty-note">Las ubicaciones son sintéticas. Los datos aparecerán al consultar el servidor.</p>
+      <div className="empty-network-art" aria-hidden="true">
+        <span className="empty-orbit empty-orbit--one" /><span className="empty-orbit empty-orbit--two" /><span className="empty-orbit empty-orbit--three" />
+        <span className="empty-signal empty-signal--one" /><span className="empty-signal empty-signal--two" /><span className="empty-signal empty-signal--three" /><span className="empty-signal empty-signal--four" />
+        <span className="empty-network-core"><Network size={38} strokeWidth={1.5} /></span>
+      </div>
+      <span className="empty-eyebrow">RED DE CONTACTOS · SIN DATOS CARGADOS</span>
+      <h2>La noche comienza en la red.</h2>
+      <p>Ajusta los parámetros y pulsa <strong>Consultar red</strong> para descubrir la población y sus contactos reales del escenario.</p>
+      <div className="empty-steps"><span><b>01</b> Configura</span><span><b>02</b> Consulta la red</span><span><b>03</b> Compara</span></div>
+      <p className="simulation-empty-note">Las personas y ubicaciones son sintéticas. Esta ilustración no muestra resultados.</p>
     </section>
     <FloatingSimulationControls actions={props.panelActions}>{props.children}</FloatingSimulationControls>
   </div>

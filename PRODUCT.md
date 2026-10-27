@@ -24,7 +24,7 @@ The documented mechanism compares `none`, `random`, and `targeted` on the same s
 
 ## Operating Context
 
-The Spanish interface supports scenario configuration, contact-network exploration, and policy comparison. Contact layers represent households, schools, buses, markets, and neighborhoods without personal data or precise household geolocation.
+The Spanish interface supports scenario configuration, contact-network exploration, and policy comparison. Navigation now leads with Explorar red, followed by Comparación, PRO and Ayuda. Contact layers represent households, schools, buses, markets, and neighborhoods without personal data or precise household geolocation.
 
 The current React/TypeScript frontend includes editable controls, an illustrative network, example comparison curves, and a scripted temporal demo. Navigation separates Simulador, Comparación and Ayuda. The surprise-outbreak section is removed from the interface. Scenario inputs are independent of those illustrations. I-02 connects health/config and a real population preview from the form. I-03 draws the actual day-zero graph and initial cases, with layer filtering and person inspection. Before requesting preview an explicit demo remains; editing invalidates the real view without showing stale data. The preview has no invented timeline or vaccination. I-04 connects real comparisons, aggregate curves/metrics/recommendations and complete JSON downloads. I-05 connects representative playback with actual daily states and active contacts, strategy/day/speed controls and explicit seed/index. I-06 adds actual vaccination selections, per-day dose inventory and person explanations (score/rank/eligibility/tie rule/outcome), with distinct dose markers. I-07 adds deterministic visual groups by actual membership (neighborhood, household, school, bus, market), defaulting to neighborhoods, with the original circular view available. Visual arrangement is independent of contact filtering and does not change the experiment. I-08 adds client-generated ZIP with the agreed CSV tables and metadata; JSON remains the reproduction source.
 
@@ -40,7 +40,7 @@ The current React/TypeScript frontend includes editable controls, an illustrativ
 
 ## Brand Commitments
 
-The interface language is Spanish. Naming is explicitly undecided: the existing interface uses Mantalab, while the project documentation uses Comité de Contención de Manta. Neither name nor their relationship is confirmed as the final product/scenario naming scheme.
+The interface language is Spanish. The user chose **Noche Cero** as the frontend identity for the fictional Halloween outbreak; Manta remains the synthetic scenario context. The visual palette is charcoal violet, pumpkin orange, lime, amber and ice blue. The first loaded simulator view is the contact network; the geographic map remains an alternate view. The Halloween treatment cannot change scientific results or imply real-world risk.
 
 ## Evidence on Hand
 

@@ -60,9 +60,10 @@ export class ApiError extends Error {
   status: number
   code: string
   fields: { path: string; reason: string }[]
-  constructor(status: number, code: string, message: string, fields: { path: string; reason: string }[] = []) {
+  retryAfterSeconds: number | null
+  constructor(status: number, code: string, message: string, fields: { path: string; reason: string }[] = [], retryAfterSeconds: number | null = null) {
     super(message)
-    this.name = 'ApiError'; this.status = status; this.code = code; this.fields = fields
+    this.name = 'ApiError'; this.status = status; this.code = code; this.fields = fields; this.retryAfterSeconds = retryAfterSeconds
   }
 }
 
@@ -199,8 +200,10 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     if (!response.ok) {
       const failure = object(data) && object(data.error) ? data.error : null
       const fields = failure && Array.isArray(failure.fields) ? failure.fields.filter((field): field is { path: string; reason: string } => object(field) && typeof field.path === 'string' && typeof field.reason === 'string') : []
+      const retryHeader = response.headers.get('Retry-After')
+      const retryAfterSeconds = retryHeader && /^\d+$/.test(retryHeader) ? Number(retryHeader) : null
       throw new ApiError(response.status, typeof failure?.code === 'string' ? failure.code : 'HTTP_ERROR',
-        typeof failure?.message === 'string' ? failure.message : 'No se pudo completar la solicitud.', fields)
+        typeof failure?.message === 'string' ? failure.message : 'No se pudo completar la solicitud.', fields, retryAfterSeconds)
     }
     if (!object(data) || data.schemaVersion !== '1.0' || typeof data.engineVersion !== 'string' || typeof data.requestId !== 'string' || !valid(data)) {
       throw new ApiError(response.status, 'INVALID_RESPONSE', 'La respuesta no corresponde al contrato de la aplicación.')

@@ -2,9 +2,10 @@ import { experimentZip } from '@/lib/export-experiment';
 import { CombinedInterventions } from '@/components/CombinedInterventions';
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
-import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, CircleHelp, Network, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { seirColors } from "@/components/seir-colors";
+import { ApiErrorPanel } from "@/components/ApiErrorPanel";
 import { defaults, validateScenario, fromConfiguration, applyServerDefaults, matchesLoadedScenario, type Scenario } from "@/lib/scenario";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 
@@ -23,6 +24,7 @@ const seirHelp = [
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
 type Modal = "help" | "export" | "run" | null;
 type WorkspaceView = "simulator" | "results" | "pro";
+type ApiOperation = "startup" | "preview" | "comparison";
 
 function Field({
   label,
@@ -75,6 +77,8 @@ export default function App() {
   const [advanced, setAdvanced] = useState(false);
   const [notice, setNotice] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [apiFailure, setApiFailure] = useState<{ operation: ApiOperation; error: ApiError } | null>(null);
+  const [configRetry, setConfigRetry] = useState(0);
   const [serverStatus, setServerStatus] = useState<"checking" | "ready" | "offline">("checking");
   const [remotePreview, setRemotePreview] = useState<PreviewResponse | null>(null);
   const [pending, setPending] = useState(false);
@@ -90,10 +94,10 @@ export default function App() {
   useEffect(() => {
     const controller = new AbortController();
     Promise.all([api.health(controller.signal), api.config(controller.signal)])
-      .then(([health, config]) => { if (!controller.signal.aborted) { setServerStatus("ready"); setServerHealth(health); setServerConfig(config); setScenario(current => applyServerDefaults(current, config.defaults, editedFields.current)); } })
-      .catch(() => { if (!controller.signal.aborted) { setServerStatus("offline"); setErrors(["No se pudo cargar la configuración del servidor. Tus entradas se conservan; vuelve a abrir la página para reintentar."]); } });
+      .then(([health, config]) => { if (!controller.signal.aborted) { setServerStatus("ready"); setApiFailure(null); setServerHealth(health); setServerConfig(config); setScenario(current => applyServerDefaults(current, config.defaults, editedFields.current)); } })
+      .catch((error) => { if (!controller.signal.aborted) { setServerStatus("offline"); setApiFailure({ operation: "startup", error: error instanceof ApiError ? error : new ApiError(0, "NETWORK_ERROR", "No se pudo conectar con el servidor.") }); } });
     return () => { controller.abort(); previewController.current?.abort(); comparisonController.current?.abort(); };
-  }, []);
+  }, [configRetry]);
 
   const invalidateComparison = () => {
     comparisonController.current?.abort();
@@ -125,6 +129,7 @@ export default function App() {
       setNotice("Configuración modificada. Consulta la red para aplicar los nuevos parámetros.");
     }
     setErrors([]);
+    setApiFailure(null);
   };
   const update = (key: keyof Scenario, value: number | string) => {
     editedFields.current.add(key);
@@ -173,6 +178,7 @@ export default function App() {
   };
   const run = async () => {
     if (!serverConfig) { setErrors(["Espera a que se cargue la configuración del servidor."]); return; }
+    setApiFailure(null);
     const issues = validateScenario(scenario);
     setErrors(
       issues.map((message) =>
@@ -197,6 +203,7 @@ export default function App() {
       ),
     );
     if (issues.length) return;
+    setApiFailure(null);
     invalidateComparison();
     previewController.current?.abort();
     const controller = new AbortController();
@@ -214,10 +221,10 @@ export default function App() {
       setNotice("Vista previa recibida. La red muestra los contactos iniciales de tus parámetros.");
     } catch (error) {
       if (controller.signal.aborted) return;
-      setErrors(error instanceof ApiError
-        ? [error.message, ...error.fields.map((field) => `${field.path}: ${field.reason}`)]
-        : ["No se pudo consultar la red. Inténtalo nuevamente."]);
-      if (error instanceof ApiError && error.status === 0) setServerStatus("offline");
+      const apiError = error instanceof ApiError ? error : new ApiError(0, "NETWORK_ERROR", "No se pudo consultar la red.");
+      setErrors([]);
+      setApiFailure({ operation: "preview", error: apiError });
+      if (apiError.status === 0) setServerStatus("offline");
     } finally {
       if (previewController.current === controller) {
         previewController.current = null;
@@ -233,6 +240,7 @@ export default function App() {
     comparisonController.current = controller;
     setComparison(null);
     setComparisonErrors([]);
+    setApiFailure(null);
     setComparisonPending(true);
     setView("results");
     setModal(null);
@@ -244,10 +252,12 @@ export default function App() {
       setNotice("Comparación completada con resultados reales del motor.");
     } catch (error) {
       if (controller.signal.aborted) return;
-      const issues = error instanceof ApiError ? [error.message, ...error.fields.map(field => `${field.path}: ${field.reason}`)] : ["No se pudo completar la comparación."];
-      setComparisonErrors(issues);
-      setErrors(issues);
-      if (error instanceof ApiError && error.status === 409) { setRemotePreview(null); loadedScenario.current = null; }
+      const apiError = error instanceof ApiError ? error : new ApiError(0, "NETWORK_ERROR", "No se pudo completar la comparación.");
+      setComparisonErrors([apiError.code]);
+      setErrors([]);
+      setApiFailure({ operation: "comparison", error: apiError });
+      if (apiError.status === 0) setServerStatus("offline");
+      if (apiError.status === 409) { setRemotePreview(null); loadedScenario.current = null; }
     } finally {
       if (comparisonController.current === controller) { comparisonController.current = null; setComparisonPending(false); }
     }
@@ -315,6 +325,13 @@ export default function App() {
             <ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul>
           </div>
         )}
+        {apiFailure && (apiFailure.operation === "startup" || apiFailure.operation === "preview") && <ApiErrorPanel
+          error={apiFailure.error}
+          operation={apiFailure.operation}
+          onRetry={apiFailure.operation === "startup" ? () => setConfigRetry(value => value + 1) : () => { setApiFailure(null); void run(); }}
+          onOpenParameters={() => { setView("simulator"); setApiFailure(null); previewSubmit.current?.focus(); }}
+          onRepreview={() => { setView("simulator"); setApiFailure(null); void run(); }}
+        />}
       </form>
     </section>
   );
@@ -335,18 +352,19 @@ export default function App() {
   );
 
   return (
-    <div className="minimal-workspace">
+    <div className="minimal-workspace noche-cero">
       <header className="simulation-header">
-        <a className="simulation-brand" href="#" onClick={(event) => { event.preventDefault(); setView("simulator"); }} aria-label="Mantalab, inicio">
-          <FlaskConical size={25} strokeWidth={1.6} /> Mantalab
+        <a className="simulation-brand" href="#" onClick={(event) => { event.preventDefault(); setView("simulator"); }} aria-label="Noche Cero, inicio">
+          <span className="brand-sigil" aria-hidden="true"><Network size={24} strokeWidth={1.9} /></span>
+          <span className="brand-wordmark">NOCHE <strong>CERO</strong><small>LABORATORIO DE PROPAGACIÓN</small></span>
         </a>
         <nav aria-label="Navegación principal" className="simulation-navigation">
-          <button type="button" aria-current={view === "simulator" ? "page" : undefined} onClick={() => setView("simulator")}>Simulador</button>
+          <button type="button" aria-current={view === "simulator" ? "page" : undefined} onClick={() => setView("simulator")}>Explorar red</button>
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
           <button type="button" aria-current={view === "pro" ? "page" : undefined} onClick={() => setView("pro")} title="Experimentos Monte Carlo">PRO</button>
           <button type="button" onClick={event => { dialogReturn.current = event.currentTarget; setModal("help"); }}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {view === "pro" ? "PRO · trabajos de ejemplo" : comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
+        <span className={`simulation-status simulation-status--${serverStatus}`} role="status"><span className="status-beacon" aria-hidden="true" />{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {view === "pro" ? "PRO · trabajos de ejemplo" : comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -358,8 +376,8 @@ export default function App() {
         {view === "simulator" ? (
           <>
             <div className="simulation-toolbar">
-              <div><h1>Simulador</h1><p>Manta · población sintética</p></div>
-
+              <div className="simulation-intro"><h1>Explora la red.<br /><em>Sigue el brote.</em></h1><p>Configura un escenario sintético en Manta, consulta sus contactos y compara estrategias de contención.</p></div>
+              <span className="synthetic-badge">● Población sintética</span>
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
               <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions}><section className="visualizer-tools" aria-label="Controles de la red">              <div className="simulation-tools">
@@ -374,14 +392,20 @@ export default function App() {
           </>
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
-            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <>
-              <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : "Aún no hay resultados para la configuración actual."}</p></div>
-              {comparisonPending && <p>Espera a que termine el experimento. No se muestran resultados parciales.</p>}
-              {comparisonErrors.length > 0 && <div role="alert"><ul>{comparisonErrors.map(text => <li key={text}>{text}</li>)}</ul></div>}
-              {!comparisonPending && <Button type="button" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}
-              {!remotePreview && <p>Consulta primero la red desde el simulador.</p>}
-            </>}
-            <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver al simulador</button>
+            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
+              <div className="comparison-empty-content"><h1 id="results-title">Las decisiones necesitan evidencia.</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : remotePreview ? "La red está lista. Ejecuta la comparación para medir las tres estrategias bajo el mismo escenario." : "Consulta primero la red para generar una población sintética y luego compara las estrategias."}</p>
+              {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}
+              {apiFailure?.operation === "comparison" && <ApiErrorPanel
+                error={apiFailure.error}
+                operation="comparison"
+                onRetry={() => { setApiFailure(null); void runComparison(); }}
+                onOpenParameters={() => { setView("simulator"); setApiFailure(null); }}
+                onRepreview={() => { setView("simulator"); setApiFailure(null); void run(); }}
+              />}
+              <div className="comparison-empty-actions">{!comparisonPending && <Button type="button" className="comparison-start" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}<button type="button" className="plain-action" onClick={() => setView("simulator")}>{remotePreview ? "Volver a la red" : "Configurar escenario"}</button></div></div>
+              <div className="comparison-empty-steps" aria-label="Pasos de la comparación"><span><b>01</b> Consulta la red</span><span><b>02</b> Ejecuta réplicas</span><span><b>03</b> Examina resultados</span></div>
+            </div>}
+            {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver a la red</button>}
           </section>
         ) : (
           <Suspense fallback={<div className="simulation-loading" role="status">Cargando PRO…</div>}>
@@ -393,7 +417,7 @@ export default function App() {
       <Dialog.Root open={modal !== null} onOpenChange={(open) => { if (!open) setModal(null); }}>
         <Dialog.Portal>
           <Dialog.Backdrop className="modal-dimmer" />
-          <Dialog.Popup className={`modal minimal-dialog${modal === "help" ? " help-dialog" : ""}`} finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
+          <Dialog.Popup className={`modal minimal-dialog noche-dialog${modal === "help" ? " help-dialog" : ""}`} finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
             <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
             {modal === "help" ? (

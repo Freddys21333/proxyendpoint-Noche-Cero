@@ -56,16 +56,16 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     const cy = cytoscape({ container: container.current, elements: graph.elements,
       layout: { name: 'preset' }, minZoom: 0.01, maxZoom: 5, boxSelectionEnabled: false, selectionType: 'single',
       style: [
-        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#334155', label: 'data(groupLabel)', 'font-size': 15, 'text-valign': 'top', 'text-margin-y': -14, 'text-background-color': '#ffffff', 'text-background-opacity': 0.9, 'text-background-padding': '4px' } },
-        { selector: 'node[state="I"]', style: { width: 23, height: 23, 'background-color': seirColors.I.marker, 'font-size': 14, 'text-valign': 'top', 'text-margin-y': -10, 'text-background-color': '#ffffff', 'text-background-opacity': 0.9 } },
+        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#e7dec9', label: 'data(groupLabel)', color: '#eee7d9', 'font-size': 15, 'text-valign': 'top', 'text-margin-y': -14, 'text-background-color': '#25212e', 'text-background-opacity': 0.94, 'text-background-padding': '4px' } },
+        { selector: 'node[state="I"]', style: { width: 23, height: 23, 'background-color': seirColors.I.marker, 'font-size': 14, 'text-valign': 'top', 'text-margin-y': -10, 'text-background-color': '#25212e', 'text-background-opacity': 0.94 } },
         { selector: 'node[state="E"]', style: { 'background-color': seirColors.E.marker } },
         { selector: 'node[state="R"]', style: { 'background-color': seirColors.R.marker } },
         { selector: 'node[!inLayer]', style: { opacity: 0.15 } },
-        { selector: 'edge', style: { display: 'none', width: 1, 'line-color': '#a8c0b2', 'curve-style': 'bezier' } },
-        { selector: 'edge.focused', style: { display: 'element', 'line-color': '#315d47', width: 2, opacity: 1 } },
+        { selector: 'edge', style: { display: 'none', width: 1, 'line-color': '#827c91', 'curve-style': 'bezier' } },
+        { selector: 'edge.focused', style: { display: 'element', 'line-color': '#ff925d', width: 2, opacity: 1 } },
         { selector: 'node[vaccination="effective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'solid' } },
         { selector: 'node[vaccination="ineffective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'dashed' } },
-        { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#173e32', opacity: 1 } },
+        { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#fff2d6', opacity: 1 } },
       ],
     })
     network.current = cy

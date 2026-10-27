@@ -1,5 +1,11 @@
 # Frontend environment
 
+## Interfaz Noche Cero
+
+El frontend conserva el simulador, la comparación y PRO bajo la identidad **Noche Cero**. La vista principal es **Explorar red** y abre en la red de contactos cuando existe un preview real. Antes de consultar, muestra una ilustración rotulada sin datos; el botón **Consultar red** permanece accesible junto a los parámetros. La paleta nocturna usa naranja calabaza para acciones, lima/ámbar/coral/azul para estados SEIR, y etiquetas de texto para no depender solo del color. En móvil, los controles van primero mientras no hay preview; después la red toma la prioridad visual. La comparación y PRO comparten las mismas superficies y conservan sus límites de datos reales y fixtures demostrativos.
+
+Para revisar localmente: iniciar el backend con `backend/.venv/bin/python scripts/serve_api.py`, iniciar Vite con `npm run dev -- --host 127.0.0.1 --port 5174` desde `frontend/` y abrir `http://127.0.0.1:5174/`. El proxy Vite dirige `/v1` al backend local.
+
 ## Estado de integración I-09
 
 El mapa geográfico está registrado como feature **P-09** ([ficha](../specs/p09-geographic-map.md)); su alcance, datos y aceptación no se mezclan con P-07 (reproducción temporal) ni con P-05/P-06 (datos reales y calibración).

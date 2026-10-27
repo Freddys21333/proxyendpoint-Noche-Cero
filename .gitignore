@@ -34,3 +34,6 @@ Thumbs.db
 *.tfvars
 *.tfvars.json
 !*.example.tfvars
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+.impeccable/mocks/

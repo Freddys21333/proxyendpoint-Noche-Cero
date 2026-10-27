@@ -9,7 +9,7 @@ const GeographicMap = lazy(() => import('./GeographicMap'))
 
 // One playback controller keeps the map and contact network synchronized.
 export function SimulationWorkspace({ active = true, comparison = null, comparisonState = 'idle', ...props }: PreviewNetworkProps) {
-  const [view, setView] = useState<'network' | 'map'>('map')
+  const [view, setView] = useState<'network' | 'map'>('network')
   const source = useMemo(() => getSimulationSource(props.preview, comparison, active, comparisonState), [props.preview, comparison, active, comparisonState])
   const lastDay = source.lastDay
   const [state, dispatch] = useReducer(
