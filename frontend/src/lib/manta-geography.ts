@@ -82,9 +82,13 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
   const features = [...data.features].sort((a, b) => a.properties.sectorId < b.properties.sectorId ? -1 : 1)
   const nodes = [...preview.graph.nodes].sort((a, b) => a.id - b.id)
   if (new Set(nodes.map(n => n.id)).size !== nodes.length) throw new Error('Identificadores de agentes duplicados.')
-  const neighborhoods = [...new Set(nodes.map(n => n.neighborhoodId))].sort()
-  const key = `mantalab-geography-v1:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
-  const offset = hash(`${key}:sectors`) % features.length
+  const key = `mantalab-geography-v2:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
+  const sectorOrder = [...features]
+  const shuffle = randomStream(`${key}:sectors`)
+  for (let i = sectorOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(shuffle() * (i + 1))
+    ;[sectorOrder[i], sectorOrder[j]] = [sectorOrder[j], sectorOrder[i]]
+  }
   const households = new Map<string, typeof nodes>()
   for (const node of nodes) {
     if (!households.has(node.householdId)) households.set(node.householdId, [])
@@ -93,22 +97,30 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
   const infected = new Set(preview.initialInfectiousNodeIds)
   const used = new Set<string>()
   const agents: GeographicAgent[] = []
+  let householdIndex = 0
+  const anchors = new Map<string, Coordinate[]>()
   for (const [household, members] of [...households].sort(([a], [b]) => a < b ? -1 : 1)) {
-    const votes = neighborhoods.map(id => ({ id, count: members.filter(n => n.neighborhoodId === id).length }))
-      .sort((a, b) => b.count - a.count || (a.id < b.id ? -1 : 1))
-    const feature = features[(neighborhoods.indexOf(votes[0].id) + offset) % features.length]
+    const feature = sectorOrder[householdIndex++ % sectorOrder.length]
     const ring = feature.geometry.coordinates[0]
     const xs = ring.map(c => c[0]), ys = ring.map(c => c[1])
     const west = Math.min(...xs), south = Math.min(...ys)
     const width = Math.max(...xs) - west, height = Math.max(...ys) - south
     const random = randomStream(`${key}:household:${household}`)
     let anchor: Coordinate | undefined
+    let bestDistance = -1
+    let candidates = 0
+    const previous = anchors.get(feature.properties.sectorId) ?? []
     for (let attempt = 0; attempt < 4096; attempt++) {
       const point: Coordinate = [west + random() * width, south + random() * height]
-      if (insideRing(point, ring)) { anchor = point; break }
+      if (!insideRing(point, ring)) continue
+      const distance = previous.length ? Math.min(...previous.map(p => (p[0] - point[0]) ** 2 + (p[1] - point[1]) ** 2)) : 1
+      if (distance > bestDistance) { anchor = point; bestDistance = distance }
+      if (++candidates === 16) break
     }
     if (!anchor) throw new Error('No se encontró terreno permitido para el grupo sintético.')
-    const radius = Math.min(width, height) * 0.15
+    previous.push(anchor)
+    anchors.set(feature.properties.sectorId, previous)
+    const radius = Math.min(Math.min(width, height) * 0.4, 0.0009)
     for (const node of members) {
       let coordinate: Coordinate | undefined
       for (let attempt = 0; attempt < 512; attempt++) {

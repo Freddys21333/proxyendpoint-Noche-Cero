@@ -16,9 +16,9 @@ const preview = (population = 50): PreviewResponse => {
   return value
 }
 
-test('the versioned OSM resource has five simple terrestrial residential polygons and source evidence', () => {
+test('the versioned OSM resource has thirteen simple terrestrial residential polygons and source evidence', () => {
   const data = resource()
-  assert.equal(data.features.length, 5)
+  assert.equal(data.features.length, 13)
   assert.ok(data.source.extractedAt.endsWith('Z'))
   for (const feature of data.features) {
     assert.equal(feature.properties.landuse, 'residential')
@@ -58,6 +58,7 @@ test('locations depend on the geographic seed and groups, not node order, visual
 test('household clusters retain original neighborhood IDs and only actual preview initial infections', () => {
   const source = preview()
   const agents = assignGeographicAgents(source, resource())
+  assert.equal(new Set(agents.map(a => a.sectorId)).size, Math.min(new Set(agents.map(a => a.householdId)).size, resource().features.length))
   assert.deepEqual(agents.filter(a => a.state === 'I').map(a => a.nodeId), [1, 3])
   assert.ok(agents.filter(a => ![1, 3].includes(a.nodeId)).every(a => a.state === 'S'))
   for (const agent of agents) {

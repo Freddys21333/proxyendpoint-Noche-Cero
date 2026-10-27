@@ -1,10 +1,10 @@
 {
   "type": "FeatureCollection",
-  "resourceVersion": "manta-residential-osm-v1",
+  "resourceVersion": "manta-residential-osm-v2",
   "source": {
     "name": "OpenStreetMap",
     "license": "ODbL-1.0",
-    "extractedAt": "2026-10-27T07:35:06Z"
+    "extractedAt": "2026-10-27T11:26:10.777Z"
   },
   "features": [
     {
@@ -15,7 +15,7 @@
         "osmWayVersion": 1,
         "osmWayTimestamp": "2024-06-08T06:15:00Z",
         "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1290388697/full.json",
-        "sourceSha256": "sha256:c1fce7a3e7d556053cb17d3a0a790dc897a48b9d30041db7578a1603c96ca3e1",
+        "sourceSha256": "sha256:16ff5ab951b094ac15986aa88f67415c978b0469174e6cd43421a58921e8f342",
         "landuse": "residential"
       },
       "geometry": {
@@ -74,7 +74,7 @@
         "osmWayVersion": 1,
         "osmWayTimestamp": "2024-01-04T20:05:49Z",
         "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1237070572/full.json",
-        "sourceSha256": "sha256:cec14ffbd9405f06b674e0e59036e987bd28e2cfa89f5ba74ec2b7b9fa6f4669",
+        "sourceSha256": "sha256:9d5c0a1a8db379c385bc96c1053f2458b702b2631ad7f4ec52328b41382a9437",
         "landuse": "residential"
       },
       "geometry": {
@@ -173,7 +173,7 @@
         "osmWayVersion": 3,
         "osmWayTimestamp": "2025-09-24T23:55:20Z",
         "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/412772816/full.json",
-        "sourceSha256": "sha256:171407627bf296daf4fc6ab22ef39549870a7b6ca9f58b2ceddf4500b9bca61a",
+        "sourceSha256": "sha256:18fcdb4e5c5541b77876be7970e2cd9ee3a2c794374b5d0c17f12e5daa3cc59a",
         "landuse": "residential"
       },
       "geometry": {
@@ -296,7 +296,7 @@
         "osmWayVersion": 5,
         "osmWayTimestamp": "2024-08-01T04:47:16Z",
         "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/412772820/full.json",
-        "sourceSha256": "sha256:22f2185f75f62e3539f5719c0608d5cf7fb1db875ec1dbc51b6b344b85c73587",
+        "sourceSha256": "sha256:e32020b1fa0b97f66e7f07250fdcdb30cef8020b0dce317d118c7b366fe2e2eb",
         "landuse": "residential"
       },
       "geometry": {
@@ -363,7 +363,7 @@
         "osmWayVersion": 1,
         "osmWayTimestamp": "2025-08-31T04:59:54Z",
         "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1426150466/full.json",
-        "sourceSha256": "sha256:68b165a9336bbea384e44b28989b033e0b97ea9a458d9e2a7340a4f4865f6abf",
+        "sourceSha256": "sha256:4099cf793d8cd613d44650fb4d2590131cec7c484cef558f562c417c95257575",
         "landuse": "residential"
       },
       "geometry": {
@@ -389,6 +389,662 @@
             [
               -80.7293929,
               -0.9626557
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-5",
+        "osmWayId": 411802416,
+        "osmWayVersion": 2,
+        "osmWayTimestamp": "2016-04-19T22:09:47Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/411802416/full.json",
+        "sourceSha256": "sha256:55279e4945c6d32f7375c72b2065b1cbfb79076d9397b3513ecae8cdb6565934",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7113023,
+              -0.9820199
+            ],
+            [
+              -80.711313,
+              -0.9818456
+            ],
+            [
+              -80.7120104,
+              -0.981918
+            ],
+            [
+              -80.7119836,
+              -0.982095
+            ],
+            [
+              -80.7114179,
+              -0.9820337
+            ],
+            [
+              -80.7113023,
+              -0.9820199
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-6",
+        "osmWayId": 411822001,
+        "osmWayVersion": 1,
+        "osmWayTimestamp": "2016-04-19T21:23:22Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/411822001/full.json",
+        "sourceSha256": "sha256:34c9642b6dd618e1e876ba29b5374b77c3fd9162bc2510053c5669cba823f473",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7140124,
+              -0.9799639
+            ],
+            [
+              -80.7138944,
+              -0.9801355
+            ],
+            [
+              -80.7138032,
+              -0.9800604
+            ],
+            [
+              -80.7141465,
+              -0.9795938
+            ],
+            [
+              -80.7142216,
+              -0.9796474
+            ],
+            [
+              -80.7142002,
+              -0.9797225
+            ],
+            [
+              -80.7142967,
+              -0.9797922
+            ],
+            [
+              -80.7141626,
+              -0.97998
+            ],
+            [
+              -80.7141134,
+              -0.9800219
+            ],
+            [
+              -80.7140124,
+              -0.9799639
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-7",
+        "osmWayId": 411822004,
+        "osmWayVersion": 1,
+        "osmWayTimestamp": "2016-04-19T21:23:22Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/411822004/full.json",
+        "sourceSha256": "sha256:bfd5a74cb83fdf435c50c5e8151bf84dbbbc1f7ec0fa20d4b4f0ea8831e396a5",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7141519,
+              -0.9802482
+            ],
+            [
+              -80.7142484,
+              -0.9803179
+            ],
+            [
+              -80.7145596,
+              -0.9798834
+            ],
+            [
+              -80.7143879,
+              -0.9797601
+            ],
+            [
+              -80.7141745,
+              -0.980069
+            ],
+            [
+              -80.7142538,
+              -0.9801302
+            ],
+            [
+              -80.7141519,
+              -0.9802482
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-8",
+        "osmWayId": 411822007,
+        "osmWayVersion": 1,
+        "osmWayTimestamp": "2016-04-19T21:23:23Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/411822007/full.json",
+        "sourceSha256": "sha256:2a52213c0b56d42c091f8cceba2cdca5400f1efabc9ba4f2b1a47416e4d45d25",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7147312,
+              -0.9798352
+            ],
+            [
+              -80.7151389,
+              -0.9801409
+            ],
+            [
+              -80.7156378,
+              -0.9793685
+            ],
+            [
+              -80.7152248,
+              -0.9790521
+            ],
+            [
+              -80.7147312,
+              -0.9798352
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-9",
+        "osmWayId": 767412777,
+        "osmWayVersion": 4,
+        "osmWayTimestamp": "2024-01-04T20:05:49Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/767412777/full.json",
+        "sourceSha256": "sha256:f612859db9f0ba512aec06acaa257c3c6985158174b530ebb1325d848040ed7e",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7302453,
+              -0.9751863
+            ],
+            [
+              -80.7301814,
+              -0.9751603
+            ],
+            [
+              -80.7294228,
+              -0.9748858
+            ],
+            [
+              -80.7280611,
+              -0.9743673
+            ],
+            [
+              -80.7274338,
+              -0.9741336
+            ],
+            [
+              -80.7280486,
+              -0.9738716
+            ],
+            [
+              -80.7283661,
+              -0.9739459
+            ],
+            [
+              -80.7286955,
+              -0.9740277
+            ],
+            [
+              -80.7289993,
+              -0.974104
+            ],
+            [
+              -80.7296402,
+              -0.9741163
+            ],
+            [
+              -80.7300317,
+              -0.9741762
+            ],
+            [
+              -80.7304661,
+              -0.9742502
+            ],
+            [
+              -80.7305724,
+              -0.9739926
+            ],
+            [
+              -80.7312799,
+              -0.97426
+            ],
+            [
+              -80.7313819,
+              -0.9739757
+            ],
+            [
+              -80.7315988,
+              -0.9740034
+            ],
+            [
+              -80.7322453,
+              -0.9740094
+            ],
+            [
+              -80.7325046,
+              -0.9740483
+            ],
+            [
+              -80.7326932,
+              -0.9741442
+            ],
+            [
+              -80.7329238,
+              -0.974288
+            ],
+            [
+              -80.7331235,
+              -0.9744447
+            ],
+            [
+              -80.733262,
+              -0.9746616
+            ],
+            [
+              -80.7333756,
+              -0.9749071
+            ],
+            [
+              -80.7334829,
+              -0.975162
+            ],
+            [
+              -80.7336303,
+              -0.9755727
+            ],
+            [
+              -80.7337482,
+              -0.9759118
+            ],
+            [
+              -80.73378,
+              -0.9765825
+            ],
+            [
+              -80.7331628,
+              -0.9763025
+            ],
+            [
+              -80.7323738,
+              -0.9760113
+            ],
+            [
+              -80.7318464,
+              -0.9757954
+            ],
+            [
+              -80.7312641,
+              -0.9755873
+            ],
+            [
+              -80.730835,
+              -0.9754022
+            ],
+            [
+              -80.7305453,
+              -0.9753003
+            ],
+            [
+              -80.7302453,
+              -0.9751863
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-10",
+        "osmWayId": 1120671240,
+        "osmWayVersion": 3,
+        "osmWayTimestamp": "2024-07-20T01:36:07Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1120671240/full.json",
+        "sourceSha256": "sha256:807c1f7af368f8f9c3651d18784101fb9f6d96f095664b6b92b5e0f5ecb85932",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7333821,
+              -0.9714132
+            ],
+            [
+              -80.73308,
+              -0.9717447
+            ],
+            [
+              -80.7320104,
+              -0.9724057
+            ],
+            [
+              -80.7319137,
+              -0.9724552
+            ],
+            [
+              -80.7318682,
+              -0.9724874
+            ],
+            [
+              -80.731895,
+              -0.972525
+            ],
+            [
+              -80.7308115,
+              -0.9733382
+            ],
+            [
+              -80.7307903,
+              -0.9734511
+            ],
+            [
+              -80.7309458,
+              -0.9735538
+            ],
+            [
+              -80.730921,
+              -0.973568
+            ],
+            [
+              -80.7314637,
+              -0.9737879
+            ],
+            [
+              -80.7321464,
+              -0.973834
+            ],
+            [
+              -80.7326199,
+              -0.9739315
+            ],
+            [
+              -80.7331236,
+              -0.9742755
+            ],
+            [
+              -80.7337374,
+              -0.9754869
+            ],
+            [
+              -80.7351069,
+              -0.9745546
+            ],
+            [
+              -80.7346165,
+              -0.9724803
+            ],
+            [
+              -80.7342732,
+              -0.9726727
+            ],
+            [
+              -80.7342626,
+              -0.9726577
+            ],
+            [
+              -80.7333821,
+              -0.9714132
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-11",
+        "osmWayId": 1237070571,
+        "osmWayVersion": 1,
+        "osmWayTimestamp": "2024-01-04T20:05:49Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1237070571/full.json",
+        "sourceSha256": "sha256:200426ae3d0b4e594f77a7eef77b2f4e8094c4a633cc64395b0a500225383f9c",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7208791,
+              -0.9860427
+            ],
+            [
+              -80.7210562,
+              -0.9858187
+            ],
+            [
+              -80.7200798,
+              -0.9849927
+            ],
+            [
+              -80.7199994,
+              -0.9850812
+            ],
+            [
+              -80.7198331,
+              -0.9849337
+            ],
+            [
+              -80.7196131,
+              -0.9852153
+            ],
+            [
+              -80.719589,
+              -0.9851939
+            ],
+            [
+              -80.719479,
+              -0.9853508
+            ],
+            [
+              -80.720678,
+              -0.9862398
+            ],
+            [
+              -80.7207343,
+              -0.9861647
+            ],
+            [
+              -80.7207719,
+              -0.9861861
+            ],
+            [
+              -80.7208114,
+              -0.9861244
+            ],
+            [
+              -80.7208791,
+              -0.9860427
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "sectorId": "synthetic-sector-12",
+        "osmWayId": 1291890427,
+        "osmWayVersion": 2,
+        "osmWayTimestamp": "2024-06-12T22:13:00Z",
+        "sourceUrl": "https://api.openstreetmap.org/api/0.6/way/1291890427/full.json",
+        "sourceSha256": "sha256:58c2b4cb25f485a42a3a5fa06555c3c52c46b6f9df53d60d2c811cc37b9f5972",
+        "landuse": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.7229791,
+              -0.9945247
+            ],
+            [
+              -80.7228063,
+              -0.9946078
+            ],
+            [
+              -80.7226504,
+              -0.9946489
+            ],
+            [
+              -80.7226186,
+              -0.994675
+            ],
+            [
+              -80.7224346,
+              -0.9947199
+            ],
+            [
+              -80.7224449,
+              -0.9947656
+            ],
+            [
+              -80.7223216,
+              -0.9947974
+            ],
+            [
+              -80.7224869,
+              -0.9954821
+            ],
+            [
+              -80.7219377,
+              -0.9956596
+            ],
+            [
+              -80.7218125,
+              -0.9957828
+            ],
+            [
+              -80.7219926,
+              -0.9962444
+            ],
+            [
+              -80.7222172,
+              -0.9969122
+            ],
+            [
+              -80.7224383,
+              -0.997548
+            ],
+            [
+              -80.722578,
+              -0.9979458
+            ],
+            [
+              -80.7227196,
+              -0.9983673
+            ],
+            [
+              -80.7229621,
+              -0.9981925
+            ],
+            [
+              -80.7233054,
+              -0.9978428
+            ],
+            [
+              -80.7233258,
+              -0.9978149
+            ],
+            [
+              -80.72334,
+              -0.9977791
+            ],
+            [
+              -80.723343,
+              -0.9977305
+            ],
+            [
+              -80.7233381,
+              -0.9976775
+            ],
+            [
+              -80.7233264,
+              -0.9976263
+            ],
+            [
+              -80.7233085,
+              -0.9975709
+            ],
+            [
+              -80.7232915,
+              -0.9975267
+            ],
+            [
+              -80.7234523,
+              -0.99747
+            ],
+            [
+              -80.7234116,
+              -0.997353
+            ],
+            [
+              -80.7240342,
+              -0.9971287
+            ],
+            [
+              -80.7239327,
+              -0.9966923
+            ],
+            [
+              -80.7235424,
+              -0.9951672
+            ],
+            [
+              -80.7231588,
+              -0.9952967
+            ],
+            [
+              -80.7229791,
+              -0.9945247
             ]
           ]
         ]

@@ -29,7 +29,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
   try {
     for (const agent of agents) {
       const color = seirColors[agent.state]
-      const marker = leaflet.circleMarker([agent.lat, agent.lng], { renderer, radius: agent.state === 'I' ? 7 : 5, weight: 1.5,
+      const marker = leaflet.circleMarker([agent.lat, agent.lng], { renderer, radius: agent.state === 'I' ? 5.5 : 3.5, weight: 1.5,
         color: color.stroke, fillColor: color.marker, fillOpacity: 0.95, bubblingMouseEvents: false })
         .bindPopup(() => popup({ ...agent, state: stateAt(agent, current)! }, current), { maxWidth: 240, maxHeight: 190,
           autoPanPaddingTopLeft: [64, 95], autoPanPaddingBottomRight: [10, 100] })
@@ -57,7 +57,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
         if (states.get(agent.nodeId) !== state) {
           const color = seirColors[state]
           marker.setStyle({ color: color.stroke, fillColor: color.marker })
-          marker.setRadius(state === 'I' ? 7 : 5)
+          marker.setRadius(state === 'I' ? 5.5 : 3.5)
           states.set(agent.nodeId, state)
         }
         if (state === 'I') marker.bringToFront()

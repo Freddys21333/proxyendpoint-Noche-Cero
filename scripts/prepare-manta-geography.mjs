@@ -4,7 +4,7 @@ import { resolve, join } from 'node:path'
 import { validateGeographicResource } from '../frontend/src/lib/manta-geography.ts'
 
 const help = 'Usage: node --experimental-strip-types scripts/prepare-manta-geography.mjs (--download | --source-dir DIR --extracted-at UTC) --output FILE\nDownloads public OSM residential polygons once, or validates saved API responses. Never overwrites an existing output. No address, building or person data is retained.\n'
-const ids = [1290388697, 1237070572, 412772816, 412772820, 1426150466]
+const ids = [1290388697, 1237070572, 412772816, 412772820, 1426150466, 411802416, 411822001, 411822004, 411822007, 767412777, 1120671240, 1237070571, 1291890427]
 try {
   const args = process.argv.slice(2)
   if (args.length === 1 && args[0] === '--help') { process.stdout.write(help); process.exit(0) }
@@ -40,7 +40,7 @@ try {
       sourceSha256: `sha256:${createHash('sha256').update(raw).digest('hex')}`, landuse: 'residential' },
       geometry: { type: 'Polygon', coordinates: [ring] } })
   }
-  const resource = { type: 'FeatureCollection', resourceVersion: 'manta-residential-osm-v1',
+  const resource = { type: 'FeatureCollection', resourceVersion: 'manta-residential-osm-v2',
     source: { name: 'OpenStreetMap', license: 'ODbL-1.0', extractedAt: options['--extracted-at'] ?? new Date().toISOString() }, features }
   validateGeographicResource(resource)
   await writeFile(resolve(options['--output']), `${JSON.stringify(resource, null, 2)}\n`, { flag: 'wx' })
