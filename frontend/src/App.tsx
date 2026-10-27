@@ -254,7 +254,7 @@ export default function App() {
         </button>
       </div>
       <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
-      <form onSubmit={(event) => { event.preventDefault(); run(); }}>
+      <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
           <Field label="Población" value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
           <Field label="Horizonte" value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
@@ -307,15 +307,18 @@ export default function App() {
             <ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul>
           </div>
         )}
-        <div className="configuration-actions">
-          <Button type="submit" className="validate-button" ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
-          <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
-          <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
-            <ArrowDownToLine size={17} /> Exportar
-          </button>
-        </div>
       </form>
     </section>
+  );
+
+  const configurationActions = (
+    <div className="configuration-actions">
+      <Button type="submit" form="scenario-form" className="validate-button" ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+      <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
+      <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
+        <ArrowDownToLine size={17} /> Exportar
+      </button>
+    </div>
   );
 
   return (
@@ -329,7 +332,7 @@ export default function App() {
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
           <button type="button" onClick={event => { dialogReturn.current = event.currentTarget; setModal("help"); }}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · {comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span>
+        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -345,7 +348,7 @@ export default function App() {
 
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'}><section className="visualizer-tools" aria-label="Controles de la red">              <div className="simulation-tools">
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions}><section className="visualizer-tools" aria-label="Controles de la red">              <div className="simulation-tools">
                 <label className="simulation-layer"><span>Tipo de contacto</span>
                   <select value={layer} onChange={(event) => setLayer(event.target.value)}>
                     {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
@@ -383,9 +386,9 @@ export default function App() {
             {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
-              {modal === "run" && <Button disabled={comparisonPending} onClick={runComparison}>Comparar estrategias</Button>}
+              {modal === "run" && <Button className="action-primary" disabled={comparisonPending} onClick={runComparison}>Comparar estrategias</Button>}
               {modal === "export" && comparison && <Button variant="outline" onClick={exportCsv}>Descargar ZIP con CSV</Button>}
-              {modal === "export" && <Button onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
+              {modal === "export" && <Button className="action-primary" onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
             </div>
           </Dialog.Popup>
         </Dialog.Portal>

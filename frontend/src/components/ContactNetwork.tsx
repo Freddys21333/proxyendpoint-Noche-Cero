@@ -6,7 +6,7 @@ import { SimulationWorkspace } from './SimulationWorkspace'
 import { FloatingSimulationControls } from './FloatingSimulationControls'
 import './ContactNetwork.css'
 
-export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState }) {
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; panelActions?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState }) {
   const lastPreview = useRef<PreviewResponse | null>(null)
   if (props.preview) lastPreview.current = props.preview
   if (lastPreview.current) return <SimulationWorkspace {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
@@ -19,6 +19,6 @@ export function ContactNetwork(props: { resetKey: number; layer: string; childre
       <ol><li>Configura la población y los contactos.</li><li>Consulta el escenario en el mapa.</li><li>Compara estrategias para reproducir una réplica real.</li></ol>
       <p className="simulation-empty-note">Las ubicaciones son sintéticas. Los datos aparecerán al consultar el servidor.</p>
     </section>
-    <FloatingSimulationControls>{props.children}</FloatingSimulationControls>
+    <FloatingSimulationControls actions={props.panelActions}>{props.children}</FloatingSimulationControls>
   </div>
 }

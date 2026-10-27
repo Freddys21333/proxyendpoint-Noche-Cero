@@ -20,10 +20,10 @@ const noSelections: VaccinationSelection[] = []
 const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado'], ['neighborhoodId', 'Barrio'] ] as const
 
 export type PreviewNetworkProps = {
-  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState
+  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; panelActions?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState
 }
 
-export function PreviewNetwork({ preview, layer, resetKey, children, active = true, comparison = null, playback, view = 'network', viewSelector, mapView }: PreviewNetworkProps & {
+export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, mapView }: PreviewNetworkProps & {
   playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; mapView?: ReactNode
 }) {
   const inspector = useRef<HTMLDetailsElement>(null)
@@ -174,7 +174,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
       </details>
       </div>
       {mapView}
-      <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
+      <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}. Las vacunas se aplican al ejecutar la simulación, no en esta vista previa.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
       </div>
       {!active && <div className="simulation-update-overlay">
         <div className="simulation-update-card" role="status" aria-live="polite">
@@ -186,10 +186,10 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         </div>
       </div>}
     </section>
-    <FloatingSimulationControls>
-      <section className="temporal-chart-panel real-playback" aria-label="Reproducción de réplica real">
-        <h3>{frames ? 'Réplica representativa' : 'Estado inicial'}</h3>
-        {frames ? <>
+    <FloatingSimulationControls actions={panelActions}>
+      {frames ? (
+        <section className="temporal-chart-panel real-playback" aria-label="Reproducción de réplica real">
+          <h3>Réplica representativa</h3>
           <p>Trayectoria real de una réplica. Los promedios y rangos están en Comparación.</p>
           <label>Estrategia <select aria-label="Estrategia de la animación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
           <div className="network-playback" role="group" aria-label="Reproductor de simulación real">
@@ -205,8 +205,13 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           </div>
           <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
           <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>
-        </> : <><p role="status">{simulationModeMessages[playback.mode]}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}
-      </section>
+        </section>
+      ) : playback.mode === 'pending' || playback.mode === 'error' ? (
+        <section className="temporal-chart-panel real-playback" aria-label="Estado de la simulación">
+          <h3>{playback.mode === 'pending' ? 'Comparación en curso' : 'Trayectoria no disponible'}</h3>
+          <p role="status">{simulationModeMessages[playback.mode]}</p>
+        </section>
+      ) : null}
       {schedule && <ResourceInventory row={inventoryDay} schedule={schedule} day={currentDay} initialVaccines={preview.configuration.intervention.vaccines} />}
       {hasComparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
       {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={schedule ? (comparison!.replicates[comparison!.representative.index].policies[policy].daily[frames ? currentDay : comparison!.configuration.scenario.days] as InventoryDaily).vaccinesReceivedTotal : comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); dispatch({ type: 'pause' }); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}

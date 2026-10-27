@@ -598,8 +598,8 @@
 
 /* Controls float over the full-width scene instead of reserving a side column. */
 .simulator-workbench.network-workbench { display: block; position: relative; }
-.simulator-workbench.network-workbench .network-demo-panel { position: relative; top: auto; height: max(720px, calc(100dvh - 150px)); }
-.floating-simulation-controls { position: absolute; z-index: 30; right: 16px; width: min(360px, calc(100% - 32px)); display: flex; flex-direction: column; border: 1px solid #cddcd0; border-radius: 12px; background: #fff; box-shadow: 0 8px 32px rgb(30 62 42 / 18%); }
+.simulator-workbench.network-workbench .network-demo-panel { position: relative; top: auto; height: max(600px, calc(100dvh - 240px)); }
+.floating-simulation-controls { position: absolute; z-index: 30; right: 16px; width: min(360px, calc(100% - 32px)); border: 1px solid #cddcd0; border-radius: 12px; background: #fff; box-shadow: 0 8px 32px rgb(30 62 42 / 18%); }
 .floating-simulation-controls:not([open]) { width: auto; }
 .floating-simulation-controls > summary { display: flex; align-items: center; gap: 10px; padding: 13px 16px; min-height: 48px; cursor: pointer; list-style: none; color: #294b39; font-size: 14px; font-weight: 600; border-radius: 12px; background: #f5f9f5; }
 .floating-simulation-controls > summary::-webkit-details-marker { display: none; }
@@ -620,8 +620,13 @@
 .floating-simulation-controls { top: var(--controls-top, 24px); overflow: hidden; }
 .floating-simulation-controls[open] { height: var(--controls-height, 480px); }
 .floating-simulation-controls > summary { flex-shrink: 0; }
-.simulator-workbench .floating-controls-body.simulator-control-column { flex: none; }
-.floating-simulation-controls[open] > .floating-controls-body { height: calc(var(--controls-height, 480px) - 50px); max-height: calc(var(--controls-height, 480px) - 50px); scrollbar-gutter: stable; }
+.floating-controls-inner { display: flex; flex-direction: column; min-height: 0; }
+.floating-simulation-controls[open] .floating-controls-inner { height: calc(var(--controls-height, 480px) - 50px); }
+.simulator-workbench .floating-controls-body.simulator-control-column { flex: 1 1 0; min-height: 0; border-radius: 0; scrollbar-width: thin; scrollbar-color: #b7c4bb transparent; }
+.floating-simulation-controls[open] > .floating-controls-inner > .floating-controls-body { height: auto; max-height: none; scrollbar-gutter: stable; }
+.floating-controls-footer { flex-shrink: 0; padding: 12px 20px 14px; border-top: 1px solid #dbe4dd; border-radius: 0 0 12px 12px; background: #fff; }
+.floating-controls-footer .configuration-actions { gap: 10px; }
+.floating-controls-footer .validate-button { flex: 1 1 100%; }
 
 /* Person details float over the lower-left of the network, with their own scroll. */
 .simulator-workbench .network-view { position: relative; }
@@ -663,3 +668,27 @@
 .resource-inventory-panel table { width: 100%; font-size: 12px; border-collapse: collapse; }
 .resource-inventory-panel th, .resource-inventory-panel td { text-align: left; padding: 6px 4px; border-bottom: 1px solid #dbe4dd; }
 .resource-inventory-panel caption { text-align: left; margin: 8px 0; color: #52695a; }
+
+/* Narrow screens stack the scene and controls instead of floating one over the other. */
+@media (max-width: 900px) {
+  .simulator-workbench.network-workbench .network-demo-panel { height: auto; }
+  .simulator-workbench .simulation-empty { min-height: 420px; padding: 36px 20px; }
+  .floating-simulation-controls,
+  .floating-simulation-controls[open] {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-top: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgb(30 62 42 / 8%);
+  }
+  .floating-controls-inner,
+  .floating-simulation-controls[open] .floating-controls-inner { height: auto; }
+  .simulator-workbench .floating-controls-body.simulator-control-column,
+  .floating-simulation-controls[open] > .floating-controls-inner > .floating-controls-body {
+    flex: none;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+}

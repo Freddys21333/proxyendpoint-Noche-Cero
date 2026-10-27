@@ -1,7 +1,7 @@
 import { useId, useLayoutEffect, useRef, type ReactNode } from 'react'
 import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 
-export function FloatingSimulationControls({ children }: { children: ReactNode }) {
+export function FloatingSimulationControls({ children, actions }: { children: ReactNode; actions?: ReactNode }) {
   const id = useId()
   const panel = useRef<HTMLDetailsElement>(null)
   useLayoutEffect(() => {
@@ -13,14 +13,20 @@ export function FloatingSimulationControls({ children }: { children: ReactNode }
       const bounds = workspace.getBoundingClientRect()
       const scene = workspace.querySelector('.network-view:not([hidden])')?.getBoundingClientRect()
       const top = Math.max(inventory ? inventory.getBoundingClientRect().bottom - bounds.top + 12 : 24, scene ? scene.top - bounds.top + 12 : 24)
+      const header = document.querySelector<HTMLElement>('.simulation-header')?.getBoundingClientRect().height ?? 0
+      const visibleTop = Math.max(bounds.top + top, header)
+      const available = window.innerHeight - visibleTop - 16
       element.style.setProperty('--controls-top', `${top}px`)
-      element.style.setProperty('--controls-height', `${Math.max(160, (scene?.bottom ?? bounds.bottom) - bounds.top - top - 12)}px`)
+      element.style.setProperty('--controls-height', `${Math.max(200, Math.min(900, available))}px`)
     }
     const observer = new ResizeObserver(position)
+    const main = workspace.closest('main')
     observer.observe(workspace)
+    if (main) observer.observe(main)
     workspace.querySelectorAll('.network-demo-heading, .network-meaning, .population-inventory-summary, .network-view').forEach(node => observer.observe(node))
+    window.addEventListener('resize', position)
     position()
-    return () => observer.disconnect()
+    return () => { observer.disconnect(); window.removeEventListener('resize', position) }
   }, [])
   return <details ref={panel} className="floating-simulation-controls" open>
     <summary aria-controls={id}>
@@ -28,6 +34,9 @@ export function FloatingSimulationControls({ children }: { children: ReactNode }
       <span>Controles</span>
       <ChevronDown size={17} className="floating-controls-chevron" aria-hidden="true" />
     </summary>
-    <div id={id} className="floating-controls-body simulator-control-column">{children}</div>
+    <div className="floating-controls-inner">
+      <div id={id} className="floating-controls-body simulator-control-column">{children}</div>
+      {actions && <div className="floating-controls-footer">{actions}</div>}
+    </div>
   </details>
 }

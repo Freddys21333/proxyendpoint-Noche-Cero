@@ -2841,6 +2841,9 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
   outline-offset: 3px;
 }
 .minimal-workspace .simulation-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: 36px;
@@ -2917,7 +2920,7 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .minimal-workspace .configuration-panel .advanced-toggle { margin-top: 13px; min-height: 48px; padding: 12px 0; font-size: 15px; color: #365347; border-bottom: 1px solid #e1e6df; }
 .minimal-workspace .configuration-advanced { padding-top: 16px; }
 .minimal-workspace .configuration-advanced p { margin: 12px 0 0; color: #5f6b64; font-size: 15px; }
-.minimal-workspace .configuration-actions { display: flex; align-items: center; gap: 20px; padding-top: 16px; }
+.minimal-workspace .configuration-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .minimal-workspace .validate-button { min-height: 44px; height: auto; padding: 10px 16px; font-size: 16px; font-weight: 500; background: #173e32; color: #fff; border-radius: 3px; }
 .minimal-workspace .validate-button:hover { background: #285442; }
 .minimal-workspace .configuration-errors { margin-top: 16px; padding: 12px; background: #faf0eb; color: #803b2e; font-size: 15px; }
@@ -2944,6 +2947,8 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .minimal-dialog .run-summary { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 16px; font-size: 15px; }
 .minimal-dialog .modal-actions { margin-top: 24px; gap: 12px; }
 .minimal-dialog .modal-actions button { min-height: 44px; height: auto; padding: 10px 14px; border-radius: 3px; font-size: 16px; }
+.minimal-dialog .modal-actions .action-primary { background: #173e32; color: #fff; }
+.minimal-dialog .modal-actions .action-primary:hover { background: #285442; }
 @media (max-width: 900px) {
   .minimal-workspace .simulation-header { gap: 24px; padding: 0 20px; flex-wrap: wrap; }
   .minimal-workspace .simulation-status { font-size: 15px; }
@@ -2953,6 +2958,7 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
   .minimal-workspace .simulation-header { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding-top: 13px; }
   .minimal-workspace .simulation-brand { font-size: 22px; }
   .minimal-workspace .simulation-status { grid-column: 2; grid-row: 1; font-size: 15px; }
+  .minimal-workspace .simulation-status-context { display: none; }
   .minimal-workspace .simulation-navigation { grid-column: 1 / -1; justify-content: space-between; gap: 10px; min-height: 50px; }
   .minimal-workspace .simulation-navigation button { padding-left: 0; padding-right: 0; }
   .minimal-workspace .simulation-navigation button:last-child svg { display: none; }
