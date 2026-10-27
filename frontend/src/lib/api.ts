@@ -6,12 +6,15 @@ export type ResourceSchedule = { modelVersion: 'daily-inventory-v1'; vaccineDail
 export type InventoryDaily = { vaccinesDeliveredToday: number; vaccinesReceivedTotal: number; vaccinesUsedToday: number; vaccinesAvailable: number;
   brigadeSuppliesDeliveredToday: number; brigadeSuppliesReceivedTotal: number; brigadeSuppliesUsedToday: number; brigadeSuppliesAvailable: number }
 
+export type AdaptiveStrategy = { modelVersion: 'adaptive-policy-v1'; closureInfectionThreshold: number; reopenInfectionThreshold: number; ringVaccinationPriority: boolean; enabled?: boolean }
+export type AdaptiveDecisions = { enabled: boolean; triggers: string[]; infectiousFraction: number; closureActive: boolean | null; brigadesAllowed: boolean; ringVaccinationActive: boolean }
 export type CombinedPlan = {
   modelVersion: 'combined-educational-v1'; budgetCents: number; vaccineCostCents: number;
   closureCostCents: number; closureContext: 'household' | 'school' | 'bus' | 'market' | 'neighborhood';
   closureStart: number; closureDays: number; brigadeCostCents: number;
   brigadeDailyCapacity: number; brigadeReduction: number; brigadeStart: number; brigadeDays: number;
   resourceSchedule?: ResourceSchedule;
+  adaptiveStrategy?: AdaptiveStrategy;
 }
 export type CombinedDaily = { day: number; budgetRemainingCents: number; spentCents: number; spentTodayCents: number; closedContext: string | null; brigadesActive: number; brigadeNodeIds: number[] }
 
@@ -26,7 +29,7 @@ export type ConfigurationInput = {
 
 type Metadata = { schemaVersion: '1.0'; engineVersion: string; requestId: string }
 export type PersonState = 'S' | 'E' | 'I' | 'R'
-export type VaccinationSelection = { day: number; nodeId: number; score: number | null; rank: number; stateAtDecision: 'S'; contexts: string[]; tieBreak: 'nodeIdAsc' | 'seededRandom'; effective: boolean }
+export type VaccinationSelection = { day: number; nodeId: number; score: number | null; infectiousContacts?: number; rank: number; stateAtDecision: 'S'; contexts: string[]; tieBreak: 'nodeIdAsc' | 'seededRandom' | 'ringContact'; effective: boolean }
 export type Policy = 'none' | 'random' | 'targeted'
 export type CurveMetric = 's' | 'e' | 'i' | 'r' | 'cumulativeInfected'
 export type Stats = { n: number; mean: number | null; median: number | null; p05: number | null; p95: number | null }
@@ -142,8 +145,13 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
       if (!object(row) || row.day !== day || !integerIn(row.spentCents, 0, plan.budgetCents) || !integerIn(row.budgetRemainingCents, 0, plan.budgetCents) || !Array.isArray(row.brigadeNodeIds) || new Set(row.brigadeNodeIds).size !== row.brigadeNodeIds.length || !row.brigadeNodeIds.every(id => integerIn(id, 0, configuration.scenario.populationSize - 1)) || row.brigadesActive !== row.brigadeNodeIds.length || row.brigadeNodeIds.length > plan.brigadeDailyCapacity) return false
       const cost = rows.filter(selection => object(selection) && selection.day === day).length * plan.vaccineCostCents + row.brigadeNodeIds.length * plan.brigadeCostCents + (row.closedContext === null ? 0 : plan.closureCostCents)
       if (row.spentTodayCents !== cost || row.spentCents !== previous + cost || row.budgetRemainingCents !== plan.budgetCents - row.spentCents || policy === 'none' && cost !== 0) return false
-      if (row.closedContext !== null && (row.closedContext !== plan.closureContext || day < plan.closureStart || day >= plan.closureStart + plan.closureDays || day >= configuration.scenario.days)) return false
+      if (row.closedContext !== null && (row.closedContext !== plan.closureContext || (!(plan.adaptiveStrategy && plan.adaptiveStrategy.enabled !== false && policy === 'targeted') && (day < plan.closureStart || day >= plan.closureStart + plan.closureDays)) || day >= configuration.scenario.days)) return false
       if (row.brigadeNodeIds.length && (day < plan.brigadeStart || day >= plan.brigadeStart + plan.brigadeDays || day >= configuration.scenario.days)) return false
+      const adaptive = plan.adaptiveStrategy
+      if (adaptive) {
+        const d = row.adaptiveDecisions, enabled = policy === 'targeted' && adaptive.enabled !== false
+        if (!object(d) || d.enabled !== enabled || !finite(d.infectiousFraction) || !finite(row.i) || d.infectiousFraction !== row.i / configuration.scenario.populationSize || d.closureActive !== (enabled ? row.closedContext !== null : null) || d.brigadesAllowed !== (!enabled || row.i > 0) || d.ringVaccinationActive !== (enabled && adaptive.ringVaccinationPriority && row.i > 0) || !Array.isArray(d.triggers) || !d.triggers.every(r => typeof r === 'string' && ['closure_triggered_by_threshold', 'closure_budget_exhausted', 'reopen_triggered_by_threshold', 'no_infectious_hold_brigades', 'ring_vaccination_active', 'closure_no_active_contacts', 'vaccine_stock_empty', 'vaccine_capacity_zero', 'vaccine_budget_exhausted', 'vaccine_no_eligible', 'brigade_capacity_zero', 'brigade_stock_empty', 'brigade_budget_exhausted', 'brigade_no_eligible'].includes(r)) || new Set(d.triggers).size !== d.triggers.length || (!enabled && d.triggers.length)) return false
+      } else if (row.adaptiveDecisions !== undefined) return false
       previous = row.spentCents
       if (schedule) {
         const delivered = schedule.deliveries.filter(r => r.day === day), received = schedule.deliveries.filter(r => r.day <= day)
@@ -157,7 +165,7 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
       }
     }
   }
-  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && (schedule ? integerIn(row.day, interventionDay, configuration.scenario.days) : row.day === interventionDay) && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
+  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && (schedule ? integerIn(row.day, interventionDay, configuration.scenario.days) : row.day === interventionDay) && (row.infectiousContacts === undefined || integerIn(row.infectiousContacts, 0, 100000)) && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && (row.tieBreak === 'nodeIdAsc' || row.tieBreak === 'ringContact' && integerIn(row.infectiousContacts, 1, 100000) && !!plan?.adaptiveStrategy?.ringVaccinationPriority && plan.adaptiveStrategy.enabled !== false) : row.score === null && row.tieBreak === 'seededRandom'))) return false
   return new Set(rows.map(row => row.nodeId)).size === rows.length && new Set(rows.map(row => row.rank)).size === rows.length && metrics.vaccinesAssigned === rows.length && metrics.vaccinesEffective === rows.filter(row => row.effective).length && metrics.vaccinesUnused === vaccines - rows.length
 }
 

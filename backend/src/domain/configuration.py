@@ -255,6 +255,15 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
     adaptive_strategy: AdaptiveStrategy | None = None
     if combined and combined.get("adaptiveStrategy"):
         ad = combined["adaptiveStrategy"]
+        if ad["reopenInfectionThreshold"] > ad["closureInfectionThreshold"]:
+            _fail_validation(
+                [
+                    FieldIssue(
+                        "configuration.intervention.combined.adaptiveStrategy.reopenInfectionThreshold",
+                        "El umbral de reapertura no puede superar el de cierre.",
+                    )
+                ]
+            )
         adaptive_strategy = AdaptiveStrategy(
             model_version="adaptive-policy-v1",
             closure_infection_threshold=_float(ad.get("closureInfectionThreshold", 0.05)),

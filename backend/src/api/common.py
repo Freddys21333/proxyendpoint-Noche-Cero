@@ -166,7 +166,8 @@ def _execute(
             **metadata,
             defaults=normalize_configuration().to_dict(),
             limits=limits,
-            features=dict(asyncJobs=True, representativeFrames=True),
+            # El servidor local aún no publica las rutas de trabajos P-03.
+            features=dict(asyncJobs=False, representativeFrames=True),
             generatorDescription=DESCRIPTION,
         )
     if endpoint == "jobs_get":

@@ -77,3 +77,18 @@ test('resource schedules normalize duplicate deliveries and restore equivalent i
   edited.combined.resourceSchedule.deliveries[0] = { day: 1, vaccines: 1000, brigadeSupplies: 0 }
   assert.ok(validateScenario(edited).length)
 })
+
+
+test('adaptive rules restore by value and reject inverted thresholds', () => {
+  const combined = { modelVersion: 'combined-educational-v1' as const, budgetCents: 10000, vaccineCostCents: 1000, closureCostCents: 500, closureContext: 'school' as const, closureStart: 0, closureDays: 2, brigadeCostCents: 100, brigadeDailyCapacity: 10, brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: 2,
+    adaptiveStrategy: { modelVersion: 'adaptive-policy-v1' as const, closureInfectionThreshold: 0.05, reopenInfectionThreshold: 0.02, ringVaccinationPriority: true } }
+  const scenario = { ...defaults, combined }
+  const configuration = toConfiguration(scenario)
+  assert.equal(matchesLoadedScenario(structuredClone(scenario), configuration), true)
+  const changed = structuredClone(scenario)
+  changed.combined.adaptiveStrategy.closureInfectionThreshold = 0.1
+  assert.equal(matchesLoadedScenario(changed, configuration), false)
+  changed.combined.adaptiveStrategy.reopenInfectionThreshold = 0.2
+  assert.ok(validateScenario(changed).length)
+  assert.equal(combined.adaptiveStrategy.closureInfectionThreshold, 0.05)
+})

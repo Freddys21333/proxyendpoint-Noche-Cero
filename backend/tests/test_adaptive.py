@@ -44,6 +44,8 @@ def test_adaptive_ring_vaccination_priority_targets_infected_neighbors():
     assert len(adapt_sel) == 1
     assert adapt_sel[0]["nodeId"] == 1
     assert adapt_sel[0]["tieBreak"] == "ringContact"
+    assert adapt_sel[0]["infectiousContacts"] == 1
+    assert "infectiousContacts" not in std_sel[0]
 
 
 def test_adaptive_strategy_simulation_runs_and_preserves_budget():

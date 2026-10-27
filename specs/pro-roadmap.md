@@ -10,7 +10,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 |---|---|---|
 | Intervenciones combinadas, costos y presupuesto | PRD §4.2 PRO-1/2; TRD §6.3 | Incremento educativo funcional: vacunas, cierre de una capa y brigadas, saldo diario y exportación. No equivale a completar todo PRO-2. Véase [semántica vigente](../docs/intervenciones-combinadas.md). |
 | Recursos que llegan por días | PRO-2; TRD §6.3 | **Verificado localmente**: P-01 incorpora calendario opcional de reposición, acumulación, capacidad diaria y registro/exportación de inventario. [Contrato](p01-resource-schedule.md). |
-| Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **En progreso, parcial**: las brigadas dirigidas ya recalculan destinatarios susceptibles por día; vacuna y cierre siguen calendarios fijados. Falta política adaptativa explícita con reglas y registro de decisiones. P-02. |
+| Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **Backend verificado localmente**: variante adaptativa versionada con cierres por umbral, pausa de brigadas y prioridad de anillo; registros/exportación y cliente compatibles. Pendiente editor e historial visual frontend. [Contrato P-02](p02-adaptive-policy.md). |
 | Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **No iniciado**: el flujo actual es síncrono, 2..30 réplicas; no hay jobs ni Distributed Map implementados. P-03/04. |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
 | Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
@@ -38,12 +38,12 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-02 — Política adaptativa observable (PRO-3)
 
-- [x] Estado: **implementado, pendiente de verificación**. Dependencia: P-01 y decisiones de modelo compatibles.
+- [x] Estado: **backend verificado localmente; interfaz específica pendiente**. Dependencia: P-01 y decisiones de modelo compatibles.
 - Formalizar reglas para reasignar dosis, brigadas y cierres según S/E/I/R observados, nuevos casos, contactos activos y saldo. Especificar frecuencia, umbrales y desempates; la primera versión puede ser una heurística voraz explicable.
 - Mantener las estrategias actuales identificadas. Si la nueva regla cambia su significado, añadir nombre/versionado, no sustituir silenciosamente `targeted`. Comparar sin intervención, azar con recursos equivalentes y política propuesta; aclarar cuándo una regla observa estados completos como supuesto educativo.
 - Exportar entradas observadas, acción, motivo, puntuación, recursos/costo y acciones omitidas por límites. No leer eventos futuros, futuros uniformes ni resultados de otras políticas.
 - Aceptación: brote ascendente/descendente, saldo agotado, ausencia de elegibles, cambios de prioridad, reglas estables y límites. Verificar independencia del orden de políticas y semillas por dominio. Recalcular solo brigadas diariamente no cierra esta tarea.
-- **Implementado 2026-10-27:** 3 reglas adaptativas (cierre dinámico, control de brigadas, ring vaccination), campo `adaptiveDecisions` en daily, archivo `adaptive-decisions.csv` en exportación, 9 pruebas (test_adaptive.py + test_adaptive_export.py), especificación completa en `specs/p02-adaptive-policy.md`, evidencia en `docs/evidencia/p02-adaptive.md`. Pendiente: ejecutar pruebas con entorno instalado.
+- **Verificado 2026-10-27:** contrato de registros y anillo, conservación, exportación/reproducción, independencia de orden y cliente HTTP. Alcance exacto y límites en [P-02](p02-adaptive-policy.md); resultados y pendientes P-03 en [evidencia](../docs/evidencia/p02-adaptive.md).
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 
@@ -107,6 +107,6 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ## 5. Orden de trabajo y criterio de inicio
 
-P-01 está verificado localmente; seguir con P-02 para completar decisiones e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
+P-01 y el backend P-02 están verificados localmente; seguir con la corrección/verificación P-03 e integración visual P-02 en paralelo, e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
 
 Antes de cada implementación: cerrar esquema, ejemplo, semántica temporal, pruebas y cambios de PRD/TRD afectados. Los nombres de campos nuevos de esta hoja son propuestas, no contratos disponibles. Conservar la comparación justa, independencia de políticas, exportaciones y reproducibilidad. Cada capacidad pasa a verificada solo con evidencia, sin convertir las ideas opcionales en obligaciones.

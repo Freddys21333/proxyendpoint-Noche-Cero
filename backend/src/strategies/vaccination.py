@@ -65,11 +65,16 @@ def select_candidates(
             "day": day,
             "nodeId": node,
             "score": scores[node] if policy == "targeted" else None,
+            **(
+                {"infectiousContacts": ring_contacts[node]}
+                if ring_priority and policy == "targeted"
+                else {}
+            ),
             "rank": rank,
             "stateAtDecision": "S",
             "contexts": sorted(contexts[node]),
             "tieBreak": "ringContact"
-            if ring_priority and ring_contacts[node] > 0
+            if ring_priority and policy == "targeted" and ring_contacts[node] > 0
             else ("nodeIdAsc" if policy == "targeted" else "seededRandom"),
         }
         for rank, node in enumerate(selected, start=1)

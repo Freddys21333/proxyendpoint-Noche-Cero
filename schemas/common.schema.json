@@ -1275,6 +1275,9 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 360000
+        },
+        "adaptiveDecisions": {
+          "$ref": "#/$defs/AdaptiveDecisions"
         }
       },
       "required": [
@@ -1330,11 +1333,17 @@
         "tieBreak": {
           "enum": [
             "nodeIdAsc",
-            "seededRandom"
+            "seededRandom",
+            "ringContact"
           ]
         },
         "effective": {
           "type": "boolean"
+        },
+        "infectiousContacts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
         }
       },
       "required": [
@@ -2620,6 +2629,62 @@
         "closureInfectionThreshold",
         "reopenInfectionThreshold",
         "ringVaccinationPriority"
+      ],
+      "additionalProperties": false
+    },
+    "AdaptiveDecisions": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "closure_triggered_by_threshold",
+              "closure_budget_exhausted",
+              "reopen_triggered_by_threshold",
+              "no_infectious_hold_brigades",
+              "ring_vaccination_active",
+              "closure_no_active_contacts",
+              "vaccine_stock_empty",
+              "vaccine_capacity_zero",
+              "vaccine_budget_exhausted",
+              "vaccine_no_eligible",
+              "brigade_capacity_zero",
+              "brigade_stock_empty",
+              "brigade_budget_exhausted",
+              "brigade_no_eligible"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "infectiousFraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "closureActive": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "brigadesAllowed": {
+          "type": "boolean"
+        },
+        "ringVaccinationActive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "triggers",
+        "infectiousFraction",
+        "closureActive",
+        "brigadesAllowed",
+        "ringVaccinationActive"
       ],
       "additionalProperties": false
     }

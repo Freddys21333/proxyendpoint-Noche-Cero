@@ -12,6 +12,7 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 | [Hoja de ruta PRO](pro-roadmap.md) | P-01..P-08: recursos, adaptación, AWS Monte Carlo, datos reales/calibración, animación y PDF; ideas opcionales | Planificación 2026-10-27; estados y aceptación separados de la base |
 | [Frentes de trabajo PRO](pro-workstreams.md) | División backend/frontend para P-01..P-08, contratos, trabajo paralelo e integración incremental | Guía de coordinación; respeta el alcance y estado de la hoja de ruta |
 | [P-01: inventario diario](p01-resource-schedule.md) | Entregas, recepción/consumo, capacidad, conservación y compatibilidad | Verificado localmente; no implica P-02 ni despliegue AWS |
+| [P-02: política adaptativa](p02-adaptive-policy.md) | Umbrales, anillo, decisiones, motivos, exportación y contrato frontend | Backend verificado localmente; editor e historial visual pendientes |
 
 Leer requisitos, diseño y acuerdos antes de tomar una tarea. [Los contratos ejecutables y ejemplos](../schemas/README.md) ya están verificados como artefactos estáticos de T-03, sin confundir mocks con resultados reales. Backend, frontend e infraestructura tienen definidos sus límites e interfaces para avanzar; T-17 conserva las verificaciones externas de AWS.
 
