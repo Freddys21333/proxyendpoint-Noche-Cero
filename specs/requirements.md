@@ -1,9 +1,9 @@
 # Requisitos de implementación — versión base
 
-**Versión:** 1.0
-**Fecha:** 26 de octubre de 2026
+**Versión:** 1.1
+**Fecha:** 27 de octubre de 2026
 **Estado:** borrador para revisión del equipo; no acredita implementación.
-**Fuentes:** [PRD](../PRD.md) v1.0 y [TRD](../TRD.md) v1.2.
+**Fuentes:** [PRD](../PRD.md) v1.1 y [TRD](../TRD.md) v1.3.
 **Complementos:** [Diseño](design.md), [Acuerdos técnicos](agreements.md) y [Tareas](tasks.md).
 
 ## 1. Propósito y alcance
@@ -27,7 +27,7 @@ El enunciado oficial prevalece; PRD define el producto y TRD la implementación.
 | REQ-07 | Mostrar R, media, mediana, P05/P95 y diferencias pareadas. Etiquetar percentiles como rango empírico; con R≥30 calcular bootstrap pareado 95 % reproducible. | RF-09/10; CA-10 | Fixtures numéricos conocidos; 2.000 remuestras y semilla registrada. |
 | REQ-08 | Explicar ganancia, empate o pérdida y selección de nodos sin ocultar resultados desfavorables. La política no observa el futuro. | RF-11/12; RNF-10 | Recomendaciones para los tres casos; score, rank, estado y desempate contrastados con la selección. |
 | REQ-09 | Exportar JSON y CSV con configuración, grafo, semillas, versiones, métricas, curvas, resultados y hashes; reproducir el JSON en otro proceso. | RF-13/17/19; CA-06/07/11 | Tres procesos con igual hash; orden de políticas/réplicas irrelevante; campos volátiles excluidos. |
-| REQ-10 | Aplicar `double_beta`, `half_vaccines`, `market_origin`, `partial_efficacy_50` y cambios manuales; aceptar semilla del jurado. | RF-15/16/17; CA-12 | Transformaciones exactas, sin acumulación accidental al volver al escenario base; flujo humano <5 min. |
+| REQ-10 | Configurar manualmente los casos variables y la semilla que solicite el jurado, sin presets fijos obligatorios. | RF-15/16/17; CA-12 | Cambios manuales validados, invalidación de resultados anteriores y registro de valores/semilla; flujo humano <5 min. |
 | REQ-11 | Ofrecer URL pública y health; documentar instalación, pruebas, despliegue, supuestos, arquitectura, costos, Budget y límites. | RF-20/21/22; CA-13/14/15 | Smoke desde sesión limpia, enlaces reales, comandos ejecutados y evidencia de cuenta/despliegue sin secretos. |
 | REQ-12 | Ofrecer animación identificada por réplica y comparación visual base/sorpresa cuando se implemente lo esperado. | RF-14/18 (DEBERÍA) | Réplica más cercana a mediana, desempate por índice, semilla visible; no llamarla promedio. Justificar ausencia. |
 
@@ -72,11 +72,11 @@ Se rechazan NaN, infinitos, campos desconocidos y cuerpos superiores al límite 
 - Dado beta=0 o ninguna arista activa, cuando se simula, no aparecen exposiciones por contacto; E/I iniciales sí pueden progresar.
 - Dado un JSON exportado, cuando se reproduce en proceso nuevo con versiones fijadas, coincide el hash no volátil.
 - Dado un error de validación, la UI conserva entradas y muestra los campos afectados; un resultado parcial no habilita recomendación final.
-- Dada la base, cada preset usa la transformación de TRD §8.4, conserva configuración de referencia y vuelve a ejecutar sin tocar código.
+- Dado un caso nuevo solicitado por el jurado, el operador introduce manualmente parámetros y semilla, vuelve a ejecutar y exporta sin tocar código (TRD §8.4).
 
 ## 6. Entrega, bloqueos y alcance PRO
 
-La validación técnica aplica los criterios científicos de PRD §7.5: menor media de acumulados de `targeted` frente a ambas líneas base, diferencia pareada positiva frente a azar, cuatro escenarios de perturbación, recursos válidos y una semilla externa exportable. La matriz de validación se fija antes de observar resultados; si falla, registrar y justificar ajustes sin seleccionar semillas favorables.
+La validación técnica aplica los criterios científicos de PRD §7.5: menor media de acumulados de `targeted` frente a ambas líneas base, diferencia pareada positiva frente a azar, casos de perturbación configurados manualmente, recursos válidos y una semilla externa exportable. La matriz de validación se fija antes de observar resultados; si falla, registrar y justificar ajustes sin seleccionar semillas favorables.
 
 Región de los documentos: `us-east-2`. El README registra que el enunciado menciona `us-east-1` por confirmar: resolver con organización antes de desplegar. El Budget de USD 20 tiene evidencia provisional y 0/2 destinatarios verificados; no se declara operativa la notificación. No activar características avanzadas ni cambiar de plan como efecto implícito de una tarea de código.
 

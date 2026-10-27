@@ -142,3 +142,7 @@ Después de comparar, Descargar ZIP con CSV está disponible en Comparación y e
 La UI espera config válida antes de habilitar Consultar red. Permite editar mientras carga; defaults recibidos solo completan campos no modificados. Restablecer usa defaults publicados. Si la carga falla conserva entradas y muestra error. Los requests incluyen la configuración de red publicada. Los rangos de N/tasas siguen el esquema; config publica límites de transporte/grafo/frames: se valida tamaño de request y JSON descomprimido, máximo de aristas y presupuesto de animación. Si el presupuesto no admite frames, se solicita directamente comparación sin animación; un rechazo posterior permite fallback acotado solo si se habían pedido frames.
 
 Preview debe coincidir con todos los parámetros solicitados (se permiten campos normalizados adicionales), conservar N, IDs, pertenencias, posiciones finitas y completas, aristas/calendario válidos, IDs iniciales únicos/cantidad coherente y hashes con formato válido. Esta validación de contrato no sustituye la validación del backend ni recalcula el hash científico.
+
+## Aclaración de alcance — 2026-10-27
+
+Los casos distintos del jurado se atienden editando parámetros y semilla manualmente. No se requieren presets fijos ni botones de sorpresa. Los helpers applyPreset y sus pruebas se conservan como utilidades opcionales históricas; su existencia no obliga a exponerlos. Las descripciones anteriores de pantallas con presets son historial, no alcance vigente. Falta medir la aceptación del flujo manual RF-15/CA-12.

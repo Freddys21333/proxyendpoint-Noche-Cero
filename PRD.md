@@ -1,7 +1,7 @@
 # PRD — Comité de Contención de Manta
 
-**Versión:** 1.0
-**Fecha:** 26 de octubre de 2026
+**Versión:** 1.1
+**Fecha:** 27 de octubre de 2026
 **Estado:** especificación lista para implementación
 **Documento complementario:** `TRD.md`
 
@@ -72,7 +72,7 @@ La población es una red sintética reproducible con capas de contacto para hoga
 | Réplicas `R` | 30 | Mínimo operativo para reportar dispersión sin impedir la demo |
 | Vacunas `K` | 100 | Supuesto del equipo: 10 % de la población |
 | Día de intervención | 0 | Supuesto base; editable para estudiar retrasos |
-| Eficacia | 100 % | Simplificación base; el preset sorpresa usa cobertura parcial |
+| Eficacia | 100 % | Simplificación base; el jurado puede solicitar manualmente una eficacia parcial |
 | Incubación media | 3 días | Parámetro del escenario, no afirmación clínica |
 | Duración infecciosa media | 7 días | Parámetro del escenario, no afirmación clínica |
 | Semilla documentada | 20261026 | Valor reproducible para README y demo; el jurado puede reemplazarlo |
@@ -152,7 +152,7 @@ PRO no puede retrasar la entrega base. Cada elemento se etiqueta `no iniciado`, 
 
 ### 5.3 Brote Sorpresa
 
-- **RF-15 (DEBE):** incluir presets de un clic: `double_beta`, `half_vaccines`, `market_origin` y `partial_efficacy_50`.
+- **RF-15 (DEBE):** permitir introducir manualmente los casos distintos que solicite el jurado mediante los controles de parámetros y semilla. No existe una lista fija de casos ni se requieren presets o botones de un clic.
 - **RF-16 (DEBE):** permitir cambios manuales equivalentes sin editar código y volver a obtener recomendación en menos de cinco minutos de operación total.
 - **RF-17 (DEBE):** aceptar cualquier semilla válida elegida por el jurado y no utilizar resultados precalculados como si fueran una ejecución nueva.
 - **RF-18 (DEBERÍA):** conservar lado a lado la configuración base y la sorpresa para explicar qué cambió y por qué cambió la recomendación.
@@ -209,7 +209,7 @@ El producto no se declara listo para la prueba de fuego hasta que, con la matriz
 
 1. `targeted` tenga menor media de infectados acumulados que `none` y `random` en el escenario base;
 2. la diferencia media pareada frente a `random` sea positiva;
-3. los cuatro presets sorpresa ejecuten sin cambios de código;
+3. los casos distintos solicitados por el jurado puedan configurarse manualmente y ejecutarse sin cambios de código;
 4. ninguna política exceda recursos ni vacune estados no elegibles;
 5. una semilla nueva elegida externamente pueda ejecutarse y exportarse.
 
@@ -228,7 +228,7 @@ Si el gate falla, se reporta el resultado real y se ajusta la estrategia o el es
 - **CA-09:** la tabla coincide con métricas recalculadas desde las series y eventos.
 - **CA-10:** cada resumen muestra `R`, media, mediana y P05/P95 y etiqueta correctamente el rango.
 - **CA-11:** el JSON exportado permite reproducir el experimento en un proceso nuevo.
-- **CA-12:** los cuatro presets sorpresa concluyen, muestran diferencias y caben en el flujo de cinco minutos.
+- **CA-12:** un caso nuevo solicitado por el jurado se configura manualmente, se ejecuta y se interpreta en menos de cinco minutos, sin editar código; se registran los parámetros y la semilla utilizados. No se exige un conjunto fijo de presets.
 - **CA-13:** la URL pública, `/v1/health` y el escenario base responden desde una sesión limpia.
 - **CA-14:** README, arquitectura, costos, Budget, pitch y parámetros base están presentes y enlazados.
 - **CA-15:** la revisión del repositorio no encuentra secretos; los permisos desplegados cumplen mínimo privilegio.
@@ -281,7 +281,7 @@ Si el gate falla, se reporta el resultado real y se ajusta la estrategia o el es
 | `targeted` pierde con ciertas semillas | Falla de impacto | Comparación pareada, matriz adversa, transparencia y ajuste documentado de heurística |
 | Modelo demasiado complejo | El equipo no lo explica | SEIR y centralidad simples; PRO separado |
 | Diferencias entre políticas no justas | Resultado inválido | Aleatoriedad común, hashes e invariantes |
-| Sorpresa excede cinco minutos | Falla de prueba | Presets de un clic, límites y ensayo cronometrado |
+| Sorpresa excede cinco minutos | Falla de prueba | Controles manuales claros, límites y ensayo cronometrado |
 | Cuota o servicio no disponible en `us-east-2` | Sin despliegue o función degradada | Verificar disponibilidad y cuotas en la cuenta antes de provisionar; no cambiar de región sin actualizar PRD, TRD, costos y evidencias |
 | Costos exceden presupuesto | Pérdida de puntos/cuenta | Budget, límites de admisión, concurrencia acotada y apagado |
 | Dependencia de red durante pitch | Demo fallida | Resultado exportado de respaldo, sin presentarlo como ejecución en vivo |
@@ -293,3 +293,6 @@ Si el gate falla, se reporta el resultado real y se ajusta la estrategia o el es
 - Límite medido de `N` y `R` que cumple RNF-04 en la cuenta del evento.
 - Datos abiertos y permiso de uso si se implementa calibración PRO.
 - Qué funciones PRO pasan de “opcional” a compromiso antes del cierre del 27 de octubre.
+
+
+Cambio de alcance 2026-10-27: por aclaración del responsable del proyecto, Brote Sorpresa corresponde a solicitudes variables del jurado atendidas manualmente. Se elimina la exigencia anterior de cuatro presets fijos. Se conserva la validación, reproducibilidad, semilla externa y objetivo de operación de cinco minutos.

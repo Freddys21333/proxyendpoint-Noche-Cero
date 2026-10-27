@@ -1,7 +1,7 @@
 # TRD — Comité de Contención de Manta
 
-**Versión:** 1.2
-**Fecha:** 26 de octubre de 2026
+**Versión:** 1.3
+**Fecha:** 27 de octubre de 2026
 **Estado:** especificación técnica lista para implementación
 **Fuente funcional:** `PRD.md`
 
@@ -348,17 +348,11 @@ El agregador devuelve media, mediana, P05 y P95 por métrica y política. Los pe
 
 Para animación se elige la réplica cuya métrica `cumulativeInfected(targeted)` esté más cerca de la mediana, con desempate por menor índice. Se muestra su semilla e índice. Nunca se llama “promedio” a esa animación.
 
-### 8.4 Presets de sorpresa
+### 8.4 Casos del jurado mediante edición manual
 
-| ID | Transformación exacta |
-|---|---|
-| `double_beta` | `beta = min(1, 2 * beta_base)` |
-| `half_vaccines` | `vaccines = floor(vaccines_base / 2)` |
-| `market_origin` | `origin.kind = market`; selección reproducible dentro del mercado |
-| `partial_efficacy_50` | `vaccineEfficacy = 0.5` |
-| `late_intervention` | `interventionDay = 7` |
+El jurado puede solicitar valores distintos de contagio, dosis, origen, eficacia, día de intervención o cualquier otro parámetro expuesto, además de una semilla nueva. El operador los introduce en el formulario, valida, consulta una nueva red cuando corresponda, compara y exporta el resultado. Cada edición invalida los resultados anteriores.
 
-El preset guarda `baseConfigHash`, transformación y `surpriseConfigHash`.
+No hay transformaciones fijas obligatorias ni botones de presets requeridos. Duplicar beta, reducir dosis o elegir origen mercado son ejemplos posibles, no una lista de aceptación. Registrar la configuración y semilla efectivas de cada ensayo. Si se implementa el diff base/caso como mejora RF-18, conservar ambas configuraciones y sus hashes; no es un requisito adicional para ejecutar cambios manuales.
 
 ## 9. Contrato HTTP `/v1`
 
@@ -485,7 +479,7 @@ Logs y respuestas nunca incluyen stack traces, tokens, URLs firmadas completas n
 2. **Vista previa:** grafo, leyenda, capas, paciente cero y hash corto.
 3. **Ejecutar:** progreso real, opción de cancelar PRO y errores recuperables.
 4. **Comparar:** curvas, tabla, personas salvadas, rango, recomendación y explicación de nodos.
-5. **Sorpresa:** presets visibles, diff de parámetros y botón “Recalcular”.
+5. **Sorpresa:** editar manualmente los parámetros solicitados y recalcular; diff base/caso como mejora RF-18.
 6. **Exportar:** JSON, CSV y copia de comando de reproducción.
 
 ### 10.2 Estados de interfaz
@@ -551,7 +545,7 @@ Alarmas mínimas:
 
 1. Abrir URL desde ventana privada y probar `/v1/health`.
 2. Ejecutar semilla documentada y verificar hashes.
-3. Ejecutar una semilla nueva y un preset sorpresa.
+3. Ejecutar una semilla nueva y un caso solicitado con parámetros editados manualmente.
 4. Revisar alarmas y gasto actual.
 5. Si falla el backend, mostrar exportación de respaldo etiquetada; no afirmar que fue ejecución en vivo.
 6. Si el costo crece, cerrar admisión PRO, detener ejecuciones y revisar recursos; Budget puede notificar con retraso y no es un límite duro.
@@ -610,7 +604,7 @@ La región de despliegue es `us-east-2`; antes de desplegar solo queda confirmar
 | Recalcular métricas desde eventos | Igual a respuesta API | CA-09 |
 | 30 réplicas conocidas | Media/mediana/P05/P95 correctos | CA-10 |
 | Exportar y reproducir | Resultado idéntico | CA-11 |
-| Cuatro presets | Sin código y <5 min | CA-12 |
+| Caso nuevo del jurado | Configuración manual, sin código y <5 min | CA-12 |
 | URL desde sesión limpia | Frontend, health y base operativos | CA-13 |
 | IaC/artefactos | Sin secretos; IAM y docs completos | CA-14/CA-15 |
 

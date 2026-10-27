@@ -164,7 +164,7 @@ En base, HTTP síncrono no transmite avance por réplica: mostrar ejecución ind
 
 Curvas S/E/I/R, bandas P05–P95 etiquetadas como rango, tabla y explicación de resultado; controles accesibles, leyenda con letras/iconos y foco visible. Frontend puede comenzar con fixtures consensuados y validados por schemas después de cerrar contrato, aunque motor siga pendiente. No usar esos fixtures como resultado real del sistema.
 
-Presets sobre copia de base: beta=min(1,2*beta), vacunas=floor(K/2), origen mercado y eficacia=0.5. `late_intervention=7` está en TRD como adicional, no sustituye los cuatro obligatorios. Conservar hashes y diferencias base/sorpresa. No implementar reglas científicas distintas en UI.
+Casos del jurado mediante los controles manuales existentes de parámetros/semilla, sin lista fija ni presets obligatorios. Validar e invalidar resultados al editar; conservar configuración efectiva para exportación. Diff base/caso como mejora RF-18. No implementar reglas científicas distintas en UI.
 
 ## 7. Infraestructura y operación
 

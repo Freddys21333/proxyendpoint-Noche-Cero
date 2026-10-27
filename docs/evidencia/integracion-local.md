@@ -99,6 +99,11 @@ Config se valida (defaults completos/red y límites positivos), conserva en App 
 
 RED observado: 10 previews corruptos y config inválida se aceptaban antes de implementar las guardas. GREEN: 69 pruebas frontend (55 previas, una prueba antigua reemplaza su preview vacío por contrato válido, 14 nuevas de preview/config/límites/preservación de ediciones). Se corrigió el fixture de la prueba de maxEdges para que excediera realmente el límite de 1 con dos aristas. Build/TypeScript correctos. La suite backend de 302 pruebas corresponde a la revisión previa; este incremento no cambia backend y no se declara una nueva ejecución.
 
-La aceptación completa T-13..16 sigue pendiente. Presets RF-15, gate científico y AWS no se cierran por esta corrección. La actualización de revision-base.md preserva el diagnóstico original y añade su resolución I-09.
+La aceptación completa T-13..16 sigue pendiente. La aceptación manual RF-15/CA-12, gate científico y AWS no se cierran por esta corrección (alcance aclarado 2026-10-27; presets no requeridos). La actualización de revision-base.md preserva el diagnóstico original y añade su resolución I-09.
 
 Navegador con API real: config cargada y consulta N50/T3/K10 aceptada por las nuevas guardas; diálogo mostró 50 personas, 322 contactos y semilla 20261026. Captura local ignorada .tools/integration-config-preview.png.
+
+
+## Aclaración de alcance — 2026-10-27
+
+El responsable aclaró que el jurado pedirá ejemplos variables configurados manualmente. Se elimina el requisito de cuatro presets fijos en PRD/TRD/specs y se retira ese hallazgo de la revisión. Se mantiene aceptación del flujo manual <5 min, validación, semilla externa y exportación. No se agrega UI ni se declara validado el tiempo de operación por este cambio documental.

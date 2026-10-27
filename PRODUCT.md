@@ -58,3 +58,5 @@ Documentation, illustrative curves, and scripted demo states do not prove scient
 3. Distinguish illustrative behavior, planned capabilities, and measured results at every stage.
 4. Keep the synthetic, educational nature of the scenario clear.
 5. Preserve Spanish terminology and access to state information beyond color alone.
+
+Scope clarification 2026-10-27: surprise cases are variable requests from judges, entered manually through parameters and seed. Fixed presets or one-click preset buttons are not required. Validate the manual flow and its timing; do not reintroduce preset UI as a missing base requirement. Existing preset helpers are optional legacy utilities.

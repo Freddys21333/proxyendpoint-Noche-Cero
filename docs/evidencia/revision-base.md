@@ -4,13 +4,13 @@ Fecha local: 26 de octubre de 2026. Código revisado: e17f4d7, rama feat/front-e
 
 ## Conclusión
 
-La integración local ya permite configurar, generar preview, comparar políticas, explorar la representativa, explicar vacunas, cambiar agrupaciones y exportar JSON/ZIP CSV. La base todavía no está cerrada: faltan requisitos obligatorios de sorpresa, aceptación integral, gate científico e infraestructura/operación AWS. Los incrementos I-01..I-08 son avances verificables, no equivalen automáticamente a cerrar T-13..16.
+La integración local ya permite configurar, generar preview, comparar políticas, explorar la representativa, explicar vacunas, cambiar agrupaciones y exportar JSON/ZIP CSV. La base todavía no está cerrada: faltan la aceptación de casos manuales del jurado, validación integral y gate científico e infraestructura/operación AWS. Los incrementos I-01..I-08 son avances verificables, no equivalen automáticamente a cerrar T-13..16.
 
 ## Hallazgos ordenados para el siguiente trabajo
 
-### 1. RF-15/CA-12: los presets obligatorios no están disponibles en la interfaz
+### 1. RF-15/CA-12: validar los casos manuales del jurado
 
-[PRD RF-15](../../PRD.md#53-brote-sorpresa) exige double_beta, half_vaccines, market_origin y partial_efficacy_50 con un clic. [scenario.ts](../../frontend/src/lib/scenario.ts) conserva transformaciones y pruebas, pero App no importa applyPreset ni expone acciones de sorpresa. [README frontend](../../frontend/README.md) registra la retirada de esa sección. Los cambios manuales no satisfacen por sí solos RF-15/CA-12. Antes de cerrar T-15 hay que reconciliar la decisión de diseño con el alcance vigente: conectar un acceso compacto a las cuatro transformaciones o acordar una modificación explícita del requisito. La comparación lado a lado RF-18 es DEBERÍA y también sigue pendiente; no confundir ambos niveles.
+**Aclaración de alcance del responsable, 2026-10-27:** no existen casos fijos obligatorios ni se necesitan botones de presets. El jurado solicitará ejemplos distintos y el operador modificará parámetros/semilla manualmente. La observación original que trataba la ausencia de presets como incumplimiento queda retirada. PRD 1.1/TRD 1.3 y specs reflejan esta decisión. Los helpers applyPreset pueden mantenerse como utilidades opcionales; no son trabajo pendiente de UI. Sigue pendiente medir y documentar la aceptación del flujo manual en menos de cinco minutos. RF-18 (comparación lado a lado) conserva su carácter DEBERÍA.
 
 ### 2. La validación del preview permite una respuesta de otra configuración
 
@@ -22,7 +22,7 @@ App hace Promise.all(health, config), pero el callback solo conserva health. El 
 
 ### 4. La aceptación del frontend y el gate científico siguen abiertos
 
-Hay pruebas unitarias y flujos manuales con API real registrados en [integracion-local.md](integracion-local.md). No se encontró suite E2E de navegador, prueba moderada cronometrada de ≤3 min ni comprobación completa de contraste/teclado y tabla equivalente de todos los estados/errores. Falta una matriz documentada con éxito, empate, pérdida, error, respuesta inválida, edición durante petición, falta de frames, exportación, semilla externa y los cuatro presets. La comprobación manual histórica no se presenta como una suite E2E automatizada.
+Hay pruebas unitarias y flujos manuales con API real registrados en [integracion-local.md](integracion-local.md). No se encontró suite E2E de navegador, prueba moderada cronometrada de ≤3 min ni comprobación completa de contraste/teclado y tabla equivalente de todos los estados/errores. Falta una matriz documentada con éxito, empate, pérdida, error, respuesta inválida, edición durante petición, falta de frames, exportación, semilla externa y casos solicitados con edición manual. La comprobación manual histórica no se presenta como una suite E2E automatizada.
 
 T-22 no tiene protocolo/matriz científica fijada ni exportaciones finales de evaluación. Las pruebas de invariantes y agregación no prueban superioridad promedio. Fijar primero escenarios/semillas y criterio; después ejecutar, conservar pérdidas y reportar si el gate falla. No escoger semillas favorables a posteriori. La animación es una réplica, no evidencia del impacto agregado.
 
@@ -43,7 +43,7 @@ infra solo contiene .gitkeep; no hay configuración Terraform ni pipeline .githu
 | REQ-07 estadísticas | Agregación/bootstrap y presentación integrados | Aceptación UI de casos límite |
 | REQ-08 explicación | Recomendaciones y selecciones reales implementadas | Casos UI de empate/pérdida/error |
 | REQ-09 exportación/reproducción | Verificado localmente, JSON y ZIP CSV con equivalencia Python | Repetición en entorno publicado/semilla externa |
-| REQ-10 sorpresas | Parcial: helpers y cambios manuales; falta acceso de un clic | RF-15/CA-12 y prueba humana <5 min |
+| REQ-10 sorpresas | Controles manuales presentes; presets no requeridos | Aceptación RF-15/CA-12 y prueba humana <5 min |
 | REQ-11 AWS/documentación | Parcial: instrucciones locales y health | T-17..21 y aceptación pública/operativa |
 | REQ-12 representativa/diff | Animación real identificada implementada | Diff base/sorpresa y aceptación de usabilidad |
 
@@ -64,7 +64,7 @@ Primera ejecución backend bajo aislamiento: 288 aprobadas, 12 errores de tmp_pa
 ## Orden recomendado
 
 1. Endurecer preview y consumir config sin perder entradas ni invalidación.
-2. Resolver RF-15 y conectar presets con base preservada; valorar diff RF-18.
+2. Validar cambios manuales de parámetros/semilla según casos del jurado; medir CA-12 y valorar diff RF-18.
 3. Completar T-13..16 con matriz integral y aceptación de usabilidad/accesibilidad.
 4. Fijar protocolo T-22 antes de evaluar resultados; ejecutar y reportar el gate real.
 5. Preparar T-17/18; luego despliegue autorizado T-19/20, mediciones y documentación T-21/23. Se puede preparar IaC en paralelo, sin declarar servicio público antes de comprobarlo.
@@ -75,4 +75,4 @@ Primera ejecución backend bajo aislamiento: 288 aprobadas, 12 errores de tmp_pa
 
 Los hallazgos 2 y 3 anteriores describen e17f4d7 y se conservan como historial. I-09 rechaza discrepancias petición/preview, valida población/IDs/posiciones/aristas/calendario/origen y los metadatos necesarios para dibujar. Config se valida, se conserva y aplica defaults solo a campos no editados; Restablecer usa defaults del servidor y las solicitudes conservan su configuración de red. El contrato /config publica límites de transporte/grafo/frames, no nuevos rangos de N/tasas: se consumen maxRequestBytes, maxDecodedResponseBytes, maxEdges y maxFrameStates en sus respectivos pasos; maxResponseBytes comprimido lo controla el backend. Los rangos de formulario siguen el esquema base.
 
-Verificación I-09: 69 pruebas frontend y build/tipos correctos. No cierra la matriz E2E completa ni T-13..16. Siguen pendientes presets RF-15, aceptación integral, gate científico y AWS. El diagnóstico N51/N50 ahora se rechaza. Siguiente trabajo funcional: reconciliar/conectar presets de sorpresa.
+Verificación I-09: 69 pruebas frontend y build/tipos correctos. No cierra la matriz E2E completa ni T-13..16. Siguen pendientes aceptación de casos manuales RF-15/CA-12, validación integral, gate científico y AWS. El diagnóstico N51/N50 ahora se rechaza. Siguiente trabajo: aceptación del flujo manual y validación integral; no añadir presets obligatorios.
