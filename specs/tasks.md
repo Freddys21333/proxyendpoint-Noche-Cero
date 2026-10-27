@@ -57,3 +57,18 @@ Una tarea se cierra con criterios de aceptación cubiertos, verificación ejecut
 Orden crítico backend: T-02→T-04→T-05→T-06→T-07→T-08→T-09→T-10→T-11. T-03 precede configuración y mocks. Frontend T-12..15 avanza con contrato mientras backend implementa núcleo; integración real exige T-11. Infra T-17/18 y documentación técnica T-21 pueden preparar borradores en paralelo; despliegue depende del código y viabilidad de cuenta. La revisión inicial no obliga a esperar a terminar todo backend para comenzar UI/IaC.
 
 PRO permanece fuera de estas casillas base. El 2026-10-27 el usuario autorizó avanzar intervenciones combinadas y costos/presupuesto con supuestos educativos: [incremento PRO-1/2](../docs/intervenciones-combinadas.md). Llegadas diarias de recursos, jobs, persistencia, permisos e idempotencia de procesamiento asíncrono no están implementados por este incremento.
+
+## 8. Pendientes PRO — planificación solicitada el 2026-10-27
+
+Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-roadmap.md). Estas casillas separan planificación de implementación y no cierran las tareas base ni el resto de PRO.
+
+- [ ] **P-01 — Llegadas diarias e inventario.** No iniciado. Definir recepción/consumo/acumulación, recursos y presupuesto sin doble cargo; exportar movimientos y probar conservación.
+- [ ] **P-02 — Decisiones adaptativas al brote.** En progreso, parcial. Ya se recalculan destinatarios de brigadas; faltan reglas generales, observabilidad, motivos y comparación reproducible.
+- [ ] **P-03 — Contratos y trabajos Monte Carlo locales.** No iniciado. Especificar jobs, semillas/índices, acceso, progreso, cancelación, reintentos idempotentes y agregado completo.
+- [ ] **P-04 — Miles de réplicas en AWS.** No iniciado. Distributed Map con concurrencia medida, cuotas, costos y evidencia; requiere P-03 y comprobaciones de infraestructura antes de ejecutar lotes.
+- [ ] **P-05 — Datos reales de dengue en Manabí.** No iniciado. Identificar serie oficial utilizable, guardar procedencia/hash, normalizar geografía/tiempo/definición de caso y validar extracción; no usar números inventados como sustituto.
+- [ ] **P-06 — Calibración y preset versionado.** No iniciado. Resolver mecanismo/modelo, ajustar contra datos de P-05 y validar fuera de muestra con incertidumbre y reproducción.
+- [ ] **P-07 — Completar mapa temporal y animación opcional.** En progreso. Reproducción por día/política/réplica ya disponible; aceptar sincronización/rendimiento y, si hay tiempo, transiciones accesibles basadas en eventos reales.
+- [ ] **P-08 — Informe sencillo para el alcalde, preferiblemente PDF.** No iniciado. Plantilla desde experimento validado, cifras y costos trazables, incertidumbre, fuentes, hash y revisión visual.
+
+Direcciones opcionales: vacunación estratégica, antídotos, cuarentena inteligente, mosquito/fumigación, inferencia del paciente cero, hospital saturado y campañas. Centralidad, algoritmos voraces, optimización y aprendizaje por refuerzo son alternativas a evaluar, no una lista de algoritmos obligatorios. Su alcance se decide según el modelo y la evidencia; véase §4 de la hoja de ruta.

@@ -5,6 +5,8 @@
 **Estado:** diseño adoptado y contratos estáticos T-03 verificados; funcionalidades pendientes.
 **Fuentes:** [PRD](../PRD.md), [TRD](../TRD.md), [Requisitos](requirements.md).
 
+**Anexo PRO (2026-10-27):** [hoja de ruta y decisiones de modelo](pro-roadmap.md), con P-01..P-08. El calendario de llegadas, adaptación completa, contratos asíncronos AWS, datos reales/calibración y PDF siguen como diseño pendiente, no interfaces disponibles. El [incremento combinado educativo](../docs/intervenciones-combinadas.md) ya funciona; la reproducción por día en mapa/red existe. La estrategia de brigadas se recalcula diariamente, sin implicar que se haya implementado toda PRO-3. No se cambia el modelo base ni se etiqueta como dengue por esta ampliación documental.
+
 ## 1. Arquitectura y límites
 
 Se conserva la arquitectura de TRD §1–3: Python 3.12, NumPy y NetworkX para motor; React, TypeScript y Vite con Cytoscape.js y Recharts para interfaz; Amplify Hosting, API Gateway HTTP API y Lambda para base. Versiones exactas y locks se incorporan al preparar cada entorno. No se agrega framework HTTP sin decisión documentada.

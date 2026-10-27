@@ -108,7 +108,7 @@ La hipótesis es que `targeted` reduce en promedio los infectados acumulados al 
 - Aplicación pública en AWS y evidencia de despliegue.
 - README con supuestos, fuentes, instrucciones, semilla y parámetros base.
 
-### 4.2 Alcance PRO — implementar después de aprobar la base
+### 4.2 Alcance PRO y planificación incremental
 
 Actualización 2026-10-27: el usuario autorizó avanzar PRO-1 y costos/presupuesto de PRO-2 con supuestos educativos editables antes de cerrar el gate base. Incremento y límites documentados en [intervenciones combinadas](docs/intervenciones-combinadas.md). Esto no aprueba la base ni incluye inventario con llegadas diarias, adaptación o calibración real.
 
@@ -119,6 +119,10 @@ Actualización 2026-10-27: el usuario autorizó avanzar PRO-1 y costos/presupues
 - **PRO-5:** preset calibrado con datos abiertos reales y metodología reproducible.
 - **PRO-6:** mapa o grafo animado del avance, identificado como una réplica concreta.
 - **PRO-7:** informe para el alcalde en lenguaje simple, generado mediante plantilla determinista; un LLM es opcional.
+
+Ampliación de planificación solicitada el 2026-10-27: [hoja de ruta PRO](specs/pro-roadmap.md). Priorizar reposición diaria y decisiones adaptativas; preparar Monte Carlo masivo en AWS; incorporar **datos reales**, con dengue en Manabí como candidato prioritario, antes de declarar calibración; completar la reproducción temporal con animación adicional si hay tiempo; preparar informe sencillo con PDF como salida preferida. El mapa ya reproduce estados reales por día y las brigadas ya recalculan destinatarios: ambos son avances parciales, no capacidades ausentes ni PRO completo.
+
+La ficha de cada plaga debe definir transmisión, incubación, contagiosidad, conversión/recuperación/muerte si aplica, intervenciones compatibles y estrategia explicable. La base ficticia no cambia por esta planificación. Vacunación estratégica, antídotos, cuarentena inteligente, mosquito/fumigación, rastreo de origen y hospital saturado se registran como **ideas opcionales**, con decisiones propias de modelo. Centralidad, algoritmos voraces, optimización o aprendizaje por refuerzo son alternativas; no se exige implementarlas todas. Véase el estado y aceptación de P-01..P-08 en la hoja de ruta.
 
 PRO no puede retrasar la entrega base. Cada elemento se etiqueta `no iniciado`, `en progreso`, `verificado` o `descartado`; nunca se presenta una aspiración como funcionalidad disponible.
 

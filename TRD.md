@@ -280,6 +280,10 @@ La explicación devuelve `nodeId`, `score`, `rank`, `stateAtDecision`, contextos
 
 Cada extensión añade esquema, prueba e indicador visual; no se codifica como condición oculta dentro de la política base.
 
+Actualización de alcance 2026-10-27: el incremento `combined-educational-v1` de [intervenciones combinadas](docs/intervenciones-combinadas.md) ya incorpora presupuesto/costos, cierre y atención de brigadas. Estas últimas recalculan destinatarios por día, pero no constituyen aún una política adaptativa completa. Recursos recibidos por día, decisiones adaptativas generales, trabajos AWS, datos reales/calibración y PDF se detallan como pendientes P-01..P-08 en [la hoja de ruta PRO](specs/pro-roadmap.md). `resourceSchedule` es una propuesta, no un campo aceptado actualmente por la API.
+
+PRO-5 exige un preset separado con datos reales trazables y modelo compatible con el mecanismo elegido. No se presenta el grafo humano ficticio ni la reducción educativa de contactos como dengue calibrado. PRO-6 ya cuenta con frames y reproducción de una réplica en mapa/red; una animación adicional solo representa estados/eventos exportados y no modifica el motor. PRO-7 contempla PDF desde plantilla con cifras del JSON, límites, fuentes y hash, sin requerir un LLM. Antídotos, cuarentenas por persona, campañas, rastreo de origen y saturación hospitalaria permanecen opcionales hasta fijar contratos/modelos propios.
+
 ## 7. Aleatoriedad y reproducibilidad
 
 ### 7.1 Derivación de semillas
@@ -703,7 +707,7 @@ Definición de terminado para una tarea:
 7. UI completa y E2E.
 8. Terraform, AWS staging, seguridad, observabilidad y costos.
 9. Validación integral, perturbaciones de parámetros y reproducibilidad.
-10. Solo entonces: trabajos PRO, Distributed Map e intervenciones combinadas.
+10. PRO se desarrolla por incrementos según [P-01..P-08](specs/pro-roadmap.md). El usuario autorizó avanzar el incremento combinado y planificar el resto antes de cerrar la base; esto no aprueba sus gates pendientes ni autoriza ejecutar lotes grandes en AWS sin presupuesto y condiciones de la prueba concretados.
 
 Cada paso termina con evidencia antes de iniciar el siguiente. Si el plazo obliga a recortar, se elimina PRO antes de reducir comparación, repetición, reproducibilidad, AWS, README o entregables.
 
