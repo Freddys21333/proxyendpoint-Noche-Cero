@@ -10,10 +10,27 @@ from pathlib import Path
 
 import pytest
 
-from domain.configuration import normalize_configuration, parse_request
+from domain.configuration import normalize_configuration, parse_request, validate_contract
 from domain.errors import ConfigurationError
 
 SCHEMAS = Path(__file__).resolve().parents[2] / "schemas"
+
+
+def test_contract_validation_preserves_format_and_field_errors() -> None:
+    document = json.loads((SCHEMAS / "examples/health-response.json").read_text())
+    validate_contract(document, "HealthResponse")
+    document["generatedAt"] = "2026-99-26T00:00:00Z"
+    with pytest.raises(ValueError, match="formato inválido"):
+        validate_contract(document, "HealthResponse")
+    document["extra"] = True
+    with pytest.raises(ConfigurationError) as error:
+        validate_contract(document, "HealthResponse")
+    assert error.value.code == "UNKNOWN_FIELD"
+    del document["extra"]
+    document["generatedAt"] = float("nan")
+    with pytest.raises(ConfigurationError) as error:
+        validate_contract(document, "HealthResponse")
+    assert error.value.fields[0].reason == "El número debe ser finito."
 
 
 def test_omitted_configuration_matches_contract_defaults() -> None:

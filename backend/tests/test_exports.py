@@ -13,6 +13,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from domain.configuration import normalize_configuration
+from domain.errors import ConfigurationError
 from domain.reproducibility import canonical_json
 from simulation.experiments import run_experiment
 from simulation.exports import (
@@ -52,6 +53,14 @@ def test_full_schema_and_real_manifest(exported):
     assert manifest["dependencies"]["networkx"] == "3.7"
     assert manifest["experimentHash"] == experiment_hash(exported)
     assert reproduce(exported) == manifest["experimentHash"]
+
+
+def test_export_validates_final_request_id_without_changing_scientific_hash(exported):
+    updated = export_experiment(exported, request_id="http-request-42")
+    assert updated["requestId"] == "http-request-42"
+    assert updated["manifest"]["experimentHash"] == exported["manifest"]["experimentHash"]
+    with pytest.raises(ConfigurationError):
+        export_experiment(exported, request_id="")
 
 
 def test_hash_ignores_volatile_and_optional_fields_without_mutation(exported):

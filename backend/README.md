@@ -4,6 +4,10 @@ Entorno T-02, contratos T-03 y configuración de dominio T-04. Python **3.12**, 
 
 ## Instalación en Windows (PowerShell)
 
+La validación de respuestas recorre una sola vez el contrato con comprobación de formatos. Ante documentos inválidos conserva los errores detallados anteriores. Comparación valida el documento final dentro de `export_experiment`, incluido el identificador HTTP, y evita validarlo otra vez en el handler. No cambia el generador ni el motor.
+
+Medición local del 2026-10-27: sobre el mismo documento N=60, T=7, R=2, la mediana de tres mediciones de validación pasó de 1,1616 s (dos validaciones estructurales más dos con formatos) a 0,3338 s (una con formatos). Es una medición de validación, no del tiempo total ni de AWS. Tres casos de integración real por Vite/API conservaron sus hashes científicos previos; consultar red y comparar tardaron juntos 760, 656 y 425 ms respectivamente. Los casos grandes todavía dependen del costo de simulación y del tamaño de respuesta.
+
 Desde la raíz del repositorio, instalar uv localmente. `.tools/`, `.uv-cache/` y `.venv/` están excluidos de Git:
 
 ```powershell

@@ -197,8 +197,8 @@ def _execute(
     result = export_experiment(
         experiment,
         build_commit=os.environ.get("BUILD_COMMIT", "unknown"),
+        request_id=request_id,
     )
-    result["requestId"] = request_id
     return result
 
 
@@ -236,7 +236,10 @@ def dispatch(endpoint: Endpoint, event: dict[str, Any], context: Any) -> dict[st
             "preview": "PreviewResponse",
             "compare": "CompareResponse",
         }[endpoint]
-        validate_contract(payload, definition)
+        # export_experiment ya valida el documento final, incluido requestId,
+        # además de verificar los hashes de integridad del experimento.
+        if endpoint != "compare":
+            validate_contract(payload, definition)
         response = _response(payload, 200, endpoint in ("preview", "compare"), limits)
     except ConfigurationError as error:
         error_code = error.code

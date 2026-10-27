@@ -256,9 +256,14 @@ def decode_json_document(body: bytes, *, max_bytes: int) -> Any:
 
 def validate_contract(value: object, definition: str) -> None:
     """Valida un documento contra el contrato local compartido, sin red."""
-    _validate(value, definition)
+    issues = _json_issues(value, "")
+    if issues:
+        _fail_validation(issues)
     formatted = _validator(definition).evolve(format_checker=Draft202012Validator.FORMAT_CHECKER)
     if not formatted.is_valid(value):
+        # Solo los documentos inválidos necesitan recorrer otra vez el contrato
+        # para conservar los errores de campos y su precedencia histórica.
+        _validate(value, definition)
         raise ValueError("El documento contiene un formato inválido.")
 
 

@@ -117,7 +117,9 @@ def _validate(document: dict[str, Any]) -> None:
                 raise ValueError("El hash de política no coincide.")
 
 
-def export_experiment(result: dict[str, Any], *, build_commit: str = "unknown") -> dict[str, Any]:
+def export_experiment(
+    result: dict[str, Any], *, build_commit: str = "unknown", request_id: str | None = None
+) -> dict[str, Any]:
     document = copy.deepcopy(result)
     manifest = dict(
         **runtime_versions(),
@@ -129,7 +131,7 @@ def export_experiment(result: dict[str, Any], *, build_commit: str = "unknown") 
     document.update(
         schemaVersion=SCHEMA_VERSION,
         engineVersion=ENGINE_VERSION,
-        requestId=str(uuid.uuid4()),
+        requestId=str(uuid.uuid4()) if request_id is None else request_id,
         generatedAt=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         manifest=manifest,
     )
