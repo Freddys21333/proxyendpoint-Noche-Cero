@@ -20,3 +20,14 @@ Rojo: las cuatro pruebas iniciales del cliente fallaron con API client/Scenario 
 Prueba manual en navegador sobre Vite 127.0.0.1:5174 y backend 127.0.0.1:8000: estado Servidor disponible; formulario N=50/T=3/K=10→Consultar red→diálogo con 50 personas, 322 contactos y semilla 20261026. Al cambiar población a 51, se verificó la invalidación y preservación del nuevo valor. Screenshot local en .tools/integration-preview.png (ignorado, no es resultado científico). El proxy/browser descomprime gzip sin código de base64 en cliente. Se verificó la separación explícita entre preview real y explorador demo. Procesos locales ejecutados fuera del aislamiento para permitir acceso desde navegador, siempre loopback.
 
 Pendiente I-03: renderizar grafo/origen real y conectar reproducción/curvas/resultados. T-12/13 no se declaran cerrados por estos avances parciales. No se alteró main ni se desplegó AWS.
+
+
+## I-03 — Grafo de preview conectado
+
+`PreviewNetwork` usa exclusivamente nodos, posiciones, IDs y origen del backend. El adaptador preview-network conserva todas las personas, toma solo aristas activas en día 0 y filtra contexto sin colapsar aristas paralelas de distintas capas. Los vecinos del inspector se cuentan como personas distintas, no aristas. La escala del círculo es solo visual y no altera datos ni consume RNG. Los estados iniciales son S/I según initialInfectiousNodeIds; todavía no hay vacunación ni trayectoria temporal en preview.
+
+Se mantiene la demo como modo inicial explícito. Después de un preview real, editar invalida y oculta el grafo anterior, preservando el componente del formulario para mantener foco y escritura. Una nueva consulta reconstruye la red; cleanup destruye Cytoscape y ResizeObserver. El preview muestra su semilla y origen reales. Se conservan zoom, centrar, selector por ID, inspector y enfoque de vecinos. La comparación sigue pendiente en otro incremento.
+
+Rojo: dos pruebas fallaron con Preview graph not connected antes de implementar el adaptador. Verde: 16 pruebas frontend (14 anteriores + 2 nuevas), build y TypeScript correctos. Los fixtures del adaptador prueban formato/vista, no generación científica. Casos: población/origen, no mutación, IDs de nodo/arista sin colisiones, calendario y filtro, capas paralelas y vecinos distintos.
+
+Verificado en navegador con API real N=50/T=3/K=10: 50 personas, S=49/E=0/I=1/R=0, caso inicial 21, 322 contactos de unión y 204 activos del día 0. Filtro Hogares: 81 contactos; persona 021 Zombie inicial con 3 vecinos visibles y grupos household-3/bus-0/market-0/neighborhood-4. Se probó zoom, ajuste y selector. Cambiar a 51 con teclado dejó foco en población y ocultó la red previa. Screenshot local .tools/integration-real-network.png, ignorado en Git. No hay nuevas dependencias ni despliegue AWS.

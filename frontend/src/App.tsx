@@ -152,7 +152,7 @@ export default function App() {
       setRemotePreview(result);
       setServerStatus("ready");
       setModal("run");
-      setNotice("Vista previa recibida del servidor. El explorador conserva la demo visual.");
+      setNotice("Vista previa recibida. La red muestra los contactos iniciales de tus parámetros.");
     } catch (error) {
       if (controller.signal.aborted) return;
       setErrors(error instanceof ApiError
@@ -243,7 +243,7 @@ export default function App() {
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
           <button type="button" onClick={() => setModal("help")}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · Demo visual</span>
+        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · {remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -266,7 +266,7 @@ export default function App() {
               </div>
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer}>{parameterPanel}</ContactNetwork>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : (
@@ -297,7 +297,7 @@ export default function App() {
             <p>{modal === "help"
               ? "La red y la curva muestran una demo independiente de los parámetros. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) representan los estados del modelo SEIR. La comparación real de estrategias requiere conectar el motor de simulación."
               : modal === "run"
-                ? "La red se calculó en el servidor con tus parámetros. El explorador de la pantalla sigue mostrando datos de demostración; todavía no se ejecutó una comparación."
+                ? "La red se calculó en el servidor con tus parámetros. El explorador muestra esta red real y su estado inicial; todavía no se ejecutó una comparación."
                 : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
             {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">

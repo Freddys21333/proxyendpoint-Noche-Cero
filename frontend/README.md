@@ -1,14 +1,14 @@
 # Frontend environment
 
-## Estado de integración I-02
+## Estado de integración I-03
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
-**La red dibujada, el reproductor temporal y la gráfica comparativa todavía muestran demos.** El siguiente incremento conectará la red visual a los nodos/aristas reales; después se conectarán compare y exportación de resultados. El botón Exportar aún descarga un borrador, no resultados reales. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
+**Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. La comparación y su gráfica todavía son de demostración; el siguiente incremento conectará compare y exportación de resultados. El botón Exportar aún descarga un borrador, no resultados reales. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
 
 Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
 
-Verificado: build/tipos, pruebas de cliente y navegador con preview N=50/T=3 (50 nodos/322 contactos). [Evidencia incremental](../docs/evidencia/integracion-local.md).
+Verificado: build/tipos, 16 pruebas frontend y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md).
 
 ## Minimal simulator dashboard
 

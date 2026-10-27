@@ -37,6 +37,8 @@ import {
 } from "@/lib/temporal-demo";
 import "./ContactNetwork.css";
 import { seirColors } from "./seir-colors";
+import type { PreviewResponse } from "@/lib/api";
+import { PreviewNetwork } from "./PreviewNetwork";
 
 const elements = buildDemoNetwork();
 const FIT_PADDING = 16;
@@ -59,7 +61,15 @@ const states: Record<
   R: { label: "Exorcizado", nodeLabel: "Exorcizado", description: "Recuperado o inmune", color: seirColors.R.marker },
 };
 
-export function ContactNetwork({
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null }) {
+  const lastPreview = useRef<PreviewResponse | null>(null);
+  if (props.preview) lastPreview.current = props.preview;
+  return lastPreview.current
+    ? <PreviewNetwork {...props} preview={lastPreview.current} active={Boolean(props.preview)} />
+    : <DemoContactNetwork {...props} />;
+}
+
+function DemoContactNetwork({
   resetKey,
   layer,
   children,
