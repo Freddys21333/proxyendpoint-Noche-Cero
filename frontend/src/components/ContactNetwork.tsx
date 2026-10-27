@@ -39,6 +39,7 @@ import "./ContactNetwork.css";
 import { seirColors } from "./seir-colors";
 import type { PreviewResponse, CompareResponse } from "@/lib/api";
 import { SimulationWorkspace } from "./SimulationWorkspace";
+import type { ComparisonState } from '@/lib/simulation-playback';
 
 const elements = buildDemoNetwork();
 const FIT_PADDING = 16;
@@ -61,7 +62,7 @@ const states: Record<
   R: { label: "Exorcizado", nodeLabel: "Exorcizado", description: "Recuperado o inmune", color: seirColors.R.marker },
 };
 
-export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null }) {
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState }) {
   const lastPreview = useRef<PreviewResponse | null>(null);
   if (props.preview) lastPreview.current = props.preview;
   return lastPreview.current
@@ -358,7 +359,7 @@ function DemoContactNetwork({
           <span>Demo · 110 personas · 20 días</span>
         </header>
         <p className="network-meaning" id={`${pickerId}-guide`}>
-          Cada punto (nodo) es una persona; cada línea, un contacto.
+          Cada punto (nodo) es una persona; cada línea, un contacto. Esta demo no dispone de ubicaciones geográficas; consulta una red de la API para abrir el mapa.
         </p>
       <div
         className="seir-instrument"

@@ -1,11 +1,85 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import type { CompareResponse, PreviewResponse, Policy } from './api.ts'
+import { previewNetwork } from './preview-network.ts'
 import {
   initialSimulationPlayback,
   simulationPlaybackReducer,
   schedulePlaybackTick,
+  getSimulationSource,
+  readSimulationPresentation,
   type SimulationPlaybackState,
 } from './simulation-playback.ts'
+
+function backendFixture() {
+  const comparison: CompareResponse = JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response.json', import.meta.url), 'utf8'))
+  const preview: PreviewResponse = JSON.parse(readFileSync(new URL('../../../schemas/examples/preview-response.json', import.meta.url), 'utf8'))
+  preview.configuration = structuredClone(comparison.configuration)
+  preview.graph = structuredClone(comparison.graph)
+  preview.graphHash = comparison.graphHash
+  preview.initialInfectiousNodeIds = comparison.representative.frames!.none[0].flatMap((state, id) => state === 'I' ? [id] : [])
+  return { comparison, preview }
+}
+
+test('both views consume each representative frame by ID with its own daily counts for every policy', () => {
+  const { preview, comparison } = backendFixture()
+  const original = JSON.stringify({ preview, comparison })
+  const source = getSimulationSource(preview, comparison, true, 'idle')
+  for (const policy of ['none', 'random', 'targeted'] as Policy[]) {
+    for (let day = 0; day <= comparison.configuration.scenario.days; day++) {
+      const presentation = readSimulationPresentation(preview, source, day, policy)
+      assert.equal(presentation.mode, 'representative')
+      assert.equal(presentation.frame, comparison.representative.frames![policy][day])
+      const graph = previewNetwork(preview, 'All layers', day, presentation.frame)
+      assert.deepEqual(graph.counts, presentation.counts)
+      assert.deepEqual(graph.nodes.map(node => node.data.state), presentation.frame)
+      const daily = comparison.replicates[comparison.representative.index].policies[policy].daily[day] as Record<string, number>
+      for (const state of ['S', 'E', 'I', 'R'] as const) assert.equal(presentation.counts[state], daily[state.toLowerCase()])
+    }
+  }
+  assert.equal(JSON.stringify({ preview, comparison }), original)
+})
+
+test('invalidated, pending, failed and frame-free comparisons expose only an explicit initial fallback', () => {
+  const { preview, comparison } = backendFixture()
+  const cases = [
+    { active: false, status: 'idle' as const, comparison, mode: 'invalid' },
+    { active: true, status: 'running' as const, comparison, mode: 'pending' },
+    { active: true, status: 'error' as const, comparison, mode: 'error' },
+    { active: true, status: 'idle' as const, comparison: null, mode: 'preview' },
+    { active: true, status: 'idle' as const, comparison: { ...comparison, representative: { ...comparison.representative, frames: null } }, mode: 'no-frames' },
+  ]
+  for (const row of cases) {
+    const source = getSimulationSource(preview, row.comparison, row.active, row.status)
+    const shown = readSimulationPresentation(preview, source, 2, 'targeted')
+    assert.equal(shown.mode, row.mode)
+    assert.equal(shown.frame, undefined)
+    assert.equal(shown.day, 0)
+    assert.equal(source.lastDay, 0)
+    assert.deepEqual(shown.counts, { S: preview.graph.nodes.length - preview.initialInfectiousNodeIds.length, E: 0, I: preview.initialInfectiousNodeIds.length, R: 0 })
+  }
+})
+
+test('a different graph or epidemiological configuration cannot animate an old scenario', () => {
+  const { preview, comparison } = backendFixture()
+  for (const change of ['hash', 'configuration'] as const) {
+    const other = structuredClone(comparison)
+    if (change === 'hash') other.graphHash = `sha256:${'f'.repeat(64)}`
+    else other.configuration.scenario.beta += 0.01
+    assert.equal(getSimulationSource(preview, other, true, 'idle').mode, 'error')
+  }
+})
+
+test('a frame inconsistent with its representative daily row is rejected without inventing individual states', () => {
+  const { preview, comparison } = backendFixture()
+  const source = getSimulationSource(preview, comparison, true, 'idle')
+  const row = comparison.replicates[comparison.representative.index].policies.targeted.daily[0] as Record<string, number>
+  row.s++
+  const shown = readSimulationPresentation(preview, source, 0, 'targeted')
+  assert.equal(shown.mode, 'error')
+  assert.equal(shown.frame, undefined)
+})
 
 const lastDay = 4
 const reduce = (state: SimulationPlaybackState, action: Parameters<typeof simulationPlaybackReducer>[1]) =>

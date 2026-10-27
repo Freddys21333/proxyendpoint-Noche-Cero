@@ -1,4 +1,57 @@
-import type { CompareResponse, PersonState, Policy } from './api.ts'
+import type { CompareResponse, PersonState, Policy, PreviewResponse } from './api.ts'
+
+export type ComparisonState = 'idle' | 'running' | 'error'
+export type SimulationMode = 'invalid' | 'preview' | 'pending' | 'error' | 'no-frames' | 'representative'
+export type SimulationPresentation = {
+  day: number; policy: Policy; mode: SimulationMode; frame: PersonState[] | undefined;
+  counts: Record<PersonState, number>; representativeIndex: number | null;
+}
+export const simulationModeMessages: Record<SimulationMode, string> = {
+  invalid: 'La configuración cambió. Consulta una nueva red.',
+  preview: 'Ejecuta Comparar estrategias para cargar una trayectoria real.',
+  pending: 'Comparación en ejecución. Se muestra el estado inicial mientras llegan los resultados.',
+  error: 'No hay una trayectoria válida disponible. Se conserva el estado inicial del escenario.',
+  'no-frames': 'Comparación disponible sin reproducción individual. Se muestra el estado inicial.',
+  representative: 'Trayectoria real de una réplica. Los promedios y rangos están en Comparación.',
+}
+
+type SimulationSource = {
+  mode: SimulationMode; frames: CompareResponse['representative']['frames'];
+  lastDay: number; comparison: CompareResponse | null; representativeIndex: number | null;
+}
+function sameConfiguration(a: unknown, b: unknown): boolean {
+  if (a === b) return true
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object' || Array.isArray(a) !== Array.isArray(b)) return false
+  const left = a as Record<string, unknown>, right = b as Record<string, unknown>
+  const keys = Object.keys(left)
+  return keys.length === Object.keys(right).length && keys.every(key => Object.hasOwn(right, key) && sameConfiguration(left[key], right[key]))
+}
+
+export function getSimulationSource(preview: PreviewResponse, comparison: CompareResponse | null, active: boolean, status: ComparisonState): SimulationSource {
+  const fallback = (mode: SimulationMode): SimulationSource => ({ mode, frames: null, lastDay: 0, comparison: null, representativeIndex: null })
+  if (!active) return fallback('invalid')
+  if (status === 'running') return fallback('pending')
+  if (status === 'error') return fallback('error')
+  if (!comparison) return fallback('preview')
+  if (comparison.graphHash !== preview.graphHash || !sameConfiguration(comparison.configuration, preview.configuration)) return fallback('error')
+  if (!comparison.representative.frames) return fallback('no-frames')
+  return { mode: 'representative', frames: comparison.representative.frames,
+    lastDay: comparison.configuration.scenario.days, comparison, representativeIndex: comparison.representative.index }
+}
+
+export function readSimulationPresentation(preview: PreviewResponse, source: SimulationSource, requestedDay: number, policy: Policy): SimulationPresentation {
+  const initial: SimulationPresentation = { mode: source.mode, day: 0, policy, frame: undefined, representativeIndex: null,
+    counts: { S: preview.graph.nodes.length - preview.initialInfectiousNodeIds.length, E: 0, I: preview.initialInfectiousNodeIds.length, R: 0 } }
+  if (source.mode !== 'representative') return initial
+  const day = Math.max(0, Math.min(requestedDay, source.lastDay))
+  const frame = source.frames?.[policy]?.[day]
+  const counts = { S: 0, E: 0, I: 0, R: 0 }
+  if (!frame || frame.length !== preview.graph.nodes.length || !frame.every(state => Object.hasOwn(counts, state))) return { ...initial, mode: 'error' }
+  for (const state of frame) counts[state]++
+  const row = source.comparison?.replicates[source.representativeIndex!]?.policies[policy].daily[day] as Record<string, unknown> | undefined
+  if (!row || row.day !== day || !(Object.keys(counts) as PersonState[]).every(state => row[state.toLowerCase()] === counts[state])) return { ...initial, mode: 'error' }
+  return { mode: 'representative', day, policy, frame, counts, representativeIndex: source.representativeIndex }
+}
 
 export type SimulationPlaybackState = {
   day: number
@@ -13,7 +66,7 @@ export type SimulationPlaybackAction =
   | { type: 'policy'; policy: Policy }
   | { type: 'speed'; speed: number }
 
-export type SimulationPlayback = SimulationPlaybackState & {
+export type SimulationPlayback = SimulationPlaybackState & SimulationPresentation & {
   lastDay: number
   frames: CompareResponse['representative']['frames']
   frame: PersonState[] | undefined

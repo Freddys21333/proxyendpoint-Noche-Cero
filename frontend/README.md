@@ -12,9 +12,15 @@ Verificado: build/tipos, 23 pruebas frontend y navegador con preview N=50/T=3 (5
 
 ## Shared real-simulation playback
 
+The preview-backed workspace now offers **Red | Mapa**. After **Consultar red**, choose **Mapa** to see Manta's OpenStreetMap basemap. It uses Leaflet directly (no React Leaflet imports), initializes on the first map visit, remains mounted across view changes, resizes on visibility/container changes and removes its listeners, observer and map on unmount. Zoom buttons, keyboard navigation and dragging are enabled; wheel zoom is disabled to preserve page scrolling. Map controls and attribution support the existing `.dark` theme; dark mode dims only the tile imagery.
+
+The map shows the real preview population at synthetic, deterministic positions inside five versioned OSM residential reference polygons. When representative frames are available, Red and Mapa consume the same workspace-selected day, policy and frame. Existing Canvas CircleMarkers update their colors/radii and open popup content without rebuilding the map, moving agents or losing selection. The agent selector provides keyboard access to every identifier and reuses its options across frames. No physical movement, heatmaps or transmission changes are implemented. See [geographic data provenance and playback](../docs/manta-geography.md).
+
+Both views retain the workspace's day, policy, speed and playback. Tile failures show an inline message with **Reintentar mapa**; the network and simulation remain usable. OpenStreetMap attribution stays visible. Standard public OSM tiles require internet access and follow the [tile usage policy](https://operations.osmfoundation.org/policies/tiles/); no offline downloads or prefetching are implemented.
+
 `ContactNetwork` routes real previews through `SimulationWorkspace`, which owns day, policy, playback status and speed, and schedules one cancellable tick. `PreviewNetwork` consumes that controller; future views can consume the same frame without creating another clock. The existing controls, markup and camera behavior are preserved. The authored demo retains its independent reducer and timer.
 
-Changing the preview, comparison or active status resets playback to day 0 and pauses, preserving the chosen policy and speed. `resetKey` only fits the network camera. Comparisons without representative frames remain available without playback. The pure controller and timer cleanup checks run with `npm test` alongside the existing network, API and demo tests.
+Changing the preview, comparison, request status or active status resets playback to day 0 and pauses, preserving the chosen policy and speed. View changes do not reset playback. `resetKey` only fits the network camera. Pending, failed or frame-free comparisons explicitly retain the valid initial preview without individual playback; invalid previews hide the old views and clear map selection. A comparison must match the preview graph hash and configuration. Selected-frame counts are checked against the same representative replicate's daily row, never aggregate curves. The controller and timer/layer cleanup checks run with `npm test` alongside the existing network, API and demo tests.
 
 ## Minimal simulator dashboard
 

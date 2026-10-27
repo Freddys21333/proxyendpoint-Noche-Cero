@@ -335,7 +335,7 @@ export default function App() {
               </div>
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison}>{parameterPanel}</ContactNetwork>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : (

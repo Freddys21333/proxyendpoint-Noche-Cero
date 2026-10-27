@@ -1,4 +1,32 @@
 /* The demo and scenario controls share a two-column workbench. */
+.visualizer-view-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid #dbe4dd;
+  border-radius: 6px;
+  background: #f8fbf8;
+}
+.visualizer-view-selector button {
+  padding: 6px 12px;
+  min-height: 36px;
+  border-radius: 4px;
+  font: inherit;
+  color: #294b39;
+}
+.visualizer-view-selector button[aria-pressed="true"] { background: #e4eee7; color: #173e32; }
+.visualizer-view-selector button:hover { background: #edf3ee; }
+.visualizer-view-selector button:focus-visible { outline: 2px solid #315d47; outline-offset: 2px; }
+.simulator-workbench .network-view[hidden],
+.simulator-workbench .network-layout-control[hidden],
+.simulator-workbench .node-inspector[hidden] { display: none; }
+.simulator-workbench .geographic-map-view { position: relative; isolation: isolate; }
+.geographic-map-loading { padding: 20px; }
+.dark .visualizer-view-selector { background: var(--card); border-color: var(--border); }
+.dark .visualizer-view-selector button { color: var(--foreground); }
+.dark .visualizer-view-selector button[aria-pressed="true"],
+.dark .visualizer-view-selector button:hover { background: var(--accent); color: var(--accent-foreground); }
 .simulator-workbench.network-workbench {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
