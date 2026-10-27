@@ -1,6 +1,6 @@
 # PRO: trabajo separado de backend y frontend
 
-Este documento divide la hoja [PRO-01..PRO-08](pro-roadmap.md) en dos frentes coordinables. El backend implementa las reglas, simulaciones, datos y contratos; el frontend puede diseñar y construir los flujos visuales en paralelo. La hoja de ruta PRO sigue siendo la fuente de alcance, dependencias y aceptación del producto.
+Este documento divide la hoja [PRO-01..PRO-09](pro-roadmap.md) en dos frentes coordinables. El backend implementa las reglas, simulaciones, datos y contratos; el frontend puede diseñar y construir los flujos visuales en paralelo. La hoja de ruta PRO sigue siendo la fuente de alcance, dependencias y aceptación del producto.
 
 ## Acuerdos para trabajar en paralelo
 
@@ -23,6 +23,7 @@ Este documento divide la hoja [PRO-01..PRO-08](pro-roadmap.md) en dos frentes co
 | **P-06 Modelo calibrado** | Definir y versionar modelo/función de observación, parámetros y ajuste; separar entrenamiento y validación retenida; publicar métricas, incertidumbre y límites reproducibles. | Permitir seleccionar modelo/preset y presentar calibración, rango de incertidumbre, métricas, fuente y limitaciones en lenguaje sencillo. No insinuar exactitud fuera del período/geografía evaluados. | Requiere P-05. El contrato separa modelo ficticio de calibrado e incluye versiones y metadatos. Las cifras que muestra la UI proceden de la respuesta validada. |
 | **P-07 Animación del mapa** | Proveer frames/eventos temporales reales, ordenados y ligados a réplica, política, día y versión del modelo. Documentar qué evento causal representa cada transición. | Sincronizar mapa/red, día, selección, reproducción, pausa, búsqueda, velocidad y movimiento reducido; pulir transiciones sin inventar contagios ni desplazamientos. | Acordar identidad y esquema de frames/eventos. Puede avanzar el diseño sobre fixtures etiquetados mientras se define el formato; la animación no cambia el resultado ni los hashes. |
 | **P-08 Informe para el alcalde** | Crear una proyección de informe desde un experimento completo y validado, con agregados, costos, incertidumbre, procedencia, configuración y hash. Generar PDF determinista y comprobar que coincide con los datos fuente. | Diseñar plantilla legible, resumen ejecutivo, tablas/gráficos, explicación de términos y estados de previsualización/descarga; cuidar impresión y lectura en pantalla. | El contrato del informe identifica el experimento y sus versiones. Requiere resultados completos; no rellenar cifras ausentes ni ocultar pérdidas o incertidumbre. Puede iniciar con escenario ficticio debidamente identificado. |
+| **P-09 Mapa geográfico y capa de agentes** | **Sin cambios.** No requiere endpoint nuevo: entrega IDs, casos iniciales, `graphHash` y frames representativos ya existentes. No escribe coordenadas ni campos geográficos en las respuestas. | **Verificado localmente.** Mapa OSM de Manta, trece polígonos residenciales versionados, posiciones deterministas, sincronización con día/política/réplica, selección accesible, reintento de teselas y atribución. | Presentación únicamente. Complementa a P-07 y no lo sustituye. Ver [P-09](p09-geographic-map.md). No consume el RNG del backend ni altera hashes; OSM no equivale a datos epidemiológicos. |
 
 ## Orden sugerido para cada incremento
 
@@ -34,3 +35,21 @@ Este documento divide la hoja [PRO-01..PRO-08](pro-roadmap.md) en dos frentes co
 ## Ideas opcionales de dirección
 
 Las ideas de vacunación estratégica, antídotos, cuarentena inteligente, fumigación, rastreo del paciente cero, saturación hospitalaria y aprendizaje por refuerzo siguen siendo opciones, no entregas comprometidas. Si se prioriza una, primero backend define mecanismo, observaciones, elegibilidad, efectos, costos y versión; frontend puede trabajar en el flujo con un fixture explícito, y la conexión se cierra contra ese contrato. Su estado y límites actuales están en la [hoja de ruta](pro-roadmap.md#4-ideas-de-dirección-opcionales-no-compromisos-de-entrega).
+
+## Trazabilidad PRO-ID → código, contratos y pruebas
+
+Esta tabla es la referencia para saber dónde vive cada pendiente y qué evidencia lo respalda. Si una feature no aparece con código y pruebas, permanece **no iniciada** aunque tenga diseño.
+
+| ID | Backend | Frontend | Contrato | Pruebas |
+|---|---|---|---|---|
+| P-01 | `domain/configuration.py`, `simulation/engine.py`, `simulation/experiments.py`, `simulation/exports.py` | `ResourceScheduleEditor`, `ResourceInventory`, `lib/resource-schedule.ts` | `schemas/common.schema.json` (`resourceSchedule`) | `tests/test_resource_schedule.py`, `test_combined.py`, `test_exports.py`; `lib/scenario.test.ts` |
+| P-02 | Parcial: `strategies/combined.py`, `strategies/vaccination.py` | Sin editor de reglas ni registro de motivos | Sin contrato de política adaptativa | `tests/test_combined.py`, `test_vaccination.py` |
+| P-03 | No iniciado | No iniciado | Sin `/jobs` | — |
+| P-04 | No iniciado | No iniciado | Sin jobs ni IaC | — |
+| P-05 | No iniciado | No iniciado | Sin dataset versionado | — |
+| P-06 | No iniciado | No iniciado | Sin modelo/preset calibrado | — |
+| P-07 | Frames representativos en `simulation/experiments.py` y `exports.py` | `simulation-playback.ts`, `SimulationWorkspace`, `PreviewNetwork`, `ContactNetwork` | `schemas/common.schema.json` (`representative`) | `lib/simulation-playback.test.ts`; `tests/test_experiments.py` |
+| P-08 | No iniciado | No iniciado | Sin contrato de informe | — |
+| P-09 | Sin cambios; consume `preview`/`compare` | `GeographicMap`, `geographic-map.ts`, `geographic-agents-layer.ts`, `manta-geography.ts` | Sin endpoint nuevo; ver [P-09](p09-geographic-map.md) | `geographic-map.test.ts`, `geographic-agents-layer.test.ts`, `manta-geography.test.ts`, `simulation-playback.test.ts` |
+
+Regla de mantenimiento: toda feature PRO nueva debe registrarse en [la hoja de ruta](pro-roadmap.md), aparecer en esta tabla con sus archivos reales y declarar contrato y pruebas. Una feature de solo presentación, como P-09, debe explicar por qué no altera modelo, hashes ni contratos.

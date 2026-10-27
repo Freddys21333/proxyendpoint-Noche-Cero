@@ -709,7 +709,7 @@ Definición de terminado para una tarea:
 7. UI completa y E2E.
 8. Terraform, AWS staging, seguridad, observabilidad y costos.
 9. Validación integral, perturbaciones de parámetros y reproducibilidad.
-10. PRO se desarrolla por incrementos según [P-01..P-08](specs/pro-roadmap.md). El usuario autorizó avanzar el incremento combinado y planificar el resto antes de cerrar la base; esto no aprueba sus gates pendientes ni autoriza ejecutar lotes grandes en AWS sin presupuesto y condiciones de la prueba concretados.
+10. PRO se desarrolla por incrementos según [P-01..P-09](specs/pro-roadmap.md). El usuario autorizó avanzar el incremento combinado y planificar el resto antes de cerrar la base; esto no aprueba sus gates pendientes ni autoriza ejecutar lotes grandes en AWS sin presupuesto y condiciones de la prueba concretados. P-09 registra el mapa geográfico como presentación verificada: no cambia contratos, modelo ni hashes.
 
 Cada paso termina con evidencia antes de iniciar el siguiente. Si el plazo obliga a recortar, se elimina PRO antes de reducir comparación, repetición, reproducibilidad, AWS, README o entregables.
 

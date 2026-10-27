@@ -4,7 +4,7 @@ Simulador de propagación y comparación de estrategias de contención sobre una
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; la interfaz muestra preview, comparación y curvas reales y descarga el experimento JSON. La animación de una réplica representativa ya usa estados diarios reales y permite alternar estrategias. El inspector explica las selecciones de vacunas y muestra dosis efectivas/fallidas de la réplica. La red permite agrupación visual por barrio, hogar, colegio, bus o mercado y distribución circular. ZIP con CSV disponible para experimentos vigentes; despliegue pendiente.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; la interfaz muestra preview, comparación y curvas reales y descarga el experimento JSON. La animación de una réplica representativa ya usa estados diarios reales y permite alternar estrategias. El inspector explica las selecciones de vacunas y muestra dosis efectivas/fallidas de la réplica. La red permite agrupación visual por barrio, hogar, colegio, bus o mercado y distribución circular. La vista **Mapa** (feature P-09) sitúa a las personas sintéticas sobre polígonos residenciales OSM versionados sin alterar el modelo ni los hashes. ZIP con CSV disponible para experimentos vigentes; despliegue pendiente. Se conserva además el [prototipo local exploratorio](prototype/README.md) con simulación y visualización.
 
 ## Documentación
 
@@ -17,6 +17,11 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
 - [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
+- [Hoja de ruta PRO y frentes](specs/pro-roadmap.md): P-01..P-09 con estado, dependencias y aceptación; división backend/frontend en [pro-workstreams.md](specs/pro-workstreams.md).
+- [P-09: mapa geográfico](specs/p09-geographic-map.md): mapa OSM, polígonos versionados, posiciones deterministas y aceptación.
+- [Procedencia geográfica y reproducción](docs/manta-geography.md).
+- [Laboratorio local ejecutable](prototype/README.md): grafo sintético, comparación SEIR y exploración inicial de cierre de capa y animación.
+- [Guía para leer el grafo y evolución PRO](docs/lectura-y-pro.md).
 
 ## Estructura
 
@@ -74,4 +79,4 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
-Todas las funciones PRO están **no iniciadas**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS.
+Todas las funciones PRO están **no iniciadas**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos.

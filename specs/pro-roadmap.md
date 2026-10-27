@@ -1,6 +1,6 @@
 # Hoja de ruta PRO y decisiones de modelo
 
-Estado documental: **borrador de implementación**, actualizado el 2026-10-27 a petición del usuario. Esta revisión registra alcance y pendientes; no implementa nuevos comportamientos, ejecuta lotes AWS ni declara calibración real disponible. Los pendientes base T-17..T-23 conservan su estado.
+Estado documental: **borrador de implementación**, actualizado el 2026-10-27 a petición del usuario. Esta revisión registra alcance y pendientes; no implementa nuevos comportamientos, ejecuta lotes AWS ni declara calibración real disponible. Los pendientes base T-17..T-23 conservan su estado. P-09 quedó registrado y verificado localmente como presentación en esta fecha.
 
 Para repartir el trabajo en paralelo entre lógica backend y experiencia frontend, consultar la [división de frentes PRO](pro-workstreams.md). Esta guía complementa las tareas de abajo; no cambia su alcance ni sus estados.
 
@@ -15,6 +15,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
 | Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
 | Informe sencillo para el alcalde | PRO-7 | **No iniciado**: salida preferida PDF desde plantilla determinista y un experimento validado. No requiere un LLM. P-08. |
+| Mapa geográfico de referencia | PRO-6 (presentación) | **Verificado localmente como presentación**: mapa OSM de Manta, trece polígonos residenciales versionados, posiciones deterministas y sincronización con la reproducción. No es dato epidemiológico ni altera el modelo. P-09. |
 
 No se confunden posiciones OSM con observaciones epidemiológicas reales, ni los costos educativos de intervenciones con tarifas verificadas o gasto AWS.
 
@@ -90,6 +91,15 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 - Lenguaje sencillo; explicar contagios evitados y diferencia entre una réplica y promedio. Conservar empates/pérdidas; no prometer ganador para toda semilla. Costo por evitado no aplicable cuando no hay mejora positiva. Separar costos de intervenciones y AWS.
 - Aceptación: las cifras coinciden con el JSON; archivo legible y visualmente revisado, tablas/gráficos sin recortes, fuentes trazables y plantilla reproducible. No fabricar resultados faltantes. Fecha de generación puede ser volátil sin cambiar la evidencia del experimento.
 
+### P-09 — Mapa geográfico y capa de agentes (presentación de PRO-6)
+
+- [x] Estado: **verificado localmente como presentación**. Dependencia: preview y frames representativos existentes. No requiere endpoint nuevo. Ficha completa: [P-09](p09-geographic-map.md).
+- Alcance: mapa Leaflet con teselas OSM, trece polígonos residenciales versionados, posiciones sintéticas deterministas y vista **Red | Mapa** sincronizada con día, política, réplica, pausa y velocidad.
+- Separación: no escribe geografía en la API, no consume el RNG del backend, no altera `graphHash`/`experimentHash` ni convierte OSM en dato epidemiológico. Complementa a P-07; no lo sustituye.
+- Aceptación: atribución y zoom seguro; un solo mapa tras resize/reintento y limpieza al desmontar; fallo de teselas no bloqueante; recurso versionado válido; posiciones deterministas e interiores; rechazo de máscaras inválidas; marcadores sin reconstrucción; frames consistentes con `graphHash`, configuración, réplica y fila diaria.
+- Evidencia: `frontend/src/lib/geographic-map.test.ts`, `manta-geography.test.ts`, `geographic-agents-layer.test.ts` y `simulation-playback.test.ts`. Procedencia: [docs/manta-geography.md](../docs/manta-geography.md).
+- Límites: sin domicilios, movilidad, densidad ni riesgo real; sin modo offline; solo `way` cerrados simples; no acredita P-05/P-06/P-08.
+
 ## 4. Ideas de dirección: opcionales, no compromisos de entrega
 
 | Idea | Encaje y decisión pendiente |
@@ -105,6 +115,6 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ## 5. Orden de trabajo y criterio de inicio
 
-P-01 está verificado localmente; seguir con P-02 para completar decisiones e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
+P-01 y P-09 están verificados localmente; seguir con P-02 para completar decisiones e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente y se apoya en P-09 sin mezclar la aceptación del mapa con la animación. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
 
 Antes de cada implementación: cerrar esquema, ejemplo, semántica temporal, pruebas y cambios de PRD/TRD afectados. Los nombres de campos nuevos de esta hoja son propuestas, no contratos disponibles. Conservar la comparación justa, independencia de políticas, exportaciones y reproducibilidad. Cada capacidad pasa a verificada solo con evidencia, sin convertir las ideas opcionales en obligaciones.

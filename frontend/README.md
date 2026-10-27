@@ -2,13 +2,15 @@
 
 ## Estado de integración I-09
 
+El mapa geográfico está registrado como feature **P-09** ([ficha](../specs/p09-geographic-map.md)); su alcance, datos y aceptación no se mezclan con P-07 (reproducción temporal) ni con P-05/P-06 (datos reales y calibración).
+
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
 **Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. Comparar estrategias ejecuta ahora el experimento real y muestra curvas agregadas S/E/I/R/acumulados, bandas empíricas, métricas y recomendación. Editar parámetros invalida también ese resultado. La animación reproduce una réplica representativa real con selector de estrategia, día, velocidad, pausa y reinicio; indica semilla e índice, y no representa el promedio. Si el servidor rechaza el tamaño de los frames, se reintenta la comparación sin ellos y se explica la ausencia de animación. I-06 añade inventario de dosis por día, marcas de vacunación y lista por posición con acceso al inspector: día, efectividad, elegibilidad, puntuación, contextos y regla de selección registrados por el backend. No anticipa dosis futuras. ZIP con CSV disponible para experimentos vigentes. Exportar descarga el JSON íntegro reproducible si existe un resultado vigente; si no existe, sigue siendo un borrador explícito. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
 
 Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
 
-Verificado: build/tipos, 23 pruebas frontend y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md).
+Verificado el 2026-10-27: build/tipos, **101 pruebas frontend** (incluye mapa y procedencia geográfica) y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md). Verificación de base: [`docs/evidencia/verificacion-base-2026-10-27.md`](../docs/evidencia/verificacion-base-2026-10-27.md).
 
 ## Shared real-simulation playback
 
@@ -64,15 +66,17 @@ The environment includes the generated shadcn Button at `src/components/ui/butto
 
 ## Scope
 
-The interactive workspace includes editable scenario controls, advanced parameters, a Cytoscape contact-network illustration with layer filtering and fit control, a synchronized temporal chart and equivalent table, a separate illustrative comparison view, responsive navigation, Base UI dialogs, and configuration-draft JSON downloads. Surprise presets are no longer exposed in the current UI preview.
+**Estado actual (2026-10-27).** The interactive workspace uses the real backend for health/config, preview and comparison. Editable controls, the Cytoscape/Canvas contact network, layer filtering, the synchronized temporal chart/table, representative playback, vaccination selections, inventory, combined interventions, ZIP/JSON export and the geographic map are integrated. The authored demo remains only as an explicitly labeled fallback before querying; it is not presented as a real result.
 
-All network and curve data are fixed illustrations, independent of scenario inputs. They are explicitly marked and are not schema-validated experiment fixtures. No simulation runs, hashes, paired metrics or recommendations are fabricated. The Run action validates inputs and explains that the API is unavailable. Downloads contain a UI configuration draft, not canonical experiment requests or reproducible results. No persistence or remote calls are implemented.
+The geographic map is feature **P-09**, documented in [`../specs/p09-geographic-map.md`](../specs/p09-geographic-map.md) and [`../docs/manta-geography.md`](../docs/manta-geography.md). It uses versioned OSM residential polygons and deterministic synthetic placement; it does not change the model, contracts or hashes.
 
-T-03 contracts and the T-12 typed API client/fixtures remain pending. This preview does not complete T-12 through T-16. Experiment export, scientific metrics, real preview and comparisons require backend integration. La interfaz está en español y conserva la identidad de Mantalab. Local draft edits reset on page reload.
+All scientific logic stays in the backend. The frontend may format, filter, lay out and present data, but it must not recompute epidemiological results. The `Mapa` and `Red` views consume the same day, policy, replicate and frames. Incomplete or stale data never becomes an invented result.
 
-Run `npm test` for the deterministic configuration/preset checks. Tests were added with the implementation; no pre-implementation RED was captured for this increment. Type checking and the production build pass. Browser checks cover a valid run dialog, Escape dismissal, consecutive presets and responsive navigation. Automated full E2E and exhaustive contrast/keyboard audits remain pending.
+Run `npm test` for the deterministic frontend suite, `npm run typecheck` for types and `npm run build` for the production bundle. The current suite covers API client, preview, comparison, export, playback, geographic map, geography provenance and agent layer. Automated full browser E2E and exhaustive contrast/keyboard audits remain pending.
 
-The visual direction follows Taste Skill's light framed-sheet app style, with a green-grey frame and IBM Plex Sans/Mono. Chart and network bundles load separately. Fonts are installed locally and use the Latin subset. No Sites tooling is used.
+The visual direction follows the light framed-sheet app style defined in [`../DESIGN.md`](../DESIGN.md), with IBM Plex Sans/Mono. Chart, network and map bundles load separately. Fonts are installed locally and use the Latin subset.
+
+Sections below this point are **historical records**. Some describe earlier states where the API, real simulations or contracts were not yet connected; do not read them as the current scope.
 
 Do not duplicate epidemiological calculations in the frontend. Follow `../specs/agreements.md` when implementing the API client. The deployment variables will be `VITE_API_BASE_URL` (including `/v1`), `VITE_BUILD_COMMIT` and `VITE_SCHEMA_VERSION`; never put secrets in Vite variables.
 

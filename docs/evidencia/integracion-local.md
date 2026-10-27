@@ -107,3 +107,12 @@ Navegador con API real: config cargada y consulta N50/T3/K10 aceptada por las nu
 ## Aclaración de alcance — 2026-10-27
 
 El responsable aclaró que el jurado pedirá ejemplos variables configurados manualmente. Se elimina el requisito de cuatro presets fijos en PRD/TRD/specs y se retira ese hallazgo de la revisión. Se mantiene aceptación del flujo manual <5 min, validación, semilla externa y exportación. No se agrega UI ni se declara validado el tiempo de operación por este cambio documental.
+
+
+## I-10 — Mapa geográfico P-09
+
+Registra la capa geográfica como feature propia. La vista **Mapa** usa Leaflet con teselas OSM, trece polígonos residenciales versionados y posiciones sintéticas deterministas derivadas de `rootSeed`, `graphHash` y `householdId`, sin consumir el RNG del backend. Red y Mapa comparten día, política, réplica, frames, pausa y velocidad; un frame solo se pinta si coincide con el grafo, la configuración, la réplica representativa y su fila diaria.
+
+No se añaden endpoints, campos geográficos a la API ni cambios al modelo/hashes. La ficha con alcance, aceptación y límites está en [specs/p09-geographic-map.md](../../specs/p09-geographic-map.md); la procedencia de datos en [docs/manta-geography.md](../manta-geography.md).
+
+Verificación local 2026-10-27: 101 pruebas frontend (incluye `geographic-map`, `manta-geography`, `geographic-agents-layer` y sincronización de playback), typecheck y build correctos. La suite backend permanece en 324 pruebas, Ruff/formato/mypy correctos. Detalle y comandos en [verificacion-base-2026-10-27.md](verificacion-base-2026-10-27.md). No se ejecutó AWS ni se declara P-05/P-06/P-08.

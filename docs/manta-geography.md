@@ -1,5 +1,7 @@
 # Geographic agents and representative playback in Mantalab
 
+**Feature:** P-09 — Mapa geográfico y capa de agentes. **Estado:** verificado localmente como presentación. **Ficha, alcance y aceptación:** [specs/p09-geographic-map.md](../specs/p09-geographic-map.md).
+
 The map is an educational presentation of synthetic agents. The coordinates are not real homes, mobility observations, population density estimates or calibrated neighborhood risks. The backend, API contracts, contact graph, experiment hashes and SEIR results are unchanged.
 
 ## Static data and provenance
