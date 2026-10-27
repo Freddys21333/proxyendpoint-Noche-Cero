@@ -35,12 +35,12 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
       <caption>Medias del experimento. La extinción usa solo réplicas con E+I=0; las demás están censuradas.</caption>
       <thead><tr><th>Estrategia</th>{Object.values(metricNames).map(label => <th key={label}>{label}</th>)}</tr></thead>
       <tbody>{policies.map(policy => <tr key={policy}><th scope="row">{policyLabels[policy]}</th>{(Object.keys(metricNames) as Metric[]).map(key => <td key={key}>{number(result.summaryByPolicy[policy][key].mean)}</td>)}</tr>)}</tbody>
-    </table></div></details>
+    </table></div><p className="table-scroll-hint">Desliza horizontalmente para ver todas las columnas.</p></details>
     <section className="results-example"><label>Estadística detallada <select aria-label="Métrica de estadísticas" value={metric} onChange={event => setMetric(event.target.value as Metric)}>{Object.entries(metricNames).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
       <div className="comparison-table-scroll"><table><caption>{metricNames[metric]} · n efectivo y dispersión entre réplicas</caption><thead><tr><th>Estrategia</th><th>n</th><th>Media</th><th>Mediana</th><th>P05</th><th>P95</th></tr></thead><tbody>{policies.map(policy => {
         const stats: Stats = result.summaryByPolicy[policy][metric]
         return <tr key={policy}><th scope="row">{policyLabels[policy]}</th><td>{stats.n}</td><td>{number(stats.mean)}</td><td>{number(stats.median)}</td><td>{number(stats.p05)}</td><td>{number(stats.p95)}</td></tr>
-      })}</tbody></table></div>
+      })}</tbody></table></div><p className="table-scroll-hint">Desliza horizontalmente para ver todas las columnas.</p>
     </section>
     <section className="results-example"><h2>Diferencias pareadas</h2><p>Valores negativos indican que la estrategia evaluada perdió frente a su referencia.</p>
       {comparisons.map(([label, comp]) => <div key={label}><h3>{label}</h3><p>Media {number(comp.mean)} · Mediana {number(comp.median)} · P05–P95 {number(comp.p05)} a {number(comp.p95)}</p><p>{comp.bootstrap ? `IC bootstrap 95%: ${number(comp.bootstrap.lower)} a ${number(comp.bootstrap.upper)} · ${comp.bootstrap.resamples} remuestras` : 'Sin IC bootstrap: requiere 30 réplicas.'}</p></div>)}

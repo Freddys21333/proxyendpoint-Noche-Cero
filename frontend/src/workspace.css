@@ -2987,6 +2987,16 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .comparison-table-scroll { overflow-x: auto; }
 .comparison-table-scroll table { width: 100%; border-collapse: collapse; }
 .comparison-table-scroll th, .comparison-table-scroll td { padding: 0.6rem; text-align: left; border-bottom: 1px solid var(--line, #dce2da); }
+.table-scroll-hint { display: none; }
+@media (max-width: 700px) {
+  .table-scroll-hint { display: block; margin: 8px 0 0; color: #5f6b64; font-size: 13px; }
+  .chart-table > div,
+  .comparison-table-scroll { scrollbar-width: thin; scrollbar-color: #b7c4bb transparent; }
+  .chart-table th:first-child,
+  .chart-table td:first-child,
+  .comparison-table-scroll th:first-child,
+  .comparison-table-scroll td:first-child { position: sticky; left: 0; z-index: 1; background: #fff; }
+}
 .experiment-hash { overflow-wrap: anywhere; font-size: 0.85rem; }
 .configuration-actions { flex-wrap: wrap; }
 
