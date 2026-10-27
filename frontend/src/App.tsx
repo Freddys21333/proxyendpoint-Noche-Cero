@@ -60,6 +60,8 @@ export default function App() {
   const [view, setView] = useState<WorkspaceView>("simulator");
   const [layer, setLayer] = useState("All layers");
   const [resetKey, setResetKey] = useState(0);
+  const previewSubmit = useRef<HTMLButtonElement>(null);
+  const dialogReturn = useRef<HTMLElement | 'preview' | null>(null);
   const [modal, setModal] = useState<Modal>(null);
   const [advanced, setAdvanced] = useState(false);
   const [notice, setNotice] = useState("");
@@ -189,6 +191,7 @@ export default function App() {
       if (controller.signal.aborted) return;
       setRemotePreview(result);
       setServerStatus("ready");
+      dialogReturn.current = 'preview';
       setModal("run");
       setNotice("Vista previa recibida. La red muestra los contactos iniciales de tus parámetros.");
     } catch (error) {
@@ -288,9 +291,9 @@ export default function App() {
           </div>
         )}
         <div className="configuration-actions">
-          <Button type="submit" className="validate-button" disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+          <Button type="submit" className="validate-button" ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
           <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
-          <button type="button" className="plain-action" onClick={() => setModal("export")}>
+          <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
             <ArrowDownToLine size={17} /> Exportar
           </button>
         </div>
@@ -307,7 +310,7 @@ export default function App() {
         <nav aria-label="Navegación principal" className="simulation-navigation">
           <button type="button" aria-current={view === "simulator" ? "page" : undefined} onClick={() => setView("simulator")}>Simulador</button>
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
-          <button type="button" onClick={() => setModal("help")}><CircleHelp size={17} /> Ayuda</button>
+          <button type="button" onClick={event => { dialogReturn.current = event.currentTarget; setModal("help"); }}><CircleHelp size={17} /> Ayuda</button>
         </nav>
         <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · {comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span>
       </header>
@@ -352,7 +355,7 @@ export default function App() {
       <Dialog.Root open={modal !== null} onOpenChange={(open) => { if (!open) setModal(null); }}>
         <Dialog.Portal>
           <Dialog.Backdrop className="modal-dimmer" />
-          <Dialog.Popup className="modal minimal-dialog">
+          <Dialog.Popup className="modal minimal-dialog" finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
             <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
             <p>{modal === "help"

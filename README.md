@@ -11,6 +11,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
+- [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
