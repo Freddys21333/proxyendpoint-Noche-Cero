@@ -1,3 +1,4 @@
+import { experimentZip } from '@/lib/export-experiment';
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
@@ -130,6 +131,22 @@ export default function App() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setModal(null);
     setNotice(comparison ? "Experimento JSON descargado con configuración, semillas, resultados y versiones." : "Borrador descargado. No incluye resultados de simulación.");
+  };
+  const exportCsv = () => {
+    if (!comparison) return;
+    try {
+      const blob = new Blob([experimentZip(comparison)], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `manta-experiment-${comparison.configuration.rootSeed}.zip`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setModal(null);
+      setNotice('ZIP descargado con CSV de resultados y metadatos. Conserva también el JSON para reproducir el experimento.');
+    } catch {
+      setNotice('No se pudo generar el ZIP del experimento. Puedes descargar el JSON e intentarlo nuevamente.');
+    }
   };
   const run = async () => {
     const issues = validateScenario(scenario);
@@ -314,7 +331,7 @@ export default function App() {
           </>
         ) : (
           <section className="results-view" aria-labelledby="results-title">
-            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} /></Suspense> : <>
+            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <>
               <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : "Aún no hay resultados para la configuración actual."}</p></div>
               {comparisonPending && <p>Espera a que termine el experimento. No se muestran resultados parciales.</p>}
               {comparisonErrors.length > 0 && <div role="alert"><ul>{comparisonErrors.map(text => <li key={text}>{text}</li>)}</ul></div>}
@@ -341,6 +358,7 @@ export default function App() {
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
               {modal === "run" && <Button disabled={comparisonPending} onClick={runComparison}>Comparar estrategias</Button>}
+              {modal === "export" && comparison && <Button variant="outline" onClick={exportCsv}>Descargar ZIP con CSV</Button>}
               {modal === "export" && <Button onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
             </div>
           </Dialog.Popup>

@@ -8,7 +8,7 @@ const metricNames: Record<Metric, string> = { cumulativeInfected: 'Infectados ac
 const number = (value: number | null) => value === null ? '—' : new Intl.NumberFormat('es-EC', { maximumFractionDigits: 3 }).format(value)
 const confidence = { descriptive: 'Comparación descriptiva', inconclusive: 'Incertidumbre no resuelta', supported: 'Ventaja respaldada por estas réplicas' }
 
-export function ComparisonResults({ result, region, onExport }: { result: CompareResponse; region?: string; onExport: () => void }) {
+export function ComparisonResults({ result, region, onExport, onExportCsv }: { result: CompareResponse; region?: string; onExport: () => void; onExportCsv: () => void }) {
   const [curve, setCurve] = useState<CurveMetric>('i')
   const [metric, setMetric] = useState<Metric>('cumulativeInfected')
   const rec = result.recommendation
@@ -44,6 +44,6 @@ export function ComparisonResults({ result, region, onExport }: { result: Compar
       {comparisons.map(([label, comp]) => <div key={label}><h3>{label}</h3><p>Media {number(comp.mean)} · Mediana {number(comp.median)} · P05–P95 {number(comp.p05)} a {number(comp.p95)}</p><p>{comp.bootstrap ? `IC bootstrap 95%: ${number(comp.bootstrap.lower)} a ${number(comp.bootstrap.upper)} · ${comp.bootstrap.resamples} remuestras` : 'Sin IC bootstrap: requiere 30 réplicas.'}</p></div>)}
       <p>Dirigida supera a aleatoria en {number(result.pairedComparisons.targetedWinRateVsRandom * 100)}% de las réplicas; a no intervenir en {number(result.pairedComparisons.targetedWinRateVsNone * 100)}%.</p>
     </section>
-    <section className="results-example"><h2>Reproducibilidad y límites</h2><p>Motor {result.engineVersion} · Schema {result.schemaVersion} · Build {result.manifest.buildCommit} · Región configurada {region ?? 'no disponible'}</p><p className="experiment-hash">{result.manifest.experimentHash}</p><p>{result.generatedAt}</p><ul>{rec.limitations.map((text, i) => <li key={i}>{text}</li>)}</ul><button type="button" className="plain-action" onClick={onExport}>Descargar experimento JSON</button></section>
+    <section className="results-example"><h2>Reproducibilidad y límites</h2><p>Motor {result.engineVersion} · Schema {result.schemaVersion} · Build {result.manifest.buildCommit} · Región configurada {region ?? 'no disponible'}</p><p className="experiment-hash">{result.manifest.experimentHash}</p><p>{result.generatedAt}</p><ul>{rec.limitations.map((text, i) => <li key={i}>{text}</li>)}</ul><div className="export-downloads"><button type="button" className="plain-action" onClick={onExport}>Descargar experimento JSON</button><button type="button" className="plain-action" onClick={onExportCsv}>Descargar ZIP con CSV</button></div><p>CSV para análisis; JSON para reproducir. Los eventos del ZIP corresponden solo a la réplica representativa.</p></section>
   </>
 }
