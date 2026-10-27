@@ -1,6 +1,6 @@
 # P-03: trabajos Monte Carlo locales
 
-Estado: **backend y contrato cliente verificados localmente**. P-04 conserva el despliegue AWS y la ejecución de miles de réplicas como pendientes. Referencias: TRD §9.3, [hoja PRO](pro-roadmap.md), [frentes backend/frontend](pro-workstreams.md), [evidencia](../docs/evidencia/p03-jobs-local.md).
+Estado: **backend, contrato cliente y pantalla PRO verificados localmente**. P-04 conserva el despliegue AWS y la ejecución de miles de réplicas como pendientes. Referencias: TRD §9.3, [hoja PRO](pro-roadmap.md), [frentes backend/frontend](pro-workstreams.md), [evidencia backend](../docs/evidencia/p03-jobs-local.md), [evidencia UI](../docs/evidencia/p03-ui-2026-10-27.md).
 
 ## Alcance y límites
 
@@ -62,4 +62,4 @@ El hash científico no incluye IDs de trabajo, tokens, timestamps ni orden de ej
 
 `createApiClient` expone `createJob`, `jobStatus`, `cancelJob`, `jobResult`; `createJobCredentials()` genera token y clave. El cliente valida estados, progreso, manifiesto y resultados completos; transmite credenciales exclusivamente en headers y admite AbortSignal. Conservar las credenciales del mismo intento si falla la red antes de recibir 202. Las funciones no hacen polling automáticamente ni guardan secretos.
 
-Pendiente frontend: selector de modo asíncrono y cantidad según jobLimits, conservar credenciales en sesión, polling con pausa/backoff, progreso real, cancelación y descarga/recomendación solo al terminar. Puede desarrollar ese diseño sobre los ejemplos de contrato; no necesita implementar reglas científicas. La validación del formulario síncrono mantiene R<=30: el modo jobs necesita su propio campo/cantidad según jobLimits, sin ampliar silenciosamente el modo base. P-04 sustituirá almacenamiento/orquestación local por infraestructura durable y definirá descarga S3 firmada, cuotas/costos y evidencia de miles de réplicas.
+Pantalla PRO implementada: `frontend/src/pro/JobsWorkspace.tsx` crea con el escenario previsualizado y el máximo publicado en `jobLimits`, guarda credenciales en `sessionStorage` (`job-session.ts`), sondea el estado cada 1,5 s, muestra progreso real, cancela, reintenta, permite quitar de la sesión y habilita el resultado solo con agregado completo. El modelo puro `jobs-model.ts` traduce estados, valida contra el límite del servidor, marca resultados incompletos y traduce errores. La recuperación al recargar consulta el servidor y avisa si los trabajos ya no existen. Ver [plan de pruebas local](../docs/plan-pruebas-local.md) y [evidencia de UI](../docs/evidencia/p03-ui-2026-10-27.md). P-04 sustituirá almacenamiento/orquestación local por infraestructura durable y definirá descarga S3 firmada, cuotas/costos y evidencia de miles de réplicas.

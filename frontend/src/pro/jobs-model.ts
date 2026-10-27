@@ -1,43 +1,26 @@
-import type { Policy } from '../lib/api.ts'
+import type { ConfigurationInput, JobLimits, JobResponse } from '../lib/api.ts'
 
-export type ProJobStatus = 'QUEUED' | 'RUNNING' | 'AGGREGATING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED'
-export type ProJobSource = 'fixture' | 'api'
+export type ProJobStatus = 'PENDING' | 'RUNNING' | 'AGGREGATING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED'
 export type ProJobDraft = { replicates: number; rootSeed: number }
-export type ProJobConfiguration = {
-  replicates: number
-  rootSeed: number
-  policies: readonly Policy[]
-  modelLabel: string
-  modelVersion: string
-  calibrated: boolean
-  networkMode: 'fixed'
-}
-export type ProJobProgress = { total: number; succeeded: number; failed: number }
-export type ProJobResult = {
-  experimentHash: string
-  generatedAt: string
-  policies: { policy: Policy; cumulativeInfected: number; peakInfectious: number }[]
-}
 export type ProJob = {
   id: string
-  source: ProJobSource
   status: ProJobStatus
   createdAt: string
-  startedAt: string | null
-  finishedAt: string | null
-  configuration: ProJobConfiguration
-  progress: ProJobProgress
+  updatedAt: string
+  configuration: ConfigurationInput
+  progress: { total: number; succeeded: number; failed: number }
+  manifestHash: string | null
   error: { code: string; message: string } | null
-  result: ProJobResult | null
 }
 
-export const JOB_POLICIES = ['none', 'random', 'targeted'] as const satisfies readonly Policy[]
+export const JOB_POLICIES = ['none', 'random', 'targeted'] as const
 export const JOB_REPLICATE_MIN = 2
-export const JOB_REPLICATE_MAX = 1000
+export const JOB_REPLICATE_DEFAULT_MAX = 100
 export const JOB_SEED_MAX = 4294967295
+export const JOB_POLL_INTERVAL_MS = 1500
 
 export const jobStatusLabels: Record<ProJobStatus, string> = {
-  QUEUED: 'En cola',
+  PENDING: 'En cola',
   RUNNING: 'Ejecutando',
   AGGREGATING: 'Agregando resultados',
   SUCCEEDED: 'Completado',
@@ -46,23 +29,56 @@ export const jobStatusLabels: Record<ProJobStatus, string> = {
 }
 
 export const jobStatusDescriptions: Record<ProJobStatus, string> = {
-  QUEUED: 'El trabajo está aceptado y espera turno de ejecución.',
-  RUNNING: 'Las réplicas se están procesando. El progreso muestra conteos reales.',
-  AGGREGATING: 'Las réplicas terminaron y se está construyendo el agregado.',
+  PENDING: 'El trabajo está aceptado y espera turno de ejecución en el servidor local.',
+  RUNNING: 'Las réplicas se están procesando. El progreso muestra conteos reales del servidor.',
+  AGGREGATING: 'Las réplicas terminaron y el servidor está construyendo el agregado.',
   SUCCEEDED: 'El agregado está completo y el resultado puede consultarse.',
   FAILED: 'El trabajo se detuvo sin un agregado utilizable.',
   CANCELLED: 'La cancelación fue aceptada y no se generará un resultado.',
 }
 
 const terminalStatuses: ReadonlySet<ProJobStatus> = new Set(['SUCCEEDED', 'FAILED', 'CANCELLED'])
+const apiStatuses: Record<JobResponse['status'], ProJobStatus> = {
+  pending: 'PENDING',
+  running: 'RUNNING',
+  aggregating: 'AGGREGATING',
+  completed: 'SUCCEEDED',
+  failed: 'FAILED',
+  cancelled: 'CANCELLED',
+}
+
+export const jobErrorLabels: Record<string, string> = {
+  SIMULATION_FAILED: 'Una réplica falló y el servidor no completó el agregado.',
+  RESULT_TOO_LARGE: 'El resultado supera el tamaño que el servidor puede entregar.',
+  JOB_NOT_FOUND: 'El trabajo no existe, expiró o el servidor local se reinició. Crea uno nuevo.',
+  JOB_NOT_READY: 'El trabajo todavía no tiene un resultado completo.',
+  IDEMPOTENCY_CONFLICT: 'Esa clave de idempotencia ya identifica otra solicitud. Crea el trabajo de nuevo.',
+  VALIDATION_ERROR: 'El servidor rechazó la solicitud del trabajo por un dato inválido.',
+  REQUEST_TOO_LARGE: 'La configuración del trabajo supera el tamaño permitido.',
+  NETWORK_ERROR: 'No se pudo conectar con el servidor local. Comprueba que esté iniciado.',
+  HTTP_ERROR: 'El servidor local respondió con un error al operar el trabajo.',
+}
+
+export function statusFromApi(status: JobResponse['status']): ProJobStatus {
+  return apiStatuses[status]
+}
+
+export function jobMaxReplicates(limits?: JobLimits): number {
+  return limits?.maxRepetitions ?? JOB_REPLICATE_DEFAULT_MAX
+}
+
+export function isTerminalStatus(status: ProJobStatus): boolean {
+  return terminalStatuses.has(status)
+}
 
 export function isTerminalJob(job: ProJob): boolean {
-  return terminalStatuses.has(job.status)
+  return isTerminalStatus(job.status)
 }
 
 export function jobProgressPercent(job: ProJob): number {
   const completed = job.progress.succeeded + job.progress.failed
-  return job.progress.total > 0 ? Math.min(100, Math.round((completed / job.progress.total) * 100)) : 0
+  if (!Number.isFinite(completed) || job.progress.total <= 0) return 0
+  return Math.max(0, Math.min(100, Math.round((completed / job.progress.total) * 100)))
 }
 
 export function jobOutcome(job: ProJob): { label: string; partial: boolean } {
@@ -70,10 +86,11 @@ export function jobOutcome(job: ProJob): { label: string; partial: boolean } {
   return { label: jobStatusLabels[job.status], partial: false }
 }
 
-export function validateJobDraft(draft: ProJobDraft): { replicates?: string; rootSeed?: string } {
+export function validateJobDraft(draft: ProJobDraft, limits?: JobLimits): { replicates?: string; rootSeed?: string } {
+  const max = jobMaxReplicates(limits)
   const errors: { replicates?: string; rootSeed?: string } = {}
-  if (!Number.isInteger(draft.replicates) || draft.replicates < JOB_REPLICATE_MIN || draft.replicates > JOB_REPLICATE_MAX) {
-    errors.replicates = `Las réplicas deben ser un entero entre ${JOB_REPLICATE_MIN} y ${JOB_REPLICATE_MAX.toLocaleString('es-EC')}.`
+  if (!Number.isInteger(draft.replicates) || draft.replicates < JOB_REPLICATE_MIN || draft.replicates > max) {
+    errors.replicates = `Las réplicas deben ser un entero entre ${JOB_REPLICATE_MIN} y ${max.toLocaleString('es-EC')}.`
   }
   if (!Number.isInteger(draft.rootSeed) || draft.rootSeed < 0 || draft.rootSeed > JOB_SEED_MAX) {
     errors.rootSeed = `La semilla debe ser un entero entre 0 y ${JOB_SEED_MAX.toLocaleString('es-EC')}.`
@@ -81,65 +98,35 @@ export function validateJobDraft(draft: ProJobDraft): { replicates?: string; roo
   return errors
 }
 
-export function createDemoJob(draft: ProJobDraft, now = new Date(), id = `demo-${now.getTime()}`): ProJob {
+/** El trabajo reutiliza el escenario ya previsualizado y solo cambia réplicas y semilla. */
+export function jobConfigurationFrom(base: ConfigurationInput, draft: ProJobDraft): ConfigurationInput {
+  return { ...base, repetitions: draft.replicates, rootSeed: draft.rootSeed }
+}
+
+export function jobErrorMessage(error: unknown, fallback = 'No se pudo completar la operación con el trabajo.'): string {
+  const code = typeof error === 'object' && error !== null && 'code' in error ? String((error as { code: unknown }).code) : ''
+  return jobErrorLabels[code] ?? fallback
+}
+
+export function jobFromResponse(response: JobResponse, configuration: ConfigurationInput): ProJob {
+  const status = statusFromApi(response.status)
   return {
-    id,
-    source: 'fixture',
-    status: 'QUEUED',
-    createdAt: now.toISOString(),
-    startedAt: null,
-    finishedAt: null,
-    configuration: {
-      replicates: draft.replicates,
-      rootSeed: draft.rootSeed,
-      policies: JOB_POLICIES,
-      modelLabel: 'Plaga ficticia SEIR',
-      modelVersion: 'fictional-seir-v1',
-      calibrated: false,
-      networkMode: 'fixed',
+    id: response.jobId,
+    status,
+    createdAt: response.createdAt,
+    updatedAt: response.updatedAt,
+    configuration,
+    progress: {
+      total: response.progress.replicatesTotal,
+      succeeded: response.progress.replicatesCompleted,
+      failed: response.progress.replicatesFailed,
     },
-    progress: { total: draft.replicates, succeeded: 0, failed: 0 },
-    error: null,
-    result: null,
+    manifestHash: response.manifest.requestHash,
+    error: response.error ? { code: response.error, message: jobErrorLabels[response.error] ?? response.error } : null,
   }
 }
 
-export function advanceDemoJob(job: ProJob, now = new Date()): ProJob {
-  if (isTerminalJob(job)) return job
-  if (job.status === 'QUEUED') {
-    return { ...job, status: 'RUNNING', startedAt: now.toISOString() }
-  }
-  if (job.status === 'RUNNING') {
-    const step = Math.max(1, Math.ceil(job.progress.total / 10))
-    const succeeded = Math.min(job.progress.total, job.progress.succeeded + step)
-    return {
-      ...job,
-      status: succeeded >= job.progress.total ? 'AGGREGATING' : 'RUNNING',
-      progress: { ...job.progress, succeeded },
-    }
-  }
-  return {
-    ...job,
-    status: 'SUCCEEDED',
-    finishedAt: now.toISOString(),
-    result: demoResultFor(job, now),
-  }
-}
-
-export function cancelDemoJob(job: ProJob, now = new Date()): ProJob {
-  if (isTerminalJob(job)) return job
-  return { ...job, status: 'CANCELLED', finishedAt: now.toISOString() }
-}
-
-export function demoResultFor(job: ProJob, now = new Date()): ProJobResult {
-  const variation = job.configuration.rootSeed % 11
-  return {
-    experimentHash: `sha256:${'d'.repeat(64)}`,
-    generatedAt: now.toISOString(),
-    policies: [
-      { policy: 'none', cumulativeInfected: 412 + variation, peakInfectious: 38 + (variation % 4) },
-      { policy: 'random', cumulativeInfected: 286 + (variation % 7), peakInfectious: 27 + (variation % 3) },
-      { policy: 'targeted', cumulativeInfected: 194 + (variation % 5), peakInfectious: 19 + (variation % 2) },
-    ],
-  }
+/** Copia el progreso de un trabajo ya conocido sin tocar configuración ni credenciales. */
+export function mergeJob(current: ProJob, next: ProJob): ProJob {
+  return { ...current, ...next, configuration: current.configuration }
 }

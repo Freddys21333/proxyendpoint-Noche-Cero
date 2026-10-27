@@ -147,7 +147,7 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** el endpoint síncrono no sirve para lotes grandes ni para calibración; no hay manifiesto, progreso, cancelación ni idempotencia.
 
-**Estado 2026-10-27:** backend y cliente verificados localmente: cuatro rutas, cola, token, idempotencia, cancelación y resultado reproducible. Falta conectar la pantalla de jobs y cerrar P-04; I-04 sigue abierta.
+**Estado 2026-10-27:** cerrada localmente. Backend y cliente verificados (cuatro rutas, cola, token, idempotencia, cancelación y resultado reproducible) **y pantalla PRO conectada a la API real**: creación con el escenario previsualizado, límites publicados, credenciales en `sessionStorage`, sondeo, progreso real, cancelación, reintento, resultado solo con agregado completo e historial de la sesión. Evidencia: [p03-ui-2026-10-27](evidencia/p03-ui-2026-10-27.md) y [plan de pruebas local](plan-pruebas-local.md). P-04 (AWS, miles de réplicas) sigue fuera de I-04.
 
 **Alcance:**
 
@@ -316,7 +316,7 @@ Reglas heredadas que no se pueden romper:
 | I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
 | I-02 | Completada localmente: backend, cliente y UI con motor real | `git log --grep=pro-p02` | `docs/evidencia/p02-ui-2026-10-27.md` |
 | I-03 | Pendiente | — | — |
-| I-04 | Parcial: backend/cliente verificados; UI y P-04 pendientes | `5861407` / `ac2ded7` | `docs/evidencia/p03-jobs-local.md` |
+| I-04 | Completada localmente: backend, cliente y UI con API real | `git log --grep=pro-p03` | `docs/evidencia/p03-ui-2026-10-27.md` |
 | I-05 | Pendiente | — | — |
 | I-06 | Pendiente | — | — |
 | I-07 | Pendiente | — | — |

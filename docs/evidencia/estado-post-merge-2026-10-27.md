@@ -14,7 +14,7 @@
 |---|---|
 | Backend | `pytest -q`: **356 pruebas aprobadas**, 97,41 s. |
 | Calidad backend | Ruff, formato y mypy sin incidencias; 21 archivos fuente revisados por mypy. |
-| Frontend | **116 pruebas aprobadas**; typecheck y build correctos. |
+| Frontend | **130 pruebas aprobadas** tras I-04 (116 en el merge); typecheck y build correctos. |
 | Protocolo T-22 | `check_validation_protocol.py`: mismo `protocolSHA256` (`cb6b3e...`), 15 experimentos, 450 réplicas, 150 primarias; no se ejecutaron simulaciones nuevas en ese chequeo. |
 | Hash base | `base-root-0` re-ejecutado después del merge: `sha256:ead1ee4c...ae3e0c5`, idéntico al JSON previo al merge. |
 | Integración P-02 | `verify_adaptive_integration.mjs`: **passed**, hash `sha256:701bee8c...63590b`, 24 filas adaptativas y anillo real. |
@@ -45,10 +45,11 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 - Cola acotada, dos trabajadores, 2..100 réplicas, token por capacidad, idempotencia, manifiesto fijo, progreso, reintento determinista, cancelación cooperativa y expiración.
 - Cliente TypeScript con `createJob`, `jobStatus`, `cancelJob`, `jobResult` y credenciales generadas; valida estados, progreso y resultado completo.
 - Resultado reproducible y comparable con la ejecución síncrona; no publica agregados parciales.
+- **UI conectada (I-04):** `JobsWorkspace` crea con el escenario previsualizado y el máximo de `jobLimits`, guarda credenciales en `sessionStorage`, sondea el estado, muestra progreso real, cancela, reintenta, habilita el resultado solo con agregado completo y recupera la sesión al recargar. Sin fixtures.
 
-**Límites que no se deben ocultar:** el gestor vive en un proceso local, no es durable, pierde trabajos al reiniciar y retiene terminales una hora. No es AWS ni acredita miles de réplicas. La pantalla PRO sigue usando fixtures.
+**Límites que no se deben ocultar:** el gestor vive en un proceso local, no es durable, pierde trabajos al reiniciar y retiene terminales una hora. No es AWS ni acredita miles de réplicas. La UI avisa cuando el servidor ya no tiene los trabajos de la sesión, pero no puede recuperarlos.
 
-**Pendiente P-03:** selector de modo asíncrono y cantidad, conservar credenciales en `sessionStorage`, polling con pausa/backoff, progreso real, cancelación, descarga y recomendación solo al completar. Conectar `JobsWorkspace`/`ProWorkspace` a la API real y corregir los rótulos “Pendiente”/“No iniciado” que hoy están desactualizados. Después, P-04.
+**Pendiente P-03:** nada local bloqueante; la pantalla está verificada. P-04 sustituye el gestor por infraestructura durable y añade cuotas, costos y miles de réplicas.
 
 ---
 
@@ -83,12 +84,13 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 ### I-04 — P-03 UI y cierre local
 
-- [ ] Conectar la pantalla PRO a `/v1/jobs`; retirar fixtures y rótulos de “contrato pendiente”.
-- [ ] Selector de réplicas según `jobLimits`, sin ampliar el modo síncrono 2..30.
-- [ ] Sesión de credenciales, polling, backoff, progreso real, cancelación y descarga.
-- [ ] Resultado/recomendación solo en estado `completed`; nunca agregados parciales.
-- [ ] Probar R=2, R=31 y R=100 localmente; documentar límites de proceso, retención y reinicio.
-- [ ] P-04 queda para AWS, no para esta iteración local.
+- [x] Conectar la pantalla PRO a `/v1/jobs`; retirar fixtures y rótulos de “contrato pendiente”.
+- [x] Selector de réplicas según `jobLimits`, sin ampliar el modo síncrono 2..30.
+- [x] Sesión de credenciales, polling, progreso real, cancelación, reintento y lectura del resultado.
+- [x] Resultado/recomendación solo en estado `completed`; aviso explícito de agregado incompleto.
+- [x] Probar R=2, R=100 y el flujo real en navegador; documentar límites de proceso, retención y reinicio.
+- [x] P-04 queda para AWS, no para esta iteración local.
+- Evidencia: [p03-ui-2026-10-27](p03-ui-2026-10-27.md) y [plan de pruebas local](../plan-pruebas-local.md).
 
 ### I-05 — P-06 calibración y preset
 
@@ -151,11 +153,11 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 ## 5. Qué no se debe reimplementar
 
 - No crear otra política adaptativa backend: `adaptive-v1` ya existe y está probada. El trabajo pendiente es UI y aceptación.
-- No crear otro gestor `/v1/jobs`: rutas, cola, token, idempotencia, cancelación, manifiesto y cliente ya existen. Falta conectar la pantalla y P-04.
+- No crear otro gestor `/v1/jobs`: rutas, cola, token, idempotencia, cancelación, manifiesto, cliente y pantalla ya existen. Falta P-04.
 - No reescribir el protocolo T-22 ni cambiar semillas para obtener un resultado favorable.
 - No duplicar validación, SEIR, métricas, agregados, costos o decisiones en el frontend.
-- No presentar fixtures de `frontend/src/pro/` como resultados reales.
-- No afirmar que P-02/P-03 están cerrados: P-02 tiene backend y UI locales verificados, pero la aceptación humana integral (T-13..T-16) y AWS siguen pendientes; P-03 tiene backend y cliente, pero le falta la pantalla y P-04.
+- No presentar fixtures como resultados reales: `frontend/src/pro/fixtures/jobs.ts` fue eliminado.
+- No afirmar que P-02/P-03 están cerrados: P-02 y P-03 tienen backend y UI locales verificados, pero la aceptación humana integral (T-13..T-16) y AWS siguen pendientes.
 
 ---
 
@@ -163,7 +165,7 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 - **T-22 no está aprobado.** Los controles pasan, pero la matriz primaria y los contrastes no se ejecutaron. `base-root-0` no representa el gate.
 - **El benchmark de 44,3 s no es el costo de T-22.** Exportar, validar, comprimir y reproducir un JSON grande tarda minutos; presupuestar decenas de minutos.
-- **La pantalla PRO sigue con fixtures.** `ProWorkspace` todavía rotula `/v1/jobs` como “Pendiente” y el backend como “No iniciado”; esos rótulos deben corregirse al conectar la API.
+- **La pantalla PRO ya no usa fixtures.** `ProWorkspace` rotula la integración real desde I-04; si se reinicia la API, la sesión pierde sus trabajos y solo queda el aviso.
 - **El gestor P-03 es local y no durable.** Reiniciar pierde trabajos; no es evidencia de AWS ni de miles de réplicas.
 - **El Budget no está operativo.** 0/2 destinatarios verificados; una alerta no detiene el gasto.
 - **No hay URL pública ni AWS desplegado.** `infra/` está vacío.
@@ -178,9 +180,8 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 1. Commit y push de esta documentación y del runner T-22.
 2. Cerrar T-22: primaria, contrastes, reproducciones, informe y gate.
 3. Repetir en UI los escenarios de saldo agotado y sin elegibles de P-02; el resto de I-02 ya está verificado localmente.
-4. Conectar P-03 UI y cerrar la aceptación local de jobs.
-5. P-05 y P-06 con datos reales y validación fuera de muestra.
-6. P-08 desde un experimento validado.
-7. P-07 con aceptación de sincronización, accesibilidad y rendimiento.
-8. P-04/T-17..T-21 solo con autorización de gasto.
-9. I-09: E2E, semilla externa, tiempos humanos, costos, arquitectura y pitch.
+4. P-03 UI cerrada localmente (I-04); continuar con P-05 y P-06 con datos reales y validación fuera de muestra.
+5. P-08 desde un experimento validado.
+6. P-07 con aceptación de sincronización, accesibilidad y rendimiento.
+7. P-04/T-17..T-21 solo con autorización de gasto.
+8. I-09: E2E, semilla externa, tiempos humanos, costos, arquitectura y pitch.

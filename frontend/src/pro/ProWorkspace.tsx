@@ -1,5 +1,5 @@
 import { Database, FileText, ListChecks, ShieldCheck } from 'lucide-react'
-import type { CompareResponse } from '../lib/api.ts'
+import type { CompareResponse, ConfigResponse, PreviewResponse } from '../lib/api.ts'
 import { policyLabels } from '../lib/comparison.ts'
 import { JobsWorkspace } from './JobsWorkspace.tsx'
 import './ProWorkspace.css'
@@ -7,19 +7,22 @@ import './ProWorkspace.css'
 const policies = ['none', 'random', 'targeted'] as const
 const number = new Intl.NumberFormat('es-EC', { maximumFractionDigits: 1 })
 
-export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, onShowResults }: {
+export function ProWorkspace({ comparison, comparisonPending, config, preview, onShowSimulator, onShowResults }: {
   comparison: CompareResponse | null
   comparisonPending: boolean
+  config: ConfigResponse | null
+  preview: PreviewResponse | null
   onShowSimulator: () => void
   onShowResults: () => void
 }) {
+  const jobsEnabled = Boolean(config?.features.asyncJobs)
   return <section className="pro-workspace" aria-labelledby="pro-title">
     <header className="pro-heading">
       <div>
         <h1 id="pro-title">PRO</h1>
-        <p>Estado de las capacidades PRO y exploración de trabajos.</p>
+        <p>Estado de las capacidades PRO y trabajos Monte Carlo locales.</p>
       </div>
-      <span className="pro-badge pro-badge--demo">Trabajos: demostración</span>
+      <span className={`pro-badge${jobsEnabled ? '' : ' pro-badge--muted'}`}>Trabajos: {jobsEnabled ? 'servidor local' : 'deshabilitados'}</span>
     </header>
 
     <section className="pro-current" aria-labelledby="pro-current-title">
@@ -49,8 +52,9 @@ export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, o
     </section>
 
     <div className="pro-demo-note" role="note">
-      <strong>Datos de ejemplo.</strong> El flujo de trabajos usa fixtures locales para revisar estados, progreso y cancelación.
-      No ejecuta cómputo real, no consulta AWS y no produce resultados científicos.
+      <strong>Servidor local.</strong> Los trabajos usan <span className="mono">/v1/jobs</span> del backend local y el escenario ya previsualizado.
+      El token de acceso vive solo en <span className="mono">sessionStorage</span>; cerrar la pestaña descarta la credencial.
+      No se consulta AWS y el resultado no es evidencia científica hasta completar T-22.
     </div>
 
     <nav className="pro-section-nav" aria-label="Secciones PRO">
@@ -59,17 +63,17 @@ export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, o
       <button type="button" disabled title="Se habilitará al cerrar el contrato de informe"><FileText size={17} aria-hidden="true" /> Informe <small>Próximamente</small></button>
     </nav>
 
-    <JobsWorkspace />
+    <JobsWorkspace config={config} preview={preview} onShowSimulator={onShowSimulator} />
 
     <details className="pro-contract">
       <summary><ShieldCheck size={17} aria-hidden="true" /> Estado de integración</summary>
       <div className="pro-contract-grid">
-        <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>Pendiente</strong></div>
-        <div><span>Backend de trabajos</span><strong>No iniciado</strong></div>
-        <div><span>Esta pantalla</span><strong>Fixture local</strong></div>
-        <div><span>Siguiente paso</span><strong>Conectar estados reales</strong></div>
+        <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>Verificado localmente</strong></div>
+        <div><span>Backend de trabajos</span><strong>Cola local, token e idempotencia</strong></div>
+        <div><span>Esta pantalla</span><strong>API real, sin fixtures</strong></div>
+        <div><span>Pendiente</span><strong>P-04 en AWS</strong></div>
       </div>
-      <p>La conexión reemplazará el fixture por estados, progreso, cancelación y resultado firmado del backend. Hasta entonces, ninguna cifra de esta pantalla debe citarse como evidencia.</p>
+      <p>La pantalla usa estados, progreso, cancelación y resultado del servidor local. Las cifras de un trabajo solo son válidas para su hash y su configuración; la ejecución distribuida de miles de réplicas sigue pendiente en P-04.</p>
     </details>
   </section>
 }

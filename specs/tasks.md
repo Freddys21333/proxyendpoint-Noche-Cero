@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 27 de octubre de 2026
-**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación actual tras integrar P-02/P-03: 356 pruebas backend, 116 frontend, Ruff/mypy/tipos/build correctos ([evidencia](../docs/evidencia/verificacion-base-2026-10-27.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
+**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación actual tras I-04 (P-03 UI): 356 pruebas backend, 130 frontend, Ruff/mypy/tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -64,7 +64,7 @@ Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-ro
 
 - [x] **P-01 — Llegadas diarias e inventario.** Verificado localmente. Calendario normalizado, recepción antes de uso, acumulación, límites físicos/monetarios, una dosis por persona, saldo diario y `inventory.csv`. [Contrato, límites y evidencia](p01-resource-schedule.md). No incluye caducidad, cancelación de entregas durante ejecución ni recursos adicionales fuera de dosis/insumos de brigadas.
 - [ ] **P-02 — Decisiones adaptativas al brote.** Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. Falta aceptación humana integral (T-13..T-16). [Contrato](p02-adaptive-policy.md), [evidencia backend](../docs/evidencia/p02-adaptive.md) y [evidencia UI](../docs/evidencia/p02-ui-2026-10-27.md).
-- [ ] **P-03 — Contratos y trabajos Monte Carlo locales.** Backend y cliente verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación, progreso y resultado reproducible. Falta pantalla de jobs y P-04. [Contrato](p03-monte-carlo-jobs.md) y [evidencia](../docs/evidencia/p03-jobs-local.md).
+- [ ] **P-03 - Contratos y trabajos Monte Carlo locales.** Backend, cliente y pantalla PRO verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación, progreso, resultado reproducible, credenciales de sesión, sondeo, reintento e historial. Falta P-04 (AWS). [Contrato](p03-monte-carlo-jobs.md), [evidencia backend](../docs/evidencia/p03-jobs-local.md), [evidencia UI](../docs/evidencia/p03-ui-2026-10-27.md) y [plan de pruebas local](../docs/plan-pruebas-local.md).
 - [ ] **P-04 — Miles de réplicas en AWS.** No iniciado. Distributed Map con concurrencia medida, cuotas, costos y evidencia; requiere P-03 y comprobaciones de infraestructura antes de ejecutar lotes.
 - [ ] **P-05 — Datos reales de dengue en Manabí.** No iniciado. Identificar serie oficial utilizable, guardar procedencia/hash, normalizar geografía/tiempo/definición de caso y validar extracción; no usar números inventados como sustituto.
 - [ ] **P-06 — Calibración y preset versionado.** No iniciado. Resolver mecanismo/modelo, ajustar contra datos de P-05 y validar fuera de muestra con incertidumbre y reproducción.

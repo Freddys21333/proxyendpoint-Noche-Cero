@@ -464,6 +464,11 @@
 .pro-alert p {
   margin: 4px 0 0;
 }
+main .pro-workspace .pro-alert strong,
+main .pro-workspace .pro-alert p,
+main .pro-workspace .pro-alert code {
+  color: inherit;
+}
 .pro-alert code {
   display: inline-block;
   margin-top: 6px;
@@ -473,6 +478,37 @@
   background: #f7f3e6;
   border-color: #ddd4b8;
   color: #6b5b2e;
+}
+.pro-alert--info {
+  background: #eef3ee;
+  border-color: #c9d8c9;
+  color: #2f4a3a;
+}
+.pro-alert--info > p {
+  margin: 0;
+}
+.pro-result-winner {
+  margin: 12px 0 4px;
+  color: #202c28;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.pro-result-reasons {
+  margin: 0 0 4px;
+  padding-left: 20px;
+  color: #5f6b64;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.pro-history-empty {
+  margin: 0;
+  padding: 4px 0 16px;
+  color: #5f6b64;
+  font-size: 14px;
+}
+.pro-hash-cell {
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .pro-result {
   margin-top: 18px;
@@ -772,4 +808,22 @@
   .pro-result td:nth-child(3) {
     width: 26%;
   }
+}
+
+/* Noche Cero: el tema oscuro global no cubre dt, dd, li ni enlaces internos. */
+.noche-cero .pro-workspace .pro-meta dt,
+.noche-cero .pro-workspace .pro-form-meta dt,
+.noche-cero .pro-workspace .pro-result-reasons {
+  color: #a9b3ad;
+}
+.noche-cero .pro-workspace .pro-meta dd,
+.noche-cero .pro-workspace .pro-form-meta dd,
+.noche-cero .pro-workspace .pro-result-winner {
+  color: #ece7df;
+}
+.noche-cero .pro-workspace .pro-link-button {
+  color: #9fd8bd;
+}
+.noche-cero .pro-workspace .pro-link-button:hover {
+  color: #c7efdb;
 }

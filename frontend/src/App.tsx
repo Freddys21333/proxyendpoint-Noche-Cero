@@ -413,7 +413,7 @@ export default function App() {
           </section>
         ) : (
           <Suspense fallback={<div className="simulation-loading" role="status">Cargando PRO…</div>}>
-            <ProWorkspace comparison={comparison} comparisonPending={comparisonPending} onShowSimulator={() => setView("simulator")} onShowResults={() => setView("results")} />
+            <ProWorkspace comparison={comparison} comparisonPending={comparisonPending} config={serverConfig} preview={remotePreview} onShowSimulator={() => setView("simulator")} onShowResults={() => setView("results")} />
           </Suspense>
         )}
       </main>

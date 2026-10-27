@@ -11,7 +11,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 | Intervenciones combinadas, costos y presupuesto | PRD §4.2 PRO-1/2; TRD §6.3 | Incremento educativo funcional: vacunas, cierre de una capa y brigadas, saldo diario y exportación. No equivale a completar todo PRO-2. Véase [semántica vigente](../docs/intervenciones-combinadas.md). |
 | Recursos que llegan por días | PRO-2; TRD §6.3 | **Verificado localmente**: P-01 incorpora calendario opcional de reposición, acumulación, capacidad diaria y registro/exportación de inventario. [Contrato](p01-resource-schedule.md). |
 | Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **Backend verificado localmente**: variante adaptativa versionada con cierres por umbral, pausa de brigadas y prioridad de anillo; registros/exportación y cliente compatibles. Pendiente editor e historial visual frontend. [Contrato P-02](p02-adaptive-policy.md). |
-| Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **P-03 backend verificado localmente**: trabajos 2..100 con cola limitada, progreso, cancelación, capacidades e idempotencia. La comparación síncrona conserva 2..30. Distributed Map y miles en AWS siguen pendientes P-04. |
+| Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **P-03 verificado localmente**: trabajos 2..100 con cola limitada, progreso, cancelación, capacidades e idempotencia; pantalla PRO conectada a la API real con credenciales de sesión, sondeo, cancelación y resultado solo al completar. La comparación síncrona conserva 2..30. Distributed Map y miles en AWS siguen pendientes P-04. [Evidencia UI](../docs/evidencia/p03-ui-2026-10-27.md). |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
 | Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
 | Informe sencillo para el alcalde | PRO-7 | **No iniciado**: salida preferida PDF desde plantilla determinista y un experimento validado. No requiere un LLM. P-08. |
@@ -49,11 +49,11 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 
-- [x] Estado: **backend y contrato cliente verificados localmente**. Dependencia: T-10/11 y una versión fijada del modelo a ejecutar.
+- [x] Estado: **backend, contrato cliente y pantalla PRO verificados localmente**. Dependencia: T-10/11 y una versión fijada del modelo a ejecutar.
 - Detallar `/v1/jobs`, estado/progreso, cancelación, acceso por capacidad, manifiesto y resultados usando el diseño previo del TRD. No ampliar `repetitions` del endpoint síncrono como sustituto.
 - Fijar lista de índices y semillas antes de ejecutar; cada réplica procesa las políticas pareadas sobre el experimento acordado. Validar modelo, recurso de calibración, red fija o regenerada y versiones.
 - Aceptación local: lotes en distinto orden producen el mismo agregado; reintentos no duplican réplicas; errores/cancelación son trazables; solo agregado completo habilita recomendación final; reproducción coincide con ejecución secuencial.
-- **Verificado 2026-10-27:** cuatro rutas locales reales, token, idempotencia, cola/retención, cancelación terminal, reintentos, progreso y resultado reproducible >30. [Contrato P-03](p03-monte-carlo-jobs.md), [evidencia](../docs/evidencia/p03-jobs-local.md). Interfaz visual pendiente; no cierra P-04.
+- **Verificado 2026-10-27:** cuatro rutas locales reales, token, idempotencia, cola/retención, cancelación terminal, reintentos, progreso y resultado reproducible >30. **UI PRO conectada:** formulario con límites del servidor, credenciales en `sessionStorage`, sondeo, cancelación, reintento, resultado solo al completar e historial de sesión. [Contrato P-03](p03-monte-carlo-jobs.md), [evidencia backend](../docs/evidencia/p03-jobs-local.md), [evidencia UI](../docs/evidencia/p03-ui-2026-10-27.md). No cierra P-04.
 
 ### P-04 — Distributed Map en AWS y evidencia de miles de réplicas (PRO-4)
 

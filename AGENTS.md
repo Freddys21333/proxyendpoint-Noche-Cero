@@ -21,12 +21,12 @@ Rama de integración: `feat/pro`. Último commit integrado: `5861407` (`merge(pr
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
 | Base backend T-02..T-12 + PRO local | Suite actual: **356 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **116 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs, ZIP/JSON y mapa. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Frontend base | **130 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON y mapa. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
 | Rendimiento | Benchmark por defecto `N=1000/T=90/R=30`: **44,3 s** sin frames, 8,5× mejor que 377,9 s. | Objetivo backend ≤25 s no alcanzado; benchmark AWS no ejecutado. |
 | T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
 | P-02 | Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. | Aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles. |
-| P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible. | Pantalla de jobs, sesión de credenciales y P-04 AWS. |
+| P-03 | Backend, cliente y pantalla PRO verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación, resultado reproducible, credenciales en `sessionStorage`, sondeo, reintento e historial. | P-04 AWS (miles de réplicas, durabilidad, cuotas y costos). |
 | P-04 | No iniciado. | Distributed Map, S3, IAM, cuotas, costos y evidencia de miles de réplicas. |
 | P-05/P-06 | No iniciados. | Dataset real trazable de dengue/Manabí, modelo, calibración y validación fuera de muestra. |
 | P-07 | Parcial: reproducción y mapa sincronizados. | Aceptación de transiciones, rendimiento, accesibilidad y movimiento reducido. |
@@ -86,7 +86,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 
 - [x] P-01: llegadas diarias e inventario, verificado localmente.
 - [ ] P-02: backend, cliente y UI locales verificados; falta aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles.
-- [ ] P-03: backend y cliente local verificados; falta pantalla de jobs y P-04.
+- [ ] P-03: backend, cliente y pantalla PRO locales verificados; falta P-04 (AWS, miles de réplicas).
 - [ ] P-04: miles de réplicas en AWS; no iniciado.
 - [ ] P-05: datos reales de dengue en Manabí; no iniciado.
 - [ ] P-06: calibración y preset versionado; no iniciado.
@@ -106,7 +106,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - Interfaz Noche Cero: preview real, red, filtros, comparación, curvas, tabla, dosis, explicación de selección, reproducción, mapa OSM y exportaciones.
 - P-01: calendario de llegadas, inventario, capacidad, costos educativos y exportación.
 - P-02: política adaptativa completa en local (`adaptive-v1`): decisiones, motivos, exportación, reproducción, editor de la variante e historial diario de decisiones.
-- P-03: trabajos Monte Carlo locales con `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible.
+- P-03: trabajos Monte Carlo locales con `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible, conectados a la pantalla PRO (creación con la vista previa, credenciales de sesión, sondeo, reintento e historial).
 - P-09: mapa de Manta con polígonos OSM versionados y posiciones sintéticas deterministas.
 
 ## 8. Funcionalidades pendientes que otros agentes deben implementar
@@ -115,7 +115,7 @@ Prioridad inmediata:
 
 1. **Terminar T-22.** Ejecutar las cinco raíces primarias y los cinco contrastes; conservar JSON/ZIP/logs; reproducir cada JSON y `base-root-0` tres veces; validar controles y generar informe. No editar el protocolo.
 2. **P-02, cierre de aceptación.** El editor, la etiqueta de variante y el historial diario ya funcionan contra el motor real ([evidencia](docs/evidencia/p02-ui-2026-10-27.md)). Falta la aceptación humana T-13..T-16 y repetir en UI los escenarios de saldo agotado y sin elegibles.
-3. **P-03 UI + P-04.** Las rutas `/v1/jobs` y el cliente ya están verificados localmente; falta conectar la pantalla PRO (hoy con fixtures), sesión de credenciales y después P-04 AWS.
+3. **P-03 cerrada en local / P-04.** Rutas `/v1/jobs`, cliente y pantalla PRO verificados localmente ([evidencia](docs/evidencia/p03-ui-2026-10-27.md)). Queda P-04 AWS.
 4. **P-05.** Dataset real trazable de dengue/Manabí: URL, edición, fecha, corte, licencia, hash, tabla normalizada, faltantes y límites. Si no alcanza, dejar P-06 pendiente.
 5. **P-06.** Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre y preset versionado.
 6. **P-08.** Informe determinista para alcaldía con cifras del JSON, costos, incertidumbre, fuentes, hash y límites.
@@ -164,6 +164,15 @@ backend/.venv/bin/python scripts/run_t22.py \
 
 Antes de ejecutar, leer [specs/validation/t22-v1/README.md](specs/validation/t22-v1/README.md). El intento y los JSON grandes están bajo `.tools/` y no se versionan.
 
+Pruebas PRO locales, desde la raíz. `verify_jobs_flow.mjs` requiere la API de `scripts/serve_api.py` en `:8000`; `verify_adaptive_integration.mjs` usa `:18002` por defecto y acepta `API_BASE`. Para el navegador hace falta Vite en `:5174`.
+
+```sh
+node --experimental-strip-types scripts/verify_adaptive_integration.mjs
+node --experimental-strip-types scripts/verify_jobs_flow.mjs
+```
+
+Comandos, pasos y resultados esperados de cada funcionalidad PRO ya cerrada están en [docs/plan-pruebas-local.md](docs/plan-pruebas-local.md). Ese documento crece solo cuando la funcionalidad existe y está verificada.
+
 ## 10. Evidencia, Git y commits
 
 - Rama de integración: `feat/pro`. Si se paraleliza, cada agente crea una rama corta desde `feat/pro` y no comparte la misma rama de implementación.
@@ -177,9 +186,9 @@ Antes de ejecutar, leer [specs/validation/t22-v1/README.md](specs/validation/t22
 - **T-22 no está aprobado.** Los controles pasan, pero faltan primaria y contrastes. `base-root-0` no representa el gate.
 - **El benchmark de 44 s no es el costo de exportar.** Exportar un JSON de 8,3 MB con validación/ZIP y reproducirlo tarda minutos; presupuestar la matriz completa por decenas de minutos.
 - **`scripts/run_t22.py` no ha corrido la matriz completa.** Su compilación, Ruff y controles funcionaron; aun así, revisarlo antes de confiar en él para primaria/contrastes.
-- **La API es síncrona y limitada a 2..30 réplicas.** No presentar `repetitions` como jobs asíncronos.
-- **P-03 en la UI es demo.** `/v1/jobs` existe localmente, pero la pantalla PRO sigue con fixtures rotulados.
-- **P-01/P-09 no cierran PRO.** P-02 tiene backend, cliente y UI locales verificados; P-03 tiene backend y cliente. P-02, P-03 y P-04..P-08 siguen abiertos por aceptación humana, AWS o evidencia.
+- **La API síncrona está limitada a 2..30 réplicas.** Los trabajos de 2..100 viven en `/v1/jobs`; no presentar `repetitions` del endpoint síncrono como jobs asíncronos.
+- **P-03 es local y no durable.** La pantalla PRO usa la API real, pero reiniciar el servidor pierde los trabajos; la UI solo avisa. No es AWS ni evidencia de miles de réplicas.
+- **P-01/P-09 no cierran PRO.** P-02 y P-03 tienen backend, cliente y UI locales verificados; P-04..P-08 siguen abiertos por AWS o evidencia, y T-13..T-16 por aceptación humana.
 - **El mapa no es evidencia epidemiológica.** OSM y posiciones sintéticas no prueban riesgo ni movilidad real.
 - **El Budget no está operativo.** 0/2 destinatarios verificados; una alerta no detiene el gasto.
 - **No hay URL pública ni AWS desplegado.** `infra/` está vacío.
