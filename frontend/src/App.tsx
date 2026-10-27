@@ -325,17 +325,17 @@ export default function App() {
           <>
             <div className="simulation-toolbar">
               <div><h1>Simulador</h1><p>Manta · población sintética</p></div>
-              <div className="simulation-tools">
+
+            </div>
+            <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'}><section className="visualizer-tools" aria-label="Controles de la red">              <div className="simulation-tools">
                 <label className="simulation-layer"><span>Tipo de contacto</span>
                   <select value={layer} onChange={(event) => setLayer(event.target.value)}>
                     {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
                 <button type="button" className="plain-action" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} /> Centrar red</button>
-              </div>
-            </div>
-            <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'}>{parameterPanel}</ContactNetwork>
+              </div></section>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : (

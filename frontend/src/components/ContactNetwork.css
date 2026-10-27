@@ -29,8 +29,8 @@
 .dark .visualizer-view-selector button:hover { background: var(--accent); color: var(--accent-foreground); }
 .simulator-workbench.network-workbench {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.9fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
   align-items: stretch;
   background: transparent;
   container-type: normal;
@@ -512,4 +512,45 @@
   .simulator-workbench .temporal-series-legend {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* The simulation is the primary workspace; controls share one compact rail. */
+.minimal-workspace .simulation-main { max-width: none; padding: 16px; }
+.minimal-workspace .simulation-toolbar { margin-bottom: 12px; }
+.minimal-workspace .simulation-toolbar > div { display: flex; align-items: baseline; gap: 16px; }
+.minimal-workspace .simulation-toolbar p { margin: 0; }
+.simulator-workbench .network-demo-heading { padding: 12px 16px; }
+.simulator-workbench .network-meaning { padding: 0 16px 12px; font-size: 14px; }
+.simulator-workbench .seir-instrument { padding: 0 16px 12px; gap: 8px; }
+.simulator-workbench .seir-instrument > div { grid-template-rows: 20px 28px; gap: 2px; padding: 0; }
+.simulator-workbench .seir-instrument strong { font-size: 24px; line-height: 28px; }
+.simulator-workbench .simulator-control-column {
+  gap: 0;
+  border: 1px solid #dbe4dd;
+  border-radius: 8px;
+  background: #fff;
+  overflow: clip;
+}
+.simulator-workbench .simulator-control-column > * { border: 0; border-radius: 0; }
+.simulator-workbench .simulator-control-column > * + * { border-top: 1px solid #dbe4dd; }
+.simulator-workbench .temporal-chart-panel { padding: 16px; }
+.simulator-workbench .temporal-chart-panel h3 { font-size: 18px; }
+.simulator-workbench .network-layout-control { margin: 0; padding: 16px; }
+.minimal-workspace .visualizer-tools { padding: 16px; }
+.minimal-workspace .visualizer-tools .simulation-tools { flex-wrap: wrap; gap: 12px; }
+.minimal-workspace .visualizer-tools .simulation-layer { flex: 1; flex-direction: column; align-items: stretch; }
+.simulator-workbench .demo-playback-panel .network-playback { grid-template-columns: 1fr auto; gap: 12px; padding: 16px; border-top: 0; }
+.simulator-workbench .demo-playback-panel .playback-timeline { grid-column: 1 / -1; grid-row: auto; }
+.simulator-workbench .demo-playback-panel .playback-speed { grid-column: 1 / -1; }
+.simulator-workbench .real-playback .configuration-actions { gap: 8px; flex-wrap: wrap; }
+.simulator-workbench .real-playback select { max-width: 100%; }
+@media (min-width: 901px) {
+  .simulator-workbench.network-workbench { align-items: start; }
+  .simulator-workbench .network-demo-panel { position: sticky; top: 16px; height: max(680px, calc(100dvh - 160px)); }
+  .simulator-workbench .network-view { min-height: 0; }
+  .simulator-workbench .node-inspector { max-height: 240px; overflow: auto; flex-shrink: 0; }
+}
+@media (max-width: 900px) {
+  .minimal-workspace .simulation-toolbar > div { flex-wrap: wrap; gap: 4px 16px; }
+  .simulator-workbench .network-view { flex: auto; height: 58dvh; min-height: 360px; }
 }

@@ -422,88 +422,6 @@ function DemoContactNetwork({
             Arrastrar · ampliar · seleccionar
           </p>
         </div>
-      <div
-        className="network-playback"
-        aria-label="Reproductor de demostración temporal"
-        aria-describedby="network-playback-status"
-      >
-        <div className="playback-time">
-          <span>Día actual</span>
-          <strong data-testid="playback-day">
-            {playback.day} <small>/ {temporalDemo.days}</small>
-          </strong>
-        </div>
-        <div className="playback-actions">
-          <Button
-            variant="ghost"
-            disabled={playback.playing}
-            aria-label="Reproducir demostración"
-            onClick={() => dispatch({ type: "play" })}
-          >
-            <Play size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={!playback.playing}
-            aria-label="Pausar demostración"
-            onClick={() => dispatch({ type: "pause" })}
-          >
-            <Pause size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            aria-label="Reiniciar demostración"
-            onClick={() => dispatch({ type: "reset" })}
-          >
-            <RotateCcw size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            disabled={playback.day === temporalDemo.days}
-            aria-label="Avanzar un día"
-            onClick={() => dispatch({ type: "step" })}
-          >
-            <StepForward size={16} />
-          </Button>
-        </div>
-        <label className="playback-timeline">
-          <span>
-            {playback.playing
-              ? "Reproduciendo"
-              : playback.day === temporalDemo.days
-                ? "Finalizada"
-                : "Día de la demo"}
-          </span>
-          <input
-            aria-label="Día de la demostración"
-            type="range"
-            min="0"
-            max={temporalDemo.days}
-            value={playback.day}
-            onChange={(event) =>
-              dispatch({ type: "seek", day: Number(event.target.value) })
-            }
-          />
-        </label>
-        <label className="playback-speed">
-          <span>Velocidad</span>
-          <select
-            aria-label="Velocidad de reproducción"
-            value={playback.speed}
-            onChange={(event) =>
-              dispatch({ type: "speed", value: Number(event.target.value) })
-            }
-          >
-            <option value="0.5">0,5×</option>
-            <option value="1">1×</option>
-            <option value="2">2×</option>
-            <option value="4">4×</option>
-          </select>
-        </label>
-      </div>
-        <p className="network-playback-status" id="network-playback-status">
-          Demo independiente de los parámetros.
-        </p>
         <details
           className="node-inspector"
           open={Boolean(detail)}
@@ -624,6 +542,90 @@ function DemoContactNetwork({
         </details>
       </section>
       <div className="simulator-control-column">
+        <section className="demo-playback-panel" aria-label="Controles de la demostración">
+      <div
+        className="network-playback"
+        aria-label="Reproductor de demostración temporal"
+        aria-describedby="network-playback-status"
+      >
+        <div className="playback-time">
+          <span>Día actual</span>
+          <strong data-testid="playback-day">
+            {playback.day} <small>/ {temporalDemo.days}</small>
+          </strong>
+        </div>
+        <div className="playback-actions">
+          <Button
+            variant="ghost"
+            disabled={playback.playing}
+            aria-label="Reproducir demostración"
+            onClick={() => dispatch({ type: "play" })}
+          >
+            <Play size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            disabled={!playback.playing}
+            aria-label="Pausar demostración"
+            onClick={() => dispatch({ type: "pause" })}
+          >
+            <Pause size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            aria-label="Reiniciar demostración"
+            onClick={() => dispatch({ type: "reset" })}
+          >
+            <RotateCcw size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            disabled={playback.day === temporalDemo.days}
+            aria-label="Avanzar un día"
+            onClick={() => dispatch({ type: "step" })}
+          >
+            <StepForward size={16} />
+          </Button>
+        </div>
+        <label className="playback-timeline">
+          <span>
+            {playback.playing
+              ? "Reproduciendo"
+              : playback.day === temporalDemo.days
+                ? "Finalizada"
+                : "Día de la demo"}
+          </span>
+          <input
+            aria-label="Día de la demostración"
+            type="range"
+            min="0"
+            max={temporalDemo.days}
+            value={playback.day}
+            onChange={(event) =>
+              dispatch({ type: "seek", day: Number(event.target.value) })
+            }
+          />
+        </label>
+        <label className="playback-speed">
+          <span>Velocidad</span>
+          <select
+            aria-label="Velocidad de reproducción"
+            value={playback.speed}
+            onChange={(event) =>
+              dispatch({ type: "speed", value: Number(event.target.value) })
+            }
+          >
+            <option value="0.5">0,5×</option>
+            <option value="1">1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+          </select>
+        </label>
+      </div>
+        <p className="network-playback-status" id="network-playback-status">
+          Demo independiente de los parámetros.
+        </p>
+        </section>
       <Suspense
         fallback={
           <p className="temporal-chart-loading">Cargando curva de la demo…</p>
