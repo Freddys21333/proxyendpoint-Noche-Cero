@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 27 de octubre de 2026
-**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación de base 2026-10-27: 324 pruebas backend, 101 frontend, Ruff/mypy/tipos/build correctos ([evidencia](../docs/evidencia/verificacion-base-2026-10-27.md)).
+**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación de base 2026-10-27: 324 pruebas backend, 111 frontend, Ruff/mypy/tipos/build correctos ([evidencia](../docs/evidencia/verificacion-base-2026-10-27.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -60,7 +60,7 @@ PRO permanece fuera de estas casillas base. El 2026-10-27 el usuario autorizó a
 
 ## 8. Pendientes PRO — planificación solicitada el 2026-10-27
 
-Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-roadmap.md) y, para el reparto por frentes y la trazabilidad, en [pro-workstreams.md](pro-workstreams.md). Estas casillas separan planificación de implementación y no cierran las tareas base ni el resto de PRO.
+Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-roadmap.md) y, para el reparto por frentes y la trazabilidad, en [pro-workstreams.md](pro-workstreams.md). El orden de ejecución, el protocolo de commits y la bitácora están en el [plan de iteraciones PRO](../docs/plan-pro-iteraciones.md). Estas casillas separan planificación de implementación y no cierran las tareas base ni el resto de PRO.
 
 - [x] **P-01 — Llegadas diarias e inventario.** Verificado localmente. Calendario normalizado, recepción antes de uso, acumulación, límites físicos/monetarios, una dosis por persona, saldo diario y `inventory.csv`. [Contrato, límites y evidencia](p01-resource-schedule.md). No incluye caducidad, cancelación de entregas durante ejecución ni recursos adicionales fuera de dosis/insumos de brigadas.
 - [ ] **P-02 — Decisiones adaptativas al brote.** En progreso, parcial. Ya se recalculan destinatarios de brigadas; faltan reglas generales, observabilidad, motivos y comparación reproducible.

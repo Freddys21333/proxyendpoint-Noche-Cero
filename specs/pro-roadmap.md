@@ -2,7 +2,7 @@
 
 Estado documental: **borrador de implementación**, actualizado el 2026-10-27 a petición del usuario. Esta revisión registra alcance y pendientes; no implementa nuevos comportamientos, ejecuta lotes AWS ni declara calibración real disponible. Los pendientes base T-17..T-23 conservan su estado. P-09 quedó registrado y verificado localmente como presentación en esta fecha.
 
-Para repartir el trabajo en paralelo entre lógica backend y experiencia frontend, consultar la [división de frentes PRO](pro-workstreams.md). Esta guía complementa las tareas de abajo; no cambia su alcance ni sus estados.
+Para repartir el trabajo en paralelo entre lógica backend y experiencia frontend, consultar la [división de frentes PRO](pro-workstreams.md). El orden acordado, la aceptación por iteración y el protocolo de commits están en el [plan de iteraciones PRO](../docs/plan-pro-iteraciones.md). Esta guía complementa las tareas de abajo; no cambia su alcance ni sus estados.
 
 ## 1. Correspondencia y estado actual
 

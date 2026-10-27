@@ -18,7 +18,7 @@ Health/config y el botón **Consultar red** usan la API real. El formulario mues
 
 Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
 
-Verificado el 2026-10-27: build/tipos, **101 pruebas frontend** (incluye mapa y procedencia geográfica) y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md). Verificación de base: [`docs/evidencia/verificacion-base-2026-10-27.md`](../docs/evidencia/verificacion-base-2026-10-27.md).
+Verificado el 2026-10-27: build/tipos, **111 pruebas frontend** (incluye mapa y procedencia geográfica) y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md). Verificación de base: [`docs/evidencia/verificacion-base-2026-10-27.md`](../docs/evidencia/verificacion-base-2026-10-27.md); conteo vigente y benchmark en la [auditoría PRO](../docs/evidencia/auditoria-pro-2026-10-27.md).
 
 ## Shared real-simulation playback
 

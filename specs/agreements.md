@@ -148,7 +148,7 @@ S3 de estado es infraestructura de administración y no agrega persistencia de r
 
 ## 8. Comprobaciones externas que no se pueden declarar resueltas
 
-Se mantiene `us-east-2` como decisión técnica existente; la aceptación por la organización no está demostrada. No cambiar a us-east-1 por inferencia. También faltan comprobar acceso real para Terraform/IAM/Amplify, cuotas Lambda/API, método de conexión GitHub y entrega de alertas del Budget en la cuenta simplificada.
+Se mantiene `us-east-2` como decisión técnica; el enunciado no exige `us-east-1`. La viabilidad real de cuenta, región, permisos y cuotas se comprueba en T-17 antes de desplegar. También faltan comprobar acceso real para Terraform/IAM/Amplify, cuotas Lambda/API, método de conexión GitHub y entrega de alertas del Budget en la cuenta simplificada.
 
 Estas son verificaciones operativas de T-17, no dudas del contrato. No requieren esperar para programar localmente. No crear recursos ni activar pago/características avanzadas para cerrarlas sin autorización. Mantener evidencia Budget como provisional hasta comprobar notificación.
 

@@ -14,6 +14,8 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [Protocolo científico T-22 preparado](specs/validation/t22-v1/README.md).
 - [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
+- [Auditoría PRO de partida](docs/evidencia/auditoria-pro-2026-10-27.md).
+- [Plan de iteraciones PRO](docs/plan-pro-iteraciones.md): orden, aceptación, commits y contexto para agentes.
 - [Costos y evidencia pendiente](docs/costos.md).
 - [Instalación y verificación del backend](backend/README.md).
 - [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
@@ -40,7 +42,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es completar la validación integral y medir ese flujo (RF-15/CA-12). El protocolo T-22 v1 está preparado y congelado; su ejecución y resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es cerrar el rendimiento y ejecutar T-22 (I-01); después siguen P-02 y P-05. El protocolo T-22 v1 está preparado y congelado; su ejecución y resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
 
 ## Parámetros previstos
 
@@ -61,7 +63,7 @@ La configuración completa y las fórmulas están en el TRD. Estos valores ya pe
 
 ## AWS y pendientes técnicos
 
-Región prevista según PRD/TRD: `us-east-2`; el enunciado menciona `us-east-1` por confirmar, por lo que se debe verificar la aceptación de Ohio con la organización antes de desplegar.
+Región elegida: `us-east-2` (Ohio). El enunciado permite elegir la región; no se requiere confirmar `us-east-1`. La decisión se documentará en el runbook de despliegue y en la evidencia de AWS.
 
 El diagrama lógico está en la sección 2 del TRD. Falta exportar el diagrama de entrega a SVG y conservar su fuente editable. También están pendientes la URL pública, resultados, benchmark y estimación mensual.
 
@@ -79,4 +81,4 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
-Todas las funciones PRO están **no iniciadas**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos.
+PRO tiene **P-01 y P-09 verificados localmente**; **P-02 y P-07 están en progreso parcial**; **P-03, P-04, P-05, P-06 y P-08 siguen pendientes**. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
