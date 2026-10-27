@@ -9,6 +9,7 @@ export type ConfigurationInput = {
 }
 
 type Metadata = { schemaVersion: '1.0'; engineVersion: string; requestId: string }
+export type PersonState = 'S' | 'E' | 'I' | 'R'
 export type Policy = 'none' | 'random' | 'targeted'
 export type CurveMetric = 's' | 'e' | 'i' | 'r' | 'cumulativeInfected'
 export type Stats = { n: number; mean: number | null; median: number | null; p05: number | null; p95: number | null }
@@ -25,7 +26,7 @@ export type CompareResponse = Metadata & {
   recommendation: { winner: Policy | 'tie'; confidence: 'descriptive' | 'supported' | 'inconclusive'; reasons: string[]; limitations: string[] };
   manifest: { experimentHash: string; engineVersion: string; schemaVersion: string; buildCommit: string; rootSeed: number; [key: string]: unknown };
   replicates: { index: number; policies: Record<Policy, { metrics: Record<Metric, number | null>; daily: unknown[]; selections: unknown[]; events: unknown[] | null; resultHash: string }> }[];
-  representative: { index: number; frames: Record<Policy, string[][]> | null; [key: string]: unknown };
+  representative: { index: number; frames: Record<Policy, PersonState[][]> | null; [key: string]: unknown };
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
 export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: Record<string, number>; generatorDescription: string }
@@ -60,7 +61,7 @@ function validStats(value: unknown, n: number, censored = false): boolean {
   const count = value.n
   return ['mean', 'median', 'p05', 'p95'].every(key => count === 0 ? value[key] === null : finite(value[key]))
 }
-function completeComparison(data: Record<string, unknown>, configuration: ConfigurationInput, graphHash: string): boolean {
+function completeComparison(data: Record<string, unknown>, configuration: ConfigurationInput, graphHash: string, includeFrames: boolean): boolean {
   const n = configuration.repetitions, days = configuration.scenario.days + 1
   if (data.graphHash !== graphHash || !containsRequested(data.configuration, configuration) || !object(data.progress) || data.progress.replicatesTotal !== n || data.progress.replicatesSucceeded !== n || data.progress.replicatesFailed !== 0) return false
   if (!Array.isArray(data.replicates) || data.replicates.length !== n || !object(data.aggregatedCurves) || !object(data.summaryByPolicy)) return false
@@ -76,7 +77,27 @@ function completeComparison(data: Record<string, unknown>, configuration: Config
   if (!['targetedWinRateVsNone', 'targetedWinRateVsRandom'].every(key => finite(paired[key]) && paired[key] >= 0 && paired[key] <= 1) || (n < 30 && rec.confidence !== 'descriptive')) return false
   const comparisons = [paired.savedVsNone.random, paired.savedVsNone.targeted, paired.gainVsRandom]
   if (!comparisons.every(c => object(c) && Array.isArray(c.values) && c.values.length === n && c.values.every(finite) && ['mean', 'median', 'p05', 'p95'].every(k => finite(c[k])) && (n < 30 ? c.bootstrap === null : object(c.bootstrap) && c.bootstrap.level === 0.95 && c.bootstrap.resamples === 2000 && finite(c.bootstrap.lower) && finite(c.bootstrap.upper) && c.bootstrap.lower <= c.bootstrap.upper))) return false
-  return object(data.manifest) && typeof data.manifest.experimentHash === 'string' && /^sha256:[0-9a-f]{64}$/.test(data.manifest.experimentHash) && data.manifest.engineVersion === data.engineVersion && data.manifest.schemaVersion === data.schemaVersion && data.manifest.rootSeed === configuration.rootSeed && typeof data.manifest.buildCommit === 'string' && object(data.representative) && finite(data.representative.index) && Number.isInteger(data.representative.index) && data.representative.index >= 0 && data.representative.index < n && data.representative.frames === null
+  return object(data.manifest) && typeof data.manifest.experimentHash === 'string' && /^sha256:[0-9a-f]{64}$/.test(data.manifest.experimentHash) && data.manifest.engineVersion === data.engineVersion && data.manifest.schemaVersion === data.schemaVersion && data.manifest.rootSeed === configuration.rootSeed && typeof data.manifest.buildCommit === 'string' && object(data.representative) && finite(data.representative.index) && Number.isInteger(data.representative.index) && data.representative.index >= 0 && data.representative.index < n && (includeFrames ? validFrames(data, configuration) : data.representative.frames === null)
+}
+
+function validFrames(data: Record<string, unknown>, configuration: ConfigurationInput): boolean {
+  if (!object(data.representative) || !object(data.representative.frames) || !object(data.graph) || !Array.isArray(data.graph.nodes) || data.graph.nodes.length !== configuration.scenario.populationSize || !Array.isArray(data.replicates)) return false
+  const frames = data.representative.frames
+  const rep = data.replicates[Number(data.representative.index)]
+  if (!object(rep) || !object(rep.policies)) return false
+  const results = rep.policies
+  // Frame position is nodeId; reject a graph that would mislabel people.
+  if (!data.graph.nodes.every((node, id) => object(node) && node.id === id)) return false
+  return policies.every(policy => {
+    const series = frames[policy], result = results[policy]
+    if (!Array.isArray(series) || series.length !== configuration.scenario.days + 1 || !object(result) || !Array.isArray(result.daily)) return false
+    const daily = result.daily
+    return series.every((frame, day) => {
+      if (!Array.isArray(frame) || frame.length !== configuration.scenario.populationSize || !frame.every(state => ['S', 'E', 'I', 'R'].includes(state))) return false
+      const row = daily[day]
+      return object(row) && row.day === day && ['S', 'E', 'I', 'R'].every(state => row[state.toLowerCase()] === frame.filter(value => value === state).length)
+    })
+  })
 }
 
 export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) {
@@ -102,10 +123,18 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     }
     return data as T
   }
+  const compare = (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false) => request<CompareResponse>('/simulations/compare', {
+    method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration, expectedGraphHash: graphHash, includeRepresentativeFrames: includeFrames }),
+  }, data => completeComparison(data, configuration, graphHash, includeFrames))
   return {
-    compare: (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal) => request<CompareResponse>('/simulations/compare', {
-      method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration, expectedGraphHash: graphHash, includeRepresentativeFrames: false }),
-    }, data => completeComparison(data, configuration, graphHash)),
+    compare,
+    compareForPlayback: async (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal) => {
+      try { return await compare(configuration, graphHash, signal, true) }
+      catch (error) {
+        if (signal?.aborted || !(error instanceof ApiError) || error.status !== 413 || !['FRAMES_TOO_LARGE', 'RESULT_TOO_LARGE'].includes(error.code)) throw error
+        return compare(configuration, graphHash, signal)
+      }
+    },
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
     config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, data => object(data.defaults) && object(data.limits)),
     preview: (configuration: ConfigurationInput, signal?: AbortSignal) => request<PreviewResponse>('/scenarios/preview', {

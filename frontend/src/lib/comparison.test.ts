@@ -46,3 +46,49 @@ for (const field of ['curve', 'replicate', 'summary', 'hash'] as const) {
     await assert.rejects(createApiClient('/v1', fetcher).compare(source.configuration, requestedHash), /respuesta|contrato/i)
   })
 }
+
+const animatedFixture = (): CompareResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response.json', import.meta.url), 'utf8'))
+
+test('animation requests and accepts complete representative frames', async () => {
+  const source = animatedFixture()
+  let sent: Record<string, unknown> = {}
+  const fetcher: typeof fetch = async (_url, init) => { sent = JSON.parse(String(init?.body)); return Response.json(source) }
+  const result = await createApiClient('/v1', fetcher).compare(source.configuration, source.graphHash, undefined, true)
+  assert.equal(sent.includeRepresentativeFrames, true)
+  assert.deepEqual(result.representative.frames, source.representative.frames)
+})
+
+for (const defect of ['missing', 'day', 'person', 'state', 'count', 'nodeId'] as const) {
+  test(`rejects representative animation with invalid ${defect}`, async () => {
+    const source = animatedFixture()
+    const frames = source.representative.frames!
+    if (defect === 'missing') source.representative.frames = null
+    if (defect === 'day') frames.targeted.pop()
+    if (defect === 'person') frames.random[0].pop()
+    if (defect === 'state') (frames.none[0] as string[])[0] = 'UNKNOWN'
+    if (defect === 'count') frames.none[0][0] = frames.none[0][0] === 'S' ? 'I' : 'S'
+    if (defect === 'nodeId') source.graph.nodes[0].id = 999
+    await assert.rejects(createApiClient('/v1', async () => Response.json(source)).compare(source.configuration, source.graphHash, undefined, true), /contrato/i)
+  })
+}
+
+test('frame-size rejection retries without animation but preserves real comparison', async () => {
+  const source = fixture()
+  const requests: boolean[] = []
+  const client = createApiClient('/v1', async (_url, init) => {
+    const sent = JSON.parse(String(init?.body))
+    requests.push(sent.includeRepresentativeFrames)
+    return sent.includeRepresentativeFrames ? Response.json({ error: { code: 'FRAMES_TOO_LARGE', message: 'Límite de frames' } }, { status: 413 }) : Response.json(source)
+  })
+  const result = await client.compareForPlayback(source.configuration, source.graphHash)
+  assert.deepEqual(requests, [true, false])
+  assert.equal(result.representative.frames, null)
+})
+
+test('contract errors are not retried as a comparison without animation', async () => {
+  const source = fixture()
+  let requests = 0
+  const client = createApiClient('/v1', async () => { requests++; return Response.json(source) })
+  await assert.rejects(client.compareForPlayback(source.configuration, source.graphHash), /contrato/i)
+  assert.equal(requests, 1)
+})

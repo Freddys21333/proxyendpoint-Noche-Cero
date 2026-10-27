@@ -1,4 +1,4 @@
-import type { PreviewResponse } from './api.ts'
+import type { PreviewResponse, PersonState } from './api.ts'
 import type { DemoState } from './contact-network.ts'
 
 export const contextLayers: Record<string, string> = {
@@ -6,12 +6,12 @@ export const contextLayers: Record<string, string> = {
   Neighborhoods: 'neighborhood', 'Bus routes': 'bus',
 }
 
-export function previewNetwork(preview: PreviewResponse, layer: string) {
+export function previewNetwork(preview: PreviewResponse, layer: string, day = 0, frame?: PersonState[]) {
   const context = contextLayers[layer]
   if (layer !== 'All layers' && !context) throw new Error('Unknown contact layer')
   const initial = new Set(preview.initialInfectiousNodeIds)
   const positions = new Map(preview.positions.map(p => [p.nodeId, p]))
-  const edges = preview.graph.edges.filter(e => e.activeDays.includes(0) && (!context || e.context === context))
+  const edges = preview.graph.edges.filter(e => e.activeDays.includes(day) && (!context || e.context === context))
     .map(e => ({ data: { id: `edge-${e.id}`, source: String(e.u), target: String(e.v), context: e.context } }))
   const neighbors: Record<string, string[]> = {}
   const sets = new Map<number, Set<number>>()
@@ -26,10 +26,10 @@ export function previewNetwork(preview: PreviewResponse, layer: string) {
     const position = positions.get(node.id)
     if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) throw new Error('Missing graph position')
     neighbors[String(node.id)] = [...(sets.get(node.id) ?? [])].sort((a, b) => a - b).map(String)
-    return { data: { id: String(node.id), state: (initial.has(node.id) ? 'I' : 'S') as DemoState,
+    return { data: { id: String(node.id), state: (frame ? frame[node.id] : initial.has(node.id) ? 'I' : 'S') as DemoState,
       initial: initial.has(node.id) ? 1 : 0, inLayer: !context || sets.has(node.id) },
       position: { x: position.x * radius, y: position.y * radius } }
   })
   return { nodes, edges, elements: [...nodes, ...edges], neighbors,
-    counts: { S: nodes.length - initial.size, E: 0, I: initial.size, R: 0 } }
+    counts: { S: nodes.filter(n => n.data.state === 'S').length, E: nodes.filter(n => n.data.state === 'E').length, I: nodes.filter(n => n.data.state === 'I').length, R: nodes.filter(n => n.data.state === 'R').length } }
 }

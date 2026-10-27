@@ -51,3 +51,14 @@ Prueba adicional por HTTP con N=50/T=3/R=30: 30 réplicas válidas, bootstrap de
 ### Corrección local de cierres de conexión (I-04.1)
 
 Se observó ConnectionAbortedError/WinError 10053 al revisar el servidor local durante cancelaciones. El puente ahora captura ConnectionError al enviar tanto cabeceras como cuerpo; incluye cierre abortado, reset y broken pipe. No altera handlers, resultados ni límites. La nueva prueba inyecta el aborto en end_headers, exige ausencia de error no manejado y verifica una petición siguiente correcta. Contra la versión anterior del script falló (errors=[True]); restaurada la corrección, pasó. Resultado específico servidor+API: 33 pruebas aprobadas; lint y mypy correctos. El archivo anterior se probó temporalmente y se restauró automáticamente; no se publicaron pruebas rotas.
+
+
+## I-05 — Animación de réplica representativa real
+
+Comparar solicita includeRepresentativeFrames=true. El cliente comprueba días T+1, población N, estados S/E/I/R, IDs indexados y correspondencia con daily en las tres políticas. Rechaza datos incompletos o incoherentes. Ante límites 413 de frames/resultado reintenta sin frames; la comparación sigue siendo real y el simulador explica la ausencia de animación. Otros errores no se ocultan ni se reintentan con datos de demo.
+
+El simulador muestra la réplica seleccionada por el backend, con índice desde 0 y semilla raíz. Permite estrategia, día, velocidad, reproducir, pausar, siguiente y reiniciar. Colores y conteos vienen de frames; aristas visibles de activeDays y filtro de contexto. Mantiene coordenadas y la instancia/zoom de Cytoscape al cambiar día. El inspector lee el estado del día; R identifica recuperación o inmunización sin atribuir una causa inventada. Editar invalida comparación/frames y los temporizadores se limpian al pausar/desmontar. El JSON exportado incluye los frames recibidos.
+
+Verificación unitaria: 33 pruebas frontend aprobadas (23 previas + 10 de validación de animación, adaptación de estados/calendario y alternativa por límite de tamaño). Build y TypeScript correctos. Fixtures unitarios son contratos de prueba, no evidencia científica.
+
+Navegador con API real N=50/T=10/K=10/R=2 y semilla 20261026: representativa índice 0. Dirigida día 0 S39/E0/I1/R10 y 204 contactos activos; día 10 S35/E1/I2/R12 y 194 contactos. Sin intervención día 10 S40/E5/I3/R2. Se comprobó cambio de estrategia conservando día, retroceso exacto, reproducción hasta el final, reinicio y pausa en día 7 (S45/E2/I2/R1 sin intervención). No se cambia generación, motor científico ni disposición circular. ZIP CSV y explicación de selección de cada vacuna siguen pendientes; no hay despliegue AWS.

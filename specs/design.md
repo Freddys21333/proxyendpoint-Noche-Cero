@@ -200,3 +200,6 @@ El contrato normativo completo está en [agreements.md](agreements.md): calendar
 | D-08 | Diseño resuelto: ZIP Linux, handlers, variables/outputs y estado Terraform S3; cuenta/región/Budget requieren comprobación externa | Acuerdos §7–8; comprobar en T-17 antes de desplegar |
 
 Los ejemplos de aceptación del anexo deben convertirse en pruebas TDD por módulo. No se marca implementación completa por haber decidido su contrato.
+
+
+Incremento I-05 (integración de visualización de RF-04): compareForPlayback solicita frames de la representativa y valida T+1 días, N estados válidos por política, IDs y coherencia con sus conteos diarios. Solo ante 413 FRAMES_TOO_LARGE/RESULT_TOO_LARGE reintenta sin frames; se conserva la comparación y se explica la ausencia de animación. PreviewNetwork reproduce los estados grabados sin simular ni promediar; adapta contactos por activeDays/capa y mantiene posiciones/zoom al avanzar. Controles de estrategia/día/velocidad/reproducción/pausa/reinicio, semilla e índice explícitos; edición de parámetros invalida también la trayectoria. La demo inicial y el preview sin intervención conservan sus etiquetas. Exportación JSON incluye frames cuando están disponibles. No añade ZIP CSV, layouts ni despliegue.

@@ -194,7 +194,7 @@ export default function App() {
     setView("results");
     setModal(null);
     try {
-      const result = await api.compare(remotePreview.configuration, remotePreview.graphHash, controller.signal);
+      const result = await api.compareForPlayback(remotePreview.configuration, remotePreview.graphHash, controller.signal);
       if (controller.signal.aborted) return;
       setComparison(result);
       setNotice("Comparación completada con resultados reales del motor.");
@@ -309,7 +309,7 @@ export default function App() {
               </div>
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} hasComparison={Boolean(comparison)}>{parameterPanel}</ContactNetwork>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : (
@@ -333,7 +333,7 @@ export default function App() {
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
             <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
             <p>{modal === "help"
-              ? "Consulta la red para ver tu población sintética y luego compara las tres estrategias con el motor real. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) son los estados SEIR. Los resultados muestran medias y dispersión entre réplicas; el grafo de preview representa solo el estado inicial."
+              ? "Consulta la red para ver tu población sintética y luego compara las tres estrategias con el motor real. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) son los estados SEIR. Los resultados muestran medias y dispersión entre réplicas; antes de comparar el grafo representa el estado inicial. Después puedes reproducir una réplica representativa real, cambiar de estrategia y recorrer sus días. Esa trayectoria no es el promedio."
               : modal === "run"
                 ? "La red se calculó en el servidor con tus parámetros. El explorador muestra esta red real y su estado inicial; todavía no se ejecutó una comparación."
                 : comparison ? "Descarga el experimento completo con parámetros, versiones, semillas y resultados reproducibles." : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>

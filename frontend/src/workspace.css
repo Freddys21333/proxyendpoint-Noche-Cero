@@ -2983,3 +2983,8 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .comparison-table-scroll th, .comparison-table-scroll td { padding: 0.6rem; text-align: left; border-bottom: 1px solid var(--line, #dce2da); }
 .experiment-hash { overflow-wrap: anywhere; font-size: 0.85rem; }
 .configuration-actions { flex-wrap: wrap; }
+
+.real-playback label { display: grid; gap: .5rem; margin: .75rem 0; }
+.real-playback select { width: 100%; padding: .5rem; border: 1px solid #cbd5cf; border-radius: .4rem; background: white; }
+.real-playback input[type="range"] { width: 100%; accent-color: #173e32; }
+.real-playback .configuration-actions { gap: .5rem; }

@@ -34,3 +34,22 @@ test('layers show only active day-zero contacts, preserving parallel contexts', 
   assert.deepEqual(previewNetwork(source, 'All layers').neighbors['0'], ['1'])
   assert.equal(homes.nodes.find(n => n.data.id === '2')?.data.inLayer, false)
 })
+
+test('playback uses actual person states and the selected day contact schedule', () => {
+  const source = fixture()
+  source.graph.edges = [
+    { id: 0, u: 0, v: 1, context: 'school', weight: 1, activeDays: [0] },
+    { id: 1, u: 1, v: 2, context: 'market', weight: 1, activeDays: [1] },
+  ]
+  const frame = source.graph.nodes.map(() => 'S' as 'S' | 'E' | 'I' | 'R')
+  frame[0] = 'R'; frame[1] = 'E'; frame[2] = 'I'
+  const before = JSON.stringify(source)
+  const graph = previewNetwork(source, 'All layers', 1, frame)
+  assert.deepEqual(graph.nodes.slice(0, 3).map(node => node.data.state), ['R', 'E', 'I'])
+  assert.deepEqual(graph.counts, { S: frame.length - 3, E: 1, I: 1, R: 1 })
+  assert.deepEqual(graph.edges.map(edge => edge.data.id), ['edge-1'])
+  assert.deepEqual(graph.neighbors['1'], ['2'])
+  assert.equal(previewNetwork(source, 'Schools', 1, frame).edges.length, 0)
+  assert.deepEqual(graph.nodes.map(node => node.position), previewNetwork(source, 'All layers').nodes.map(node => node.position))
+  assert.equal(JSON.stringify(source), before)
+})
