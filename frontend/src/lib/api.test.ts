@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { readFileSync } from 'node:fs'
 import type { PreviewResponse, ConfigResponse } from './api.ts'
-import { createApiClient, toConfiguration } from './api.ts'
+import { createApiClient, createJobCredentials, toConfiguration } from './api.ts'
 import { defaults } from './scenario.ts'
 
 test('scenario maps to the shared backend request without mutating UI inputs', () => {
@@ -122,4 +122,52 @@ test('API client sends canonical resource deliveries without changing the caller
   })
   await client.preview(request)
   assert.equal(JSON.stringify(request), before)
+})
+
+
+const jobFixture = () => JSON.parse(readFileSync(new URL('../../../schemas/examples/job-status-response.json', import.meta.url), 'utf8'))
+test('job credentials use independent random tokens and idempotency keys', () => {
+  const a = createJobCredentials(), b = createJobCredentials()
+  assert.match(a.token, /^[0-9a-f]{64}$/)
+  assert.notEqual(a.token, b.token)
+  assert.notEqual(a.idempotencyKey, b.idempotencyKey)
+})
+test('job client sends credentials only in headers and forwards abort signals', async () => {
+  const source = jobFixture(), credentials = createJobCredentials(), controller = new AbortController()
+  const wire = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-create-request.json', import.meta.url), 'utf8'))
+  const client = createApiClient('/v1', async (url, init) => {
+    assert.equal(String(url).includes(credentials.token), false)
+    const headers = new Headers(init?.headers)
+    assert.equal(headers.get('X-Job-Token'), credentials.token)
+    assert.equal(init?.signal, controller.signal)
+    if (url === '/v1/jobs') {
+      assert.equal(headers.get('Idempotency-Key'), credentials.idempotencyKey)
+      assert.equal(String(init?.body).includes(credentials.token), false)
+      assert.equal(JSON.parse(String(init?.body)).configuration.repetitions, 31)
+    }
+    return Response.json(source, { status: url === '/v1/jobs' ? 202 : 200 })
+  })
+  await client.createJob(wire.configuration, wire.expectedGraphHash, credentials, controller.signal)
+  await client.jobStatus(source.jobId, credentials.token, controller.signal)
+})
+test('job client rejects impossible progress, incomplete completion and missing manifests', async () => {
+  for (const mutate of [
+    value => { value.progress.replicatesCompleted = 32 },
+    value => { value.status = 'completed' },
+    value => { value.manifest.replicates.pop() },
+    value => { value.jobId = 'wrong' },
+    value => { value.manifest.replicates[0].initialSeedEntropy[1] = 5 },
+  ] as ((value: ReturnType<typeof jobFixture>) => void)[]) {
+    const source = jobFixture(), id = source.jobId
+    mutate(source)
+    const client = createApiClient('/v1', async () => Response.json(source))
+    await assert.rejects(client.jobStatus(id, 'a'.repeat(64)), /contrato/)
+  }
+})
+test('cancelling through the client requires a terminal response', async () => {
+  const source = jobFixture()
+  const client = createApiClient('/v1', async () => Response.json(source, { status: 202 }))
+  await assert.rejects(client.cancelJob(source.jobId, 'a'.repeat(64)), /contrato/)
+  source.status = 'cancelled'
+  assert.equal((await client.cancelJob(source.jobId, 'a'.repeat(64))).status, 'cancelled')
 })

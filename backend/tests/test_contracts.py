@@ -48,7 +48,7 @@ def replace_at(document: Any, path: str, value: Any) -> Any:
     return result
 
 
-def test_openapi_is_valid_and_only_exposes_base_routes() -> None:
+def test_openapi_is_valid_and_exposes_base_and_local_job_routes() -> None:
     path = SCHEMAS / "openapi.yaml"
     specification = yaml.safe_load(path.read_text(encoding="utf-8"))
     validate(specification, base_uri=path.as_uri())
@@ -59,6 +59,10 @@ def test_openapi_is_valid_and_only_exposes_base_routes() -> None:
         "/config",
         "/scenarios/preview",
         "/simulations/compare",
+        "/jobs",
+        "/jobs/{jobId}",
+        "/jobs/{jobId}/cancel",
+        "/jobs/{jobId}/result",
     }
 
 

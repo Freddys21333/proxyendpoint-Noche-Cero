@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "configuration": {
+    "rootSeed": 20261026,
+    "networkMode": "fixed",
+    "repetitions": 31,
+    "scenario": {
+      "populationSize": 50,
+      "days": 1,
+      "beta": 0.0,
+      "sigma": 0.333333,
+      "gamma": 0.142857,
+      "initialInfectious": 1,
+      "origin": {
+        "kind": "random",
+        "value": null
+      }
+    },
+    "intervention": {
+      "vaccines": 5,
+      "interventionDay": 0,
+      "vaccineEfficacy": 1.0
+    },
+    "policies": [
+      "none",
+      "random",
+      "targeted"
+    ],
+    "network": {
+      "generatorVersion": "synthetic-manta-v1",
+      "dayZero": "monday",
+      "weights": {
+        "household": 1.0,
+        "school": 0.6,
+        "bus": 0.45,
+        "market": 0.5,
+        "neighborhood": 0.2
+      }
+    }
+  },
+  "expectedGraphHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "includeRepresentativeFrames": false
+}

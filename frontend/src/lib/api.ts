@@ -6,12 +6,15 @@ export type ResourceSchedule = { modelVersion: 'daily-inventory-v1'; vaccineDail
 export type InventoryDaily = { vaccinesDeliveredToday: number; vaccinesReceivedTotal: number; vaccinesUsedToday: number; vaccinesAvailable: number;
   brigadeSuppliesDeliveredToday: number; brigadeSuppliesReceivedTotal: number; brigadeSuppliesUsedToday: number; brigadeSuppliesAvailable: number }
 
+export type AdaptiveStrategy = { modelVersion: 'adaptive-policy-v1'; closureInfectionThreshold: number; reopenInfectionThreshold: number; ringVaccinationPriority: boolean; enabled?: boolean }
+export type AdaptiveDecisions = { enabled: boolean; triggers: string[]; infectiousFraction: number; closureActive: boolean | null; brigadesAllowed: boolean; ringVaccinationActive: boolean }
 export type CombinedPlan = {
   modelVersion: 'combined-educational-v1'; budgetCents: number; vaccineCostCents: number;
   closureCostCents: number; closureContext: 'household' | 'school' | 'bus' | 'market' | 'neighborhood';
   closureStart: number; closureDays: number; brigadeCostCents: number;
   brigadeDailyCapacity: number; brigadeReduction: number; brigadeStart: number; brigadeDays: number;
   resourceSchedule?: ResourceSchedule;
+  adaptiveStrategy?: AdaptiveStrategy;
 }
 export type CombinedDaily = { day: number; budgetRemainingCents: number; spentCents: number; spentTodayCents: number; closedContext: string | null; brigadesActive: number; brigadeNodeIds: number[] }
 
@@ -26,7 +29,7 @@ export type ConfigurationInput = {
 
 type Metadata = { schemaVersion: '1.0'; engineVersion: string; requestId: string }
 export type PersonState = 'S' | 'E' | 'I' | 'R'
-export type VaccinationSelection = { day: number; nodeId: number; score: number | null; rank: number; stateAtDecision: 'S'; contexts: string[]; tieBreak: 'nodeIdAsc' | 'seededRandom'; effective: boolean }
+export type VaccinationSelection = { day: number; nodeId: number; score: number | null; infectiousContacts?: number; rank: number; stateAtDecision: 'S'; contexts: string[]; tieBreak: 'nodeIdAsc' | 'seededRandom' | 'ringContact'; effective: boolean }
 export type Policy = 'none' | 'random' | 'targeted'
 export type CurveMetric = 's' | 'e' | 'i' | 'r' | 'cumulativeInfected'
 export type Stats = { n: number; mean: number | null; median: number | null; p05: number | null; p95: number | null }
@@ -47,7 +50,15 @@ export type CompareResponse = Metadata & {
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
 export type ServerLimits = Record<'maxRequestBytes' | 'maxResponseBytes' | 'maxDecodedResponseBytes' | 'maxEdges' | 'maxFrameStates', number>
-export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string }
+export type JobLimits = Record<'maxRepetitions' | 'maxConcurrent' | 'maxRetained' | 'retentionSeconds' | 'maxEdgeDayReplicates', number>
+export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string; features: { asyncJobs: boolean; representativeFrames: boolean }; jobLimits?: JobLimits }
+export type JobCredentials = { token: string; idempotencyKey: string }
+export type JobResponse = Metadata & { jobId: string; status: 'pending' | 'running' | 'aggregating' | 'completed' | 'failed' | 'cancelled'; createdAt: string; updatedAt: string; statusUrl: string; resultUrl: string;
+  progress: { replicatesTotal: number; replicatesCompleted: number; replicatesFailed: number }; error?: 'SIMULATION_FAILED' | 'RESULT_TOO_LARGE';
+  manifest: { modelVersion: 'local-jobs-v1'; configurationHash: string; graphHash: string; requestHash: string; rootSeed: number; engineVersion: string; rngVersion: 'rng-v1'; runtimeVersions: Record<string, unknown>; replicates: { index: number; initialSeedEntropy: number[] }[] } }
+export function createJobCredentials(): JobCredentials {
+  return { token: Array.from(crypto.getRandomValues(new Uint8Array(32)), n => n.toString(16).padStart(2, '0')).join(''), idempotencyKey: crypto.randomUUID() }
+}
 export type PreviewResponse = Metadata & {
   configuration: ConfigurationInput; graphHash: string; initialStateHash: string;
   graph: { generatorVersion: string; nodes: { id: number; role: string; householdId: string; neighborhoodId: string;
@@ -87,8 +98,17 @@ function validConfiguration(value: unknown): value is ConfigurationInput {
   return object(network) && network.generatorVersion === 'synthetic-manta-v1' && network.dayZero === 'monday' && object(network.weights) && contexts.every(key => object(network.weights) && finite(network.weights[key]) && network.weights[key] >= 0 && network.weights[key] <= 1)
 }
 function validConfig(data: Record<string, unknown>): boolean {
-  return validConfiguration(data.defaults) && object(data.limits) && ['maxRequestBytes', 'maxResponseBytes', 'maxDecodedResponseBytes', 'maxEdges', 'maxFrameStates'].every(key => object(data.limits) && integerIn(data.limits[key], 1, Number.MAX_SAFE_INTEGER)) && typeof data.generatorDescription === 'string'
+  return object(data.features) && typeof data.features.asyncJobs === 'boolean' && data.features.representativeFrames === true && (!data.features.asyncJobs || object(data.jobLimits) && ['maxRepetitions', 'maxConcurrent', 'maxRetained', 'retentionSeconds', 'maxEdgeDayReplicates'].every(key => object(data.jobLimits) && integerIn(data.jobLimits[key], 1, Number.MAX_SAFE_INTEGER))) && validConfiguration(data.defaults) && object(data.limits) && ['maxRequestBytes', 'maxResponseBytes', 'maxDecodedResponseBytes', 'maxEdges', 'maxFrameStates'].every(key => object(data.limits) && integerIn(data.limits[key], 1, Number.MAX_SAFE_INTEGER)) && typeof data.generatorDescription === 'string'
 }
+function validJob(data: Record<string, unknown>): boolean {
+  if (typeof data.jobId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(data.jobId) || !['pending', 'running', 'aggregating', 'completed', 'failed', 'cancelled'].includes(String(data.status)) || !['createdAt', 'updatedAt'].every(k => typeof data[k] === 'string' && Number.isFinite(Date.parse(data[k] as string))) || data.statusUrl !== `/v1/jobs/${data.jobId}` || data.resultUrl !== `/v1/jobs/${data.jobId}/result` || data.result !== undefined) return false
+  const p = data.progress, m = data.manifest
+  if (!object(p) || !integerIn(p.replicatesTotal, 2, 100) || !integerIn(p.replicatesCompleted, 0, Number(p.replicatesTotal)) || !integerIn(p.replicatesFailed, 0, 1) || Number(p.replicatesCompleted) + Number(p.replicatesFailed) > Number(p.replicatesTotal)) return false
+  if (data.status === 'completed' && (p.replicatesCompleted !== p.replicatesTotal || p.replicatesFailed !== 0)) return false
+  if (data.status === 'failed' ? !['SIMULATION_FAILED', 'RESULT_TOO_LARGE'].includes(String(data.error)) : data.error !== undefined) return false
+  return object(m) && m.modelVersion === 'local-jobs-v1' && hash(m.configurationHash) && hash(m.graphHash) && hash(m.requestHash) && integerIn(m.rootSeed, 0, 4294967295) && m.engineVersion === data.engineVersion && m.rngVersion === 'rng-v1' && object(m.runtimeVersions) && m.runtimeVersions.engineVersion === data.engineVersion && m.runtimeVersions.rngVersion === m.rngVersion && Array.isArray(m.replicates) && m.replicates.length === p.replicatesTotal && m.replicates.every((r, i) => object(r) && r.index === i && Array.isArray(r.initialSeedEntropy) && r.initialSeedEntropy.length === 10 && r.initialSeedEntropy[0] === m.rootSeed && r.initialSeedEntropy[1] === i && r.initialSeedEntropy.every(n => integerIn(n, 0, 4294967295)))
+}
+
 function validPreview(data: Record<string, unknown>, requested: ConfigurationInput, limits?: ServerLimits): boolean {
   if (!validConfiguration(data.configuration) || !containsRequested(data.configuration, requested) || !hash(data.graphHash) || !hash(data.initialStateHash) || !object(data.graph)) return false
   const { nodes, edges } = data.graph, positions = data.positions, initial = data.initialInfectiousNodeIds
@@ -143,8 +163,13 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
       if (!object(row) || row.day !== day || !integerIn(row.spentCents, 0, plan.budgetCents) || !integerIn(row.budgetRemainingCents, 0, plan.budgetCents) || !Array.isArray(row.brigadeNodeIds) || new Set(row.brigadeNodeIds).size !== row.brigadeNodeIds.length || !row.brigadeNodeIds.every(id => integerIn(id, 0, configuration.scenario.populationSize - 1)) || row.brigadesActive !== row.brigadeNodeIds.length || row.brigadeNodeIds.length > plan.brigadeDailyCapacity) return false
       const cost = rows.filter(selection => object(selection) && selection.day === day).length * plan.vaccineCostCents + row.brigadeNodeIds.length * plan.brigadeCostCents + (row.closedContext === null ? 0 : plan.closureCostCents)
       if (row.spentTodayCents !== cost || row.spentCents !== previous + cost || row.budgetRemainingCents !== plan.budgetCents - row.spentCents || policy === 'none' && cost !== 0) return false
-      if (row.closedContext !== null && (row.closedContext !== plan.closureContext || day < plan.closureStart || day >= plan.closureStart + plan.closureDays || day >= configuration.scenario.days)) return false
+      if (row.closedContext !== null && (row.closedContext !== plan.closureContext || (!(plan.adaptiveStrategy && plan.adaptiveStrategy.enabled !== false && policy === 'targeted') && (day < plan.closureStart || day >= plan.closureStart + plan.closureDays)) || day >= configuration.scenario.days)) return false
       if (row.brigadeNodeIds.length && (day < plan.brigadeStart || day >= plan.brigadeStart + plan.brigadeDays || day >= configuration.scenario.days)) return false
+      const adaptive = plan.adaptiveStrategy
+      if (adaptive) {
+        const d = row.adaptiveDecisions, enabled = policy === 'targeted' && adaptive.enabled !== false
+        if (!object(d) || d.enabled !== enabled || !finite(d.infectiousFraction) || !finite(row.i) || d.infectiousFraction !== row.i / configuration.scenario.populationSize || d.closureActive !== (enabled ? row.closedContext !== null : null) || d.brigadesAllowed !== (!enabled || row.i > 0) || d.ringVaccinationActive !== (enabled && adaptive.ringVaccinationPriority && row.i > 0) || !Array.isArray(d.triggers) || !d.triggers.every(r => typeof r === 'string' && ['closure_triggered_by_threshold', 'closure_budget_exhausted', 'reopen_triggered_by_threshold', 'no_infectious_hold_brigades', 'ring_vaccination_active', 'closure_no_active_contacts', 'vaccine_stock_empty', 'vaccine_capacity_zero', 'vaccine_budget_exhausted', 'vaccine_no_eligible', 'brigade_capacity_zero', 'brigade_stock_empty', 'brigade_budget_exhausted', 'brigade_no_eligible'].includes(r)) || new Set(d.triggers).size !== d.triggers.length || (!enabled && d.triggers.length)) return false
+      } else if (row.adaptiveDecisions !== undefined) return false
       previous = row.spentCents
       if (schedule) {
         const delivered = schedule.deliveries.filter(r => r.day === day), received = schedule.deliveries.filter(r => r.day <= day)
@@ -158,7 +183,7 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
       }
     }
   }
-  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && (schedule ? integerIn(row.day, interventionDay, configuration.scenario.days) : row.day === interventionDay) && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
+  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && (schedule ? integerIn(row.day, interventionDay, configuration.scenario.days) : row.day === interventionDay) && (row.infectiousContacts === undefined || integerIn(row.infectiousContacts, 0, 100000)) && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && (row.tieBreak === 'nodeIdAsc' || row.tieBreak === 'ringContact' && integerIn(row.infectiousContacts, 1, 100000) && !!plan?.adaptiveStrategy?.ringVaccinationPriority && plan.adaptiveStrategy.enabled !== false) : row.score === null && row.tieBreak === 'seededRandom'))) return false
   return new Set(rows.map(row => row.nodeId)).size === rows.length && new Set(rows.map(row => row.rank)).size === rows.length && metrics.vaccinesAssigned === rows.length && metrics.vaccinesEffective === rows.filter(row => row.effective).length && metrics.vaccinesUnused === vaccines - rows.length
 }
 
@@ -228,6 +253,13 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
         return compare(configuration, graphHash, signal, false, limits)
       }
     },
+    createJob: (configuration: ConfigurationInput, graphHash: string, credentials: JobCredentials, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<JobResponse>('/jobs', {
+      method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'X-Job-Token': credentials.token, 'Idempotency-Key': credentials.idempotencyKey },
+      body: JSON.stringify({ schemaVersion: '1.0', configuration: normalized(configuration), expectedGraphHash: graphHash, includeRepresentativeFrames: includeFrames }),
+    }, data => validJob(data) && object(data.progress) && data.progress.replicatesTotal === configuration.repetitions && object(data.manifest) && data.manifest.graphHash === graphHash && data.manifest.rootSeed === configuration.rootSeed, limits),
+    jobStatus: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}`, { signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId),
+    cancelJob: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST', signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId && ['completed', 'failed', 'cancelled'].includes(String(data.status))),
+    jobResult: (jobId: string, token: string, configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<CompareResponse>(`/jobs/${encodeURIComponent(jobId)}/result`, { signal, headers: { 'X-Job-Token': token } }, data => completeComparison(data, normalized(configuration), graphHash, includeFrames), limits),
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
     config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, validConfig),
     preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => {

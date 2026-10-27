@@ -53,6 +53,15 @@ class ResourceSchedule:
 
 
 @dataclass(frozen=True, slots=True)
+class AdaptiveStrategy:
+    model_version: Literal["adaptive-policy-v1"]
+    closure_infection_threshold: float
+    reopen_infection_threshold: float
+    ring_vaccination_priority: bool
+    enabled: bool = True
+
+
+@dataclass(frozen=True, slots=True)
 class CombinedIntervention:
     model_version: Literal["combined-educational-v1"]
     budget_cents: int
@@ -67,6 +76,7 @@ class CombinedIntervention:
     brigade_start: int
     brigade_days: int
     resource_schedule: ResourceSchedule | None = None
+    adaptive_strategy: AdaptiveStrategy | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,8 +118,11 @@ class Configuration:
         data: dict[str, Any] = _camelize(asdict(self))
         if self.intervention.combined is None:
             data["intervention"].pop("combined", None)
-        elif self.intervention.combined.resource_schedule is None:
-            data["intervention"]["combined"].pop("resourceSchedule", None)
+        else:
+            if self.intervention.combined.resource_schedule is None:
+                data["intervention"]["combined"].pop("resourceSchedule", None)
+            if self.intervention.combined.adaptive_strategy is None:
+                data["intervention"]["combined"].pop("adaptiveStrategy", None)
         return data
 
 

@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 from domain.errors import ConfigurationError, FieldIssue
 from domain.models import (
+    AdaptiveStrategy,
     CombinedIntervention,
     CompareRequest,
     Configuration,
@@ -147,11 +148,13 @@ def _float(value: int | float) -> float:
     return 0.0 if value == 0 else float(value)
 
 
-def normalize_configuration(payload: object = _OMITTED) -> Configuration:
+def normalize_configuration(payload: object = _OMITTED, *, for_jobs: bool = False) -> Configuration:
     """None explícito nunca equivale a configuración omitida."""
     if payload is _OMITTED:
         payload = {}
-    _validate(payload, "ConfigurationInput", "configuration")
+    _validate(
+        payload, "JobConfigurationInput" if for_jobs else "ConfigurationInput", "configuration"
+    )
     defaults = {
         key: prop["default"]
         for key, prop in _definitions()["ConfigurationInput"]["properties"].items()
@@ -251,6 +254,25 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                 for day, q in sorted(deliveries.items())
             ),
         )
+    adaptive_strategy: AdaptiveStrategy | None = None
+    if combined and combined.get("adaptiveStrategy"):
+        ad = combined["adaptiveStrategy"]
+        if ad["reopenInfectionThreshold"] > ad["closureInfectionThreshold"]:
+            _fail_validation(
+                [
+                    FieldIssue(
+                        "configuration.intervention.combined.adaptiveStrategy.reopenInfectionThreshold",
+                        "El umbral de reapertura no puede superar el de cierre.",
+                    )
+                ]
+            )
+        adaptive_strategy = AdaptiveStrategy(
+            model_version="adaptive-policy-v1",
+            closure_infection_threshold=_float(ad.get("closureInfectionThreshold", 0.05)),
+            reopen_infection_threshold=_float(ad.get("reopenInfectionThreshold", 0.02)),
+            ring_vaccination_priority=bool(ad.get("ringVaccinationPriority", True)),
+            enabled=bool(ad.get("enabled", True)),
+        )
     weights = candidate["network"]["weights"]
     result = Configuration(
         root_seed=int(candidate["rootSeed"]),
@@ -286,6 +308,7 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                 brigade_start=combined["brigadeStart"],
                 brigade_days=combined["brigadeDays"],
                 resource_schedule=resource_schedule,
+                adaptive_strategy=adaptive_strategy,
             )
             if combined
             else None,
@@ -360,18 +383,21 @@ def parse_request(
 
 @overload
 def parse_request(
-    body: str | bytes, *, operation: Literal["compare"], max_request_bytes: int = MAX_REQUEST_BYTES
+    body: str | bytes,
+    *,
+    operation: Literal["compare", "jobs"],
+    max_request_bytes: int = MAX_REQUEST_BYTES,
 ) -> CompareRequest: ...
 
 
 def parse_request(
     body: str | bytes,
     *,
-    operation: Literal["preview", "compare"] = "preview",
+    operation: Literal["preview", "compare", "jobs"] = "preview",
     max_request_bytes: int = MAX_REQUEST_BYTES,
 ) -> PreviewRequest | CompareRequest:
     """Entrada pura de JSON; la respuesta HTTP corresponde al futuro adapter."""
-    if operation not in ("preview", "compare"):
+    if operation not in ("preview", "compare", "jobs"):
         raise ValueError("Operación de entrada no soportada.")
     if type(max_request_bytes) is not int or max_request_bytes < 1:
         raise ValueError("El límite de request debe ser un entero positivo.")
@@ -394,13 +420,20 @@ def parse_request(
         raise ConfigurationError(
             "INVALID_JSON", 400, "El cuerpo debe ser JSON UTF-8 válido."
         ) from None
-    _validate(payload, "PreviewRequest" if operation == "preview" else "CompareRequest")
-    configuration = normalize_configuration(payload.get("configuration", _OMITTED))
-    if operation == "compare":
+    _validate(
+        payload,
+        {"preview": "PreviewRequest", "compare": "CompareRequest", "jobs": "JobCreateRequest"}[
+            operation
+        ],
+    )
+    configuration = normalize_configuration(
+        payload.get("configuration", _OMITTED), for_jobs=operation == "jobs"
+    )
+    if operation in ("compare", "jobs"):
         return CompareRequest(
             schema_version="1.0",
             configuration=configuration,
             expected_graph_hash=payload["expectedGraphHash"],
-            include_representative_frames=payload["includeRepresentativeFrames"],
+            include_representative_frames=payload.get("includeRepresentativeFrames", False),
         )
     return PreviewRequest(schema_version="1.0", configuration=configuration)

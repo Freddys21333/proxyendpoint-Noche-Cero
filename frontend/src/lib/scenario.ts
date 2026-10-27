@@ -48,6 +48,10 @@ export function validateScenario(s: Scenario): string[] {
       integer(days, 0, s.days, 'Duración de intervención combinada')
       if (days && start + days > s.days) errors.push('Las intervenciones combinadas deben caber en el horizonte.')
     }
+    if (p.adaptiveStrategy) {
+      const a = p.adaptiveStrategy
+      if (a.modelVersion !== 'adaptive-policy-v1' || typeof a.ringVaccinationPriority !== 'boolean' || (a.enabled !== undefined && typeof a.enabled !== 'boolean') || ![a.closureInfectionThreshold, a.reopenInfectionThreshold].every(v => Number.isFinite(v) && v >= 0 && v <= 1) || a.reopenInfectionThreshold > a.closureInfectionThreshold) errors.push('Política adaptativa inválida: el umbral de reapertura no debe superar el de cierre.')
+    }
     if (p.resourceSchedule) {
       const r = p.resourceSchedule
       if (r.modelVersion !== 'daily-inventory-v1' || !Array.isArray(r.deliveries) || r.deliveries.length > 512) errors.push('Calendario de entregas inválido.')

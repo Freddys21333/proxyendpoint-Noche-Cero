@@ -201,6 +201,37 @@
       "method": "post",
       "direction": "response",
       "status": 503
+    },
+    {
+      "file": "job-create-request.json",
+      "schema": "job-create-request.schema.json",
+      "path": "/jobs",
+      "method": "post",
+      "direction": "request"
+    },
+    {
+      "file": "job-create-response.json",
+      "schema": "job-create-response.schema.json",
+      "path": "/jobs",
+      "method": "post",
+      "direction": "response",
+      "status": 202
+    },
+    {
+      "file": "job-status-response.json",
+      "schema": "job-status-response.schema.json",
+      "path": "/jobs/{jobId}",
+      "method": "get",
+      "direction": "response",
+      "status": 200
+    },
+    {
+      "file": "job-cancel-response.json",
+      "schema": "job-cancel-response.schema.json",
+      "path": "/jobs/{jobId}/cancel",
+      "method": "post",
+      "direction": "response",
+      "status": 202
     }
   ]
 }

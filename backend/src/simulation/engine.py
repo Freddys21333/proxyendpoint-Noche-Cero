@@ -296,6 +296,8 @@ def simulate_policy(
     selections: list[dict[str, Any]] = []
     policy_rng = create_rng(configuration.root_seed, "policy-random", replicate_index)
     combined = configuration.intervention.combined
+    adaptive = combined.adaptive_strategy if combined else None
+    adaptive_enabled = bool(adaptive and adaptive.enabled and policy == "targeted")
     schedule = combined.resource_schedule if combined else None
     delivery_days = {row.day: row for row in schedule.deliveries} if schedule else {}
     vaccine_stock = configuration.intervention.vaccines
@@ -308,6 +310,7 @@ def simulate_policy(
     remaining = combined.budget_cents if combined else 0
     brigade_rng = create_rng(configuration.root_seed, "combined-brigades-v1", replicate_index)
     interval_edges = edges
+    is_closed_dynamically = False
     for day in range(t + 1):
         before = remaining
         delivery = delivery_days.get(day)
@@ -337,6 +340,42 @@ def simulate_policy(
                 if event["cause"] == "contact":
                     cumulative += 1
             events.extend(changes)
+
+        # Evaluación de estado observable del día d (P-02)
+        current_i = states.count("I")
+        infectious_fraction = current_i / n
+        adaptive_reasons: list[str] = []
+
+        if adaptive_enabled and adaptive is not None and combined is not None:
+            # 1. Gatillo de cierre dinámico
+            if not is_closed_dynamically:
+                if infectious_fraction >= adaptive.closure_infection_threshold:
+                    if remaining >= combined.closure_cost_cents:
+                        is_closed_dynamically = True
+                        adaptive_reasons.append("closure_triggered_by_threshold")
+                    else:
+                        adaptive_reasons.append("closure_budget_exhausted")
+            else:
+                if infectious_fraction < adaptive.reopen_infection_threshold:
+                    is_closed_dynamically = False
+                    adaptive_reasons.append("reopen_triggered_by_threshold")
+                elif remaining < combined.closure_cost_cents:
+                    is_closed_dynamically = False
+                    adaptive_reasons.append("closure_budget_exhausted")
+
+            # 2. Gatillo de brigadas: si brote extinto, no desplegar
+            brigades_allowed = current_i > 0
+            if not brigades_allowed:
+                adaptive_reasons.append("no_infectious_hold_brigades")
+
+            # 3. Prioridad de anillo en vacunas si hay infecciosos activos
+            ring_priority = bool(adaptive.ring_vaccination_priority and current_i > 0)
+            if ring_priority:
+                adaptive_reasons.append("ring_vaccination_active")
+        else:
+            brigades_allowed = True
+            ring_priority = False
+
         if day == configuration.intervention.intervention_day or (
             schedule and day > configuration.intervention.intervention_day
         ):
@@ -359,6 +398,7 @@ def simulate_policy(
                 excluded=frozenset(row["nodeId"] for row in selections)
                 if schedule
                 else frozenset(),
+                ring_priority=ring_priority,
             )
             for row in today_selections:
                 row["rank"] += len(selections)
@@ -372,6 +412,7 @@ def simulate_policy(
                 remaining -= used_vaccines * combined.vaccine_cost_cents
         closed_context = None
         brigade_ids: list[int] = []
+        interval_budget = remaining
         if combined:
             interval_edges, spent, closed_context, brigade_ids = interval_actions(
                 combined,
@@ -383,17 +424,59 @@ def simulate_policy(
                 remaining=remaining,
                 rng=brigade_rng,
                 supplies=brigade_stock if schedule else None,
+                adaptive_closed=is_closed_dynamically if adaptive_enabled else None,
+                brigades_active=brigades_allowed,
+                ring_priority=ring_priority,
             )
             remaining -= spent
             if schedule:
                 brigade_stock -= len(brigade_ids)
+        if adaptive_enabled and combined is not None:
+            # Motivos de omisión desde el mismo snapshot, sin consultar potenciales.
+            if day < t and is_closed_dynamically and closed_context is None:
+                reason = (
+                    "closure_budget_exhausted"
+                    if interval_budget < combined.closure_cost_cents
+                    else "closure_no_active_contacts"
+                )
+                if reason not in adaptive_reasons:
+                    adaptive_reasons.append(reason)
+            vaccination_day = day == configuration.intervention.intervention_day or (
+                schedule is not None and day > configuration.intervention.intervention_day
+            )
+            if vaccination_day and used_vaccines == 0:
+                if vaccine_stock == 0:
+                    adaptive_reasons.append("vaccine_stock_empty")
+                elif schedule is not None and schedule.vaccine_daily_capacity == 0:
+                    adaptive_reasons.append("vaccine_capacity_zero")
+                elif before < combined.vaccine_cost_cents:
+                    adaptive_reasons.append("vaccine_budget_exhausted")
+                else:
+                    adaptive_reasons.append("vaccine_no_eligible")
+            if (
+                brigades_allowed
+                and day < t
+                and combined.brigade_start <= day < combined.brigade_start + combined.brigade_days
+                and not brigade_ids
+            ):
+                if combined.brigade_daily_capacity == 0:
+                    adaptive_reasons.append("brigade_capacity_zero")
+                elif schedule is not None and brigade_stock == 0:
+                    adaptive_reasons.append("brigade_stock_empty")
+                elif (
+                    interval_budget - (combined.closure_cost_cents if closed_context else 0)
+                    < combined.brigade_cost_cents
+                ):
+                    adaptive_reasons.append("brigade_budget_exhausted")
+                else:
+                    adaptive_reasons.append("brigade_no_eligible")
         frames.append(states.copy())
         daily.append(
             {
                 "day": day,
                 "s": states.count("S"),
                 "e": states.count("E"),
-                "i": states.count("I"),
+                "i": current_i,
                 "r": states.count("R"),
                 "cumulativeInfected": cumulative,
             }
@@ -417,6 +500,17 @@ def simulate_policy(
                 brigadeSuppliesReceivedTotal=received_brigades,
                 brigadeSuppliesUsedToday=len(brigade_ids),
                 brigadeSuppliesAvailable=brigade_stock,
+            )
+        if adaptive:
+            daily[-1].update(
+                adaptiveDecisions={
+                    "enabled": adaptive_enabled,
+                    "triggers": adaptive_reasons,
+                    "infectiousFraction": infectious_fraction,
+                    "closureActive": closed_context is not None if adaptive_enabled else None,
+                    "brigadesAllowed": brigades_allowed,
+                    "ringVaccinationActive": ring_priority,
+                }
             )
     events.sort(key=lambda event: (event["day"], event["nodeId"], event["cause"]))
     return SimulationTrace(

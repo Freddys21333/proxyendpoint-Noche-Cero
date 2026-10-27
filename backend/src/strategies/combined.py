@@ -19,14 +19,26 @@ def interval_actions(
     remaining: int,
     rng: Generator,
     supplies: int | None = None,
+    adaptive_closed: bool | None = None,
+    brigades_active: bool = True,
+    ring_priority: bool = False,
 ) -> tuple[list[dict[str, Any]], int, str | None, list[int]]:
     """Cierre completo si cabe; después brigadas por persona susceptible y día."""
     if policy == "none" or day >= last_day:
         return edges, 0, None, []
     spent = 0
     closed = None
+
+    # Determinación de cierre: si se especifica adaptive_closed (decisión adaptativa P-02)
+    # se usa ese trigger; de lo contrario se usa la ventana predeterminada de días.
+    should_close = (
+        adaptive_closed
+        if adaptive_closed is not None
+        else (plan.closure_start <= day < plan.closure_start + plan.closure_days)
+    )
+
     if (
-        plan.closure_start <= day < plan.closure_start + plan.closure_days
+        should_close
         and remaining >= plan.closure_cost_cents
         and any(e["context"] == plan.closure_context and day in e["activeDays"] for e in edges)
     ):
@@ -34,12 +46,20 @@ def interval_actions(
         spent += plan.closure_cost_cents
     available = [e for e in edges if e["context"] != closed] if closed else edges
     selected = []
-    if plan.brigade_start <= day < plan.brigade_start + plan.brigade_days:
+
+    # Brigadas: activas si está dentro de la ventana de brigadas y brigades_active es True
+    if brigades_active and (plan.brigade_start <= day < plan.brigade_start + plan.brigade_days):
         count = min(plan.brigade_daily_capacity, (remaining - spent) // plan.brigade_cost_cents)
         if supplies is not None:
             count = min(count, supplies)
         selected = select_candidates(
-            states, available, policy=policy, vaccines=count, day=day, rng=rng
+            states,
+            available,
+            policy=policy,
+            vaccines=count,
+            day=day,
+            rng=rng,
+            ring_priority=ring_priority,
         )
         spent += len(selected) * plan.brigade_cost_cents
     ids = sorted(row["nodeId"] for row in selected)

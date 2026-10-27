@@ -43,8 +43,15 @@ export function experimentFiles(result: CompareResponse): Record<string, string>
   table('daily', ['replicateIndex', 'policy', 'day', 's', 'e', 'i', 'r', 'cumulativeInfected'], tables.daily)
   if (result.configuration.intervention.combined?.resourceSchedule) table('inventory', ['replicateIndex', 'policy', 'day', 'vaccinesDeliveredToday', 'vaccinesReceivedTotal', 'vaccinesUsedToday', 'vaccinesAvailable', 'brigadeSuppliesDeliveredToday', 'brigadeSuppliesReceivedTotal', 'brigadeSuppliesUsedToday', 'brigadeSuppliesAvailable'], tables.daily)
   if (result.configuration.intervention.combined) table('budget', ['replicateIndex', 'policy', 'day', 'spentTodayCents', 'spentCents', 'budgetRemainingCents', 'closedContext', 'brigadesActive', 'brigadeNodeIds'], tables.daily)
+  if (result.configuration.intervention.combined?.adaptiveStrategy) {
+    const rows = result.replicates.flatMap(rep => policies.flatMap(policy => rep.policies[policy].daily.map(value => {
+      const row = value as { day: number; adaptiveDecisions: Record<string, unknown> }
+      return { replicateIndex: rep.index, policy, day: row.day, ...row.adaptiveDecisions }
+    })))
+    table('adaptive-decisions', ['replicateIndex', 'policy', 'day', 'enabled', 'infectiousFraction', 'closureActive', 'brigadesAllowed', 'ringVaccinationActive', 'triggers'], rows)
+  }
   table('metrics', ['replicateIndex', 'policy', ...metrics], tables.metrics)
-  table('selections', ['replicateIndex', 'policy', ...selections], tables.selections)
+  table('selections', ['replicateIndex', 'policy', ...selections, ...(result.configuration.intervention.combined?.adaptiveStrategy ? ['infectiousContacts'] : [])], tables.selections)
   table('events', ['replicateIndex', 'policy', ...events], tables.events)
   table('summary', ['policy', 'metric', 'n', 'mean', 'median', 'p05', 'p95'], policies.flatMap(policy => metrics.map(metric => ({ policy, metric, ...result.summaryByPolicy[policy][metric] }))))
   const paired = result.pairedComparisons

@@ -5,6 +5,7 @@ export function vaccinationsAtDay(selections: VaccinationSelection[], day: numbe
   return selections.filter(row => row.day <= day).sort((a, b) => a.rank - b.rank)
 }
 export function selectionReason(row: VaccinationSelection): string {
+  if (row.tieBreak === 'ringContact') return `Selección dirigida en anillo: prioridad por ${row.infectiousContacts} contactos activos hacia infecciosos; después puntuación de contactos hacia susceptibles (${row.score}) y menor identificador. Posición registrada ${row.rank}.`
   return row.tieBreak === 'nodeIdAsc'
     ? `Selección dirigida: puntuación ${row.score!.toLocaleString('es-EC', { maximumFractionDigits: 6 })} (suma de pesos de contactos activos hacia susceptibles al decidir). Posición registrada ${row.rank}; prioridad de mayor puntuación, con menor identificador de persona para desempatar.`
     : `Selección aleatoria uniforme sin reemplazo, reproducible con la semilla de esta réplica. Posición registrada ${row.rank}; no usa puntuación de contactos.`

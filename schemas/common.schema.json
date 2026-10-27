@@ -561,7 +561,7 @@
           "type": "integer",
           "minimum": 2,
           "default": 30,
-          "maximum": 30
+          "maximum": 100
         },
         "scenario": {
           "$ref": "#/$defs/Scenario",
@@ -843,7 +843,7 @@
           "type": "object",
           "properties": {
             "asyncJobs": {
-              "const": false
+              "type": "boolean"
             },
             "representativeFrames": {
               "const": true
@@ -858,6 +858,9 @@
         "generatorDescription": {
           "type": "string",
           "minLength": 1
+        },
+        "jobLimits": {
+          "$ref": "#/$defs/JobLimits"
         }
       },
       "required": [
@@ -1275,6 +1278,9 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 360000
+        },
+        "adaptiveDecisions": {
+          "$ref": "#/$defs/AdaptiveDecisions"
         }
       },
       "required": [
@@ -1330,11 +1336,17 @@
         "tieBreak": {
           "enum": [
             "nodeIdAsc",
-            "seededRandom"
+            "seededRandom",
+            "ringContact"
           ]
         },
         "effective": {
           "type": "boolean"
+        },
+        "infectiousContacts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
         }
       },
       "required": [
@@ -1578,7 +1590,7 @@
         "index": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 29
+          "maximum": 99
         },
         "initialInfectiousNodeIds": {
           "type": "array",
@@ -1633,7 +1645,7 @@
         "n": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 30
+          "maximum": 100
         },
         "mean": {
           "type": "number",
@@ -1773,7 +1785,7 @@
             "type": "number"
           },
           "minItems": 2,
-          "maxItems": 30
+          "maxItems": 100
         },
         "mean": {
           "type": "number"
@@ -1889,7 +1901,7 @@
         "index": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 29
+          "maximum": 99
         },
         "initialSeed": {
           "type": "object",
@@ -1902,7 +1914,7 @@
             "replicateIndex": {
               "type": "integer",
               "minimum": 0,
-              "maximum": 29
+              "maximum": 99
             },
             "domain": {
               "const": "initial"
@@ -2125,12 +2137,12 @@
         "replicatesTotal": {
           "type": "integer",
           "minimum": 2,
-          "maximum": 30
+          "maximum": 100
         },
         "replicatesSucceeded": {
           "type": "integer",
           "minimum": 2,
-          "maximum": 30
+          "maximum": 100
         },
         "replicatesFailed": {
           "type": "integer",
@@ -2234,7 +2246,7 @@
             "$ref": "#/$defs/Replicate"
           },
           "minItems": 2,
-          "maxItems": 30
+          "maxItems": 100
         },
         "representative": {
           "$ref": "#/$defs/Representative"
@@ -2398,7 +2410,10 @@
                 "RATE_LIMITED",
                 "INTERNAL_ERROR",
                 "SIMULATION_FAILED",
-                "COMPUTE_UNAVAILABLE"
+                "COMPUTE_UNAVAILABLE",
+                "JOB_NOT_FOUND",
+                "JOB_NOT_READY",
+                "IDEMPOTENCY_CONFLICT"
               ]
             },
             "message": {
@@ -2505,6 +2520,9 @@
         },
         "resourceSchedule": {
           "$ref": "#/$defs/ResourceSchedule"
+        },
+        "adaptiveStrategy": {
+          "$ref": "#/$defs/AdaptiveStrategy"
         }
       },
       "required": [
@@ -2580,6 +2598,480 @@
         "vaccineDailyCapacity",
         "initialBrigadeSupplies",
         "deliveries"
+      ],
+      "additionalProperties": false
+    },
+    "AdaptiveStrategy": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "const": "adaptive-policy-v1",
+          "type": "string",
+          "default": "adaptive-policy-v1"
+        },
+        "closureInfectionThreshold": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.05
+        },
+        "reopenInfectionThreshold": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.02
+        },
+        "ringVaccinationPriority": {
+          "type": "boolean",
+          "default": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "modelVersion",
+        "closureInfectionThreshold",
+        "reopenInfectionThreshold",
+        "ringVaccinationPriority"
+      ],
+      "additionalProperties": false
+    },
+    "AdaptiveDecisions": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "closure_triggered_by_threshold",
+              "closure_budget_exhausted",
+              "reopen_triggered_by_threshold",
+              "no_infectious_hold_brigades",
+              "ring_vaccination_active",
+              "closure_no_active_contacts",
+              "vaccine_stock_empty",
+              "vaccine_capacity_zero",
+              "vaccine_budget_exhausted",
+              "vaccine_no_eligible",
+              "brigade_capacity_zero",
+              "brigade_stock_empty",
+              "brigade_budget_exhausted",
+              "brigade_no_eligible"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "infectiousFraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "closureActive": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "brigadesAllowed": {
+          "type": "boolean"
+        },
+        "ringVaccinationActive": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "triggers",
+        "infectiousFraction",
+        "closureActive",
+        "brigadesAllowed",
+        "ringVaccinationActive"
+      ],
+      "additionalProperties": false
+    },
+    "JobConfigurationInput": {
+      "type": "object",
+      "properties": {
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 20261026,
+          "maximum": 4294967295
+        },
+        "networkMode": {
+          "const": "fixed",
+          "default": "fixed"
+        },
+        "repetitions": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 30,
+          "maximum": 100
+        },
+        "scenario": {
+          "$ref": "#/$defs/ScenarioInput",
+          "default": {
+            "populationSize": 1000,
+            "days": 90,
+            "beta": 0.08,
+            "sigma": 0.333333,
+            "gamma": 0.142857,
+            "initialInfectious": 1,
+            "origin": {
+              "kind": "random",
+              "value": null
+            }
+          }
+        },
+        "intervention": {
+          "$ref": "#/$defs/InterventionInput",
+          "default": {
+            "vaccines": 100,
+            "interventionDay": 0,
+            "vaccineEfficacy": 1.0
+          }
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Policy"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "default": [
+            "none",
+            "random",
+            "targeted"
+          ]
+        },
+        "network": {
+          "$ref": "#/$defs/NetworkInput",
+          "default": {
+            "generatorVersion": "synthetic-manta-v1",
+            "dayZero": "monday",
+            "weights": {
+              "household": 1.0,
+              "school": 0.6,
+              "bus": 0.45,
+              "market": 0.5,
+              "neighborhood": 0.2
+            }
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Validar relaciones despuÃƒÆ’Ã‚Â©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+    },
+    "JobCreateRequest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "configuration": {
+          "$ref": "#/$defs/JobConfigurationInput"
+        },
+        "expectedGraphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "includeRepresentativeFrames": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "configuration",
+        "expectedGraphHash"
+      ],
+      "additionalProperties": false
+    },
+    "JobManifest": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "const": "local-jobs-v1"
+        },
+        "configurationHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "graphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "requestHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "engineVersion": {
+          "type": "string"
+        },
+        "rngVersion": {
+          "const": "rng-v1"
+        },
+        "replicates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 99
+              },
+              "initialSeedEntropy": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 10,
+                "maxItems": 10
+              }
+            },
+            "required": [
+              "index",
+              "initialSeedEntropy"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "runtimeVersions": {
+          "$ref": "#/$defs/RuntimeVersions"
+        }
+      },
+      "required": [
+        "modelVersion",
+        "configurationHash",
+        "graphHash",
+        "requestHash",
+        "rootSeed",
+        "engineVersion",
+        "rngVersion",
+        "replicates",
+        "runtimeVersions"
+      ],
+      "additionalProperties": false
+    },
+    "JobStatusResponse": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "jobId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "running",
+            "aggregating",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "statusUrl": {
+          "type": "string",
+          "pattern": "^/v1/jobs/[0-9a-f-]{36}$"
+        },
+        "resultUrl": {
+          "type": "string",
+          "pattern": "^/v1/jobs/[0-9a-f-]{36}/result$"
+        },
+        "progress": {
+          "type": "object",
+          "properties": {
+            "replicatesTotal": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 100
+            },
+            "replicatesCompleted": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "replicatesFailed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "replicatesTotal",
+            "replicatesCompleted",
+            "replicatesFailed"
+          ],
+          "additionalProperties": false
+        },
+        "manifest": {
+          "$ref": "#/$defs/JobManifest"
+        },
+        "error": {
+          "type": "string",
+          "enum": [
+            "SIMULATION_FAILED",
+            "RESULT_TOO_LARGE"
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "jobId",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "statusUrl",
+        "resultUrl",
+        "progress",
+        "manifest"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "error"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "error"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "JobCreateResponse": {
+      "$ref": "#/$defs/JobStatusResponse"
+    },
+    "JobCancelResponse": {
+      "$ref": "#/$defs/JobStatusResponse"
+    },
+    "RuntimeVersions": {
+      "type": "object",
+      "properties": {
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "pythonVersion": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^3\\.12\\.\\d+$"
+        },
+        "dependencies": {
+          "type": "object",
+          "minProperties": 2,
+          "required": [
+            "numpy",
+            "networkx"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "generatorVersion": {
+          "const": "synthetic-manta-v1"
+        },
+        "rngVersion": {
+          "const": "rng-v1"
+        },
+        "bitGenerator": {
+          "const": "PCG64"
+        },
+        "canonicalVersion": {
+          "const": "canonical-v1"
+        }
+      },
+      "required": [
+        "engineVersion",
+        "schemaVersion",
+        "pythonVersion",
+        "dependencies",
+        "generatorVersion",
+        "rngVersion",
+        "bitGenerator",
+        "canonicalVersion"
+      ],
+      "additionalProperties": false
+    },
+    "JobLimits": {
+      "type": "object",
+      "properties": {
+        "maxRepetitions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxConcurrent": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxRetained": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retentionSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxEdgeDayReplicates": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "maxRepetitions",
+        "maxConcurrent",
+        "maxRetained",
+        "retentionSeconds",
+        "maxEdgeDayReplicates"
       ],
       "additionalProperties": false
     }

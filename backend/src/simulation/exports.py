@@ -112,6 +112,17 @@ def _validate(document: dict[str, Any]) -> None:
         for policy in POLICIES:
             result = rep["policies"][policy]
             plan = document["configuration"]["intervention"].get("combined")
+            for selection in result["selections"]:
+                if selection["tieBreak"] == "ringContact":
+                    strategy = plan.get("adaptiveStrategy") if plan else None
+                    if (
+                        policy != "targeted"
+                        or not strategy
+                        or not strategy.get("enabled", True)
+                        or not strategy["ringVaccinationPriority"]
+                        or selection.get("infectiousContacts", 0) <= 0
+                    ):
+                        raise ValueError("Selección de anillo sin política o contactos elegibles.")
             if plan:
                 previous = 0
                 schedule = plan.get("resourceSchedule")
@@ -119,6 +130,28 @@ def _validate(document: dict[str, Any]) -> None:
                 brigades_used = 0
                 seen_nodes: set[int] = set()
                 for row in result["daily"]:
+                    adaptive = plan.get("adaptiveStrategy")
+                    decision = row.get("adaptiveDecisions")
+                    if adaptive:
+                        enabled = adaptive.get("enabled", True) and policy == "targeted"
+                        if (
+                            decision is None
+                            or decision["enabled"] != enabled
+                            or decision["infectiousFraction"]
+                            != row["i"] / document["configuration"]["scenario"]["populationSize"]
+                            or decision["closureActive"]
+                            != (row.get("closedContext") is not None if enabled else None)
+                            or decision["brigadesAllowed"] != (not enabled or row["i"] > 0)
+                            or decision["ringVaccinationActive"]
+                            != (enabled and adaptive["ringVaccinationPriority"] and row["i"] > 0)
+                            or (not enabled and decision["triggers"])
+                            or (enabled and row["i"] == 0 and row["brigadesActive"] != 0)
+                        ):
+                            raise ValueError(
+                                "El registro adaptativo no cuadra con el estado diario."
+                            )
+                    elif decision is not None:
+                        raise ValueError("Decisiones adaptativas sin política configurada.")
                     count = sum(
                         selection["day"] == row["day"] for selection in result["selections"]
                     )
@@ -236,7 +269,7 @@ def reproduce(document: dict[str, Any]) -> str:
     for key, value in runtime_versions().items():
         if document["manifest"][key] != value:
             raise ValueError("El entorno o la versión no coincide con el experimento.")
-    configuration = normalize_configuration(document["configuration"])
+    configuration = normalize_configuration(document["configuration"], for_jobs=True)
     fresh = export_experiment(
         run_experiment(
             configuration,
@@ -318,7 +351,17 @@ def export_zip(document: dict[str, Any]) -> bytes:
     for name, fields in (
         ("daily", ("day", "s", "e", "i", "r", "cumulativeInfected")),
         ("metrics", METRICS),
-        ("selections", SELECTIONS),
+        (
+            "selections",
+            SELECTIONS
+            + (
+                ("infectiousContacts",)
+                if document["configuration"]["intervention"]
+                .get("combined", {})
+                .get("adaptiveStrategy")
+                else ()
+            ),
+        ),
         ("events", EVENTS),
     ):
         table(name, ("replicateIndex", "policy", *fields), rows_by_name[name])
@@ -356,6 +399,43 @@ def export_zip(document: dict[str, Any]) -> bytes:
             ),
             rows_by_name["daily"],
         )
+        if document["configuration"]["intervention"]["combined"].get("adaptiveStrategy"):
+            # Extraer decisiones adaptativas si están presentes
+            adaptive_rows = []
+            for rep in document["replicates"]:
+                for policy in POLICIES:
+                    for day_data in rep["policies"][policy]["daily"]:
+                        if "adaptiveDecisions" in day_data:
+                            dec = day_data["adaptiveDecisions"]
+                            adaptive_rows.append(
+                                {
+                                    "replicateIndex": rep["index"],
+                                    "policy": policy,
+                                    "day": day_data["day"],
+                                    "enabled": dec["enabled"],
+                                    "infectiousFraction": dec["infectiousFraction"],
+                                    "closureActive": dec.get("closureActive"),
+                                    "brigadesAllowed": dec.get("brigadesAllowed"),
+                                    "ringVaccinationActive": dec.get("ringVaccinationActive"),
+                                    "triggers": dec.get("triggers", []),
+                                }
+                            )
+            if adaptive_rows:
+                table(
+                    "adaptive-decisions",
+                    (
+                        "replicateIndex",
+                        "policy",
+                        "day",
+                        "enabled",
+                        "infectiousFraction",
+                        "closureActive",
+                        "brigadesAllowed",
+                        "ringVaccinationActive",
+                        "triggers",
+                    ),
+                    adaptive_rows,
+                )
     table(
         "summary",
         ("policy", "metric", "n", "mean", "median", "p05", "p95"),
