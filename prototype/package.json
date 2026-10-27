@@ -1,0 +1,9 @@
+{
+  "name": "manta-simulation-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "test": "node simulation.test.mjs"
+  }
+}
