@@ -3,6 +3,7 @@ import { MapPinned } from 'lucide-react'
 import type { PreviewResponse, CompareResponse } from '@/lib/api'
 import type { ComparisonState } from '@/lib/simulation-playback'
 import { SimulationWorkspace } from './SimulationWorkspace'
+import { FloatingSimulationControls } from './FloatingSimulationControls'
 import './ContactNetwork.css'
 
 export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState }) {
@@ -18,6 +19,6 @@ export function ContactNetwork(props: { resetKey: number; layer: string; childre
       <ol><li>Configura la población y los contactos.</li><li>Consulta el escenario en el mapa.</li><li>Compara estrategias para reproducir una réplica real.</li></ol>
       <p className="simulation-empty-note">Las ubicaciones son sintéticas. Los datos aparecerán al consultar el servidor.</p>
     </section>
-    <div className="simulator-control-column">{props.children}</div>
+    <FloatingSimulationControls>{props.children}</FloatingSimulationControls>
   </div>
 }

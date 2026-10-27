@@ -9,6 +9,7 @@ import { Button } from './ui/button'
 import { vaccinationsAtDay } from '@/lib/vaccination'
 import { VaccinationDetails, VaccinationPerson } from './VaccinationDetails'
 import { seirColors } from './seir-colors'
+import { FloatingSimulationControls } from './FloatingSimulationControls'
 import { simulationModeMessages, type SimulationPlayback, type ComparisonState } from '@/lib/simulation-playback'
 import './ContactNetwork.css'
 
@@ -175,7 +176,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         </div>
       </div>}
     </section>
-    <div className="simulator-control-column">
+    <FloatingSimulationControls>
       <section className="temporal-chart-panel real-playback" aria-label="Reproducción de réplica real">
         <h3>{frames ? 'Réplica representativa' : 'Estado inicial'}</h3>
         {frames ? <>
@@ -203,6 +204,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>
       </div>
       {children}
-    </div>
+    </FloatingSimulationControls>
   </div>
 }
