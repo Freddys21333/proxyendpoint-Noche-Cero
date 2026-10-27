@@ -4,6 +4,7 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 
 | Documento | Contenido | Estado |
 |---|---|---|
+| [Mejoras del sistema y UX](mejoras-sistema-ux.md) | Backlog UX-01..UX-08: recorrido, recomendación, indicadores, presupuesto educativo, parámetros, mapa y accesibilidad | Planificado; excluye pitch y AWS; sin cierre de aceptación |
 | [requirements.md](requirements.md) | Alcance, requisitos RF/CA, parámetros y aceptación | Borrador para revisión del equipo |
 | [design.md](design.md) | Módulos, contratos, motor, UI, AWS y acuerdos D-01..D-08 | Diseño adoptado; verificación AWS pendiente |
 | [tasks.md](tasks.md) | Tareas T-01..T-23, frentes técnicos, dependencias y evidencia de terminado | T-02..T-12 verificadas localmente; integración frontend parcial y validación/AWS pendientes |

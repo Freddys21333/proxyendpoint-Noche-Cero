@@ -7,6 +7,8 @@
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
 
+**Mejoras de producto y UX (2026-10-27):** [backlog UX-01..UX-08](../specs/mejoras-sistema-ux.md), derivado de la retroalimentación del equipo y contrastado con capacidades existentes. Incluye presupuesto educativo; pitch y AWS se gestionan por separado. Es planificación, no implementación ni aceptación cerrada, y conserva las dependencias científicas.
+
 Este documento explica qué se está construyendo, qué ya funciona, qué falta, en qué orden y con qué límites. No sustituye al [PRD](../PRD.md), al [TRD](../TRD.md) ni a las [specs](../specs/README.md). Si hay contradicción, prevalecen PRD/TRD y el protocolo congelado de T-22.
 
 ---
