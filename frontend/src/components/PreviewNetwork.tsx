@@ -131,7 +131,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
   return <div className="simulator-workbench network-workbench">
     <section className={`network-demo-panel simulation-visualizer${active ? '' : ' simulation-outdated'}`} aria-label={!active ? 'Vista previa pendiente' : showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
       <div className="simulation-visualizer-content" inert={!active} aria-hidden={!active}>
-      <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
+      <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa · sin vacunación'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
       <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver solo sus conexiones del día y filtro actuales.' : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
       <div className="population-inventory-summary">
       <div className="seir-instrument" aria-label={frames ? 'Estados de la población en el día seleccionado' : 'Estados iniciales de la población del preview'}>
@@ -148,7 +148,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       <div className="network-view" hidden={!showNetwork}>
         <div ref={container} className="network-canvas" role="img" aria-label={`Red real de ${graph.nodes.length} personas sintéticas, contactos del día ${currentDay}. Seleccione una persona o use el selector.`} />
-        <div className="graph-day-label">{frames ? `Día ${currentDay} · ${policyLabels[policy]}` : 'Estado inicial · sin vacunación'}</div>
         <div className="network-zoom" aria-label="Herramientas de exploración">
           <button type="button" aria-label="Acercar red" onClick={() => zoom(1.25)}><ZoomIn size={17} /></button>
           <button type="button" aria-label="Alejar red" onClick={() => zoom(0.8)}><ZoomOut size={17} /></button>
@@ -179,9 +178,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       {!active && <div className="simulation-update-overlay">
         <div className="simulation-update-card" role="status" aria-live="polite">
           <span className="simulation-update-icon"><SlidersHorizontal size={30} aria-hidden="true" /></span>
-          <span className="simulation-update-eyebrow">Parámetros modificados</span>
           <h2>Actualiza tu escenario</h2>
-          <p>La visualización anterior ya no corresponde a los parámetros actuales.</p>
+          <p>Los parámetros cambiaron y la visualización anterior ya no corresponde a la configuración actual.</p>
           <p className="simulation-update-action">Pulsa <strong>Consultar red</strong> en el panel de parámetros para cargar la nueva población.</p>
         </div>
       </div>}

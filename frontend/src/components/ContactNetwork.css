@@ -147,15 +147,6 @@
   background: #f8fbf8;
 }
 
-.simulator-workbench .graph-day-label {
-  top: 14px;
-  right: 16px;
-  color: #465f50;
-  background: #f8fbf8eb;
-  font-size: 15px;
-  padding: 4px;
-}
-
 .simulator-workbench .graph-interaction-hint {
   left: 16px;
   bottom: 15px;
@@ -564,8 +555,7 @@
 .simulator-workbench .real-playback .playback-speed { grid-template-columns: 1fr auto; align-items: center; }
 .simulator-workbench .simulation-empty { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 570px; padding: 48px 28px; text-align: center; background: radial-gradient(ellipse at center, #edf4ed, #f8faf7 70%); }
 .simulation-empty-icon { display: grid; place-items: center; width: 88px; height: 88px; border: 1px solid #c8dbcd; border-radius: 24px; background: #e3eee3; color: #315f47; margin-bottom: 24px; }
-.simulation-empty-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: #52695a; }
-.simulator-workbench .simulation-empty h2 { margin: 12px 0; font-size: clamp(24px, 3vw, 36px); color: #203d31; }
+.simulator-workbench .simulation-empty h2 { margin: 0 0 12px; font-size: clamp(24px, 3vw, 36px); color: #203d31; }
 .simulation-empty p { max-width: 460px; line-height: 1.7; color: #52695a; }
 .simulation-empty ol { margin: 24px 0; padding-left: 24px; text-align: left; line-height: 2; color: #365b4a; }
 .simulation-empty .simulation-empty-note { font-size: 13px; }
@@ -576,8 +566,7 @@
 .simulation-update-overlay { position: absolute; inset: 0; z-index: 10; display: grid; place-items: center; padding: 24px; background: rgb(242 247 242 / 35%); }
 .simulation-update-card { width: min(100%, 420px); padding: 32px; text-align: center; border: 1px solid #d0dfd3; border-radius: 18px; background: rgb(255 255 255 / 97%); box-shadow: 0 20px 60px rgb(30 62 42 / 14%); color: #203d31; }
 .simulation-update-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 18px; background: #e7f0e8; color: #315f47; }
-.simulation-update-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #52695a; }
-.simulator-workbench .simulation-update-card h2 { margin: 10px 0 12px; font-size: clamp(22px, 3vw, 28px); line-height: 1.2; }
+.simulator-workbench .simulation-update-card h2 { margin: 0 0 12px; font-size: clamp(22px, 3vw, 28px); line-height: 1.2; }
 .simulation-update-card p { margin: 0; font-size: 15px; line-height: 1.6; color: #52695a; }
 .simulation-update-card .simulation-update-action { margin-top: 20px; padding-top: 18px; border-top: 1px solid #e1e9e2; }
 @media (max-width: 600px) { .simulation-update-overlay { padding: 16px; } .simulation-update-card { padding: 24px; } }
@@ -626,7 +615,7 @@
 .floating-simulation-controls[open] > .floating-controls-inner > .floating-controls-body { height: auto; max-height: none; scrollbar-gutter: stable; }
 .floating-controls-footer { flex-shrink: 0; padding: 12px 20px 14px; border-top: 1px solid #dbe4dd; border-radius: 0 0 12px 12px; background: #fff; }
 .floating-controls-footer .configuration-actions { gap: 10px; }
-.floating-controls-footer .validate-button { flex: 1 1 100%; }
+.floating-controls-footer .configuration-actions > .validate-button:not(.validate-button--secondary) { flex: 1 1 100%; }
 
 /* Person details float over the lower-left of the network, with their own scroll. */
 .simulator-workbench .network-view { position: relative; }
@@ -670,8 +659,9 @@
 .resource-inventory-panel caption { text-align: left; margin: 8px 0; color: #52695a; }
 
 /* Narrow screens stack the scene and controls instead of floating one over the other. */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .simulator-workbench.network-workbench .network-demo-panel { height: auto; }
+  .simulator-workbench .network-view { flex: auto; height: 58dvh; min-height: 360px; }
   .simulator-workbench .simulation-empty { min-height: 420px; padding: 36px 20px; }
   .floating-simulation-controls,
   .floating-simulation-controls[open] {
@@ -690,5 +680,15 @@
     height: auto;
     max-height: none;
     overflow: visible;
+  }
+}
+
+/* On wide screens the controls get their own lane instead of covering the scene. */
+@media (min-width: 1101px) {
+  .simulator-workbench.network-workbench:has(.floating-simulation-controls[open]) .simulation-empty {
+    padding-right: 416px;
+  }
+  .simulator-workbench.network-workbench:has(.floating-simulation-controls[open]) :is(.network-view, .geographic-map-view, .network-playback-status) {
+    margin-right: 392px;
   }
 }

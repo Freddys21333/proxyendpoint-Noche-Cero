@@ -44,7 +44,7 @@ Esta tabla es la referencia para saber dónde vive cada pendiente y qué evidenc
 |---|---|---|---|---|
 | P-01 | `domain/configuration.py`, `simulation/engine.py`, `simulation/experiments.py`, `simulation/exports.py` | `ResourceScheduleEditor`, `ResourceInventory`, `lib/resource-schedule.ts` | `schemas/common.schema.json` (`resourceSchedule`) | `tests/test_resource_schedule.py`, `test_combined.py`, `test_exports.py`; `lib/scenario.test.ts` |
 | P-02 | Parcial: `strategies/combined.py`, `strategies/vaccination.py` | Sin editor de reglas ni registro de motivos | Sin contrato de política adaptativa | `tests/test_combined.py`, `test_vaccination.py` |
-| P-03 | No iniciado | No iniciado | Sin `/jobs` | — |
+| P-03 | No iniciado | Pantalla de trabajos con fixtures locales, estados, cancelación y reintento; separada del resumen real de comparación | Sin `/jobs` | `frontend/src/pro/jobs-model.test.ts` (solo modelo de demostración) |
 | P-04 | No iniciado | No iniciado | Sin jobs ni IaC | — |
 | P-05 | No iniciado | No iniciado | Sin dataset versionado | — |
 | P-06 | No iniciado | No iniciado | Sin modelo/preset calibrado | — |

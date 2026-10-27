@@ -64,6 +64,10 @@ npm run preview
 
 The environment includes the generated shadcn Button at `src/components/ui/button.tsx`, backed by `@base-ui/react/button`. Import it through `@/components/ui/button`. Import icons by name from `lucide-react`. `components.json` configures future shadcn components; the neutral starter theme is provisional.
 
+## Vista PRO en desarrollo
+
+La vista PRO muestra la comparación vigente de la API real cuando existe y permite abrir sus resultados completos. El flujo de trabajos Monte Carlo usa exclusivamente fixtures locales rotulados como datos de ejemplo; su progreso, historial y cifras no son resultados científicos. El backend todavía no publica `/v1/jobs`, por lo que P-03 sigue pendiente de contrato e integración.
+
 ## Scope
 
 **Estado actual (2026-10-27).** The interactive workspace uses the real backend for health/config, preview and comparison. Editable controls, the Cytoscape/Canvas contact network, layer filtering, the synchronized temporal chart/table, representative playback, vaccination selections, inventory, combined interventions, ZIP/JSON export and the geographic map are integrated. The authored demo remains only as an explicitly labeled fallback before querying; it is not presented as a real result.

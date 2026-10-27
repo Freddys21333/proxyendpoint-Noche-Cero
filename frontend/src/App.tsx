@@ -4,6 +4,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { seirColors } from "@/components/seir-colors";
 import { defaults, validateScenario, fromConfiguration, applyServerDefaults, matchesLoadedScenario, type Scenario } from "@/lib/scenario";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 
@@ -11,10 +12,17 @@ const ContactNetwork = lazy(() =>
   import("@/components/ContactNetwork").then((module) => ({ default: module.ContactNetwork })),
 );
 const ComparisonResults = lazy(() => import("@/components/ComparisonResults").then(module => ({ default: module.ComparisonResults })));
+const ProWorkspace = lazy(() => import("@/pro/ProWorkspace").then(module => ({ default: module.ProWorkspace })));
 const nf = new Intl.NumberFormat("es-EC");
+const seirHelp = [
+  ["S", "Sano", "Sin infección."],
+  ["E", "Mordido", "Expuesto, aún no transmite."],
+  ["I", "Zombie", "Infectado y transmite."],
+  ["R", "Exorcizado", "Recuperado o inmune."],
+] as const;
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
 type Modal = "help" | "export" | "run" | null;
-type WorkspaceView = "simulator" | "results";
+type WorkspaceView = "simulator" | "results" | "pro";
 
 function Field({
   label,
@@ -311,10 +319,15 @@ export default function App() {
     </section>
   );
 
+  const previewButton = (
+    <Button type="submit" form="scenario-form" className={`validate-button${remotePreview ? " validate-button--secondary" : ""}`} ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+  );
+  const compareButton = (
+    <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
+  );
   const configurationActions = (
     <div className="configuration-actions">
-      <Button type="submit" form="scenario-form" className="validate-button" ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
-      <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
+      {remotePreview ? <>{compareButton}{previewButton}</> : <>{previewButton}{compareButton}</>}
       <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
         <ArrowDownToLine size={17} /> Exportar
       </button>
@@ -330,9 +343,10 @@ export default function App() {
         <nav aria-label="Navegación principal" className="simulation-navigation">
           <button type="button" aria-current={view === "simulator" ? "page" : undefined} onClick={() => setView("simulator")}>Simulador</button>
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
+          <button type="button" aria-current={view === "pro" ? "page" : undefined} onClick={() => setView("pro")} title="Experimentos Monte Carlo">PRO</button>
           <button type="button" onClick={event => { dialogReturn.current = event.currentTarget; setModal("help"); }}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
+        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {view === "pro" ? "PRO · trabajos de ejemplo" : comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -358,7 +372,7 @@ export default function App() {
               </div></section>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
-        ) : (
+        ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
             {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <>
               <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : "Aún no hay resultados para la configuración actual."}</p></div>
@@ -369,20 +383,45 @@ export default function App() {
             </>}
             <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver al simulador</button>
           </section>
+        ) : (
+          <Suspense fallback={<div className="simulation-loading" role="status">Cargando PRO…</div>}>
+            <ProWorkspace comparison={comparison} comparisonPending={comparisonPending} onShowSimulator={() => setView("simulator")} onShowResults={() => setView("results")} />
+          </Suspense>
         )}
         <footer className="simulation-footer">Modelo educativo · No utilizar para decisiones sanitarias reales.</footer>
       </main>
       <Dialog.Root open={modal !== null} onOpenChange={(open) => { if (!open) setModal(null); }}>
         <Dialog.Portal>
           <Dialog.Backdrop className="modal-dimmer" />
-          <Dialog.Popup className="modal minimal-dialog" finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
+          <Dialog.Popup className={`modal minimal-dialog${modal === "help" ? " help-dialog" : ""}`} finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
             <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
-            <p>{modal === "help"
-              ? "Consulta la red para ver tu población sintética y luego compara las tres estrategias con el motor real. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) son los estados SEIR. Los resultados muestran medias y dispersión entre réplicas; antes de comparar el grafo representa el estado inicial. Después puedes reproducir una réplica representativa real, cambiar de estrategia y recorrer sus días. Esa trayectoria no es el promedio."
-              : modal === "run"
+            {modal === "help" ? (
+              <div className="help-content">
+                <p>Este simulador trabaja con una población sintética de Manta y el motor real del servidor.</p>
+                <ol className="help-steps">
+                  <li><strong>Consulta la red.</strong> Ajusta la población y los contactos; el servidor devuelve la red inicial con ubicaciones sintéticas.</li>
+                  <li><strong>Compara estrategias.</strong> Ejecuta las tres políticas con réplicas reales y revisa medias y dispersión en Comparación.</li>
+                  <li><strong>Reproduce una réplica.</strong> Vuelve al simulador, cambia de estrategia y recorre los días. Esa trayectoria no es el promedio.</li>
+                </ol>
+                <section className="help-section" aria-labelledby="help-seir-title">
+                  <h3 id="help-seir-title">Estados SEIR</h3>
+                  <dl className="help-states">
+                    {seirHelp.map(([key, label, detail]) => (
+                      <div key={key}>
+                        <dt><span className="help-state-dot" style={{ background: seirColors[key].marker }} aria-hidden="true" />{key} · {label}</dt>
+                        <dd>{detail}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+                <p className="help-note">Antes de comparar, el grafo representa el estado inicial. Las vacunas se aplican al ejecutar la simulación. Modelo educativo: no usar para decisiones sanitarias reales.</p>
+              </div>
+            ) : (
+              <p>{modal === "run"
                 ? "La red se calculó en el servidor con tus parámetros. El explorador muestra esta red real y su estado inicial; todavía no se ejecutó una comparación."
                 : comparison ? "Descarga el experimento completo con parámetros, versiones, semillas y resultados reproducibles." : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
+            )}
             {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
