@@ -1,0 +1,157 @@
+{
+ "presetId": "manabi-dengue-2025-v1",
+ "schemaVersion": "p06-dengue-preset-v1",
+ "hash": "sha256:2cde2f34eb1c088611d4f6714756e67d4cec980b8b0a349d0e323fbd56cf8aab",
+ "status": "fitted-not-validated",
+ "label": "SEIR calibrado al dengue notificado de Manabí (2025); validación fuera de muestra desfavorable frente a persistencia",
+ "dataset": {
+  "datasetId": "manabi-dengue-weekly-v1",
+  "csvSha256": "e51b0858624ccd32349e86fcee57777bc1834579b80416e21ce54b1b11d1913a",
+  "years": [
+   2025,
+   2026
+  ]
+ },
+ "parameters": {
+  "beta": 0.1678562291,
+  "reporting": 0.0121826558,
+  "r0": 1.174994779,
+  "dispersion": 50.0,
+  "logLikelihood": -159.2130669684,
+  "fitWindow": {
+   "fitStart": 1,
+   "fitEnd": 35,
+   "validationStart": 36,
+   "validationEnd": 53,
+   "weeks": 53,
+   "rule": "primeras floor(2n/3) semanas para ajuste"
+  }
+ },
+ "uncertainty": {
+  "beta": {
+   "mean": 0.16777872482740985,
+   "p05": 0.16554006111466413,
+   "p50": 0.16785622914468637,
+   "p95": 0.16949801141522078
+  },
+  "reporting": {
+   "mean": 0.012228826775370296,
+   "p05": 0.01161665858666512,
+   "p50": 0.012253826947470323,
+   "p95": 0.012789895842557289
+  },
+  "r0": {
+   "mean": 1.174452248244117,
+   "p05": 1.1587815865842352,
+   "p50": 1.1749947790075834,
+   "p95": 1.1864872663938117
+  },
+  "dispersion": {
+   "mean": 64.79166666666667,
+   "p05": 25.0,
+   "p50": 50.0,
+   "p95": 100.0
+  },
+  "replicates": 120,
+  "seed": 20261027
+ },
+ "metrics": {
+  "fit": {
+   "mae": 73.5176034554,
+   "rmse": 80.8458646411,
+   "bias": -30.9474929798,
+   "logScore": -11.6173079942,
+   "coverage95": 0.1764705882
+  },
+  "validation": {
+   "mae": 29.5293446741,
+   "rmse": 35.0081416359,
+   "bias": 23.5355103258,
+   "logScore": -6.6966637228,
+   "coverage95": 0.3333333333
+  },
+  "fitPoints": 34,
+  "validationPoints": 18
+ },
+ "identifiability": {
+  "identified": true,
+  "withinTwoLogUnits": {
+   "min": 0.17,
+   "max": 0.17,
+   "count": 1
+  },
+  "tenPercentDelta": {
+   "down": -29.5092880238,
+   "up": -35.4578312
+  },
+  "note": "beta queda determinado con precisión condicionado al modelo de mezcla homogénea, a sigma, gamma y N fijos y a la rejilla de dispersión. Eso no corrige el mal ajuste ni la confusión estructural entre N y rho, y el objetivo no es suave porque k se elige en rejilla: la búsqueda es rejilla más refinamiento local, no una prueba de óptimo global."
+ },
+ "engine": {
+  "configuration": {
+   "rootSeed": 20261026,
+   "networkMode": "fixed",
+   "repetitions": 2,
+   "scenario": {
+    "populationSize": 1000,
+    "days": 90,
+    "beta": 0.025542,
+    "sigma": 0.333333,
+    "gamma": 0.142857,
+    "initialInfectious": 3,
+    "origin": {
+     "kind": "random",
+     "value": null
+    }
+   },
+   "intervention": {
+    "vaccines": 100,
+    "interventionDay": 0,
+    "vaccineEfficacy": 1.0
+   },
+   "policies": [
+    "none",
+    "random",
+    "targeted"
+   ],
+   "network": {
+    "generatorVersion": "synthetic-manta-v1",
+    "dayZero": "monday",
+    "weights": {
+     "household": 1.0,
+     "school": 0.6,
+     "bus": 0.45,
+     "market": 0.5,
+     "neighborhood": 0.2
+    }
+   }
+  },
+  "meanDailyWeightPerNode": 6.5717655556,
+  "r0": 1.174994779,
+  "betaApproximation": 0.0255420294,
+  "bridgeCheck": {
+   "window": [
+    14,
+    45
+   ],
+   "replicates": 10,
+   "extinctions": 3,
+   "fizzledRate": 0.3,
+   "growthRateTheory": 0.0168997001,
+   "growthRateEngineMedian": 0.010989809,
+   "ratioMedian": 0.6502960959,
+   "medianAttackRate90Days": 0.027,
+   "note": "El motor parte de 3 infecciosos en 1 000 personas y una red heterogénea; la teoría asume mezcla homogénea y un estado casi estacionario. Si el brote se extingue por azar no hay pendiente que comparar. El cociente se publica como desviación entre aproximaciones, no como validación."
+  }
+ },
+ "limits": [
+  "No es un modelo de dengue: es la forma del motor SEIR ajustada a una curva de casos.",
+  "La serie observada es provincial, preliminar y sin granularidad de Manta.",
+  "N y rho estan confundidos: solo se identifica rho·N; se fija N y se reporta rho|N.",
+  "El preset del motor arranca con 3 infecciosos en 1 000 personas, no en el estado de la semana 1.",
+  "El motor simula como maximo 180 dias; la ventana de ajuste de 2025 tiene 371 dias.",
+  "Los efectos y costos educativos del simulador no se vuelven reales por calibrar una curva.",
+  "El modo ficticio del simulador sigue siendo el predeterminado; este preset es optativo.",
+  "La validación fuera de muestra pierde frente a persistencia en 2025 y 2026: el ajuste no predice la onda observada.",
+  "beta y R0 se identifican solo de forma condicional al modelo; un parámetro preciso no corrige un modelo mal especificado."
+ ]
+}

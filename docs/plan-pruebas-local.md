@@ -224,11 +224,112 @@ Si el MSP publica una revisión del PDF en la misma URL, `download` y `extract` 
 - 2026 llega hasta la SE 41; 2025 cubre 53 semanas.
 - Las series 2021–2024 del gráfico no tienen etiquetas impresas y no se importan.
 - El control de 2025 es **indirecto** (tasas por 100 000), no una tabla de casos.
-- El dataset no alimenta el motor SEIR y no es calibración; P-06 sigue abierto.
+- El dataset no alimenta el motor SEIR; la calibración es P-06 y se prueba en la sección 5.
 
 Evidencia: [p05-dengue-manabi-2026-10-27.md](evidencia/p05-dengue-manabi-2026-10-27.md) y figura [p05-dengue-manabi.svg](evidencia/figuras/p05-dengue-manabi.svg).
 
-## 5. Regresión mínima antes de cerrar una iteración
+## 5. P-06 — Calibración y preset versionado de dengue
+
+Funcionalidad implementada: ajuste del SEIR de mezcla homogénea del motor a los casos semanales notificados de Manabí (P-05), con ventanas de ajuste/validación fijadas antes de mirar resultados, incertidumbre por bootstrap, perfil de verosimilitud, preset versionado `manabi-dengue-2025-v1` y panel en la UI.
+
+**Estado publicado: `fitted-not-validated`.** La validación fuera de muestra pierde frente a la persistencia en 2025 (MAE 29,53 vs 14,22) y en 2026 (268,62 vs 48,86). Es el resultado real y no se re-tunea. El modo ficticio sigue siendo el predeterminado.
+
+### 5.1 Pruebas automatizadas (A)
+
+Backend, desde `backend/`. No requieren red, PDF ni la API:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests/test_p06_calibration.py -q
+```
+
+| ID | Qué comprueba | Resultado esperado |
+|---|---|---|
+| P06-A1 | La ventana usa dos tercios por número de semanas | 2025 35/18; 2026 27/14 |
+| P06-A2 | `σ`, `γ` y `N` son los valores declarados | 0.333333, 0.142857, 1 661 447 |
+| P06-A3 | La simulación conserva población y es determinista | misma salida en dos llamadas |
+| P06-A4 | La simulación responde de forma monótona a `β` al inicio | más `β` ⇒ más exposición |
+| P06-A5 | Parámetros inválidos se rechazan | 4 errores distintos |
+| P06-A6 | La log-verosimilitud NB coincide con la fórmula | error < 1e-12 |
+| P06-A7 | La dispersión se elige en la rejilla declarada | valor de la rejilla |
+| P06-A8 | `evaluate` publica MAE, RMSE, sesgo, log-score y cobertura | cifras finitas y rango válido |
+| P06-A9 | El ajuste recupera parámetros conocidos de datos sintéticos | error acotado en `β` y `ρ` |
+| P06-A10 | Series cortas o inválidas se rechazan | 3 errores distintos |
+| P06-A11 | El perfil de verosimilitud tiene su máximo cerca del estimado | Δ mínimo en el entorno de `β` |
+| P06-A12 | El bootstrap es determinista y ordenado | mismos percentiles en dos ejecuciones |
+| P06-A13 | El CSV de P-05 se lee con su hash congelado | 94 filas, `e51b0858…` |
+| P06-A14 | El ajuste real coincide con el preset publicado | `β`, `ρ`, `k`, `R₀` y logL idénticos |
+| P06-A15 | Se publican métricas de validación y las dos referencias | MAE de modelo, persistencia y media |
+| P06-A16 | El preset del motor es una configuración válida | `β` en (0,1], N ≤ 2000, días ≤ 180 |
+| P06-A17 | El perfil se lee como identificabilidad **condicional** | máximo único en 0.17; ±10 % cuesta > 2 unidades |
+| P06-A18 | El perfil no escapa al óptimo global | `β` lejano pierde > 2 unidades |
+| P06-A19 | El puente al motor se publica como desviación | 10 réplicas, extinciones contadas, cociente finito |
+| P06-A20 | El resultado desfavorable queda registrado | validación > persistencia en los dos años |
+| P06-A21 | La copia del frontend coincide con el preset del backend | hash, motor, límites e identificabilidad |
+| P06-A22 | El preset no contamina el modo ficticio | escenario por defecto intacto |
+
+Frontend, desde `frontend/`:
+
+```powershell
+npm test -- --run
+```
+
+| ID | Qué comprueba | Resultado esperado |
+|---|---|---|
+| P06-A23 | Lee el preset publicado sin recalcular el ajuste | `manabi-dengue-2025-v1`, ventanas 35/53 y 27/41 |
+| P06-A24 | Un preset alterado no se carga ni rompe el modo ficticio | `PresetError` en 6 mutaciones |
+| P06-A25 | Cargar impone la parte epidemiológica y respeta la intervención | `β` y `σ` del motor; vacunas, eficacia, réplicas y semilla intactas |
+| P06-A26 | El preset solo está activo mientras el escenario no se edite | `true` con vacunas distintas; `false` al cambiar `β` o población |
+| P06-A27 | El resumen muestra ventana, error retenido y desviación | texto con S1–S35 / S36–S53 y brotes extintos |
+
+Referencia de la iteración: **22/22** pruebas backend nuevas y **5/5** frontend; suite completa **391 backend** y **135 frontend** en verde.
+
+### 5.2 Pipeline reproducible (D)
+
+Desde la raíz, sin red:
+
+```powershell
+backend\.venv\Scripts\python.exe scripts\p06_calibrate.py verify
+backend\.venv\Scripts\python.exe scripts\p06_calibrate.py summary
+```
+
+| ID | Qué comprueba | Resultado esperado |
+|---|---|---|
+| P06-D1 | `verify` recalcula el preset desde el CSV y compara con lo publicado | `status: passed`, hash `sha256:2cde2f34…` |
+| P06-D2 | El ajuste es determinista | `beta 0.1678562291` (2025) y `0.1725914523` (2026) en cada ejecución |
+| P06-D3 | `summary` resume ambos años y el puente | ventanas, MAE de validación y persistencia |
+
+Salida real de P06-D1 (2026-10-27):
+
+```json
+{"status":"passed","presetId":"manabi-dengue-2025-v1","hash":"sha256:2cde2f34eb1c088611d4f6714756e67d4cec980b8b0a349d0e323fbd56cf8aab","fits":[{"year":2025,"beta":0.1678562291,"reporting":0.0121826558,"r0":1.174994779,"validationMae":29.5293446741,"validationCoverage95":0.3333333333},{"year":2026,"beta":0.1725914523,"reporting":0.016842195,"r0":1.2081413743,"validationMae":268.6159791177,"validationCoverage95":0.0}],"engineBeta":0.025542,"bridgeRatio":0.6502960959,"bridgeExtinctions":3,"identifiabilityWindow":{"min":0.17,"max":0.17,"count":1}}
+```
+
+`fit` solo hace falta para republicar: reescribe `data/p06/dengue-preset-v1.json` y `frontend/src/lib/dengue-preset.json`. Si cambia el CSV de P-05, `verify` falla por hash y el ajuste exige revisión explícita.
+
+### 5.3 Navegador real (B)
+
+Precondición: API en `:8000` y Vite en `:5174`; vista **Explorar red**.
+
+| ID | Pasos | Resultado esperado |
+|---|---|---|
+| P06-B1 | Abrir la vista y leer el panel | Insignia «Ajustado, no validado»; ventanas S1–S35/S36–S53; MAE retenido 29,53; cobertura 33,33 %; 3/10 brotes extintos; 9 límites; sin errores de consola |
+| P06-B2 | Pulsar «Cargar preset de dengue» | `β` 0.03 (0.025542), población 1000, horizonte 90, inicio 3; vacunas, eficacia y réplicas sin cambios; aviso con `R₀ ≈ 1.17` |
+| P06-B3 | «Consultar red» con el preset cargado | `POST /v1/scenarios/preview` → 200; 1 000 personas, 59 373 contactos, semilla 20261026 |
+| P06-B4 | Pulsar «Volver al brote ficticio» | `β` vuelve a 0.08; el panel deja de estar activo; aviso de modo ficticio restablecido |
+
+Figura: `docs/evidencia/figuras/p06-preset-dengue.jpeg`. Informe: [p06-dengue-manabi-2026-10-27.md](evidencia/p06-dengue-manabi-2026-10-27.md).
+
+### 5.4 Límites
+
+- El resultado de validación es **desfavorable** y así se publica; el preset no está validado.
+- No es un modelo de dengue: es la forma SEIR del motor ajustada a una curva de casos.
+- `N` y `ρ` están confundidos; solo se identifica `ρ·N` y se reporta `ρ|N`.
+- La identificabilidad de `β` es **condicional al modelo**; no corrige el mal ajuste.
+- El motor no puede simular la ventana de ajuste (371 días > 180): el preset reproduce la dinámica traducida, no la serie.
+- El puente mide desviación entre aproximaciones (0,65× la teoría), no valida el motor.
+- Los datos son provinciales, preliminares y 2026 llega hasta la SE 41.
+
+## 6. Regresión mínima antes de cerrar una iteración
 
 Desde `backend/`:
 
@@ -247,12 +348,13 @@ npm run typecheck
 npm run build
 ```
 
-Resultado de referencia (2026-10-27, I-03): 369 pruebas backend; 130 pruebas frontend; Ruff, formato, mypy, typecheck y build correctos.
+Resultado de referencia (2026-10-27, I-05): 391 pruebas backend; 135 pruebas frontend; Ruff, formato, mypy, typecheck y build correctos.
 
-## 6. Límites de este documento
+## 7. Límites de este documento
 
 - P-04 (AWS, Distributed Map, miles de réplicas) no existe en local y por eso no tiene pruebas aquí.
 - P-05 no tiene prueba de navegador: es un pipeline de datos. Su verificación es por hash, controles de totales y pruebas unitarias.
+- P-06 tiene panel, pero su verificación en navegador cubre la carga y la vista previa, no una aceptación humana.
 - La aceptación humana T-13..T-16 (teclado, contraste con personas, tiempos de demo, guion sorpresa) requiere personas y acceso; no se simula con scripts.
 - Las capturas prueban lo que muestran; no sustituyen los hashes ni la reproducibilidad que verifican los scripts.
 - T-22 sigue incompleto: ninguna cifra de estas pruebas debe citarse como gate científico.

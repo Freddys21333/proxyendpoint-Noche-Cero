@@ -93,11 +93,42 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-06 — Modelo y preset calibrado, validación fuera de muestra (PRO-5)
 
-- [ ] Estado: **no iniciado**. Dependencias: P-05 y ficha de modelo de §2.
+- [x] Estado: **cerrado en local** (2026-10-27) sobre `manabi-dengue-weekly-v1` (P-05). Preset `manabi-dengue-2025-v1` con `status: fitted-not-validated`: la validación fuera de muestra **pierde frente a persistencia** en 2025 y 2026 y así se publica. Dependencias: P-05 cumplida. La «ficha de modelo de §2» no existe como documento aparte: los supuestos se declaran aquí y en la evidencia de la iteración. Evidencia: [p06-dengue-manabi-2026-10-27.md](../docs/evidencia/p06-dengue-manabi-2026-10-27.md). Pruebas: [plan-pruebas-local.md](../docs/plan-pruebas-local.md#5-p-06--calibración-y-preset-versionado-de-dengue).
 - Definir variable observada y función de observación (casos notificados frente a estados simulados), escala semanal/diaria y supuestos de notificación. Una probabilidad diaria no se obtiene igualando sin justificación el inverso de una duración ni interpolando arbitrariamente casos semanales.
 - Separar períodos de ajuste y validación antes de observar el resultado; documentar parámetros fijados/estimados, método, restricciones, identificabilidad, incertidumbre y métricas de ajuste/predicción. No escoger una semilla por parecerse a la curva observada.
 - Publicar dataset/preset/modelo versionados, código, semillas, parámetros, rango y limitaciones. Comparar con una referencia sencilla; registrar resultados desfavorables. Los efectos y costos educativos no se vuelven reales por calibrar una curva de casos.
 - Aceptación: otro proceso reproduce el ajuste y la evaluación retenida. No se etiqueta como calibrado mientras solo existan datos importados o números tomados de una ficha. Mantener el modo ficticio independiente.
+
+**Protocolo fijado antes de ajustar (2026-10-27)**
+
+| Elemento | Decisión | Justificación |
+|---|---|---|
+| Variable observada | Casos semanales **notificados** de dengue en Manabí (`weekly_cases`, P-05) | Es lo único observado; no se usan tasas, acumulados ni datos de otra geografía. |
+| Modelo de transmisión | SEIR determinista de mezcla homogénea a escala provincial: `λ = β·I/N`, pasos diarios discretos | Es la forma del motor del proyecto llevada a su límite de mezcla homogénea; no es un modelo de dengue validado. |
+| Función de observación | `y_w ~ NB(μ_w, k)`, `μ_w = ρ · Σ_{d∈w} σ·E_d` | Los casos notificados siguen al inicio de síntomas, aproximado por la transición E→I. |
+| Parámetros fijados | `σ = γ = 1/3` por día (valores por defecto del motor), `N = 1 661 447` (población implícita de la tabla de tasas 2025) | No se inventan duraciones «de dengue»; se usan las del simulador y se declara. |
+| Parámetros estimados | `β` (transmisión diaria), `ρ` (fracción notificada **dado N**), `k` (dispersión NB, en rejilla) | `N` y `ρ` están exactamente confundidos: solo se identifica `ρ·N`. Se fija `N` y se reporta `ρ|N`. |
+| Semilla de condiciones iniciales | `E₀ = I₀ = (y₁/7ρ)·(1/σ)`; la semana 1 solo condiciona y no entra en la verosimilitud | La serie empieza a mitad de onda; sembrar desde cero obligaría a inventar historia previa. |
+| Ventana de ajuste 2025 | S1–S35 (35 de 53 semanas) | Regla de dos tercios declarada por número de semanas disponibles, no por forma de la curva. |
+| Validación 2025 | S36–S53 (18 semanas), sin reajuste | Retención fuera de muestra dentro de la misma onda. |
+| Ventana de ajuste 2026 | S1–S27 (27 de 41 semanas) | Misma regla de dos tercios. |
+| Validación 2026 | S28–S41 (14 semanas), sin reajuste | Segunda onda, misma regla; el pico queda en la frontera y se declara. |
+| Referencias simples | Persistencia (último valor) y media de la ventana de ajuste | Si el modelo no supera una referencia trivial, se registra. |
+| Incertidumbre | Bootstrap paramétrico determinista, 120 réplicas, semilla fija | Reproducible sin depender de optimizadores estocásticos. |
+| Preset para el motor | `manabi-dengue-2025-v1`: `β_motor = R₀·γ / w̄`, con `R₀ = β/γ` y `w̄` medido en el grafo sintético | Puente declarado de mezcla homogénea; se mide su desviación frente al motor y se publica. |
+
+**Resultado publicado (2026-10-27)**
+
+| Año | Ajuste | Validación | `β` | `ρ\|N` | `k` | `R₀` | MAE validación | Persistencia | Cobertura 95 % |
+|---|---|---|---|---|---|---|---|---|---|
+| 2025 | S1–S35 | S36–S53 | 0.1678562291 | 0.0121826558 | 50 | 1.174994779 | **29.53** | **14.22** | 33.3 % |
+| 2026 | S1–S27 | S28–S41 | 0.1725914523 | 0.016842195 | 25 | 1.2081413743 | **268.62** | **48.86** | 0 % |
+
+- Preset: `data/p06/dengue-preset-v1.json`, hash `sha256:2cde2f34eb1c088611d4f6714756e67d4cec980b8b0a349d0e323fbd56cf8aab`, `status: fitted-not-validated`.
+- Bootstrap 120 réplicas (semilla 20261027): `β` 2025 entre 0.165540 y 0.169498.
+- Identificabilidad condicional: mover `β` un ±10 % cuesta −35.46 / −29.51 unidades de log-verosimilitud; `N` y `ρ` siguen confundidos.
+- Puente al motor: `w̄ = 6.5717655556`, `β_motor = 0.0255420294`, 3/10 brotes extintos, crecimiento 0.65× la teoría.
+- Consecuencia: el preset es optativo, explícitamente no validado y no convierte en reales los efectos ni los costos educativos. P-08 debe citarlo con esta etiqueta.
 
 ### P-07 — Completar visualización temporal y animación opcional (PRO-6)
 

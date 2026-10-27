@@ -1,8 +1,8 @@
 # Traspaso para agentes — contexto, estado y backlog
 
 **Fecha de corte:** 2026-10-27.
-**Rama de integración:** `feat/pro`.
-**Último commit integrado:** `5861407` (`merge(pro): integrar P-02 adaptativa y P-03 jobs locales`).
+**Rama de trabajo:** `feat/backend-contratos`.
+**Último commit:** P-06 (`feat(pro-p06)`), tras P-05 (`0902755`).
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -20,7 +20,7 @@ Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar e
 - T-22 completo: matriz primaria y contrastes, no solo controles.
 - P-02: aceptación humana UI; editor, historial y backend adaptativo ya verificados en local.
 - P-04: AWS; la pantalla de jobs ya usa la API real (P-03 cerrada en local, no durable).
-- P-06: calibración y validación fuera de muestra sobre la serie real ya importada.
+- P-06: existe el preset `manabi-dengue-2025-v1`, pero la validación fuera de muestra es desfavorable; no hay versión validada.
 - P-08: informe determinista para alcaldía.
 - P-07: aceptación de sincronización, accesibilidad y rendimiento.
 - T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
@@ -189,6 +189,7 @@ Evidencia: [estado del frontend PRO](estado-frontend-pro-2026-10-27.md), [integr
 - **P-02 backend y UI local:** `adaptive-v1`, reglas, anillo, motivos, exportación, reproducción, editor, variante e historial diario verificados; falta aceptación humana T-13..T-16.
 - **P-03 local (no durable):** `/v1/jobs`, cola, token, idempotencia, cancelación, resultado reproducible y pantalla PRO conectada a la API real; falta P-04 (AWS) y durabilidad.
 - **P-05:** `manabi-dengue-weekly-v1`, 94 semanas reales de dengue de Manabí (2025 S1–53, 2026 S1–41) con importador reproducible, geometría versionada, procedencia y controles de totales. Provincial, preliminar y **sin** conexión al motor SEIR.
+- **P-06 local, no validado:** `manabi-dengue-2025-v1` ajusta el SEIR de mezcla homogénea a P-05 con ventanas fijadas antes de mirar, bootstrap 120, perfil condicional y puente al motor. La validación pierde frente a persistencia en ambos años; el panel de la UI lo muestra y permite volver al modo ficticio.
 - **P-07 parcial:** reproducción y mapa sincronizados; faltan aceptación, transiciones, rendimiento y accesibilidad.
 
 ---
@@ -269,7 +270,7 @@ Antes de ejecutar, revisar `scripts/run_t22.py`. Su compilación, Ruff y corrida
 | P-03 | Local, no durable | `/v1/jobs`, manifiesto, progreso, cancelación, idempotencia, agregado completo y pantalla PRO conectada a la API real. | Cumplido en local: mismo agregado en distinto orden, reintentos sin duplicar, cancelación trazable y reproducción secuencial. Reiniciar el servidor pierde los trabajos; eso es P-04. |
 | P-04 | No iniciado | Step Functions Distributed Map, Lambda por réplica, S3, IAM mínimo, cuotas, concurrencia, costos. | Terraform válido, prueba pequeña, 100 y ≥1.000 réplicas con integridad/costo; sin 10.000 sin autorización. |
 | P-05 | Cerrado en local | Hecho: `manabi-dengue-weekly-v1`, 94 semanas (2025 S1–53, 2026 S1–41), 18 259 casos, desde las gacetas ETV SE 53/2025 y SE 41/2026 del MSP. | Cumplido: importador `download`/`extract`/`build`/`verify`/`render`, geometría versionada, procedencia con hash, control directo 2026 (11 946) e indirecto por tasas 2025 (6 313). Límites: provincial, preliminar, 2026 incompleto. |
-| P-06 | Siguiente, no iniciado | Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre, preset versionado, sobre la serie de P-05. | Otro proceso reproduce ajuste y validación retenida; resultados desfavorables visibles; no confundir datos importados con calibración. |
+| P-06 | Cerrado en local, **no validado** | Hecho: `manabi-dengue-2025-v1` sobre `manabi-dengue-weekly-v1`; SEIR de mezcla homogénea con `σ`/`γ` del motor, `N` fijo, NB semanal, ventanas 2025 S1–S35/S36–S53 y 2026 S1–S27/S28–S41, bootstrap 120, perfil de `β` y puente `β_motor = R₀·γ/w̄`. | Cumplido: `scripts/p06_calibrate.py verify` reproduce el preset; panel en la UI con etiqueta y límites. Resultado: pierde frente a persistencia (29,53 vs 14,22 y 268,62 vs 48,86), `N`–`ρ` confundidos y ventana de 371 días fuera del motor. No re-tunear. |
 | P-07 | Parcial | Sincronización mapa/red/curva/tabla, pausa/seek/velocidad/reinicio, foco, movimiento reducido, rendimiento. | Sin divergencias; frames coherentes con hash/réplica/día; accesibilidad y rendimiento aceptados; no inventar contagios ni trayectos. |
 | P-08 | No iniciado | Informe determinista para alcaldía, preferible PDF, desde experimento validado. | Cifras coinciden con JSON; fuentes, hash, costos, incertidumbre y límites; PDF revisado y reproducible; no ocultar pérdidas. |
 
@@ -310,7 +311,7 @@ Detalle completo: [specs/pro-roadmap.md](../specs/pro-roadmap.md) y [specs/pro-w
 - [ ] P-03 local no durable; falta P-04.
 - [ ] P-04 AWS Distributed Map, no iniciado.
 - [x] P-05 datos reales de dengue/Manabí, verificado localmente (94 semanas, 2025–2026).
-- [ ] P-06 calibración, no iniciado.
+- [x] P-06 calibración y preset `manabi-dengue-2025-v1`, cerrado en local pero `fitted-not-validated` (pierde frente a persistencia).
 - [ ] P-07 mapa/animación, parcial.
 - [ ] P-08 informe para alcaldía, no iniciado.
 - [x] P-09 mapa geográfico, verificado localmente como presentación.
@@ -368,7 +369,8 @@ No cambiar hashes, defaults, fórmulas, contratos ni semillas sin actualizar pru
 - [x] P-05 cerrado en local: fuente oficial, procedencia, hash, normalización, controles de totales y límites declarados.
 - La fuente es **provincial** y **preliminar**: no hay Manta ni datos cantonales; 2026 llega a la SE 41.
 - El dataset **no alimenta el motor SEIR** (`wired_into_simulator = false`). Importar datos no es calibrar.
-- P-06 es lo siguiente: variable observada, ajuste/validación separados, incertidumbre y preset versionado.
+- [x] P-06 cerrado en local con resultado desfavorable: `manabi-dengue-2025-v1` (`fitted-not-validated`), ventanas fijadas antes de mirar, bootstrap, perfil condicional y puente al motor. Evidencia: [p06-dengue-manabi-2026-10-27](evidencia/p06-dengue-manabi-2026-10-27.md).
+- No re-tunear ventanas, semillas ni parámetros para mejorar la validación. `N`–`ρ` siguen confundidos y el motor no admite la ventana de 371 días.
 - No inventar datos ni repartir casos provinciales sin metodología.
 
 ### Prioridad 4 — P-04 (AWS)
@@ -448,8 +450,8 @@ No guardar credenciales, correos, tokens ni datos personales en evidencia.
 
 | Frente | Último estado auditado |
 |---|---|
-| Backend | 369 pruebas, Ruff y mypy correctos (23 archivos fuente). |
-| Frontend | 130 pruebas, typecheck y build correctos. |
+| Backend | 391 pruebas, Ruff y mypy correctos (24 archivos fuente). |
+| Frontend | 135 pruebas, typecheck y build correctos. |
 | Benchmark local | 44,3 s para N1000/T90/R30 sin frames; 8,5× mejor que 377,9 s. |
 | T-22 controles | 5/5 PASA; matriz primaria/contrastes pendientes. |
 | T-22 exportación | `base-root-0` JSON ~8,3 MB; exportación ~2 min; reproducción pendiente para la matriz. |
@@ -539,17 +541,17 @@ Reemplaza fixtures de frontend/src/pro/ por contrato real. No presentes
 repetitions síncronas como jobs. Documenta evidencia y límites.
 ```
 
-### 13.4 P-06 (P-05 ya cerrado)
+### 13.4 P-08 (P-06 cerrado en local, no validado)
 
 ```text
 Lee AGENTS.md, docs/plan-pro-iteraciones.md y
-docs/evidencia/p05-dengue-manabi-2026-10-27.md. Trabaja solo en P-06 sobre
-manabi-dengue-weekly-v1. Define variable observada y función de observación,
-separa ajuste y validación fuera de muestra, reporta identificabilidad,
-incertidumbre y un preset versionado reproducible. Recuerda que la serie es
-provincial y preliminar: no la presentes como evidencia de riesgo local ni
-repartas casos entre personas sintéticas. No ajustes y valides con la misma
-ventana. Si el resultado es desfavorable, consérvalo.
+docs/evidencia/p06-dengue-manabi-2026-10-27.md. Trabaja solo en P-08. Construye
+un informe determinista para la alcaldía desde un experimento completo, con
+cifras exactas del JSON, costos, incertidumbre, fuentes, hash y límites. Si usas
+el preset manabi-dengue-2025-v1, cítalo como fitted-not-validated y no lo
+presentes como calibración validada: su validación pierde frente a persistencia.
+No rellenes cifras ausentes ni ocultes pérdidas o empates. Prefiere PDF
+reproducible y revisa el resultado visualmente.
 ```
 
 ### 13.5 AWS/T-17..T-21

@@ -1,5 +1,7 @@
 # Estado del frontend hacia PRO · 2026-10-27
 
+> **Instantánea histórica.** Este documento describe el frontend antes de I-02..I-05 (P-02, P-03, P-05 y P-06). El estado vigente está en [pro-roadmap](../specs/pro-roadmap.md), [plan de pruebas local](plan-pruebas-local.md) y [AGENTS.md](../AGENTS.md).
+
 Alcance de esta revisión: **solo frontend**. La fuente de verdad del modelo, los costos, las estadísticas y los trabajos sigue siendo el backend. La [hoja de ruta PRO](../specs/pro-roadmap.md) define el alcance del producto y la [división de frentes](../specs/pro-workstreams.md) separa responsabilidades. Este documento registra qué puede usar hoy una persona en la interfaz, qué es una demostración y qué contrato falta para conectar el resto.
 
 ## Estado visible hoy

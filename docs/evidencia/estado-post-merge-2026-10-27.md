@@ -96,11 +96,12 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 ### I-05 — P-06 calibración y preset
 
-- [ ] Definir variable observada y función de observación.
-- [ ] Separar ajuste y validación antes de mirar resultados.
-- [ ] Documentar parámetros fijados/estimados, identificabilidad, incertidumbre y métricas.
-- [ ] Publicar dataset, preset, modelo, semillas y limitaciones versionados.
-- [ ] Mantener el modo ficticio separado; no etiquetar como calibrado sin validación fuera de muestra.
+- [x] Definir variable observada y función de observación (`weekly_cases`, NB con `μ_w = ρ·ΣσE_d`).
+- [x] Separar ajuste y validación antes de mirar resultados (2025 S1–S35/S36–S53; 2026 S1–S27/S28–S41).
+- [x] Documentar parámetros fijados/estimados, identificabilidad, incertidumbre y métricas.
+- [x] Publicar dataset, preset, modelo, semillas y limitaciones versionados (`manabi-dengue-2025-v1`, `fitted-not-validated`).
+- [x] Mantener el modo ficticio separado; no etiquetar como calibrado sin validación fuera de muestra.
+- Resultado: la validación **pierde** frente a persistencia en 2025 (29,53 vs 14,22) y 2026 (268,62 vs 48,86); `N`–`ρ` confundidos y ventana de 371 días fuera del motor. Evidencia: [p06-dengue-manabi-2026-10-27](p06-dengue-manabi-2026-10-27.md).
 
 ### I-06 — P-08 informe para el alcalde
 

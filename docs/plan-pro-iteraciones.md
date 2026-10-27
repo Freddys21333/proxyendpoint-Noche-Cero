@@ -190,6 +190,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 - No se etiqueta como calibrado si solo hay datos importados.
 - El preset calibrado se puede cargar desde la UI sin romper el modo ficticio.
 
+**Estado 2026-10-27:** cerrada localmente con **resultado desfavorable publicado**. `manabi-dengue-2025-v1` (`status: fitted-not-validated`) ajusta el SEIR de mezcla homogénea a P-05 con ventanas fijadas antes de mirar resultados (2025 S1–S35/S36–S53; 2026 S1–S27/S28–S41), bootstrap determinista de 120 réplicas, perfil de verosimilitud que reoptimiza solo `ρ` y puente declarado al motor (`β_motor = R₀·γ/w̄`). La validación pierde frente a persistencia en los dos años (MAE 29,53 vs 14,22 y 268,62 vs 48,86) y el intervalo predictivo no cubre la onda retenida; `N` y `ρ` siguen confundidos y la ventana de 371 días no cabe en el motor. El panel de la UI muestra la etiqueta, las cifras y los 9 límites, y permite volver al modo ficticio. Evidencia: [p06-dengue-manabi-2026-10-27](evidencia/p06-dengue-manabi-2026-10-27.md) y [plan de pruebas local](plan-pruebas-local.md).
+
 ### I-06 — P-08: informe para el alcalde
 
 **Problema:** los resultados existen, pero no hay un documento sencillo, determinista y trazable para una autoridad.
@@ -317,9 +319,9 @@ Reglas heredadas que no se pueden romper:
 | I-00 | Completada | `git log --grep=I-00` | `docs/evidencia/auditoria-pro-2026-10-27.md` |
 | I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
 | I-02 | Completada localmente: backend, cliente y UI con motor real | `git log --grep=pro-p02` | `docs/evidencia/p02-ui-2026-10-27.md` |
-| I-03 | Pendiente | — | — |
+| I-03 | Completada localmente: dataset real y verificado | `git log --grep=pro-p05` | `docs/evidencia/p05-dengue-manabi-2026-10-27.md` |
 | I-04 | Completada localmente: backend, cliente y UI con API real | `git log --grep=pro-p03` | `docs/evidencia/p03-ui-2026-10-27.md` |
-| I-05 | Pendiente | — | — |
+| I-05 | Completada localmente: preset `fitted-not-validated`, validación desfavorable publicada | `git log --grep=pro-p06` | `docs/evidencia/p06-dengue-manabi-2026-10-27.md` |
 | I-06 | Pendiente | — | — |
 | I-07 | Pendiente | — | — |
 | I-08 | Pendiente | — | — |

@@ -1,0 +1,108 @@
+.dengue-preset {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid #dce2da;
+  border-left: 3px solid #7d9b88;
+  background: #f7f9f5;
+}
+
+.dengue-preset--active {
+  border-left-color: #173e32;
+  background: #eef3ec;
+}
+
+.dengue-preset-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dengue-preset-heading h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 15px;
+  color: #173e32;
+}
+
+.dengue-preset-status {
+  padding: 2px 8px;
+  border: 1px solid #c6a15b;
+  border-radius: 999px;
+  color: #7a5a1c;
+  background: #fdf6e3;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.dengue-preset-status[data-status='fitted-and-validated'] {
+  border-color: #7d9b88;
+  color: #173e32;
+  background: #eef3ec;
+}
+
+.dengue-preset-intro,
+.dengue-preset-label,
+.dengue-preset-identifiability,
+.dengue-preset-error {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3d4d43;
+}
+
+.dengue-preset-label {
+  font-weight: 500;
+  color: #202c28;
+}
+
+.dengue-preset-figures {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #5f6b64;
+  font-variant-numeric: tabular-nums;
+}
+
+.dengue-preset-identifiability {
+  color: #7a5a1c;
+}
+
+.dengue-preset-limits {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #3d4d43;
+}
+
+.dengue-preset-limits summary {
+  cursor: pointer;
+  color: #173e32;
+}
+
+.dengue-preset-limits ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  line-height: 1.45;
+}
+
+.dengue-preset-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.dengue-preset-actions small {
+  font-size: 11px;
+  color: #5f6b64;
+  overflow-wrap: anywhere;
+}

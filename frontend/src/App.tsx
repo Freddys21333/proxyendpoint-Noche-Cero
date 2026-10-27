@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { seirColors } from "@/components/seir-colors";
 import { ApiErrorPanel } from "@/components/ApiErrorPanel";
 import { defaults, validateScenario, fromConfiguration, applyServerDefaults, matchesLoadedScenario, type Scenario } from "@/lib/scenario";
+import { readDenguePreset, presetScenario, presetCoversScenario, type DenguePreset } from "@/lib/dengue-preset";
+import denguePresetJson from "@/lib/dengue-preset.json";
+import { DenguePresetPanel } from "@/components/DenguePresetPanel";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 
 const ContactNetwork = lazy(() =>
@@ -22,6 +25,13 @@ const seirHelp = [
   ["R", "Exorcizado", "Recuperado o inmune."],
 ] as const;
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
+const publishedPreset = ((): { preset: DenguePreset | null; error: string } => {
+  try {
+    return { preset: readDenguePreset(denguePresetJson), error: "" };
+  } catch (error) {
+    return { preset: null, error: error instanceof Error ? error.message : "formato inesperado" };
+  }
+})();
 type Modal = "help" | "export" | "run" | null;
 type WorkspaceView = "simulator" | "results" | "pro";
 type ApiOperation = "startup" | "preview" | "comparison";
@@ -138,6 +148,19 @@ export default function App() {
   const reset = () => {
     editedFields.current.clear();
     applyScenario(serverConfig ? fromConfiguration(serverConfig.defaults) : { ...defaults });
+  };
+  const denguePreset = publishedPreset.preset;
+  const presetActive = denguePreset ? presetCoversScenario(denguePreset, scenario) : false;
+  const loadDenguePreset = () => {
+    if (!denguePreset) return;
+    const imposed = presetScenario(denguePreset);
+    for (const key of Object.keys(imposed) as (keyof Scenario)[]) editedFields.current.add(key);
+    applyScenario({ ...scenario, ...imposed });
+    setNotice(`Preset ${denguePreset.presetId} cargado. La transmisión usa R₀ ≈ ${denguePreset.parameters.r0.toFixed(2)} traducido a la red; la validación fuera de muestra fue desfavorable.`);
+  };
+  const clearDenguePreset = () => {
+    reset();
+    setNotice("Modo ficticio restablecido con los valores predeterminados del servidor.");
   };
   const exportConfig = () => {
     const payload = comparison ?? {
@@ -272,6 +295,7 @@ export default function App() {
         </button>
       </div>
       <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
+      <DenguePresetPanel preset={denguePreset} active={presetActive} error={publishedPreset.error} onLoad={loadDenguePreset} onClear={clearDenguePreset} />
       <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
           <Field label="Población" value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />

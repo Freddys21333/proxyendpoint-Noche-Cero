@@ -1,0 +1,690 @@
+{
+ "schemaVersion": "p06-dengue-preset-v1",
+ "presetId": "manabi-dengue-2025-v1",
+ "status": "fitted-not-validated",
+ "label": "SEIR calibrado al dengue notificado de Manabí (2025); validación fuera de muestra desfavorable frente a persistencia",
+ "generatedBy": "scripts/p06_calibrate.py",
+ "dataset": {
+  "datasetId": "manabi-dengue-weekly-v1",
+  "csvPath": "data/p05/manabi-dengue-weekly.csv",
+  "csvSha256": "e51b0858624ccd32349e86fcee57777bc1834579b80416e21ce54b1b11d1913a",
+  "rows": 94,
+  "years": [
+   2025,
+   2026
+  ]
+ },
+ "model": {
+  "form": "seir-homogeneous-mixing-v1",
+  "stateVariables": [
+   "S",
+   "E",
+   "I",
+   "R"
+  ],
+  "forceOfInfection": "beta * I / N",
+  "observation": "negative-binomial",
+  "observationMean": "rho * sum(sigma * E_d) over the 7 days of the week",
+  "sigma": 0.333333,
+  "gamma": 0.142857,
+  "population": 1661447,
+  "dispersionGrid": [
+   2.0,
+   5.0,
+   10.0,
+   25.0,
+   50.0,
+   100.0
+  ]
+ },
+ "fits": [
+  {
+   "year": 2025,
+   "window": {
+    "fitStart": 1,
+    "fitEnd": 35,
+    "validationStart": 36,
+    "validationEnd": 53,
+    "weeks": 53,
+    "rule": "primeras floor(2n/3) semanas para ajuste"
+   },
+   "parameters": {
+    "beta": 0.1678562291,
+    "reporting": 0.0121826558,
+    "dispersion": 50.0,
+    "r0": 1.174994779,
+    "logLikelihood": -159.2130669684,
+    "evaluations": 1981
+   },
+   "fixed": {
+    "sigma": 0.333333,
+    "gamma": 0.142857,
+    "population": 1661447,
+    "initialState": "E0 = y1/(7·ρ·σ); I0 = σ·E0/β; la semana 1 solo condiciona",
+    "dispersionGrid": [
+     2.0,
+     5.0,
+     10.0,
+     25.0,
+     50.0,
+     100.0
+    ]
+   },
+   "uncertainty": {
+    "beta": {
+     "mean": 0.16777872482740985,
+     "p05": 0.16554006111466413,
+     "p50": 0.16785622914468637,
+     "p95": 0.16949801141522078
+    },
+    "reporting": {
+     "mean": 0.012228826775370296,
+     "p05": 0.01161665858666512,
+     "p50": 0.012253826947470323,
+     "p95": 0.012789895842557289
+    },
+    "r0": {
+     "mean": 1.174452248244117,
+     "p05": 1.1587815865842352,
+     "p50": 1.1749947790075834,
+     "p95": 1.1864872663938117
+    },
+    "dispersion": {
+     "mean": 64.79166666666667,
+     "p05": 25.0,
+     "p50": 50.0,
+     "p95": 100.0
+    },
+    "replicates": 120,
+    "seed": 20261027
+   },
+   "profile": [
+    {
+     "beta": 0.0839281146,
+     "logLikelihood": -12799.8217705025
+    },
+    {
+     "beta": 0.1174993604,
+     "logLikelihood": -1460.7916182122
+    },
+    {
+     "beta": 0.1426777948,
+     "logLikelihood": -214.916682813
+    },
+    {
+     "beta": 0.1678562291,
+     "logLikelihood": -159.2115334636
+    },
+    {
+     "beta": 0.201427475,
+     "logLikelihood": -214.2271580452
+    },
+    {
+     "beta": 0.2517843437,
+     "logLikelihood": -291.0588402163
+    }
+   ],
+   "metrics": {
+    "fit": {
+     "mae": 73.5176034554,
+     "rmse": 80.8458646411,
+     "bias": -30.9474929798,
+     "logScore": -11.6173079942,
+     "coverage95": 0.1764705882
+    },
+    "validation": {
+     "mae": 29.5293446741,
+     "rmse": 35.0081416359,
+     "bias": 23.5355103258,
+     "logScore": -6.6966637228,
+     "coverage95": 0.3333333333
+    },
+    "fitPoints": 34,
+    "validationPoints": 18
+   },
+   "baselines": {
+    "persistence": {
+     "mae": 14.2222222222,
+     "rmse": 17.4387818127,
+     "bias": 7.6666666667,
+     "logScore": -4.9191547264,
+     "coverage95": 0.6111111111
+    },
+    "mean": {
+     "mae": 116.9607843137,
+     "rmse": 118.0049083751,
+     "bias": 116.9607843137,
+     "logScore": -23.4353680376,
+     "coverage95": 0.0
+    }
+   },
+   "series": {
+    "observed": [
+     31,
+     86,
+     95,
+     112,
+     94,
+     85,
+     141,
+     138,
+     153,
+     143,
+     189,
+     235,
+     213,
+     279,
+     256,
+     215,
+     264,
+     212,
+     275,
+     228,
+     232,
+     200,
+     263,
+     200,
+     163,
+     164,
+     113,
+     107,
+     125,
+     102,
+     127,
+     97,
+     60,
+     66,
+     52,
+     57,
+     67,
+     56,
+     75,
+     52,
+     36,
+     52,
+     53,
+     37,
+     30,
+     28,
+     29,
+     41,
+     27,
+     28,
+     63,
+     49,
+     18
+    ],
+    "predicted": [
+     31.7802589649,
+     35.2817936826,
+     39.4805233283,
+     44.1099902172,
+     49.1924493182,
+     54.7489621953,
+     60.7952426241,
+     67.3396914541,
+     74.3811953135,
+     81.9067199256,
+     89.8887888247,
+     98.2829849796,
+     107.0256640103,
+     116.0321182579,
+     125.1954730014,
+     134.3866191952,
+     143.455479305,
+     152.2338526998,
+     160.5399865601,
+     168.1848662768,
+     174.9800249043,
+     180.746455486,
+     185.3240051002,
+     188.580473941,
+     190.4195739101,
+     190.7869452778,
+     189.6735934724,
+     187.1163731964,
+     183.195473606,
+     178.0291917869,
+     171.7665662821,
+     164.578633594,
+     156.649145095,
+     148.1655407075,
+     139.3108411575,
+     130.2569277787,
+     121.1594663433,
+     112.1545329,
+     103.3568385426,
+     94.8593380174,
+     86.7339451255,
+     79.0330594914,
+     71.7916238488,
+     65.0294669398,
+     58.7537338958,
+     52.961255288,
+     47.6407522015,
+     42.7748143866,
+     38.3416203549,
+     34.3163921587,
+     30.672594266,
+     27.3828965995,
+     24.4199277259
+    ]
+   }
+  },
+  {
+   "year": 2026,
+   "window": {
+    "fitStart": 1,
+    "fitEnd": 27,
+    "validationStart": 28,
+    "validationEnd": 41,
+    "weeks": 41,
+    "rule": "primeras floor(2n/3) semanas para ajuste"
+   },
+   "parameters": {
+    "beta": 0.1725914523,
+    "reporting": 0.016842195,
+    "dispersion": 25.0,
+    "r0": 1.2081413743,
+    "logLikelihood": -131.0463710523,
+    "evaluations": 1981
+   },
+   "fixed": {
+    "sigma": 0.333333,
+    "gamma": 0.142857,
+    "population": 1661447,
+    "initialState": "E0 = y1/(7·ρ·σ); I0 = σ·E0/β; la semana 1 solo condiciona",
+    "dispersionGrid": [
+     2.0,
+     5.0,
+     10.0,
+     25.0,
+     50.0,
+     100.0
+    ]
+   },
+   "uncertainty": {
+    "beta": {
+     "mean": 0.17263113092472424,
+     "p05": 0.17124308158599913,
+     "p50": 0.17259145230714873,
+     "p95": 0.17393982302829833
+    },
+    "reporting": {
+     "mean": 0.016887640923187484,
+     "p05": 0.014928918815584937,
+     "p50": 0.016925721136402578,
+     "p95": 0.018938080698786375
+    },
+    "r0": {
+     "mean": 1.2084191248921945,
+     "p05": 1.1987027698047636,
+     "p50": 1.2081413742914153,
+     "p95": 1.217579978778067
+    },
+    "dispersion": {
+     "mean": 32.125,
+     "p05": 25.0,
+     "p50": 25.0,
+     "p95": 50.0
+    },
+    "replicates": 120,
+    "seed": 20261027
+   },
+   "profile": [
+    {
+     "beta": 0.0862957262,
+     "logLikelihood": -14398.5199479209
+    },
+    {
+     "beta": 0.1208140166,
+     "logLikelihood": -1621.8036000222
+    },
+    {
+     "beta": 0.1467027345,
+     "logLikelihood": -211.4383360307
+    },
+    {
+     "beta": 0.1725914523,
+     "logLikelihood": -130.987102224
+    },
+    {
+     "beta": 0.2071097428,
+     "logLikelihood": -171.5067689546
+    },
+    {
+     "beta": 0.2588871785,
+     "logLikelihood": -222.5032498012
+    }
+   ],
+   "metrics": {
+    "fit": {
+     "mae": 52.6823250397,
+     "rmse": 63.095721105,
+     "bias": 24.9848278496,
+     "logScore": -5.381570461,
+     "coverage95": 0.9230769231
+    },
+    "validation": {
+     "mae": 268.6159791177,
+     "rmse": 275.2060345484,
+     "bias": -268.6159791177,
+     "logScore": -27.8641718275,
+     "coverage95": 0.0
+    },
+    "fitPoints": 26,
+    "validationPoints": 14
+   },
+   "baselines": {
+    "persistence": {
+     "mae": 48.8571428571,
+     "rmse": 59.9547448378,
+     "bias": 43.0,
+     "logScore": -5.6213923236,
+     "coverage95": 1.0
+    },
+    "mean": {
+     "mae": 209.1538461538,
+     "rmse": 213.2859648207,
+     "bias": -209.1538461538,
+     "logScore": -11.8068417969,
+     "coverage95": 0.0
+    }
+   },
+   "series": {
+    "observed": [
+     64,
+     51,
+     70,
+     71,
+     84,
+     89,
+     87,
+     196,
+     151,
+     209,
+     186,
+     171,
+     178,
+     169,
+     226,
+     255,
+     274,
+     289,
+     303,
+     319,
+     271,
+     279,
+     314,
+     323,
+     366,
+     413,
+     476,
+     517,
+     421,
+     463,
+     449,
+     400,
+     432,
+     402,
+     467,
+     401,
+     470,
+     462,
+     449,
+     365,
+     364
+    ],
+    "predicted": [
+     65.8869103031,
+     74.468382237,
+     84.8962161781,
+     96.5389008366,
+     109.4520601786,
+     123.6745159715,
+     139.213431493,
+     156.0339805633,
+     174.0483489348,
+     193.1048256914,
+     212.9781577648,
+     233.3626997808,
+     253.8701558265,
+     274.0337684939,
+     293.320544194,
+     311.1524195716,
+     326.9361532901,
+     340.1002716227,
+     350.1358474207,
+     356.636606976,
+     359.333224604,
+     358.1169693244,
+     353.0491787122,
+     344.3551341492,
+     332.4033375879,
+     317.6733758787,
+     300.7170168082,
+     282.1176521877,
+     262.4527136737,
+     242.2624981747,
+     222.027329779,
+     202.153518559,
+     182.9674120417,
+     164.7160917088,
+     147.5729406218,
+     131.6463157742,
+     116.989784786,
+     103.6127203283,
+     91.4904011526,
+     80.5730904828,
+     70.7938230813
+    ]
+   }
+  }
+ ],
+ "identifiability": {
+  "year": 2025,
+  "grid": [
+   0.1,
+   0.11,
+   0.12,
+   0.13,
+   0.14,
+   0.15,
+   0.16,
+   0.17,
+   0.18,
+   0.19,
+   0.2,
+   0.21,
+   0.22,
+   0.23,
+   0.24,
+   0.25
+  ],
+  "points": [
+   {
+    "beta": 0.1,
+    "r0": 0.7000007,
+    "logLikelihood": -5885.916046832,
+    "delta": -5725.0409703659
+   },
+   {
+    "beta": 0.11,
+    "r0": 0.77000077,
+    "logLikelihood": -2889.3527575415,
+    "delta": -2728.4776810754
+   },
+   {
+    "beta": 0.12,
+    "r0": 0.84000084,
+    "logLikelihood": -1138.6612293062,
+    "delta": -977.7861528401
+   },
+   {
+    "beta": 0.13,
+    "r0": 0.91000091,
+    "logLikelihood": -432.0474201898,
+    "delta": -271.1723437238
+   },
+   {
+    "beta": 0.14,
+    "r0": 0.98000098,
+    "logLikelihood": -232.484365327,
+    "delta": -71.6092888609
+   },
+   {
+    "beta": 0.15,
+    "r0": 1.05000105,
+    "logLikelihood": -196.1649597645,
+    "delta": -35.2898832985
+   },
+   {
+    "beta": 0.16,
+    "r0": 1.12000112,
+    "logLikelihood": -175.436502515,
+    "delta": -14.5614260489
+   },
+   {
+    "beta": 0.17,
+    "r0": 1.19000119,
+    "logLikelihood": -160.8750764661,
+    "delta": 0.0
+   },
+   {
+    "beta": 0.18,
+    "r0": 1.26000126,
+    "logLikelihood": -183.2879980368,
+    "delta": -22.4129215708
+   },
+   {
+    "beta": 0.19,
+    "r0": 1.33000133,
+    "logLikelihood": -202.0155729894,
+    "delta": -41.1404965234
+   },
+   {
+    "beta": 0.2,
+    "r0": 1.4000014,
+    "logLikelihood": -212.5075527379,
+    "delta": -51.6324762719
+   },
+   {
+    "beta": 0.21,
+    "r0": 1.47000147,
+    "logLikelihood": -225.4744308747,
+    "delta": -64.5993544087
+   },
+   {
+    "beta": 0.22,
+    "r0": 1.54000154,
+    "logLikelihood": -240.1023684353,
+    "delta": -79.2272919692
+   },
+   {
+    "beta": 0.23,
+    "r0": 1.61000161,
+    "logLikelihood": -255.7234222564,
+    "delta": -94.8483457903
+   },
+   {
+    "beta": 0.24,
+    "r0": 1.68000168,
+    "logLikelihood": -271.8489261326,
+    "delta": -110.9738496665
+   },
+   {
+    "beta": 0.25,
+    "r0": 1.75000175,
+    "logLikelihood": -288.1494050696,
+    "delta": -127.2743286036
+   }
+  ],
+  "bestBeta": 0.17,
+  "withinTwoLogUnits": {
+   "min": 0.17,
+   "max": 0.17,
+   "count": 1
+  },
+  "tenPercentDelta": {
+   "down": -29.5092880238,
+   "up": -35.4578312
+  },
+  "identified": true,
+  "note": "beta queda determinado con precisión condicionado al modelo de mezcla homogénea, a sigma, gamma y N fijos y a la rejilla de dispersión. Eso no corrige el mal ajuste ni la confusión estructural entre N y rho, y el objetivo no es suave porque k se elige en rejilla: la búsqueda es rejilla más refinamiento local, no una prueba de óptimo global."
+ },
+ "engine": {
+  "configuration": {
+   "rootSeed": 20261026,
+   "networkMode": "fixed",
+   "repetitions": 2,
+   "scenario": {
+    "populationSize": 1000,
+    "days": 90,
+    "beta": 0.025542,
+    "sigma": 0.333333,
+    "gamma": 0.142857,
+    "initialInfectious": 3,
+    "origin": {
+     "kind": "random",
+     "value": null
+    }
+   },
+   "intervention": {
+    "vaccines": 100,
+    "interventionDay": 0,
+    "vaccineEfficacy": 1.0
+   },
+   "policies": [
+    "none",
+    "random",
+    "targeted"
+   ],
+   "network": {
+    "generatorVersion": "synthetic-manta-v1",
+    "dayZero": "monday",
+    "weights": {
+     "household": 1.0,
+     "school": 0.6,
+     "bus": 0.45,
+     "market": 0.5,
+     "neighborhood": 0.2
+    }
+   }
+  },
+  "meanDailyWeightPerNode": 6.5717655556,
+  "r0": 1.174994779,
+  "betaApproximation": 0.0255420294,
+  "bridgeCheck": {
+   "window": [
+    14,
+    45
+   ],
+   "replicates": 10,
+   "extinctions": 3,
+   "fizzledRate": 0.3,
+   "growthRateTheory": 0.0168997001,
+   "growthRateEngineMedian": 0.010989809,
+   "ratioMedian": 0.6502960959,
+   "medianAttackRate90Days": 0.027,
+   "note": "El motor parte de 3 infecciosos en 1 000 personas y una red heterogénea; la teoría asume mezcla homogénea y un estado casi estacionario. Si el brote se extingue por azar no hay pendiente que comparar. El cociente se publica como desviación entre aproximaciones, no como validación."
+  }
+ },
+ "limits": [
+  "No es un modelo de dengue: es la forma del motor SEIR ajustada a una curva de casos.",
+  "La serie observada es provincial, preliminar y sin granularidad de Manta.",
+  "N y rho estan confundidos: solo se identifica rho·N; se fija N y se reporta rho|N.",
+  "El preset del motor arranca con 3 infecciosos en 1 000 personas, no en el estado de la semana 1.",
+  "El motor simula como maximo 180 dias; la ventana de ajuste de 2025 tiene 371 dias.",
+  "Los efectos y costos educativos del simulador no se vuelven reales por calibrar una curva.",
+  "El modo ficticio del simulador sigue siendo el predeterminado; este preset es optativo.",
+  "La validación fuera de muestra pierde frente a persistencia en 2025 y 2026: el ajuste no predice la onda observada.",
+  "beta y R0 se identifican solo de forma condicional al modelo; un parámetro preciso no corrige un modelo mal especificado."
+ ],
+ "provenance": {
+  "protocol": "specs/pro-roadmap.md#p-06--modelo-y-preset-calibrado-validación-fuera-de-muestra-pro-5",
+  "fitCommand": "backend/.venv/bin/python scripts/p06_calibrate.py fit",
+  "verifyCommand": "backend/.venv/bin/python scripts/p06_calibrate.py verify",
+  "frontendCopy": "frontend/src/lib/dengue-preset.json"
+ },
+ "hash": "sha256:2cde2f34eb1c088611d4f6714756e67d4cec980b8b0a349d0e323fbd56cf8aab"
+}
