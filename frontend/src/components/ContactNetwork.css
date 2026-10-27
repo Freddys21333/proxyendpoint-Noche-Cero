@@ -58,14 +58,23 @@
 }
 
 .simulator-workbench .seir-instrument > div {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 0;
+  display: grid;
+  grid-template-rows: 24px 32px;
+  align-content: start;
+  justify-items: center;
+  gap: 6px;
+  padding: 6px 0;
   min-width: 0;
   border-radius: 0;
   background: transparent;
+  text-align: center;
+}
+
+.simulator-workbench .seir-instrument-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .simulator-workbench .seir-instrument-label,
@@ -77,22 +86,24 @@
 }
 
 .simulator-workbench .seir-instrument-label b {
-  margin-right: 2px;
+  margin-right: 0;
   font-weight: 600;
 }
 
 .simulator-workbench .seir-instrument strong {
   color: #203d31;
-  font-size: 21px;
+  font-size: 26px;
+  line-height: 32px;
   font-weight: 600;
   margin-left: 0;
   font-variant-numeric: tabular-nums;
+  justify-self: center;
 }
 
 .simulator-workbench .seir-status-dot {
-  width: 9px;
-  height: 9px;
-  border: 1px solid #385d4c;
+  width: 14px;
+  height: 14px;
+  border: 0;
 }
 
 .simulator-workbench .network-view {
@@ -352,8 +363,24 @@
 }
 
 .simulator-workbench .temporal-series-legend {
-  gap: 10px 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
   margin: 14px 0 8px;
+}
+
+.simulator-workbench .temporal-series-legend > span {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 3ch;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.simulator-workbench .temporal-series-legend strong {
+  text-align: center;
+  color: #203d31;
+  font-variant-numeric: tabular-nums;
 }
 
 .simulator-workbench .temporal-data-table {
@@ -415,14 +442,6 @@
     padding-left: 16px;
   }
 
-  .simulator-workbench .seir-instrument > div {
-    flex-wrap: nowrap;
-  }
-
-  .simulator-workbench .seir-instrument strong {
-    margin-left: auto;
-  }
-
   .simulator-workbench .network-view {
     min-height: 420px;
   }
@@ -460,5 +479,9 @@
 @media (max-width: 400px) {
   .simulator-workbench .seir-instrument-label b {
     display: none;
+  }
+
+  .simulator-workbench .temporal-series-legend {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

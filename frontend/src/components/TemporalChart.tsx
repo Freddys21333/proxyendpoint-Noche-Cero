@@ -9,12 +9,13 @@ import {
   YAxis,
 } from "recharts";
 import type { DemoDaily } from "@/lib/temporal-demo";
+import { seirColors } from "./seir-colors";
 
 const series = {
-  s: { label: "Sano", color: "#487e66", dash: "0" },
-  e: { label: "Mordido", color: "#9c711a", dash: "6 3" },
-  i: { label: "Zombie", color: "#b55340", dash: "2 3" },
-  r: { label: "Exorcizado", color: "#3974a3", dash: "8 3 2 3" },
+  s: { label: "Sano", color: seirColors.S.stroke },
+  e: { label: "Mordido", color: seirColors.E.stroke },
+  i: { label: "Zombie", color: seirColors.I.stroke },
+  r: { label: "Exorcizado", color: seirColors.R.stroke },
 };
 type StateKey = keyof typeof series;
 const selectedKeys = Object.keys(series) as StateKey[];
@@ -41,9 +42,9 @@ export default function TemporalChart({
           {selectedKeys.map((key) => (
             <span key={key}>
               <svg width="22" height="10" aria-hidden="true">
-                <line x1="0" y1="5" x2="22" y2="5" stroke={series[key].color} strokeWidth="2" strokeDasharray={series[key].dash} />
+                <line x1="0" y1="5" x2="22" y2="5" stroke={series[key].color} strokeWidth="2.5" />
               </svg>
-              {series[key].label} <strong>{daily[day][key]}</strong>
+              <span>{series[key].label}</span> <strong>{daily[day][key]}</strong>
             </span>
           ))}
         </div>
@@ -82,8 +83,8 @@ export default function TemporalChart({
               name={series[key].label}
               dataKey={key}
               stroke={series[key].color}
-              strokeDasharray={series[key].dash}
-              strokeWidth={2}
+              strokeWidth={2.5}
+              strokeLinecap="round"
               dot={{ r: 2 }}
               activeDot={{ r: 4 }}
               isAnimationActive={false}

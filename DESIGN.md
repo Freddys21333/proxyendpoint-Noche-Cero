@@ -41,7 +41,7 @@ Technical, focused, analytical. The existing interface treats scenario controls,
 
 ## Colors
 
-Containment Green anchors navigation and headings; Paper supports the working area; Alert Clay marks warnings and emphasis. Ink supplies primary text, Muted supports secondary labels, Line separates panels, and Surface carries white containers. SEIR states retain their distinct colors and non-color indicators from the implementation.
+Containment Green anchors navigation and headings; Paper supports the working area; Alert Clay marks warnings and emphasis. Ink supplies primary text, Muted supports secondary labels, Line separates panels, and Surface carries white containers. SEIR states use vivid green, yellow, red and blue from the shared presentation palette, with contrasting chart strokes and explicit labels.
 
 ## Typography
 
@@ -63,14 +63,14 @@ Controls commonly use restrained 3px corners. Network people and state indicator
 
 Buttons, fields, navigation, chips, and panels are practical and confident. Primary actions use the established green; secondary actions use outlined or transparent treatments. Focus-visible controls use a 3px green outline with a 3px offset. Button color and background transitions last 0.15s.
 
-Fields retain visible labels and units, with person-facing terms such as Origen aleatorio and Número de persona. Navigation uses a clear active underline. White containers use the Line border. Evolution displays the four SEIR series together with labels and distinct line patterns. Network controls and temporal playback remain visibly distinct from scientific experiment results. Complete-network fit uses 16px padding and native wheel sensitivity.
+Fields retain visible labels and units, with person-facing terms such as Origen aleatorio, Número de persona and Tipo de contacto. Navigation uses a clear active underline. White containers use the Line border. State totals sit in equal centered columns beneath their labels; indicator circles are 14px without borders. Evolution displays the four SEIR series together with solid colored lines, a labeled legend and an equivalent daily table. Network controls and temporal playback remain visibly distinct from scientific experiment results. Complete-network fit uses 16px padding and native wheel sensitivity.
 
 ## Do's and Don'ts
 
 ### Do:
 - Do preserve the green identity, restrained top navigation and light workspace.
 - Do use borders and tonal separation to group controls.
-- Do preserve state letters, labels, and line patterns alongside scientific colors.
+- Do preserve state letters, labels, and the daily table alongside scientific colors.
 
 ### Don't:
 - Don't replace the flat interface with decorative raised cards.

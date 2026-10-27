@@ -208,9 +208,9 @@ export default function App() {
             <div className="simulation-toolbar">
               <div><h1>Simulador</h1><p>Manta · población sintética</p></div>
               <div className="simulation-tools">
-                <label className="simulation-layer"><span>Capas</span>
+                <label className="simulation-layer"><span>Tipo de contacto</span>
                   <select value={layer} onChange={(event) => setLayer(event.target.value)}>
-                    {[["All layers", "Todas las capas"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                    {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
                 <button type="button" className="plain-action" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} /> Centrar red</button>

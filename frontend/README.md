@@ -2,6 +2,8 @@
 
 ## Minimal simulator dashboard
 
+SEIR person markers use vivid green/yellow/red/blue, with contrasting strokes from one shared presentation palette. State-indicator circles are 14px without borders. Evolution curves and their legend use solid colored lines, with labels and the daily data table retained. State totals use equal centered columns; chart-legend values have fixed alignment. The contact filter is labeled Tipo de contacto / Todos los tipos; its internal values and behavior are unchanged.
+
 The dashboard uses a light contact-network canvas on the left and a synchronized temporal chart plus scenario parameters on the right. Navigation is reduced to Simulador, Comparación and Ayuda. Labels and input text use 16px, with 15px supporting text. The surprise-outbreak section and its navigation are removed; its domain helpers remain available to existing tests.
 
 The follow-up preview explains that each point (node) represents a synthetic person and each line a contact. Origin controls use Origen aleatorio, Persona específica and Número de persona; internal API/configuration keys are unchanged. Evolution displays all four states directly, without a state selector. Initial fit, centering and fit controls share 16px padding to enlarge the complete network; the native Cytoscape wheel sensitivity is restored without custom wheel listeners or animation timers. Browser checks observed wheel zoom in/out, complete recentering, person-origin field visibility and synchronized day-3 counts (102/2/3/3). All 9 tests and the production build passed.

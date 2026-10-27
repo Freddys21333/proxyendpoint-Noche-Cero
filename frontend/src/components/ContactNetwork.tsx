@@ -36,6 +36,7 @@ import {
   initialPlayback,
 } from "@/lib/temporal-demo";
 import "./ContactNetwork.css";
+import { seirColors } from "./seir-colors";
 
 const elements = buildDemoNetwork();
 const FIT_PADDING = 16;
@@ -52,10 +53,10 @@ const states: Record<
   DemoState,
   { label: string; nodeLabel: string; description: string; color: string }
 > = {
-  S: { label: "Sano", nodeLabel: "Sano", description: "Susceptible", color: "#85b59f" },
-  E: { label: "Mordido", nodeLabel: "Mordido", description: "Expuesto", color: "#e3bd69" },
-  I: { label: "Zombie", nodeLabel: "Zombie", description: "Infeccioso", color: "#e88e77" },
-  R: { label: "Exorcizado", nodeLabel: "Exorcizado", description: "Recuperado o inmune", color: "#85b8df" },
+  S: { label: "Sano", nodeLabel: "Sano", description: "Susceptible", color: seirColors.S.marker },
+  E: { label: "Mordido", nodeLabel: "Mordido", description: "Expuesto", color: seirColors.E.marker },
+  I: { label: "Zombie", nodeLabel: "Zombie", description: "Infeccioso", color: seirColors.I.marker },
+  R: { label: "Exorcizado", nodeLabel: "Exorcizado", description: "Recuperado o inmune", color: seirColors.R.marker },
 };
 
 export function ContactNetwork({
@@ -126,7 +127,7 @@ export function ContactNetwork({
             height: 17,
             "background-color": states.S.color,
             "border-width": 1.5,
-            "border-color": "#365b4a",
+            "border-color": "#334155",
             "overlay-opacity": 0,
           },
         },
@@ -213,7 +214,7 @@ export function ContactNetwork({
         },
         {
           selector: "node.day-vaccine",
-          style: { "border-color": "#85b8df", "border-width": 3 },
+          style: { "border-color": seirColors.R.stroke, "border-width": 3 },
         },
         {
           selector: "edge.connected",
@@ -234,7 +235,7 @@ export function ContactNetwork({
         },
         {
           selector: "edge.day-contact",
-          style: { "line-color": "#e88e77", width: 2.6, opacity: 1 },
+          style: { "line-color": seirColors.I.stroke, width: 2.6, opacity: 1 },
         },
       ],
     });
@@ -360,11 +361,8 @@ export function ContactNetwork({
             aria-label={`${states[state].label}: ${counts[state]}. ${states[state].description}`}
             style={{ "--state-color": states[state].color } as CSSProperties}
           >
-            <span
-              className="seir-status-dot"
-              aria-hidden="true"
-            />
             <span className="seir-instrument-label">
+              <span className="seir-status-dot" aria-hidden="true" />
               <b>{state}</b> {states[state].label}
             </span>
             <strong>{counts[state]}</strong>
