@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, ZoomIn, ZoomOut } from 'lucide-react'
+import { Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -37,6 +37,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const pickerId = useId()
   const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections), [preview, layer, currentDay, frame, selections])
   const visibleCounts = playback.counts
+  const vaccineBudget = preview.configuration.intervention.vaccines
+  const remainingVaccines = vaccineBudget - (frames ? applied.length : 0)
   const positions = useMemo(() => networkPositions(preview, layout), [preview, layout])
   const detail = preview.graph.nodes.find(n => String(n.id) === selected)
   const selectedState = graph.nodes.find(n => n.data.id === selected)?.data.state ?? 'S'
@@ -123,10 +125,17 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
       <div className="simulation-visualizer-content" inert={!active} aria-hidden={!active}>
       <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
       <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver solo sus conexiones del día y filtro actuales.' : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
+      <div className="population-inventory-summary">
       <div className="seir-instrument" aria-label={frames ? 'Estados de la población en el día seleccionado' : 'Estados iniciales de la población del preview'}>
         {(Object.keys(labels) as (keyof typeof labels)[]).map(state => <div key={state} aria-label={`${labels[state]}: ${visibleCounts[state]}`} style={{ '--state-color': seirColors[state].marker } as CSSProperties}>
           <span className="seir-instrument-label"><span className="seir-status-dot" aria-hidden="true" /><b>{state}</b> {labels[state]}</span><strong>{visibleCounts[state]}</strong>
         </div>)}
+      </div>
+      <div className="vaccine-inventory" aria-label={`Vacunas restantes: ${remainingVaccines} de ${vaccineBudget}${frames ? ` en el día ${currentDay}, estrategia ${policyLabels[policy]}` : ', antes de simular'}`} title="Cada dosis asignada se descuenta, aunque no resulte efectiva.">
+        <span className="vaccine-inventory-label"><Syringe size={16} aria-hidden="true" />Vacunas restantes</span>
+        <span className="vaccine-inventory-value"><strong>{remainingVaccines.toLocaleString('es-EC')}</strong><small>/ {vaccineBudget.toLocaleString('es-EC')} dosis</small></span>
+        <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}` : 'Antes de simular'}</small>
+      </div>
       </div>
       <div className="network-view" hidden={!showNetwork}>
         <div ref={container} className="network-canvas" role="img" aria-label={`Red real de ${graph.nodes.length} personas sintéticas, contactos del día ${currentDay}. Seleccione una persona o use el selector.`} />
