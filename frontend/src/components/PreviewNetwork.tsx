@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { Crosshair, Pause, Play, RotateCcw, StepForward, ZoomIn, ZoomOut } from 'lucide-react'
+import { Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -42,7 +42,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const selectedState = graph.nodes.find(n => n.data.id === selected)?.data.state ?? 'S'
 
   useEffect(() => {
-    if (!container.current || !active) return
+    if (!container.current) return
     const cy = cytoscape({ container: container.current, elements: graph.elements,
       layout: { name: 'preset' }, minZoom: 0.01, maxZoom: 5, boxSelectionEnabled: false, selectionType: 'single',
       style: [
@@ -74,7 +74,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     resize.observe(container.current)
     cy.fit(undefined, 20)
     return () => { resize.disconnect(); cy.destroy(); network.current = null }
-  }, [preview, active])
+  }, [preview])
 
   useEffect(() => { setSelected('') }, [preview])
 
@@ -119,7 +119,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     if (cy) cy.zoom({ level: Math.max(cy.minZoom(), Math.min(cy.maxZoom(), cy.zoom() * factor)), renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } })
   }
   return <div className="simulator-workbench network-workbench">
-    {!active ? <section className="network-demo-panel" aria-label="Vista previa pendiente"><h2>Vista previa pendiente</h2><p>La configuración cambió. Consulta la red para mostrar la población actual.</p></section> : <section className="network-demo-panel" aria-label={showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
+    <section className={`network-demo-panel simulation-visualizer${active ? '' : ' simulation-outdated'}`} aria-label={!active ? 'Vista previa pendiente' : showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
+      <div className="simulation-visualizer-content" inert={!active} aria-hidden={!active}>
       <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
       <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver solo sus conexiones del día y filtro actuales.' : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
       <div className="seir-instrument" aria-label={frames ? 'Estados de la población en el día seleccionado' : 'Estados iniciales de la población del preview'}>
@@ -154,7 +155,17 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           <button type="button" className="plain-action" onClick={() => setSelected('')}>Ocultar conexiones y quitar selección</button>
         </div>}
       </details>
-    </section>}
+      </div>
+      {!active && <div className="simulation-update-overlay">
+        <div className="simulation-update-card" role="status" aria-live="polite">
+          <span className="simulation-update-icon"><SlidersHorizontal size={30} aria-hidden="true" /></span>
+          <span className="simulation-update-eyebrow">Parámetros modificados</span>
+          <h2>Actualiza tu escenario</h2>
+          <p>La visualización anterior ya no corresponde a los parámetros actuales.</p>
+          <p className="simulation-update-action">Pulsa <strong>Consultar red</strong> en el panel de parámetros para cargar la nueva población.</p>
+        </div>
+      </div>}
+    </section>
     <div className="simulator-control-column">
       <section className="temporal-chart-panel real-playback" aria-label="Reproducción de réplica real">
         <h3>{frames ? 'Réplica representativa' : 'Estado inicial'}</h3>
