@@ -204,7 +204,7 @@
 .noche-cero .simulator-workbench .temporal-chart-panel p { color: #b9adbd; }
 .noche-cero .simulator-workbench .temporal-chart-heading h3,
 .noche-cero .simulator-workbench .real-playback h3 { color: var(--ink); }
-.noche-cero .simulator-workbench .network-playback { border-color: var(--night-border); color: var(--ink); }
+.noche-cero .simulator-workbench .network-playback { border-color: var(--night-border); color: var(--ink); background: #24212d; }
 .noche-cero .simulator-workbench .playback-actions > button { color: #f8e4d1; border-color: #6a4b43; background: #382b32; }
 .noche-cero .simulator-workbench .playback-actions > button:not(:disabled):hover { background: #503139; }
 .noche-cero .simulator-workbench .playback-time strong { color: var(--pumpkin-soft); }
