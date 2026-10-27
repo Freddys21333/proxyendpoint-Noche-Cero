@@ -61,7 +61,7 @@ const states: Record<
   R: { label: "Exorcizado", nodeLabel: "Exorcizado", description: "Recuperado o inmune", color: seirColors.R.marker },
 };
 
-export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null }) {
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; preview?: PreviewResponse | null; hasComparison?: boolean }) {
   const lastPreview = useRef<PreviewResponse | null>(null);
   if (props.preview) lastPreview.current = props.preview;
   return lastPreview.current

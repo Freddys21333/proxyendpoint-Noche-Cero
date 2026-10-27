@@ -2976,3 +2976,10 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
   .minimal-workspace .configuration-fields { grid-template-columns: 1fr; }
   .minimal-workspace .configuration-actions { flex-wrap: wrap; gap: 10px 20px; }
 }
+
+/* Resultados reales: tablas accesibles sin desbordar pantallas estrechas. */
+.comparison-table-scroll { overflow-x: auto; }
+.comparison-table-scroll table { width: 100%; border-collapse: collapse; }
+.comparison-table-scroll th, .comparison-table-scroll td { padding: 0.6rem; text-align: left; border-bottom: 1px solid var(--line, #dce2da); }
+.experiment-hash { overflow-wrap: anywhere; font-size: 0.85rem; }
+.configuration-actions { flex-wrap: wrap; }

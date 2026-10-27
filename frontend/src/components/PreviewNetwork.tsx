@@ -9,8 +9,8 @@ import './ContactNetwork.css'
 const labels = { S: 'Sano', E: 'Mordido', I: 'Zombie', R: 'Exorcizado' }
 const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado'], ['neighborhoodId', 'Barrio'] ] as const
 
-export function PreviewNetwork({ preview, layer, resetKey, children, active = true }: {
-  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; active?: boolean
+export function PreviewNetwork({ preview, layer, resetKey, children, active = true, hasComparison = false }: {
+  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; active?: boolean; hasComparison?: boolean
 }) {
   const container = useRef<HTMLDivElement>(null)
   const network = useRef<cytoscape.Core | null>(null)
@@ -90,7 +90,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
       </details>
     </section>}
     <div className="simulator-control-column">
-      <section className="temporal-chart-panel" aria-label="Estado de la vista previa"><h3>Estado inicial</h3><p>{active ? "La red corresponde a tus parámetros. Aún no hay una trayectoria temporal ni resultados de comparación." : "Consulta la red para obtener un nuevo estado inicial."}</p><p>Las vacunas se aplicarán al ejecutar la simulación.</p></section>
+      <section className="temporal-chart-panel" aria-label="Estado de la vista previa"><h3>Estado inicial</h3><p>{active ? hasComparison ? "Los resultados están en Comparación. Aquí se conserva la vista previa inicial, sin vacunación." : "La red corresponde a tus parámetros. Aún no hay una trayectoria temporal ni resultados de comparación." : "Consulta la red para obtener un nuevo estado inicial."}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></section>
       {children}
     </div>
   </div>

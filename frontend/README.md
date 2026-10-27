@@ -1,14 +1,14 @@
 # Frontend environment
 
-## Estado de integración I-03
+## Estado de integración I-04
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
-**Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. La comparación y su gráfica todavía son de demostración; el siguiente incremento conectará compare y exportación de resultados. El botón Exportar aún descarga un borrador, no resultados reales. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
+**Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. Comparar estrategias ejecuta ahora el experimento real y muestra curvas agregadas S/E/I/R/acumulados, bandas empíricas, métricas y recomendación. Editar parámetros invalida también ese resultado. La animación de una réplica y el ZIP CSV se conectarán después. Exportar descarga el JSON íntegro reproducible si existe un resultado vigente; si no existe, sigue siendo un borrador explícito. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
 
 Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
 
-Verificado: build/tipos, 16 pruebas frontend y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md).
+Verificado: build/tipos, 23 pruebas frontend y navegador con preview N=50/T=3 (50 nodos, 322 contactos en la unión, 204 activos en día 0 y 81 del hogar). Se probó filtro, caso inicial 21, inspector, zoom y edición sin perder foco. [Evidencia incremental](../docs/evidencia/integracion-local.md).
 
 ## Minimal simulator dashboard
 
@@ -106,3 +106,13 @@ Primer incremento: servidor real de desarrollo y proxy de Vite. Desde la raíz, 
 ```
 
 En otra terminal, ejecutar `.\scripts\frontend.ps1 run dev` desde la raíz (o `npm run dev` desde frontend si Node/npm están instalados). Las llamadas `/v1/*` del navegador pasan al backend en 127.0.0.1:8000 sin necesitar CORS. El puente conserva gzip y errores de los handlers Lambda. Es un servidor local secuencial para desarrollo; no reemplaza API Gateway/Lambda ni valida rendimiento de producción. Este primer incremento todavía conserva la demo visual y sus datos.
+
+
+### Ejecutar una comparación real
+
+1. Ajustar parámetros y consultar la red.
+2. Pulsar Comparar estrategias (en el diálogo o formulario). La espera es indeterminada; no hay progreso por réplica en HTTP síncrono.
+3. En Comparación, elegir S/E/I/R o acumulados. Las líneas son medias y las bandas P05–P95 son rango empírico, no IC. Tablas y diferencias provienen del backend, incluidos negativos, censura de duración y empates/pérdidas.
+4. Descargar experimento JSON para usar scripts/reproduce.py. Sin resultado vigente, Exportar descarga solo borrador. La animación representativa y ZIP CSV siguen pendientes.
+
+El cliente verifica hash/configuración, total de réplicas, longitud de series, estadísticas y metadatos antes de mostrar éxito. Si falla o se editan parámetros, no se presenta un resultado anterior como actual. Abortar la espera del navegador no garantiza detener el cómputo del servidor.

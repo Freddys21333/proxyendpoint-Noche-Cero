@@ -3,12 +3,12 @@ import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { defaults, validateScenario, type Scenario } from "@/lib/scenario";
-import { ApiError, createApiClient, toConfiguration, type PreviewResponse } from "@/lib/api";
+import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse } from "@/lib/api";
 
 const ContactNetwork = lazy(() =>
   import("@/components/ContactNetwork").then((module) => ({ default: module.ContactNetwork })),
 );
-const ComparisonChart = lazy(() => import("@/components/ComparisonChart"));
+const ComparisonResults = lazy(() => import("@/components/ComparisonResults").then(module => ({ default: module.ComparisonResults })));
 const nf = new Intl.NumberFormat("es-EC");
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
 type Modal = "help" | "export" | "run" | null;
@@ -65,16 +65,31 @@ export default function App() {
   const [remotePreview, setRemotePreview] = useState<PreviewResponse | null>(null);
   const [pending, setPending] = useState(false);
   const previewController = useRef<AbortController | null>(null);
+  const [comparison, setComparison] = useState<CompareResponse | null>(null);
+  const [comparisonPending, setComparisonPending] = useState(false);
+  const [comparisonErrors, setComparisonErrors] = useState<string[]>([]);
+  const [serverHealth, setServerHealth] = useState<HealthResponse | null>(null);
+  const comparisonController = useRef<AbortController | null>(null);
+
 
   useEffect(() => {
     const controller = new AbortController();
     Promise.all([api.health(controller.signal), api.config(controller.signal)])
-      .then(() => { if (!controller.signal.aborted) setServerStatus("ready"); })
+      .then(([health]) => { if (!controller.signal.aborted) { setServerStatus("ready"); setServerHealth(health); } })
       .catch(() => { if (!controller.signal.aborted) setServerStatus("offline"); });
-    return () => { controller.abort(); previewController.current?.abort(); };
+    return () => { controller.abort(); previewController.current?.abort(); comparisonController.current?.abort(); };
   }, []);
 
+  const invalidateComparison = () => {
+    comparisonController.current?.abort();
+    comparisonController.current = null;
+    setComparison(null);
+    setComparisonPending(false);
+    setComparisonErrors([]);
+  };
+
   const invalidatePreview = () => {
+    invalidateComparison();
     previewController.current?.abort();
     previewController.current = null;
     setRemotePreview(null);
@@ -86,7 +101,7 @@ export default function App() {
   const update = (key: keyof Scenario, value: number | string) => {
     invalidatePreview();
     setScenario((current) => ({ ...current, [key]: value }));
-    setNotice("Configuración modificada. La vista previa anterior quedó invalidada.");
+    setNotice("Configuración modificada. La vista previa y los resultados anteriores quedaron invalidados.");
     setErrors([]);
   };
   const reset = () => {
@@ -96,7 +111,7 @@ export default function App() {
     setNotice("Configuración base restaurada.");
   };
   const exportConfig = () => {
-    const payload = {
+    const payload = comparison ?? {
       kind: "configuration-draft",
       simulated: false,
       schemaVersion: "1.0",
@@ -104,17 +119,17 @@ export default function App() {
       notice:
         "UI configuration draft only. Not a canonical experiment request or reproducible result.",
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    const blob = new Blob([JSON.stringify(payload)], {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "manta-configuration-draft.json";
+    a.download = comparison ? `manta-experiment-${comparison.configuration.rootSeed}.json` : "manta-configuration-draft.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setModal(null);
-    setNotice("Borrador descargado. No incluye resultados de simulación.");
+    setNotice(comparison ? "Experimento JSON descargado con configuración, semillas, resultados y versiones." : "Borrador descargado. No incluye resultados de simulación.");
   };
   const run = async () => {
     const issues = validateScenario(scenario);
@@ -141,6 +156,7 @@ export default function App() {
       ),
     );
     if (issues.length) return;
+    invalidateComparison();
     previewController.current?.abort();
     const controller = new AbortController();
     previewController.current = controller;
@@ -164,6 +180,32 @@ export default function App() {
         previewController.current = null;
         setPending(false);
       }
+    }
+  };
+
+  const runComparison = async () => {
+    if (!remotePreview || pending || comparisonPending) return;
+    comparisonController.current?.abort();
+    const controller = new AbortController();
+    comparisonController.current = controller;
+    setComparison(null);
+    setComparisonErrors([]);
+    setComparisonPending(true);
+    setView("results");
+    setModal(null);
+    try {
+      const result = await api.compare(remotePreview.configuration, remotePreview.graphHash, controller.signal);
+      if (controller.signal.aborted) return;
+      setComparison(result);
+      setNotice("Comparación completada con resultados reales del motor.");
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      const issues = error instanceof ApiError ? [error.message, ...error.fields.map(field => `${field.path}: ${field.reason}`)] : ["No se pudo completar la comparación."];
+      setComparisonErrors(issues);
+      setErrors(issues);
+      if (error instanceof ApiError && error.status === 409) setRemotePreview(null);
+    } finally {
+      if (comparisonController.current === controller) { comparisonController.current = null; setComparisonPending(false); }
     }
   };
 
@@ -224,6 +266,7 @@ export default function App() {
         )}
         <div className="configuration-actions">
           <Button type="submit" className="validate-button" disabled={pending}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+          <Button type="button" variant="outline" disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>Comparar estrategias</Button>
           <button type="button" className="plain-action" onClick={() => setModal("export")}>
             <ArrowDownToLine size={17} /> Exportar
           </button>
@@ -243,7 +286,7 @@ export default function App() {
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
           <button type="button" onClick={() => setModal("help")}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · {remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span>
+        <span className="simulation-status" role="status">{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"} · {comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span>
       </header>
       <main className="simulation-main">
         {notice && (
@@ -266,23 +309,18 @@ export default function App() {
               </div>
             </div>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview}>{parameterPanel}</ContactNetwork>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} hasComparison={Boolean(comparison)}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : (
           <section className="results-view" aria-labelledby="results-title">
-            <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p>Sin resultados experimentales. El motor aún no está conectado.</p></div>
-            <div className="results-example">
-              <h2>Ejemplo de trayectorias</h2>
-              <p>Datos ilustrativos: no corresponden a la configuración ni demuestran la eficacia de una estrategia.</p>
-              <Suspense fallback={<div className="simulation-loading" role="status">Cargando gráfica…</div>}><ComparisonChart /></Suspense>
-              <div className="results-axis"><span>Personas</span><span>Días desde el inicio del brote</span></div>
-            </div>
-            <dl className="results-strategies">
-              <div><dt>Sin intervención</dt><dd>Brote sin administrar vacunas.</dd></div>
-              <div><dt>Aleatoria</dt><dd>Dosis distribuidas al azar entre personas Sanas.</dd></div>
-              <div><dt>Dirigida</dt><dd>Prioridad a personas Sanas con más conexiones ponderadas.</dd></div>
-            </dl>
+            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} /></Suspense> : <>
+              <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : "Aún no hay resultados para la configuración actual."}</p></div>
+              {comparisonPending && <p>Espera a que termine el experimento. No se muestran resultados parciales.</p>}
+              {comparisonErrors.length > 0 && <div role="alert"><ul>{comparisonErrors.map(text => <li key={text}>{text}</li>)}</ul></div>}
+              {!comparisonPending && <Button type="button" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}
+              {!remotePreview && <p>Consulta primero la red desde el simulador.</p>}
+            </>}
             <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver al simulador</button>
           </section>
         )}
@@ -293,16 +331,17 @@ export default function App() {
           <Dialog.Backdrop className="modal-dimmer" />
           <Dialog.Popup className="modal minimal-dialog">
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
-            <Dialog.Title>{modal === "help" ? "Acerca de esta demo" : modal === "run" ? "Vista previa de la población" : "Exportar configuración"}</Dialog.Title>
+            <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
             <p>{modal === "help"
-              ? "La red y la curva muestran una demo independiente de los parámetros. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) representan los estados del modelo SEIR. La comparación real de estrategias requiere conectar el motor de simulación."
+              ? "Consulta la red para ver tu población sintética y luego compara las tres estrategias con el motor real. Sano (S), Mordido (E), Zombie (I) y Exorcizado (R) son los estados SEIR. Los resultados muestran medias y dispersión entre réplicas; el grafo de preview representa solo el estado inicial."
               : modal === "run"
                 ? "La red se calculó en el servidor con tus parámetros. El explorador muestra esta red real y su estado inicial; todavía no se ejecutó una comparación."
-                : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
+                : comparison ? "Descarga el experimento completo con parámetros, versiones, semillas y resultados reproducibles." : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
             {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
-              {modal === "export" && <Button onClick={exportConfig}><ArrowDownToLine size={17} /> Descargar borrador</Button>}
+              {modal === "run" && <Button disabled={comparisonPending} onClick={runComparison}>Comparar estrategias</Button>}
+              {modal === "export" && <Button onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
             </div>
           </Dialog.Popup>
         </Dialog.Portal>

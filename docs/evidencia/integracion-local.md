@@ -31,3 +31,19 @@ Se mantiene la demo como modo inicial explícito. Después de un preview real, e
 Rojo: dos pruebas fallaron con Preview graph not connected antes de implementar el adaptador. Verde: 16 pruebas frontend (14 anteriores + 2 nuevas), build y TypeScript correctos. Los fixtures del adaptador prueban formato/vista, no generación científica. Casos: población/origen, no mutación, IDs de nodo/arista sin colisiones, calendario y filtro, capas paralelas y vecinos distintos.
 
 Verificado en navegador con API real N=50/T=3/K=10: 50 personas, S=49/E=0/I=1/R=0, caso inicial 21, 322 contactos de unión y 204 activos del día 0. Filtro Hogares: 81 contactos; persona 021 Zombie inicial con 3 vecinos visibles y grupos household-3/bus-0/market-0/neighborhood-4. Se probó zoom, ajuste y selector. Cambiar a 51 con teclado dejó foco en población y ocultó la red previa. Screenshot local .tools/integration-real-network.png, ignorado en Git. No hay nuevas dependencias ni despliegue AWS.
+
+## I-04 — Comparación, curvas y JSON reales
+
+Cliente compare envía configuración normalizada y expectedGraphHash del preview vigente, con includeRepresentativeFrames=false. Antes de aceptar éxito verifica hash/configuración, réplicas completas, series de T+1 filas, estadísticas no nulas salvo censura, bootstrap coherente con R y metadatos. No hay fallback a resultados ilustrativos. Editar/reset/consultar otro preview aborta la espera e invalida comparación; un error 409 obliga a volver a consultar la red. Esto no promete detener el cómputo del servidor al abortar el navegador.
+
+La interfaz muestra espera indeterminada, después medias y bandas P05–P95 para S/E/I/R/acumulados. Tablas incluyen las ocho métricas y estadísticas detalladas con n efectivo, mediana/P05/P95, diferencias pareadas con negativos, IC bootstrap cuando existe y tasas de victoria. La recomendación usa los datos del backend sin recalcular la estrategia; mantiene empate, incertidumbre y pérdidas. Se exponen semilla/versiones/build/región configurada/hash/fecha y limitaciones.
+
+Descargar experimento JSON conserva el documento completo retornado por API (incluye grafo, réplicas, manifiesto y eventos de representativa; frames omitidos). Sin resultado vigente, Exportar conserva el borrador explícito. No se conectaron aún animación representativa ni ZIP CSV. El grafo del simulador sigue siendo preview inicial sin vacunación, claramente identificado.
+
+TDD: tres pruebas fallaron antes de implementar comparisonRows/compare; luego se añadieron cuatro rechazos de curvas/réplicas/resúmenes/hash incompletos. Resultado: 23 pruebas frontend aprobadas (16 previas + 7 nuevas), build y TypeScript correctos. Los fixtures unitarios son mocks de contrato y no evidencia de impacto.
+
+Flujo real en navegador: N=50/T=10/K=10/R=2, semilla 20261026, preview→comparar→curvas/métricas/recomendación. Medias de acumulados none=15.5/random=11.5/targeted=5; recomendación descriptiva sin IC para R<30. Se verificaron selector de curva y tablas, espera sin porcentajes inventados y edición con invalidación. Estos datos son una comprobación funcional, no el gate científico T-22.
+
+Interop real: cliente TypeScript → Vite → API local → archivo JSON compacto en .tools/integration-experiment.json → scripts/reproduce.py en proceso Python nuevo. Ambos produjeron sha256:7c0f3a4c73824b0335c698590728f781b6e25c6d90cab6126a363d3a2376c5ad. Archivo temporal ignorado, no se versiona como resultado final.
+
+Prueba adicional por HTTP con N=50/T=3/R=30: 30 réplicas válidas, bootstrap de 2000 remuestras con intervalo [-0.06666666666666667, 0.5] para gainVsRandom y confianza inconclusive. Se comprueba transporte de incertidumbre real, sin atribuir superioridad universal. No se ejecutó benchmark AWS ni se cerró T-22.
