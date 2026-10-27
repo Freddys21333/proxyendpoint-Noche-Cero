@@ -11,6 +11,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
+- [Protocolo científico T-22 preparado](specs/validation/t22-v1/README.md).
 - [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Costos y evidencia pendiente](docs/costos.md).
@@ -34,7 +35,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es completar la validación integral y medir ese flujo (RF-15/CA-12). Infraestructura T-17/18, despliegue T-19/20 y gate científico T-22 siguen pendientes. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es completar la validación integral y medir ese flujo (RF-15/CA-12). El protocolo T-22 v1 está preparado y congelado; su ejecución y resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea.
 
 ## Parámetros previstos
 

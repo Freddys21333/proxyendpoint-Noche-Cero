@@ -47,7 +47,7 @@ Antes de iniciar una tarea, confirmar sus dependencias y aplicar los acuerdos D-
 
 ## 6. Validación técnica integral
 
-- [ ] **T-22 — Fijar matriz experimental antes de resultados finales.** Frente: backend. Dep.: T-03 para fijar protocolo; T-09/10 para ejecutar. Registrar lista y derivación de semillas antes de observar impacto, incluir casos adversos y conservar pérdidas. Salida: protocolo y exportaciones, menor media targeted frente a none/random y diferencia pareada positiva o reporte explícito del gate fallido. Ref.: PRD §7.5; REQ-04/07/08/09.
+- [ ] **T-22 — Fijar matriz experimental antes de resultados finales.** Frente: backend. Dep.: T-03 para fijar protocolo; T-09/10 para ejecutar. Registrar lista y derivación de semillas antes de observar impacto, incluir casos adversos y conservar pérdidas. Salida: protocolo y exportaciones, menor media targeted frente a none/random y diferencia pareada positiva o reporte explícito del gate fallido. Ref.: PRD §7.5; REQ-04/07/08/09. **Preparación completada (2026-10-27):** [protocolo v1](validation/t22-v1/README.md), cinco raíces derivadas públicamente, 15 inputs normalizados/R30, SHA256SUMS y verificador sin simulaciones. 450 réplicas previstas, 150 primarias. Ejecución, exportaciones y decisión del gate pendientes; la casilla permanece abierta.
 - [ ] **T-23 — Validar escenarios y reproducibilidad.** Frente: backend + frontend + infraestructura. Dep.: T-20/21/22. Ejecutar semilla externa y casos variables configurados manualmente, verificar recursos/estados y explicar resultados. Salida: flujo sorpresa <5 min, evidencia y pendientes; ninguna garantía de victoria por semilla. Ref.: REQ-10/11; CA-01..15 según matriz de requirements.
 
 ## 7. Condición de terminado y paralelismo

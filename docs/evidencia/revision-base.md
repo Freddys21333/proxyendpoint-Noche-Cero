@@ -81,3 +81,8 @@ Verificación I-09: 69 pruebas frontend y build/tipos correctos. No cierra la ma
 ## Actualización — validación del flujo local 2026-10-27
 
 [Informe y comandos](validacion-flujo-local.md): tres casos funcionales con API real, errores409/422/413, JSON reproducidos en procesos nuevos, ZIP verificados y descargas reales desde navegador. Se corrigió el retorno de foco de los diálogos detectado con Escape. Se mantienen abiertos los criterios de prueba humana, suite E2E completa, semilla externa, gate científico y AWS; no se confunde este avance con el cierre de toda la base.
+
+
+## Actualización — preparación T-22 v1 (2026-10-27)
+
+El [protocolo](../../specs/validation/t22-v1/README.md) ya está preparado: 15 configuraciones normalizadas, cinco raíces nuevas, criterios primarios separados de contrastes/controles y hashes de congelación. El verificador comprueba plan/semillas/archivos sin generar grafos ni ejecutar simulaciones. El pendiente actual de T-22 es ejecutar y reportar el gate real, no redactar la matriz. Las pruebas operativas humanas/jurado y AWS siguen separadas.

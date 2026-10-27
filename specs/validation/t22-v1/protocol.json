@@ -1,0 +1,192 @@
+{
+  "engineVersion": "0.1.0",
+  "networkMode": "fixed within each root; five separate synthetic graphs in primary matrix",
+  "operationalAcceptance": "separate pending checks for jury-supplied external seed, manual flow timing, public AWS and accessibility",
+  "primaryDecision": {
+    "incomplete": "any missing/invalid primary run or technical control invalidates the assessment; no complete-case filtering",
+    "pass": [
+      "sum(cumulativeInfected_none - cumulativeInfected_targeted) > 0",
+      "sum(cumulativeInfected_random - cumulativeInfected_targeted) > 0"
+    ],
+    "runs": [
+      "base-root-0",
+      "base-root-1",
+      "base-root-2",
+      "base-root-3",
+      "base-root-4"
+    ],
+    "ties": "zero difference does not pass strict improvement",
+    "weighting": "equal weight to each of 150 complete paired replicates (30 per root)"
+  },
+  "primaryEndpoint": "cumulativeInfected including initial infectious, excluding immunity due to vaccination",
+  "primaryPairedReplicates": 150,
+  "protocolId": "t22-v1",
+  "registeredLocalDate": "2026-10-27",
+  "retention": "all outcomes, ties, losses, errors and retries; never replace seeds or omit unfavorable runs",
+  "runs": [
+    {
+      "configuration": "inputs/base-root-0.json",
+      "expectedInvariant": null,
+      "id": "base-root-0",
+      "includeRepresentativeFrames": false,
+      "kind": "primary",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/base-root-1.json",
+      "expectedInvariant": null,
+      "id": "base-root-1",
+      "includeRepresentativeFrames": false,
+      "kind": "primary",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    },
+    {
+      "configuration": "inputs/base-root-2.json",
+      "expectedInvariant": null,
+      "id": "base-root-2",
+      "includeRepresentativeFrames": false,
+      "kind": "primary",
+      "repetitions": 30,
+      "rootSeed": 2677345323
+    },
+    {
+      "configuration": "inputs/base-root-3.json",
+      "expectedInvariant": null,
+      "id": "base-root-3",
+      "includeRepresentativeFrames": false,
+      "kind": "primary",
+      "repetitions": 30,
+      "rootSeed": 3856593946
+    },
+    {
+      "configuration": "inputs/base-root-4.json",
+      "expectedInvariant": null,
+      "id": "base-root-4",
+      "includeRepresentativeFrames": false,
+      "kind": "primary",
+      "repetitions": 30,
+      "rootSeed": 2820136827
+    },
+    {
+      "configuration": "inputs/higher-transmission.json",
+      "expectedInvariant": null,
+      "id": "higher-transmission",
+      "includeRepresentativeFrames": false,
+      "kind": "descriptive-contrast",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/scarce-vaccines.json",
+      "expectedInvariant": null,
+      "id": "scarce-vaccines",
+      "includeRepresentativeFrames": false,
+      "kind": "descriptive-contrast",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/partial-efficacy.json",
+      "expectedInvariant": null,
+      "id": "partial-efficacy",
+      "includeRepresentativeFrames": false,
+      "kind": "descriptive-contrast",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/market-origin.json",
+      "expectedInvariant": null,
+      "id": "market-origin",
+      "includeRepresentativeFrames": false,
+      "kind": "descriptive-contrast",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/delayed-intervention.json",
+      "expectedInvariant": null,
+      "id": "delayed-intervention",
+      "includeRepresentativeFrames": false,
+      "kind": "descriptive-contrast",
+      "repetitions": 30,
+      "rootSeed": 2085192491
+    },
+    {
+      "configuration": "inputs/control-zero-vaccines.json",
+      "expectedInvariant": "daily series identical across policies",
+      "id": "control-zero-vaccines",
+      "includeRepresentativeFrames": false,
+      "kind": "technical-control",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    },
+    {
+      "configuration": "inputs/control-zero-transmission.json",
+      "expectedInvariant": "cumulativeInfected equals initialInfectious each day",
+      "id": "control-zero-transmission",
+      "includeRepresentativeFrames": false,
+      "kind": "technical-control",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    },
+    {
+      "configuration": "inputs/control-zero-efficacy.json",
+      "expectedInvariant": "daily series identical across policies; effective doses zero",
+      "id": "control-zero-efficacy",
+      "includeRepresentativeFrames": false,
+      "kind": "technical-control",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    },
+    {
+      "configuration": "inputs/control-full-coverage.json",
+      "expectedInvariant": "assigned=49/effective=49 for vaccination policies; cumulativeInfected=1",
+      "id": "control-full-coverage",
+      "includeRepresentativeFrames": false,
+      "kind": "technical-control",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    },
+    {
+      "configuration": "inputs/control-terminal-intervention.json",
+      "expectedInvariant": "cumulativeInfected series identical across policies; final S/R may differ",
+      "id": "control-terminal-intervention",
+      "includeRepresentativeFrames": false,
+      "kind": "technical-control",
+      "repetitions": 30,
+      "rootSeed": 144169776
+    }
+  ],
+  "schemaVersion": "1.0",
+  "scientificResultsObserved": false,
+  "seedDerivation": {
+    "algorithm": "first 4 bytes of SHA-256, unsigned little-endian uint32",
+    "encoding": "UTF-8",
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "rootSeeds": [
+      2085192491,
+      144169776,
+      2677345323,
+      3856593946,
+      2820136827
+    ],
+    "template": "zombie-management:T22:v1:validation-root:{i}"
+  },
+  "status": "prepared-not-executed",
+  "totalExperiments": 15,
+  "totalPairedReplicates": 450,
+  "uncertainty": {
+    "interpretation": "interval support and backend recommendation are reported separately from the PRD point-estimate gate",
+    "overall": "point estimates only; do not bootstrap 150 replicates as if they had independent graphs",
+    "perRoot": "backend paired bootstrap, 2000 resamples, 95 percent; empirical P05/P95 labelled separately"
+  }
+}
