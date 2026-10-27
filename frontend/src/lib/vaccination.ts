@@ -6,6 +6,6 @@ export function vaccinationsAtDay(selections: VaccinationSelection[], day: numbe
 }
 export function selectionReason(row: VaccinationSelection): string {
   return row.tieBreak === 'nodeIdAsc'
-    ? `Selección dirigida: puntuación ${row.score!.toLocaleString('es-EC', { maximumFractionDigits: 6 })} (suma de pesos de contactos activos hacia susceptibles al decidir). Posición ${row.rank}; prioridad de mayor puntuación, con menor identificador de persona para desempatar.`
-    : `Selección aleatoria uniforme sin reemplazo, reproducible con la semilla de esta réplica. Posición ${row.rank} en el sorteo; no usa puntuación de contactos.`
+    ? `Selección dirigida: puntuación ${row.score!.toLocaleString('es-EC', { maximumFractionDigits: 6 })} (suma de pesos de contactos activos hacia susceptibles al decidir). Posición registrada ${row.rank}; prioridad de mayor puntuación, con menor identificador de persona para desempatar.`
+    : `Selección aleatoria uniforme sin reemplazo, reproducible con la semilla de esta réplica. Posición registrada ${row.rank}; no usa puntuación de contactos.`
 }

@@ -18,6 +18,7 @@ def select_candidates(
     vaccines: int,
     day: int,
     rng: Generator,
+    excluded: frozenset[int] = frozenset(),
 ) -> list[dict[str, Any]]:
     """Decide desde un único snapshot sin acceder a potenciales epidemiológicos."""
     if policy not in ("none", "random", "targeted"):
@@ -26,7 +27,7 @@ def select_candidates(
         raise ValueError("Inventario o día inválido.")
     if any(state not in ("S", "E", "I", "R") for state in states):
         raise ValueError("Estado SEIR inválido.")
-    eligible = [node for node, state in enumerate(states) if state == "S"]
+    eligible = [node for node, state in enumerate(states) if state == "S" and node not in excluded]
     count = min(vaccines, len(eligible))
     if policy == "none" or count == 0:
         return []
@@ -36,6 +37,8 @@ def select_candidates(
         u, v = edge["u"], edge["v"]
         if day in edge["activeDays"] and states[u] == states[v] == "S":
             for node in (u, v):
+                if node not in weights:
+                    continue
                 weights[node].append(edge["weight"])
                 contexts[node].add(edge["context"])
     scores = {node: math.fsum(weights[node]) for node in eligible}
@@ -68,6 +71,7 @@ def vaccinate(
     efficacy: float,
     potentials: NDArray[np.float64],
     rng: Generator,
+    excluded: frozenset[int] = frozenset(),
 ) -> tuple[list[str], list[dict[str, Any]], list[dict[str, Any]]]:
     """Cada selección consume una dosis; solo el éxito produce evento S→R."""
     if not math.isfinite(efficacy) or not 0 <= efficacy <= 1:
@@ -79,7 +83,9 @@ def vaccinate(
         or np.any(potentials >= 1)
     ):
         raise ValueError("Potenciales de eficacia inválidos.")
-    rows = select_candidates(states, edges, policy=policy, vaccines=vaccines, day=day, rng=rng)
+    rows = select_candidates(
+        states, edges, policy=policy, vaccines=vaccines, day=day, rng=rng, excluded=excluded
+    )
     after = states.copy()
     events: list[dict[str, Any]] = []
     for row in rows:

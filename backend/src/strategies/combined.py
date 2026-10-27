@@ -18,6 +18,7 @@ def interval_actions(
     last_day: int,
     remaining: int,
     rng: Generator,
+    supplies: int | None = None,
 ) -> tuple[list[dict[str, Any]], int, str | None, list[int]]:
     """Cierre completo si cabe; después brigadas por persona susceptible y día."""
     if policy == "none" or day >= last_day:
@@ -35,6 +36,8 @@ def interval_actions(
     selected = []
     if plan.brigade_start <= day < plan.brigade_start + plan.brigade_days:
         count = min(plan.brigade_daily_capacity, (remaining - spent) // plan.brigade_cost_cents)
+        if supplies is not None:
+            count = min(count, supplies)
         selected = select_candidates(
             states, available, policy=policy, vaccines=count, day=day, rng=rng
         )

@@ -654,3 +654,12 @@
 .combined-cost-results table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .combined-cost-results th, .combined-cost-results td { padding: 12px; text-align: left; border-bottom: 1px solid #dbe4dd; }
 .combined-cost-results caption { text-align: left; padding: 12px 0; color: #52695a; }
+
+.resource-schedule-editor { margin: 16px 0; padding: 12px 0; border-block: 1px solid #dbe4dd; }
+.resource-delivery { margin: 12px 0; padding: 12px; border: 1px solid #dbe4dd; border-radius: 8px; }
+.resource-delivery legend { padding: 0 4px; font-size: 13px; font-weight: 600; }
+.resource-inventory-panel { padding: 16px; font-size: 13px; line-height: 1.5; }
+.resource-inventory-panel h3 { font-size: 17px; margin-bottom: 10px; }
+.resource-inventory-panel table { width: 100%; font-size: 12px; border-collapse: collapse; }
+.resource-inventory-panel th, .resource-inventory-panel td { text-align: left; padding: 6px 4px; border-bottom: 1px solid #dbe4dd; }
+.resource-inventory-panel caption { text-align: left; margin: 8px 0; color: #52695a; }

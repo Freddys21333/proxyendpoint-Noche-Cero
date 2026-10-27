@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
 import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
-import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily } from '@/lib/api'
+import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily, InventoryDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
 import { previewNetwork } from '@/lib/preview-network'
@@ -11,6 +11,7 @@ import { VaccinationDetails, VaccinationPerson } from './VaccinationDetails'
 import { seirColors } from './seir-colors'
 import { FloatingSimulationControls } from './FloatingSimulationControls'
 import { usd } from './CombinedCostResults'
+import { ResourceInventory } from './ResourceInventory'
 import { simulationModeMessages, type SimulationPlayback, type ComparisonState } from '@/lib/simulation-playback'
 import './ContactNetwork.css'
 
@@ -39,11 +40,13 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const pickerId = useId()
   const combined = preview.configuration.intervention.combined
   const budgetDay = combined && frames && hasComparison ? comparison!.replicates[comparison!.representative.index].policies[policy].daily[currentDay] as CombinedDaily : null
+  const schedule = combined?.resourceSchedule
+  const inventoryDay = schedule && budgetDay ? budgetDay as CombinedDaily & InventoryDaily : null
   const blockedContext = budgetDay?.closedContext ?? null
   const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections, blockedContext), [preview, layer, currentDay, frame, selections, blockedContext])
   const visibleCounts = playback.counts
-  const vaccineBudget = preview.configuration.intervention.vaccines
-  const remainingVaccines = vaccineBudget - (frames ? applied.length : 0)
+  const vaccineBudget = inventoryDay?.vaccinesReceivedTotal ?? preview.configuration.intervention.vaccines
+  const remainingVaccines = inventoryDay?.vaccinesAvailable ?? vaccineBudget - (frames ? applied.length : 0)
   const positions = useMemo(() => networkPositions(preview, layout), [preview, layout])
   const detail = preview.graph.nodes.find(n => String(n.id) === selected)
   const selectedState = graph.nodes.find(n => n.data.id === selected)?.data.state ?? 'S'
@@ -139,7 +142,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
       <div className="vaccine-inventory" aria-label={`Vacunas restantes: ${remainingVaccines} de ${vaccineBudget}${frames ? ` en el día ${currentDay}, estrategia ${policyLabels[policy]}` : ', antes de simular'}`} title="Cada dosis asignada se descuenta, aunque no resulte efectiva.">
         <span className="vaccine-inventory-label"><Syringe size={16} aria-hidden="true" />Vacunas restantes</span>
         <span className="vaccine-inventory-value"><strong>{remainingVaccines.toLocaleString('es-EC')}</strong><small>/ {vaccineBudget.toLocaleString('es-EC')} dosis</small></span>
-        <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}` : 'Antes de simular'}</small>
+        <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}${inventoryDay ? ' · recibidas hasta hoy' : ''}` : 'Antes de simular'}</small>
       </div>
       </div>
       {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
@@ -201,11 +204,12 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
             <label className="playback-speed"><span>Velocidad</span><select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>0,5×</option><option value={700}>1×</option><option value={350}>2×</option><option value={175}>4×</option></select></label>
           </div>
           <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
-          <p>R incluye personas recuperadas o inmunizadas. Las vacunas se aplican al registrar el día {comparison!.configuration.intervention.interventionDay}.</p>
+          <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>
         </> : <><p role="status">{simulationModeMessages[playback.mode]}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}
       </section>
+      {schedule && <ResourceInventory row={inventoryDay} schedule={schedule} day={currentDay} initialVaccines={preview.configuration.intervention.vaccines} />}
       {hasComparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
-      {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); dispatch({ type: 'pause' }); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
+      {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={schedule ? (comparison!.replicates[comparison!.representative.index].policies[policy].daily[frames ? currentDay : comparison!.configuration.scenario.days] as InventoryDaily).vaccinesReceivedTotal : comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); dispatch({ type: 'pause' }); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
       <div className="network-layout-control" hidden={!showNetwork}>
         <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); dispatch({ type: 'pause' }) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
         <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>

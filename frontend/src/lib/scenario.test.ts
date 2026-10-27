@@ -59,3 +59,21 @@ test('combined plans round trip, validate money and restore by value rather than
   assert.ok(validateScenario({ ...scenario, combined: { ...combined, vaccineCostCents: 0 } }).length)
   assert.ok(validateScenario({ ...scenario, combined: { ...combined, closureDays: 91 } }).length)
 })
+
+test('resource schedules normalize duplicate deliveries and restore equivalent inputs without mutating UI', () => {
+  const combined = { modelVersion: 'combined-educational-v1' as const, budgetCents: 10000, vaccineCostCents: 1000, closureCostCents: 500, closureContext: 'school' as const, closureStart: 0, closureDays: 2, brigadeCostCents: 100, brigadeDailyCapacity: 10, brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: 2,
+    resourceSchedule: { modelVersion: 'daily-inventory-v1' as const, vaccineDailyCapacity: 2, initialBrigadeSupplies: 0, deliveries: [{ day: 2, vaccines: 2, brigadeSupplies: 3 }, { day: 2, vaccines: 1, brigadeSupplies: 1 }] } }
+  const scenario = { ...defaults, vaccines: 1, combined }
+  const before = JSON.stringify(scenario)
+  const configuration = toConfiguration(scenario)
+  assert.deepEqual(configuration.intervention.combined!.resourceSchedule!.deliveries, [{ day: 2, vaccines: 3, brigadeSupplies: 4 }])
+  assert.equal(JSON.stringify(scenario), before)
+  assert.equal(matchesLoadedScenario(scenario, configuration), true)
+  const edited = structuredClone(scenario)
+  edited.combined.resourceSchedule.deliveries[0].day = 3
+  assert.equal(matchesLoadedScenario(edited, configuration), false)
+  edited.combined.resourceSchedule.deliveries[0].day = 91
+  assert.ok(validateScenario(edited).length)
+  edited.combined.resourceSchedule.deliveries[0] = { day: 1, vaccines: 1000, brigadeSupplies: 0 }
+  assert.ok(validateScenario(edited).length)
+})

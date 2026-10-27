@@ -56,13 +56,13 @@ Una tarea se cierra con criterios de aceptación cubiertos, verificación ejecut
 
 Orden crítico backend: T-02→T-04→T-05→T-06→T-07→T-08→T-09→T-10→T-11. T-03 precede configuración y mocks. Frontend T-12..15 avanza con contrato mientras backend implementa núcleo; integración real exige T-11. Infra T-17/18 y documentación técnica T-21 pueden preparar borradores en paralelo; despliegue depende del código y viabilidad de cuenta. La revisión inicial no obliga a esperar a terminar todo backend para comenzar UI/IaC.
 
-PRO permanece fuera de estas casillas base. El 2026-10-27 el usuario autorizó avanzar intervenciones combinadas y costos/presupuesto con supuestos educativos: [incremento PRO-1/2](../docs/intervenciones-combinadas.md). Llegadas diarias de recursos, jobs, persistencia, permisos e idempotencia de procesamiento asíncrono no están implementados por este incremento.
+PRO permanece fuera de estas casillas base. El 2026-10-27 el usuario autorizó avanzar intervenciones combinadas y costos/presupuesto con supuestos educativos: [incremento PRO-1/2](../docs/intervenciones-combinadas.md). P-01 incorpora ahora llegadas diarias e inventario opcionales; jobs, persistencia, permisos e idempotencia de procesamiento asíncrono siguen pendientes.
 
 ## 8. Pendientes PRO — planificación solicitada el 2026-10-27
 
 Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-roadmap.md). Estas casillas separan planificación de implementación y no cierran las tareas base ni el resto de PRO.
 
-- [ ] **P-01 — Llegadas diarias e inventario.** No iniciado. Definir recepción/consumo/acumulación, recursos y presupuesto sin doble cargo; exportar movimientos y probar conservación.
+- [x] **P-01 — Llegadas diarias e inventario.** Verificado localmente. Calendario normalizado, recepción antes de uso, acumulación, límites físicos/monetarios, una dosis por persona, saldo diario y `inventory.csv`. [Contrato, límites y evidencia](p01-resource-schedule.md). No incluye caducidad, cancelación de entregas durante ejecución ni recursos adicionales fuera de dosis/insumos de brigadas.
 - [ ] **P-02 — Decisiones adaptativas al brote.** En progreso, parcial. Ya se recalculan destinatarios de brigadas; faltan reglas generales, observabilidad, motivos y comparación reproducible.
 - [ ] **P-03 — Contratos y trabajos Monte Carlo locales.** No iniciado. Especificar jobs, semillas/índices, acceso, progreso, cancelación, reintentos idempotentes y agregado completo.
 - [ ] **P-04 — Miles de réplicas en AWS.** No iniciado. Distributed Map con concurrencia medida, cuotas, costos y evidencia; requiere P-03 y comprobaciones de infraestructura antes de ejecutar lotes.

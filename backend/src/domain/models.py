@@ -38,6 +38,21 @@ class Scenario:
 
 
 @dataclass(frozen=True, slots=True)
+class ResourceDelivery:
+    day: int
+    vaccines: int
+    brigade_supplies: int
+
+
+@dataclass(frozen=True, slots=True)
+class ResourceSchedule:
+    model_version: Literal["daily-inventory-v1"]
+    vaccine_daily_capacity: int
+    initial_brigade_supplies: int
+    deliveries: tuple[ResourceDelivery, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class CombinedIntervention:
     model_version: Literal["combined-educational-v1"]
     budget_cents: int
@@ -51,6 +66,7 @@ class CombinedIntervention:
     brigade_reduction: float
     brigade_start: int
     brigade_days: int
+    resource_schedule: ResourceSchedule | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,6 +108,8 @@ class Configuration:
         data: dict[str, Any] = _camelize(asdict(self))
         if self.intervention.combined is None:
             data["intervention"].pop("combined", None)
+        elif self.intervention.combined.resource_schedule is None:
+            data["intervention"]["combined"].pop("resourceSchedule", None)
         return data
 
 

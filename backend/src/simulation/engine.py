@@ -186,11 +186,28 @@ def simulate_policy(
     selections: list[dict[str, Any]] = []
     policy_rng = create_rng(configuration.root_seed, "policy-random", replicate_index)
     combined = configuration.intervention.combined
+    schedule = combined.resource_schedule if combined else None
+    delivery_days = {row.day: row for row in schedule.deliveries} if schedule else {}
+    vaccine_stock = configuration.intervention.vaccines
+    received_vaccines = vaccine_stock
+    brigade_stock = schedule.initial_brigade_supplies if schedule else 0
+    received_brigades = brigade_stock
+    total_vaccines = vaccine_stock + (
+        sum(row.vaccines for row in schedule.deliveries) if schedule else 0
+    )
     remaining = combined.budget_cents if combined else 0
     brigade_rng = create_rng(configuration.root_seed, "combined-brigades-v1", replicate_index)
     interval_edges = edges
     for day in range(t + 1):
         before = remaining
+        delivery = delivery_days.get(day)
+        delivered_vaccines = delivery.vaccines if delivery else 0
+        delivered_brigades = delivery.brigade_supplies if delivery else 0
+        vaccine_stock += delivered_vaccines
+        brigade_stock += delivered_brigades
+        received_vaccines += delivered_vaccines
+        received_brigades += delivered_brigades
+        used_vaccines = 0
         if day:
             states, changes = step_day(
                 states,
@@ -207,26 +224,39 @@ def simulate_policy(
                 if event["cause"] == "contact":
                     cumulative += 1
             events.extend(changes)
-        if day == configuration.intervention.intervention_day:
-            states, selections, vaccine_events = vaccinate(
+        if day == configuration.intervention.intervention_day or (
+            schedule and day > configuration.intervention.intervention_day
+        ):
+            available = (
+                min(vaccine_stock, schedule.vaccine_daily_capacity)
+                if schedule
+                else configuration.intervention.vaccines
+            )
+            states, today_selections, vaccine_events = vaccinate(
                 states,
                 edges,
                 policy=policy,
-                vaccines=min(
-                    configuration.intervention.vaccines, remaining // combined.vaccine_cost_cents
-                )
+                vaccines=min(available, remaining // combined.vaccine_cost_cents)
                 if combined
                 else configuration.intervention.vaccines,
                 day=day,
                 efficacy=configuration.intervention.vaccine_efficacy,
                 potentials=p.vaccine[day],
                 rng=policy_rng,
+                excluded=frozenset(row["nodeId"] for row in selections)
+                if schedule
+                else frozenset(),
             )
+            for row in today_selections:
+                row["rank"] += len(selections)
+            selections.extend(today_selections)
+            used_vaccines = len(today_selections)
+            vaccine_stock -= used_vaccines
             for event in vaccine_events:
                 entries[event["nodeId"]]["R"] = day
             events.extend(vaccine_events)
             if combined:
-                remaining -= len(selections) * combined.vaccine_cost_cents
+                remaining -= used_vaccines * combined.vaccine_cost_cents
         closed_context = None
         brigade_ids: list[int] = []
         if combined:
@@ -239,8 +269,11 @@ def simulate_policy(
                 last_day=t,
                 remaining=remaining,
                 rng=brigade_rng,
+                supplies=brigade_stock if schedule else None,
             )
             remaining -= spent
+            if schedule:
+                brigade_stock -= len(brigade_ids)
         frames.append(states.copy())
         daily.append(
             {
@@ -261,6 +294,17 @@ def simulate_policy(
                 brigadesActive=len(brigade_ids),
                 brigadeNodeIds=brigade_ids,
             )
+        if schedule:
+            daily[-1].update(
+                vaccinesDeliveredToday=delivered_vaccines,
+                vaccinesReceivedTotal=received_vaccines,
+                vaccinesUsedToday=used_vaccines,
+                vaccinesAvailable=vaccine_stock,
+                brigadeSuppliesDeliveredToday=delivered_brigades,
+                brigadeSuppliesReceivedTotal=received_brigades,
+                brigadeSuppliesUsedToday=len(brigade_ids),
+                brigadeSuppliesAvailable=brigade_stock,
+            )
     events.sort(key=lambda event: (event["day"], event["nodeId"], event["cause"]))
     return SimulationTrace(
         daily,
@@ -271,7 +315,7 @@ def simulate_policy(
         selections,
         len(selections),
         sum(row["effective"] for row in selections),
-        configuration.intervention.vaccines - len(selections),
+        total_vaccines - len(selections),
     )
 
 

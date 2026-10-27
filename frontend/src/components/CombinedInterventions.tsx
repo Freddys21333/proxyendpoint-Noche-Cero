@@ -1,4 +1,5 @@
 import type { CombinedPlan } from '@/lib/api'
+import { ResourceScheduleEditor } from './ResourceScheduleEditor'
 
 export function CombinedInterventions({ value, onChange, days, population }: {
   value?: CombinedPlan; onChange: (value: CombinedPlan | undefined) => void; days: number; population: number;
@@ -16,6 +17,9 @@ export function CombinedInterventions({ value, onChange, days, population }: {
     {value && <>
       <p className="educational-assumption">Supuestos educativos editables en USD. No son precios reales ni efectos sanitarios calibrados.</p>
       <div className="configuration-fields">{number('Presupuesto total (USD)', 'budgetCents', 1000000, true)}{number('Costo por dosis (USD)', 'vaccineCostCents', 10000, true)}</div>
+      <ResourceScheduleEditor value={value.resourceSchedule} days={days} population={population} initialSupplies={value.brigadeDailyCapacity * value.brigadeDays} onChange={schedule => {
+        const next = { ...value }; if (schedule) next.resourceSchedule = schedule; else delete next.resourceSchedule; onChange(next)
+      }} />
       <details open><summary>Cierre temporal de contactos</summary>
         <label className="field"><span>Tipo de contacto a cerrar</span><select value={value.closureContext} onChange={event => onChange({ ...value, closureContext: event.target.value as CombinedPlan['closureContext'] })}>
           <option value="household">Hogares</option><option value="school">Colegios</option><option value="bus">Rutas de bus</option><option value="market">Mercado</option><option value="neighborhood">Barrios</option>

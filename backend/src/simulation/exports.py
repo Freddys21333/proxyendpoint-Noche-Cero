@@ -114,6 +114,10 @@ def _validate(document: dict[str, Any]) -> None:
             plan = document["configuration"]["intervention"].get("combined")
             if plan:
                 previous = 0
+                schedule = plan.get("resourceSchedule")
+                vaccines_used = 0
+                brigades_used = 0
+                seen_nodes: set[int] = set()
                 for row in result["daily"]:
                     count = sum(
                         selection["day"] == row["day"] for selection in result["selections"]
@@ -136,6 +140,57 @@ def _validate(document: dict[str, Any]) -> None:
                     ):
                         raise ValueError("El registro de presupuesto no cuadra con las acciones.")
                     previous = spent
+                    if schedule:
+                        delivered = [r for r in schedule["deliveries"] if r["day"] == row["day"]]
+                        received = [r for r in schedule["deliveries"] if r["day"] <= row["day"]]
+                        vaccines_used += count
+                        brigades_used += len(brigade_ids)
+                        expected = dict(
+                            vaccinesDeliveredToday=sum(r["vaccines"] for r in delivered),
+                            vaccinesReceivedTotal=document["configuration"]["intervention"][
+                                "vaccines"
+                            ]
+                            + sum(r["vaccines"] for r in received),
+                            vaccinesUsedToday=count,
+                            brigadeSuppliesDeliveredToday=sum(
+                                r["brigadeSupplies"] for r in delivered
+                            ),
+                            brigadeSuppliesReceivedTotal=schedule["initialBrigadeSupplies"]
+                            + sum(r["brigadeSupplies"] for r in received),
+                            brigadeSuppliesUsedToday=len(brigade_ids),
+                        )
+                        expected.update(
+                            vaccinesAvailable=expected["vaccinesReceivedTotal"] - vaccines_used,
+                            brigadeSuppliesAvailable=expected["brigadeSuppliesReceivedTotal"]
+                            - brigades_used,
+                        )
+                        today_nodes = {
+                            s["nodeId"] for s in result["selections"] if s["day"] == row["day"]
+                        }
+                        if (
+                            any(row.get(k) != v or v < 0 for k, v in expected.items())
+                            or count > schedule["vaccineDailyCapacity"]
+                            or len(today_nodes) != count
+                            or seen_nodes & today_nodes
+                            or (
+                                count
+                                and row["day"]
+                                < document["configuration"]["intervention"]["interventionDay"]
+                            )
+                        ):
+                            raise ValueError(
+                                "El registro de inventario no cuadra con las entregas y consumos."
+                            )
+                        seen_nodes.update(today_nodes)
+                if schedule:
+                    total = document["configuration"]["intervention"]["vaccines"] + sum(
+                        r["vaccines"] for r in schedule["deliveries"]
+                    )
+                    if (
+                        result["metrics"]["vaccinesAssigned"] != vaccines_used
+                        or result["metrics"]["vaccinesUnused"] != total - vaccines_used
+                    ):
+                        raise ValueError("Las métricas de dosis no cuadran con el inventario.")
             if result["resultHash"] != json_hash(
                 {key: result[key] for key in ("metrics", "daily", "selections")}
             ):
@@ -268,6 +323,24 @@ def export_zip(document: dict[str, Any]) -> bytes:
     ):
         table(name, ("replicateIndex", "policy", *fields), rows_by_name[name])
     if document["configuration"]["intervention"].get("combined"):
+        if document["configuration"]["intervention"]["combined"].get("resourceSchedule"):
+            table(
+                "inventory",
+                (
+                    "replicateIndex",
+                    "policy",
+                    "day",
+                    "vaccinesDeliveredToday",
+                    "vaccinesReceivedTotal",
+                    "vaccinesUsedToday",
+                    "vaccinesAvailable",
+                    "brigadeSuppliesDeliveredToday",
+                    "brigadeSuppliesReceivedTotal",
+                    "brigadeSuppliesUsedToday",
+                    "brigadeSuppliesAvailable",
+                ),
+                rows_by_name["daily"],
+            )
         table(
             "budget",
             (

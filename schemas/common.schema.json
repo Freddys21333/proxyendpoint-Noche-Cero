@@ -315,7 +315,7 @@
       },
       "required": [],
       "additionalProperties": false,
-      "description": "Validar relaciones despuÃƒÂ©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+      "description": "Validar relaciones despuÃƒÆ’Ã‚Â©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
     },
     "Origin": {
       "type": "object",
@@ -630,7 +630,7 @@
         "network"
       ],
       "additionalProperties": false,
-      "description": "Validar relaciones despuÃƒÂ©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+      "description": "Validar relaciones despuÃƒÆ’Ã‚Â©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
     },
     "PreviewRequest": {
       "type": "object",
@@ -1235,6 +1235,46 @@
             "minimum": 0,
             "maximum": 1999
           }
+        },
+        "vaccinesDeliveredToday": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "vaccinesReceivedTotal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "vaccinesUsedToday": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "vaccinesAvailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "brigadeSuppliesDeliveredToday": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
+        },
+        "brigadeSuppliesReceivedTotal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
+        },
+        "brigadeSuppliesUsedToday": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
+        },
+        "brigadeSuppliesAvailable": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
         }
       },
       "required": [
@@ -2462,6 +2502,9 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 180
+        },
+        "resourceSchedule": {
+          "$ref": "#/$defs/ResourceSchedule"
         }
       },
       "required": [
@@ -2480,6 +2523,65 @@
       ],
       "additionalProperties": false,
       "description": "Supuestos educativos editables. Costos enteros en centavos; prioridad vacunas, cierre, brigadas. No son tarifas reales."
+    },
+    "ResourceDelivery": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "vaccines": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "brigadeSupplies": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
+        }
+      },
+      "required": [
+        "day",
+        "vaccines",
+        "brigadeSupplies"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceSchedule": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "type": "string",
+          "const": "daily-inventory-v1"
+        },
+        "vaccineDailyCapacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "initialBrigadeSupplies": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 360000
+        },
+        "deliveries": {
+          "type": "array",
+          "maxItems": 512,
+          "items": {
+            "$ref": "#/$defs/ResourceDelivery"
+          }
+        }
+      },
+      "required": [
+        "modelVersion",
+        "vaccineDailyCapacity",
+        "initialBrigadeSupplies",
+        "deliveries"
+      ],
+      "additionalProperties": false
     }
   }
 }

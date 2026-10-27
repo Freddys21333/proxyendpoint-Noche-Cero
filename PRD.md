@@ -110,10 +110,12 @@ La hipótesis es que `targeted` reduce en promedio los infectados acumulados al 
 
 ### 4.2 Alcance PRO y planificación incremental
 
-Actualización 2026-10-27: el usuario autorizó avanzar PRO-1 y costos/presupuesto de PRO-2 con supuestos educativos editables antes de cerrar el gate base. Incremento y límites documentados en [intervenciones combinadas](docs/intervenciones-combinadas.md). Esto no aprueba la base ni incluye inventario con llegadas diarias, adaptación o calibración real.
+Actualización 2026-10-27: el usuario autorizó avanzar PRO-1 y costos/presupuesto de PRO-2 con supuestos educativos editables antes de cerrar el gate base. Incremento y límites documentados en [intervenciones combinadas](docs/intervenciones-combinadas.md). P-01 amplía ahora el inventario con llegadas diarias, como se detalla debajo. Esto no aprueba la base ni completa adaptación o calibración real.
 
 - **PRO-1:** varias intervenciones combinadas: vacunas, cierre temporal de una capa y brigadas de fumigación simuladas.
 - **PRO-2:** costos unitarios, presupuesto total, inventario y recursos que llegan por día.
+
+P-01 verificado localmente (2026-10-27): [calendario opcional de entregas e inventario](specs/p01-resource-schedule.md), recepción antes de uso, remanentes acumulables, dosis e insumos de brigadas limitados por existencias/capacidad/presupuesto y registro reproducible por día. Recibir no incrementa el presupuesto; se paga al usar. Con calendario activo se vacuna diariamente desde el día de intervención, una sola dosis por persona; sin calendario se conserva la intervención única anterior. La política adaptativa completa pertenece a P-02.
 - **PRO-3:** estrategia adaptativa que recalcula prioridades con el estado observado.
 - **PRO-4:** 1.000 o más réplicas paralelas mediante AWS Step Functions Distributed Map.
 - **PRO-5:** preset calibrado con datos abiertos reales y metodología reproducible.

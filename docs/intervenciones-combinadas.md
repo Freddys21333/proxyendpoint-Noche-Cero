@@ -1,6 +1,6 @@
 # Intervenciones combinadas y presupuesto educativo
 
-Estado: incremento funcional PRO-1 y parte de PRO-2, solicitado explícitamente el 2026-10-27. No implica aprobar la base ni completar todo el alcance PRO. Los costos y efectos editables fueron autorizados como supuestos educativos por el usuario. No se han agregado recursos que llegan por día, calibración real, planificación óptima ni estrategia adaptativa PRO-3.
+Estado: incremento funcional PRO-1 y parte de PRO-2, solicitado explícitamente el 2026-10-27. No implica aprobar la base ni completar todo el alcance PRO. Los costos y efectos editables fueron autorizados como supuestos educativos por el usuario. P-01 añade opcionalmente entregas diarias e inventario: [contrato y evidencia](../specs/p01-resource-schedule.md). Calibración real, planificación óptima y estrategia adaptativa completa PRO-3 siguen pendientes.
 
 ## Qué significa y qué aporta el PDF
 
@@ -10,7 +10,7 @@ El PRD §4.2 define vacunas, cierre temporal de una capa y brigadas simuladas, j
 
 Activación opcional en `configuration.intervention.combined`. Ausente conserva exactamente el modo base y sus hashes de referencia. El submodelo queda identificado por `modelVersion=combined-educational-v1`, incluido en el JSON y su hash. Montos enteros en centavos USD, sin redondeos acumulados del saldo; la interfaz permite editar dólares con dos decimales. Presupuesto máximo: USD 1.000.000; costos unitarios: USD 0,01 a 10.000. El presupuesto puede ser cero.
 
-Supuestos iniciales editables: presupuesto USD 2.000; dosis USD 10; cierre USD 100 por día; brigada USD 2 por persona atendida y día, hasta 10 personas diarias, reducción de transmisión del 30 %. Cierre y brigadas comienzan en día 0 y duran hasta 7 intervalos, ajustados al horizonte al activar el modo. Desactivar elimina el submodelo. No se ajustan silenciosamente calendarios existentes al reducir el horizonte: se informa error para corregirlos.
+Supuestos iniciales editables: presupuesto USD 2.000; dosis USD 10; cierre USD 100 por día; brigada USD 2 por persona atendida y día, hasta 10 personas diarias, reducción de transmisión del 30 %. Cierre y brigadas comienzan en día 0 y duran hasta 7 intervalos, ajustados al horizonte al activar el modo. Desactivar elimina el submodelo. El calendario opcional P-01 extiende la vacunación a días sucesivos con capacidad y existencias limitadas; sin calendario, las reglas siguientes conservan su significado original. No se ajustan silenciosamente calendarios existentes al reducir el horizonte: se informa error para corregirlos.
 
 Un día d registra el estado tras la vacunación de ese día; los cierres y brigadas de d afectan el intervalo d→d+1. No se pagan intervalos después del último día T. Los calendarios son inicio incluido y fin excluido; duración cero desactiva una acción. Cada día se atiende, por orden: vacunación cuando corresponde, cierre y brigadas. No hay reserva automática para dosis de días futuros.
 

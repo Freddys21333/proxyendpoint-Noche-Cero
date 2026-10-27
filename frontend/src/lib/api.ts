@@ -1,10 +1,17 @@
 import { fromConfiguration, validateScenario, type Scenario } from './scenario.ts'
+import { normalizedCombinedPlan } from './resource-schedule.ts'
+
+export type ResourceSchedule = { modelVersion: 'daily-inventory-v1'; vaccineDailyCapacity: number; initialBrigadeSupplies: number;
+  deliveries: { day: number; vaccines: number; brigadeSupplies: number }[] }
+export type InventoryDaily = { vaccinesDeliveredToday: number; vaccinesReceivedTotal: number; vaccinesUsedToday: number; vaccinesAvailable: number;
+  brigadeSuppliesDeliveredToday: number; brigadeSuppliesReceivedTotal: number; brigadeSuppliesUsedToday: number; brigadeSuppliesAvailable: number }
 
 export type CombinedPlan = {
   modelVersion: 'combined-educational-v1'; budgetCents: number; vaccineCostCents: number;
   closureCostCents: number; closureContext: 'household' | 'school' | 'bus' | 'market' | 'neighborhood';
   closureStart: number; closureDays: number; brigadeCostCents: number;
   brigadeDailyCapacity: number; brigadeReduction: number; brigadeStart: number; brigadeDays: number;
+  resourceSchedule?: ResourceSchedule;
 }
 export type CombinedDaily = { day: number; budgetRemainingCents: number; spentCents: number; spentTodayCents: number; closedContext: string | null; brigadesActive: number; brigadeNodeIds: number[] }
 
@@ -123,12 +130,14 @@ function completeComparison(data: Record<string, unknown>, configuration: Config
 
 function validSelections(result: Record<string, unknown>, policy: Policy, configuration: ConfigurationInput): boolean {
   const rows = result.selections, metrics = result.metrics
-  const { vaccines, interventionDay } = configuration.intervention
+  const { interventionDay } = configuration.intervention
+  const schedule = configuration.intervention.combined?.resourceSchedule
+  const vaccines = configuration.intervention.vaccines + (schedule?.deliveries.reduce((total, row) => total + row.vaccines, 0) ?? 0)
   if (!Array.isArray(rows) || !object(metrics) || rows.length > vaccines || (policy === 'none' && rows.length !== 0)) return false
   const plan = configuration.intervention.combined
   if (plan) {
     if (!Array.isArray(result.daily)) return false
-    let previous = 0
+    let previous = 0, usedVaccines = 0, usedSupplies = 0
     for (const [day, row] of result.daily.entries()) {
       if (!object(row) || row.day !== day || !integerIn(row.spentCents, 0, plan.budgetCents) || !integerIn(row.budgetRemainingCents, 0, plan.budgetCents) || !Array.isArray(row.brigadeNodeIds) || new Set(row.brigadeNodeIds).size !== row.brigadeNodeIds.length || !row.brigadeNodeIds.every(id => integerIn(id, 0, configuration.scenario.populationSize - 1)) || row.brigadesActive !== row.brigadeNodeIds.length || row.brigadeNodeIds.length > plan.brigadeDailyCapacity) return false
       const cost = rows.filter(selection => object(selection) && selection.day === day).length * plan.vaccineCostCents + row.brigadeNodeIds.length * plan.brigadeCostCents + (row.closedContext === null ? 0 : plan.closureCostCents)
@@ -136,9 +145,19 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
       if (row.closedContext !== null && (row.closedContext !== plan.closureContext || day < plan.closureStart || day >= plan.closureStart + plan.closureDays || day >= configuration.scenario.days)) return false
       if (row.brigadeNodeIds.length && (day < plan.brigadeStart || day >= plan.brigadeStart + plan.brigadeDays || day >= configuration.scenario.days)) return false
       previous = row.spentCents
+      if (schedule) {
+        const delivered = schedule.deliveries.filter(r => r.day === day), received = schedule.deliveries.filter(r => r.day <= day)
+        const count = rows.filter(selection => object(selection) && selection.day === day).length
+        usedVaccines += count; usedSupplies += row.brigadeNodeIds.length
+        const receivedVaccines = configuration.intervention.vaccines + received.reduce((n, r) => n + r.vaccines, 0)
+        const receivedSupplies = schedule.initialBrigadeSupplies + received.reduce((n, r) => n + r.brigadeSupplies, 0)
+        const expected = { vaccinesDeliveredToday: delivered.reduce((n,r) => n+r.vaccines,0), vaccinesReceivedTotal: receivedVaccines, vaccinesUsedToday: count, vaccinesAvailable: receivedVaccines-usedVaccines,
+          brigadeSuppliesDeliveredToday: delivered.reduce((n,r) => n+r.brigadeSupplies,0), brigadeSuppliesReceivedTotal: receivedSupplies, brigadeSuppliesUsedToday: row.brigadeNodeIds.length, brigadeSuppliesAvailable: receivedSupplies-usedSupplies }
+        if (count > schedule.vaccineDailyCapacity || Object.entries(expected).some(([key,value]) => value < 0 || !integerIn(row[key],value,value))) return false
+      }
     }
   }
-  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && row.day === interventionDay && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
+  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && (schedule ? integerIn(row.day, interventionDay, configuration.scenario.days) : row.day === interventionDay) && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
   return new Set(rows.map(row => row.nodeId)).size === rows.length && new Set(rows.map(row => row.rank)).size === rows.length && metrics.vaccinesAssigned === rows.length && metrics.vaccinesEffective === rows.filter(row => row.effective).length && metrics.vaccinesUnused === vaccines - rows.length
 }
 
@@ -188,9 +207,14 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     }
     return data as T
   }
-  const compare = (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<CompareResponse>('/simulations/compare', {
+  const normalized = (configuration: ConfigurationInput): ConfigurationInput => configuration.intervention.combined?.resourceSchedule
+    ? { ...configuration, intervention: { ...configuration.intervention, combined: normalizedCombinedPlan(configuration.intervention.combined) } } : configuration
+  const compare = (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => {
+    configuration = normalized(configuration)
+    return request<CompareResponse>('/simulations/compare', {
     method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration, expectedGraphHash: graphHash, includeRepresentativeFrames: includeFrames }),
   }, data => completeComparison(data, configuration, graphHash, includeFrames), limits)
+  }
   return {
     compare,
     compareForPlayback: async (configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, limits?: ServerLimits) => {
@@ -203,9 +227,12 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     },
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
     config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, validConfig),
-    preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => request<PreviewResponse>('/scenarios/preview', {
+    preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => {
+      configuration = normalized(configuration)
+      return request<PreviewResponse>('/scenarios/preview', {
       method: 'POST', signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ schemaVersion: '1.0', configuration }),
-    }, data => validPreview(data, configuration, limits), limits),
+    }, data => validPreview(data, configuration, limits), limits)
+    },
   }
 }
 
@@ -213,6 +240,6 @@ export function toConfiguration(s: Scenario, base?: ConfigurationInput): Configu
   return { ...base, rootSeed: s.seed, networkMode: 'fixed', repetitions: s.repetitions,
     scenario: { populationSize: s.population, days: s.days, beta: s.beta, sigma: s.sigma, gamma: s.gamma,
       initialInfectious: s.initial, origin: { kind: s.origin, value: s.origin === 'node' ? s.node : null } },
-    intervention: { vaccines: s.vaccines, interventionDay: s.interventionDay, vaccineEfficacy: s.efficacy, ...(s.combined ? { combined: s.combined } : {}) },
+    intervention: { vaccines: s.vaccines, interventionDay: s.interventionDay, vaccineEfficacy: s.efficacy, ...(s.combined ? { combined: normalizedCombinedPlan(s.combined) } : {}) },
     policies: ['none', 'random', 'targeted'] }
 }

@@ -1,4 +1,5 @@
 import type { ConfigurationInput, CombinedPlan } from './api.ts'
+import { sameCombinedPlan } from './resource-schedule.ts'
 export const defaults = {
   population: 1000, days: 90, beta: 0.08, sigma: 0.333333, gamma: 0.142857,
   initial: 1, vaccines: 100, interventionDay: 0, efficacy: 1, repetitions: 30,
@@ -47,6 +48,21 @@ export function validateScenario(s: Scenario): string[] {
       integer(days, 0, s.days, 'Duración de intervención combinada')
       if (days && start + days > s.days) errors.push('Las intervenciones combinadas deben caber en el horizonte.')
     }
+    if (p.resourceSchedule) {
+      const r = p.resourceSchedule
+      if (r.modelVersion !== 'daily-inventory-v1' || !Array.isArray(r.deliveries) || r.deliveries.length > 512) errors.push('Calendario de entregas inválido.')
+      integer(r.vaccineDailyCapacity, 0, s.population, 'Capacidad diaria de vacunación')
+      integer(r.initialBrigadeSupplies, 0, 360000, 'Insumos iniciales de brigadas')
+      const deliveries = Array.isArray(r.deliveries) ? r.deliveries.filter(row => row && typeof row === 'object') : []
+      if (Array.isArray(r.deliveries) && deliveries.length !== r.deliveries.length) errors.push('Fila de entrega inválida.')
+      for (const row of deliveries) {
+        integer(row.day, 0, s.days, 'Día de entrega')
+        integer(row.vaccines, 0, 2000, 'Dosis entregadas')
+        integer(row.brigadeSupplies, 0, 360000, 'Insumos entregados')
+      }
+      if (s.vaccines + deliveries.reduce((n, row) => n + row.vaccines, 0) > s.population) errors.push('Las dosis iniciales más entregas no pueden superar la población en esta versión.')
+      if (r.initialBrigadeSupplies + deliveries.reduce((n, row) => n + row.brigadeSupplies, 0) > 360000) errors.push('Los insumos totales de brigadas superan 360000.')
+    }
   }
   return errors
 }
@@ -68,7 +84,7 @@ export function matchesLoadedScenario(scenario: Scenario, configuration: Configu
     if (key === 'node' && scenario.origin !== 'node') return true
     if (key !== 'combined') return scenario[key] === loaded[key]
     if (!scenario.combined || !loaded.combined) return scenario.combined === loaded.combined
-    return Object.entries(loaded.combined).every(([name, value]) => scenario.combined![name as keyof CombinedPlan] === value)
+    return sameCombinedPlan(scenario.combined, loaded.combined)
   })
 }
 

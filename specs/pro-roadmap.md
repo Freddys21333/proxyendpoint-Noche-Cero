@@ -7,7 +7,7 @@ Estado documental: **borrador de implementación**, actualizado el 2026-10-27 a 
 | Capacidad solicitada | Referencia previa | Estado comprobable y pendiente |
 |---|---|---|
 | Intervenciones combinadas, costos y presupuesto | PRD §4.2 PRO-1/2; TRD §6.3 | Incremento educativo funcional: vacunas, cierre de una capa y brigadas, saldo diario y exportación. No equivale a completar todo PRO-2. Véase [semántica vigente](../docs/intervenciones-combinadas.md). |
-| Recursos que llegan por días | PRO-2; TRD §6.3 | **No iniciado**: hay inventario inicial y presupuesto, pero no calendario de reposición. P-01. |
+| Recursos que llegan por días | PRO-2; TRD §6.3 | **Verificado localmente**: P-01 incorpora calendario opcional de reposición, acumulación, capacidad diaria y registro/exportación de inventario. [Contrato](p01-resource-schedule.md). |
 | Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **En progreso, parcial**: las brigadas dirigidas ya recalculan destinatarios susceptibles por día; vacuna y cierre siguen calendarios fijados. Falta política adaptativa explícita con reglas y registro de decisiones. P-02. |
 | Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **No iniciado**: el flujo actual es síncrono, 2..30 réplicas; no hay jobs ni Distributed Map implementados. P-03/04. |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
@@ -28,7 +28,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-01 — Calendario de llegadas e inventario (PRO-2)
 
-- [ ] Estado: **no iniciado**. Dependencia: contrato combinado vigente.
+- [x] Estado: **verificado localmente**. Dependencia: contrato combinado vigente. Implementación, decisiones cerradas y evidencia: [P-01](p01-resource-schedule.md).
 - Definir esquema de entregas por día, tipo y cantidad, con inventario inicial y recursos consumibles frente a capacidad diaria. Distinguir dosis recibidas, atenciones disponibles y financiación; una entrega no aumenta automáticamente el presupuesto.
 - Propuesta a cerrar en contrato: recepción al inicio del día, antes de decidir; acumular remanentes no perecederos. Definir explícitamente cancelación de entregas, caducidad si aplica y si las compras descuentan al recibir o al usar. Evitar pagar dos veces una dosis.
 - Exportar inventario inicial, llegadas, consumo y saldo por recurso/día/réplica/política; límites de coste e inventario son simultáneos. Ninguna estrategia usa recursos antes de su llegada.
@@ -103,6 +103,6 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ## 5. Orden de trabajo y criterio de inicio
 
-Primero P-01 y P-02 para completar recursos/decisiones; investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
+P-01 está verificado localmente; seguir con P-02 para completar decisiones e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
 
 Antes de cada implementación: cerrar esquema, ejemplo, semántica temporal, pruebas y cambios de PRD/TRD afectados. Los nombres de campos nuevos de esta hoja son propuestas, no contratos disponibles. Conservar la comparación justa, independencia de políticas, exportaciones y reproducibilidad. Cada capacidad pasa a verificada solo con evidencia, sin convertir las ideas opcionales en obligaciones.

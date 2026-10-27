@@ -19,6 +19,8 @@ from domain.models import (
     Origin,
     OriginKind,
     PreviewRequest,
+    ResourceDelivery,
+    ResourceSchedule,
     Scenario,
     Weights,
 )
@@ -209,6 +211,46 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                     )
                 ]
             )
+    schedule = combined.get("resourceSchedule") if combined else None
+    resource_schedule = None
+    if schedule:
+        deliveries: dict[int, list[int]] = {}
+        for row in schedule["deliveries"]:
+            if row["day"] > scenario["days"]:
+                _fail_validation(
+                    [
+                        FieldIssue(
+                            "configuration.intervention.combined.resourceSchedule.deliveries",
+                            "La entrega no puede superar el horizonte.",
+                        )
+                    ]
+                )
+            quantities = deliveries.setdefault(row["day"], [0, 0])
+            quantities[0] += row["vaccines"]
+            quantities[1] += row["brigadeSupplies"]
+        if (
+            intervention["vaccines"] + sum(q[0] for q in deliveries.values())
+            > scenario["populationSize"]
+            or schedule["vaccineDailyCapacity"] > scenario["populationSize"]
+            or schedule["initialBrigadeSupplies"] + sum(q[1] for q in deliveries.values()) > 360000
+        ):
+            _fail_validation(
+                [
+                    FieldIssue(
+                        "configuration.intervention.combined.resourceSchedule",
+                        "El total de dosis o insumos, o la capacidad, supera el límite permitido.",
+                    )
+                ]
+            )
+        resource_schedule = ResourceSchedule(
+            model_version="daily-inventory-v1",
+            vaccine_daily_capacity=schedule["vaccineDailyCapacity"],
+            initial_brigade_supplies=schedule["initialBrigadeSupplies"],
+            deliveries=tuple(
+                ResourceDelivery(day=day, vaccines=q[0], brigade_supplies=q[1])
+                for day, q in sorted(deliveries.items())
+            ),
+        )
     weights = candidate["network"]["weights"]
     result = Configuration(
         root_seed=int(candidate["rootSeed"]),
@@ -243,6 +285,7 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
                 brigade_reduction=_float(combined["brigadeReduction"]),
                 brigade_start=combined["brigadeStart"],
                 brigade_days=combined["brigadeDays"],
+                resource_schedule=resource_schedule,
             )
             if combined
             else None,

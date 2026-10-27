@@ -107,3 +107,19 @@ test('frame budget avoids requesting known oversized animation while retaining c
   await createApiClient('/v1', async (_url, init) => { included = JSON.parse(String(init?.body)).includeRepresentativeFrames; return Response.json(source) }).compareForPlayback(source.configuration, source.graphHash, undefined, { ...limits, maxFrameStates: 1 })
   assert.equal(included, false)
 })
+
+test('API client sends canonical resource deliveries without changing the caller', async () => {
+  const source = previewFixture()
+  source.configuration.intervention.vaccines = 1
+  source.configuration.intervention.combined = { modelVersion: 'combined-educational-v1', budgetCents: 10000, vaccineCostCents: 1000, closureCostCents: 500, closureContext: 'school', closureStart: 0, closureDays: 0, brigadeCostCents: 100, brigadeDailyCapacity: 2, brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: 0,
+    resourceSchedule: { modelVersion: 'daily-inventory-v1', vaccineDailyCapacity: 2, initialBrigadeSupplies: 0, deliveries: [{ day: 1, vaccines: 1, brigadeSupplies: 1 }, { day: 1, vaccines: 2, brigadeSupplies: 3 }] } }
+  const request = structuredClone(source.configuration)
+  const before = JSON.stringify(request)
+  source.configuration.intervention.combined.resourceSchedule!.deliveries = [{ day: 1, vaccines: 3, brigadeSupplies: 4 }]
+  const client = createApiClient('/v1', async (_url, init) => {
+    assert.deepEqual(JSON.parse(String(init?.body)).configuration.intervention.combined.resourceSchedule.deliveries, [{ day: 1, vaccines: 3, brigadeSupplies: 4 }])
+    return Response.json(source)
+  })
+  await client.preview(request)
+  assert.equal(JSON.stringify(request), before)
+})
