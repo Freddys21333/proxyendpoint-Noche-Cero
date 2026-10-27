@@ -446,3 +446,107 @@ paths:
               compare-request-minimal:
                 summary: Mock de contrato; no ejecución real
                 externalValue: ./examples/compare-request-minimal.json
+  /jobs:
+    post:
+      operationId: jobsCreate
+      summary: Crear trabajo Monte Carlo asíncrono
+      requestBody:
+        required: true
+        description: JSON estricto <=64 KiB. Configuración completa con repetitions 2..10000.
+        content:
+          application/json:
+            schema:
+              $ref: ./job-create-request.schema.json
+      responses:
+        '202':
+          description: Trabajo creado y aceptado para ejecución
+          content:
+            application/json:
+              schema:
+                $ref: ./job-create-response.schema.json
+        '400':
+          description: Error de aplicación saneado
+          x-error-codes: &id004
+          - INVALID_JSON
+          - UNKNOWN_FIELD
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '409':
+          description: Error de aplicación saneado
+          x-error-codes: &id006
+          - GRAPH_HASH_MISMATCH
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '422':
+          description: Error de aplicación saneado
+          x-error-codes: &id008
+          - VALIDATION_ERROR
+          - ORIGIN_EMPTY
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '503':
+          description: Error de aplicación saneado
+          x-error-codes: &id003
+          - COMPUTE_UNAVAILABLE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+  /jobs/{jobId}:
+    get:
+      operationId: jobsGet
+      summary: Consultar estado de un trabajo
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Estado actual del trabajo
+          content:
+            application/json:
+              schema:
+                $ref: ./job-status-response.schema.json
+        '404':
+          description: Error de aplicación saneado
+          x-error-codes: &id005
+          - JOB_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+  /jobs/{jobId}/cancel:
+    post:
+      operationId: jobsCancel
+      summary: Cancelar un trabajo en ejecución
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '202':
+          description: Solicitud de cancelación aceptada
+          content:
+            application/json:
+              schema:
+                $ref: ./job-cancel-response.schema.json
+        '404':
+          description: Error de aplicación saneado
+          x-error-codes: &id005
+          - JOB_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json

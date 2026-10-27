@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "job-create-response.schema.json",
+  "title": "JobCreateResponse",
+  "description": "Respuesta de creación exitosa de un trabajo.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0",
+      "description": "Versión del contrato de respuesta."
+    },
+    "engineVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Versión semántica del motor de simulación."
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Identificador único de la petición HTTP."
+    },
+    "jobId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único del trabajo creado."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "queued"],
+      "description": "Estado inicial del trabajo: pending (no iniciado) o queued (en cola de ejecución)."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp ISO 8601 de creación en UTC."
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp ISO 8601 de última actualización en UTC."
+    },
+    "progress": {
+      "type": "object",
+      "properties": {
+        "replicatesTotal": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Número total de réplicas a ejecutar."
+        },
+        "replicatesCompleted": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Número de réplicas completadas exitosamente."
+        },
+        "replicatesFailed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Número de réplicas que fallaron."
+        }
+      },
+      "required": ["replicatesTotal", "replicatesCompleted", "replicatesFailed"],
+      "additionalProperties": false
+    },
+    "statusUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL para consultar el estado del trabajo (GET /v1/jobs/{jobId})."
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "engineVersion",
+    "requestId",
+    "jobId",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "progress"
+  ],
+  "additionalProperties": false
+}

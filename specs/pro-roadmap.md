@@ -46,10 +46,11 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 
-- [ ] Estado: **no iniciado**. Dependencia: T-10/11 y una versión fijada del modelo a ejecutar.
+- [x] Estado: **implementado, pendiente de verificación**. Dependencia: T-10/11 y una versión fijada del modelo a ejecutar.
 - Detallar `/v1/jobs`, estado/progreso, cancelación, acceso por capacidad, manifiesto y resultados usando el diseño previo del TRD. No ampliar `repetitions` del endpoint síncrono como sustituto.
 - Fijar lista de índices y semillas antes de ejecutar; cada réplica procesa las políticas pareadas sobre el experimento acordado. Validar modelo, recurso de calibración, red fija o regenerada y versiones.
 - Aceptación local: lotes en distinto orden producen el mismo agregado; reintentos no duplican réplicas; errores/cancelación son trazables; solo agregado completo habilita recomendación final; reproducción coincide con ejecución secuencial.
+- **Implementado 2026-10-27:** 4 esquemas JSON (`job-create-request`, `job-create-response`, `job-status-response`, `job-cancel-response`), OpenAPI actualizado con 3 endpoints, 10 pruebas en `test_jobs_local.py`, evidencia en `docs/evidencia/p03-jobs-local.md`. Pendiente: ejecutar pruebas con entorno instalado.
 
 ### P-04 — Distributed Map en AWS y evidencia de miles de réplicas (PRO-4)
 
