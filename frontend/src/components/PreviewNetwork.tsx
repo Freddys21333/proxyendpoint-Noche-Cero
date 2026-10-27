@@ -51,8 +51,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         { selector: 'node[state="E"]', style: { 'background-color': seirColors.E.marker } },
         { selector: 'node[state="R"]', style: { 'background-color': seirColors.R.marker } },
         { selector: 'node[!inLayer]', style: { opacity: 0.15 } },
-        { selector: 'edge', style: { width: 1, 'line-color': '#a8c0b2', opacity: 0.4, 'curve-style': 'bezier' } },
-        { selector: '.focused', style: { 'line-color': '#315d47', width: 2, opacity: 1 } },
+        { selector: 'edge', style: { display: 'none', width: 1, 'line-color': '#a8c0b2', 'curve-style': 'bezier' } },
+        { selector: 'edge.focused', style: { display: 'element', 'line-color': '#315d47', width: 2, opacity: 1 } },
         { selector: 'node[vaccination="effective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'solid' } },
         { selector: 'node[vaccination="ineffective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'dashed' } },
         { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#173e32', opacity: 1 } },
@@ -75,6 +75,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     cy.fit(undefined, 20)
     return () => { resize.disconnect(); cy.destroy(); network.current = null }
   }, [preview, active])
+
+  useEffect(() => { setSelected('') }, [preview])
 
   useEffect(() => {
     const cy = network.current
@@ -119,7 +121,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   return <div className="simulator-workbench network-workbench">
     {!active ? <section className="network-demo-panel" aria-label="Vista previa pendiente"><h2>Vista previa pendiente</h2><p>La configuración cambió. Consulta la red para mostrar la población actual.</p></section> : <section className="network-demo-panel" aria-label={showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
       <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
-      <p className="network-meaning">{showNetwork ? `${graph.edges.length} contactos activos visibles. Cada punto es una persona; cada línea, un contacto.` : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
+      <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver solo sus conexiones del día y filtro actuales.' : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
       <div className="seir-instrument" aria-label={frames ? 'Estados de la población en el día seleccionado' : 'Estados iniciales de la población del preview'}>
         {(Object.keys(labels) as (keyof typeof labels)[]).map(state => <div key={state} aria-label={`${labels[state]}: ${visibleCounts[state]}`} style={{ '--state-color': seirColors[state].marker } as CSSProperties}>
           <span className="seir-instrument-label"><span className="seir-status-dot" aria-hidden="true" /><b>{state}</b> {labels[state]}</span><strong>{visibleCounts[state]}</strong>
@@ -149,6 +151,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
             {groups.map(([key, label]) => detail[key] !== null && <div key={key}><dt>{label}</dt><dd>{detail[key]}</dd></div>)}</dl>
           {frames && (dose ? <VaccinationPerson selection={dose} /> : <p>{policy === 'none' ? 'Sin intervención: no se aplican vacunas.' : currentDay < comparison!.configuration.intervention.interventionDay ? `Intervención pendiente para el día ${comparison!.configuration.intervention.interventionDay}. Aún no recibió una dosis.` : 'No recibió una dosis en esta estrategia. El estado actual no determina por sí solo su elegibilidad al decidir.'}</p>)}
           <button className="plain-action" onClick={() => network.current?.fit(network.current.getElementById(selected).closedNeighborhood(), 45)}><Crosshair size={14} /> Enfocar conexiones</button>
+          <button type="button" className="plain-action" onClick={() => setSelected('')}>Ocultar conexiones y quitar selección</button>
         </div>}
       </details>
     </section>}
