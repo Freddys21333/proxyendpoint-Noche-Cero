@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -146,11 +146,9 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           <button type="button" aria-label="Alejar red" onClick={() => zoom(0.8)}><ZoomOut size={17} /></button>
           <button type="button" aria-label="Ajustar grafo a la vista" onClick={() => network.current?.fit(undefined, 20)}><Crosshair size={17} /></button>
         </div>
-      </div>
-      {mapView}
-      <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
-      <details ref={inspector} className="node-inspector" hidden={!showNetwork} open={Boolean(detail)} aria-label="Información de la persona seleccionada">
-        <summary>Explorar personas</summary>
+      <details ref={inspector} className="node-inspector floating-person-inspector" hidden={!showNetwork} open={Boolean(detail)} aria-label="Información de la persona seleccionada">
+        <summary><UserRound size={17} aria-hidden="true" /><span>{detail ? `Persona ${String(detail.id).padStart(3, '0')}` : 'Explorar personas'}</span><ChevronDown size={16} aria-hidden="true" /></summary>
+        <div className="person-inspector-body">
         <label htmlFor={pickerId}>Buscar persona por número</label>
         <select id={pickerId} value={selected} onChange={event => setSelected(event.target.value)}>
           <option value="">Seleccione una persona</option>
@@ -164,7 +162,11 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           <button className="plain-action" onClick={() => network.current?.fit(network.current.getElementById(selected).closedNeighborhood(), 45)}><Crosshair size={14} /> Enfocar conexiones</button>
           <button type="button" className="plain-action" onClick={() => setSelected('')}>Ocultar conexiones y quitar selección</button>
         </div>}
+        </div>
       </details>
+      </div>
+      {mapView}
+      <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
       </div>
       {!active && <div className="simulation-update-overlay">
         <div className="simulation-update-card" role="status" aria-live="polite">

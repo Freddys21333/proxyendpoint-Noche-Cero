@@ -622,3 +622,22 @@
 .floating-simulation-controls > summary { flex-shrink: 0; }
 .simulator-workbench .floating-controls-body.simulator-control-column { flex: none; }
 .floating-simulation-controls[open] > .floating-controls-body { height: calc(var(--controls-height, 480px) - 50px); max-height: calc(var(--controls-height, 480px) - 50px); scrollbar-gutter: stable; }
+
+/* Person details float over the lower-left of the network, with their own scroll. */
+.simulator-workbench .network-view { position: relative; }
+.simulator-workbench .floating-person-inspector.node-inspector { position: absolute; z-index: 8; bottom: 12px; left: 12px; width: min(320px, calc(100% - 24px)); max-height: none; padding: 0; overflow: hidden; border: 1px solid #cddcd0; border-radius: 12px; box-shadow: 0 6px 24px rgb(30 62 42 / 14%); }
+.simulator-workbench .floating-person-inspector:not([open]) { width: auto; }
+.simulator-workbench .floating-person-inspector > summary { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 46px; padding: 12px 16px; list-style: none; background: #f5f9f5; font-size: 14px; font-weight: 600; }
+.floating-person-inspector > summary::-webkit-details-marker { display: none; }
+.floating-person-inspector > summary svg:last-child { margin-left: auto; }
+.floating-person-inspector[open] > summary svg:last-child { transform: rotate(180deg); }
+.floating-person-inspector > summary:focus-visible { outline: 2px solid #315f47; outline-offset: -3px; }
+.person-inspector-body { max-height: min(300px, 35dvh); overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px; border-top: 1px solid #dbe4dd; scrollbar-gutter: stable; }
+.person-inspector-body > label { display: block; margin-bottom: 6px; font-size: 13px; color: #52695a; }
+.person-inspector-body > select { width: 100%; }
+.person-inspector-body .node-context { margin-top: 12px; }
+.person-inspector-body .node-context dl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin: 12px 0; }
+.person-inspector-body .node-context dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.person-inspector-body .node-context dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.person-inspector-body .plain-action { display: flex; margin-top: 12px; }
+@media (max-width: 600px) { .simulator-workbench .floating-person-inspector.node-inspector { z-index: 31; width: min(280px, calc(100% - 24px)); } .simulator-workbench .floating-person-inspector:not([open]) { width: auto; } }
