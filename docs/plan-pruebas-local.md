@@ -8,6 +8,8 @@ Este documento reúne las pruebas que **ya existen y se pueden ejecutar** sobre 
 - Evidencia cruda: `.tools/` (no versionado). Informes y figuras: `docs/evidencia/`.
 - Sin secretos: los tokens de trabajo viven en `sessionStorage` y nunca se pegan en documentos ni capturas.
 
+Revisión transversal ejecutada del frontend contra API real y proxy Vite: [integración revisada 2026-10-27](evidencia/integracion-revisada-2026-10-27.md). Incluye 391 pruebas backend, 135 frontend, scripts de integración, comparación desde navegador, exportación reproducida y jobs desde UI. No sustituye T-22 ni aceptación humana.
+
 ## 1. Entorno y precondiciones
 
 Herramientas: Node ≥24 (probado con 24.21), npm ≥11, Python del venv del backend.
