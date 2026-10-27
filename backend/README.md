@@ -175,3 +175,8 @@ Resultado observado de esta preparación: [evidencia de T-02](../docs/evidencia/
 Validación de contratos: [evidencia de T-03](../docs/evidencia/backend-contratos.md).
 
 Configuración y entrada estricta: [evidencia de T-04](../docs/evidencia/backend-configuracion.md).
+
+
+## P-03: trabajos locales
+
+Backend verificado con cola de dos trabajadores, hasta 100 réplicas por trabajo, capacidad/idempotencia en headers, progreso, cancelación cooperativa y resultado reproducible. El servidor `scripts/serve_api.py` publica create/status/cancel/result en `/v1/jobs`; config anuncia límites y disponibilidad local. El endpoint síncrono conserva R<=30. Estado en memoria, retención acotada y reinicio borra los trabajos; no es un despliegue Lambda durable. [Contrato y uso del cliente](../specs/p03-monte-carlo-jobs.md), [evidencia](../docs/evidencia/p03-jobs-local.md). P-04 sigue pendiente.

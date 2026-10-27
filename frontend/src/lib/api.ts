@@ -50,7 +50,15 @@ export type CompareResponse = Metadata & {
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
 export type ServerLimits = Record<'maxRequestBytes' | 'maxResponseBytes' | 'maxDecodedResponseBytes' | 'maxEdges' | 'maxFrameStates', number>
-export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string }
+export type JobLimits = Record<'maxRepetitions' | 'maxConcurrent' | 'maxRetained' | 'retentionSeconds' | 'maxEdgeDayReplicates', number>
+export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string; features: { asyncJobs: boolean; representativeFrames: boolean }; jobLimits?: JobLimits }
+export type JobCredentials = { token: string; idempotencyKey: string }
+export type JobResponse = Metadata & { jobId: string; status: 'pending' | 'running' | 'aggregating' | 'completed' | 'failed' | 'cancelled'; createdAt: string; updatedAt: string; statusUrl: string; resultUrl: string;
+  progress: { replicatesTotal: number; replicatesCompleted: number; replicatesFailed: number }; error?: 'SIMULATION_FAILED' | 'RESULT_TOO_LARGE';
+  manifest: { modelVersion: 'local-jobs-v1'; configurationHash: string; graphHash: string; requestHash: string; rootSeed: number; engineVersion: string; rngVersion: 'rng-v1'; runtimeVersions: Record<string, unknown>; replicates: { index: number; initialSeedEntropy: number[] }[] } }
+export function createJobCredentials(): JobCredentials {
+  return { token: Array.from(crypto.getRandomValues(new Uint8Array(32)), n => n.toString(16).padStart(2, '0')).join(''), idempotencyKey: crypto.randomUUID() }
+}
 export type PreviewResponse = Metadata & {
   configuration: ConfigurationInput; graphHash: string; initialStateHash: string;
   graph: { generatorVersion: string; nodes: { id: number; role: string; householdId: string; neighborhoodId: string;
@@ -89,8 +97,17 @@ function validConfiguration(value: unknown): value is ConfigurationInput {
   return object(network) && network.generatorVersion === 'synthetic-manta-v1' && network.dayZero === 'monday' && object(network.weights) && contexts.every(key => object(network.weights) && finite(network.weights[key]) && network.weights[key] >= 0 && network.weights[key] <= 1)
 }
 function validConfig(data: Record<string, unknown>): boolean {
-  return validConfiguration(data.defaults) && object(data.limits) && ['maxRequestBytes', 'maxResponseBytes', 'maxDecodedResponseBytes', 'maxEdges', 'maxFrameStates'].every(key => object(data.limits) && integerIn(data.limits[key], 1, Number.MAX_SAFE_INTEGER)) && typeof data.generatorDescription === 'string'
+  return object(data.features) && typeof data.features.asyncJobs === 'boolean' && data.features.representativeFrames === true && (!data.features.asyncJobs || object(data.jobLimits) && ['maxRepetitions', 'maxConcurrent', 'maxRetained', 'retentionSeconds', 'maxEdgeDayReplicates'].every(key => object(data.jobLimits) && integerIn(data.jobLimits[key], 1, Number.MAX_SAFE_INTEGER))) && validConfiguration(data.defaults) && object(data.limits) && ['maxRequestBytes', 'maxResponseBytes', 'maxDecodedResponseBytes', 'maxEdges', 'maxFrameStates'].every(key => object(data.limits) && integerIn(data.limits[key], 1, Number.MAX_SAFE_INTEGER)) && typeof data.generatorDescription === 'string'
 }
+function validJob(data: Record<string, unknown>): boolean {
+  if (typeof data.jobId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(data.jobId) || !['pending', 'running', 'aggregating', 'completed', 'failed', 'cancelled'].includes(String(data.status)) || !['createdAt', 'updatedAt'].every(k => typeof data[k] === 'string' && Number.isFinite(Date.parse(data[k] as string))) || data.statusUrl !== `/v1/jobs/${data.jobId}` || data.resultUrl !== `/v1/jobs/${data.jobId}/result` || data.result !== undefined) return false
+  const p = data.progress, m = data.manifest
+  if (!object(p) || !integerIn(p.replicatesTotal, 2, 100) || !integerIn(p.replicatesCompleted, 0, Number(p.replicatesTotal)) || !integerIn(p.replicatesFailed, 0, 1) || Number(p.replicatesCompleted) + Number(p.replicatesFailed) > Number(p.replicatesTotal)) return false
+  if (data.status === 'completed' && (p.replicatesCompleted !== p.replicatesTotal || p.replicatesFailed !== 0)) return false
+  if (data.status === 'failed' ? !['SIMULATION_FAILED', 'RESULT_TOO_LARGE'].includes(String(data.error)) : data.error !== undefined) return false
+  return object(m) && m.modelVersion === 'local-jobs-v1' && hash(m.configurationHash) && hash(m.graphHash) && hash(m.requestHash) && integerIn(m.rootSeed, 0, 4294967295) && m.engineVersion === data.engineVersion && m.rngVersion === 'rng-v1' && object(m.runtimeVersions) && m.runtimeVersions.engineVersion === data.engineVersion && m.runtimeVersions.rngVersion === m.rngVersion && Array.isArray(m.replicates) && m.replicates.length === p.replicatesTotal && m.replicates.every((r, i) => object(r) && r.index === i && Array.isArray(r.initialSeedEntropy) && r.initialSeedEntropy.length === 10 && r.initialSeedEntropy[0] === m.rootSeed && r.initialSeedEntropy[1] === i && r.initialSeedEntropy.every(n => integerIn(n, 0, 4294967295)))
+}
+
 function validPreview(data: Record<string, unknown>, requested: ConfigurationInput, limits?: ServerLimits): boolean {
   if (!validConfiguration(data.configuration) || !containsRequested(data.configuration, requested) || !hash(data.graphHash) || !hash(data.initialStateHash) || !object(data.graph)) return false
   const { nodes, edges } = data.graph, positions = data.positions, initial = data.initialInfectiousNodeIds
@@ -233,6 +250,13 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
         return compare(configuration, graphHash, signal, false, limits)
       }
     },
+    createJob: (configuration: ConfigurationInput, graphHash: string, credentials: JobCredentials, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<JobResponse>('/jobs', {
+      method: 'POST', signal, headers: { 'Content-Type': 'application/json', 'X-Job-Token': credentials.token, 'Idempotency-Key': credentials.idempotencyKey },
+      body: JSON.stringify({ schemaVersion: '1.0', configuration: normalized(configuration), expectedGraphHash: graphHash, includeRepresentativeFrames: includeFrames }),
+    }, data => validJob(data) && object(data.progress) && data.progress.replicatesTotal === configuration.repetitions && object(data.manifest) && data.manifest.graphHash === graphHash && data.manifest.rootSeed === configuration.rootSeed, limits),
+    jobStatus: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}`, { signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId),
+    cancelJob: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST', signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId && ['completed', 'failed', 'cancelled'].includes(String(data.status))),
+    jobResult: (jobId: string, token: string, configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<CompareResponse>(`/jobs/${encodeURIComponent(jobId)}/result`, { signal, headers: { 'X-Job-Token': token } }, data => completeComparison(data, normalized(configuration), graphHash, includeFrames), limits),
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
     config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, validConfig),
     preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => {

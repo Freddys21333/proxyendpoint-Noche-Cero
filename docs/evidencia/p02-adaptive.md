@@ -35,3 +35,5 @@ La ejecución amplia `pytest backend/tests --ignore=backend/tests/test_jobs_loca
 El sandbox Windows impidió inicialmente usar temporales y sockets en pruebas generales. La ejecución amplia y HTTP se repitieron con permisos locales suficientes; esos fallos de permisos no se contaron como errores del motor.
 
 El backend y compatibilidad del cliente P-02 quedan verificados localmente. Falta el editor e historial visual específico del frontend. No se ejecutó AWS, calibración real ni el protocolo científico T-22.
+
+Actualización posterior: los pendientes P-03 enumerados en esta evidencia histórica se resolvieron y verificaron en [P-03](p03-jobs-local.md).

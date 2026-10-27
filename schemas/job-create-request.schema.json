@@ -1,34 +1,5 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "job-create-request.schema.json",
   "title": "JobCreateRequest",
-  "description": "Solicitud para crear un trabajo Monte Carlo asíncrono.",
-  "type": "object",
-  "properties": {
-    "schemaVersion": {
-      "const": "1.0",
-      "description": "Versión del contrato de petición."
-    },
-    "configuration": {
-      "$ref": "configuration.schema.json#/$defs/Configuration",
-      "description": "Configuración normalizada del experimento."
-    },
-    "expectedGraphHash": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 128,
-      "description": "Hash del grafo obtenido desde /v1/scenarios/preview para validar coherencia."
-    },
-    "includeRepresentativeFrames": {
-      "type": "boolean",
-      "default": false,
-      "description": "Si es true, incluye frames completos de la réplica representativa."
-    }
-  },
-  "required": [
-    "schemaVersion",
-    "configuration",
-    "expectedGraphHash"
-  ],
-  "additionalProperties": false
+  "$ref": "./common.schema.json#/$defs/JobCreateRequest"
 }

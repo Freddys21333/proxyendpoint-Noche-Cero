@@ -1,194 +1,42 @@
-# P-03: Evidencia de trabajos locales
+# P-03: evidencia de trabajos Monte Carlo locales
 
-**Fecha:** 2026-10-27  
-**Responsable:** Freddy Bajaña  
-**Estado:** Implementado, pendiente de ejecución de pruebas
+Fecha: 2026-10-27. Rama `feat/backend-contratos`. Estado: **backend y contrato cliente verificados localmente**. [Contrato vigente](../../specs/p03-monte-carlo-jobs.md).
 
-## 1. Archivos creados
+## Qué se cerró
 
-### 1.1 Esquemas JSON
-- ✅ `schemas/job-create-request.schema.json`
-- ✅ `schemas/job-create-response.schema.json`
-- ✅ `schemas/job-status-response.schema.json`
-- ✅ `schemas/job-cancel-response.schema.json`
+Cuatro rutas HTTP reales para crear, consultar, cancelar y descargar; schemas compartidos y OpenAPI sin anchors duplicados ni referencias inexistentes. Solicitud local R=2..100 separada del máximo síncrono 30. Dos trabajadores, retención/cola acotada, límites publicados, manifiesto de índices/semillas/versiones fijado antes de ejecutar. Acceso con token cuyo hash se almacena, idempotencia por capacidad y clave, respuestas saneadas y sin resultados parciales.
 
-### 1.2 Pruebas
-- ✅ `backend/tests/test_jobs_local.py` - 10 casos de prueba
+El gestor reutiliza el ejecutor científico. Progreso por índices únicos, un reintento determinista por réplica, cancelación cooperativa y estados terminales estables incluso al terminar una exportación pendiente. Se verifica runtime contra manifiesto al iniciar. El cliente TypeScript valida snapshots y resultados; recibe credenciales por argumento y las envía solo en headers. No se añadieron pantallas de trabajos ni persistencia de sesión de la interfaz.
 
-### 1.3 Documentación
-- ✅ `specs/p03-jobs-local.md` - Especificación completa
-- ✅ OpenAPI actualizado con 3 endpoints
+## Pruebas ejecutadas
 
-## 2. Contratos HTTP
+- Suite completa backend final: **356 aprobadas**, incluidos procesos nuevos, API, contratos, trabajos HTTP, orden invertido y runtime fijado. Log local `.tools/p03-backend-tests-final.log`. La suite focalizada de gestor obtuvo **12 aprobadas**.
+- Contratos/OpenAPI/ejemplos finales y HTTP local: **73 aprobadas** (`test_contracts.py` y `test_jobs_local.py`). Ejemplos de trabajos marcados como mocks, sin resultados científicos inventados.
+- Frontend: **106 aprobadas**; compilación TypeScript/Vite aprobada. Nuevos casos comprueban credenciales aleatorias, headers sin token en cuerpo/URL, AbortSignal, progreso imposible, resultado incompleto y cancelación terminal.
+- Ruff de `src` y `tests`, formato y mypy: aprobados, **21 archivos fuente**. Ejecutados desde `backend/` para resolver correctamente sus imports y configuración.
 
-### 2.1 POST /v1/jobs
-**Entrada:**
-```json
-{
-  "schemaVersion": "1.0",
-  "configuration": { /* Configuration completa */ },
-  "expectedGraphHash": "sha256:...",
-  "includeRepresentativeFrames": false
-}
-```
+Las pruebas cubren 31 réplicas, igualdad con ejecución síncrona, reproducción, orden de índices, manifiesto, reintento sin doble progreso, cola limitada, cancelación antes de empezar y durante agregación/exportación, capacidad incorrecta, conflicto idempotente, expiración, ausencia de resultado parcial y sanitización de fallos.
 
-**Respuesta 202:**
-```json
-{
-  "schemaVersion": "1.0",
-  "engineVersion": "0.1.0",
-  "requestId": "abc-123",
-  "jobId": "uuid",
-  "status": "pending",
-  "createdAt": "2026-10-27T15:30:00Z",
-  "updatedAt": "2026-10-27T15:30:00Z",
-  "progress": {
-    "replicatesTotal": 100,
-    "replicatesCompleted": 0,
-    "replicatesFailed": 0
-  }
-}
-```
+## Integración con el cliente real
 
-### 2.2 GET /v1/jobs/{jobId}
-**Respuesta 200:**
-- Estados: `pending`, `queued`, `running`, `aggregating`, `completed`, `failed`, `cancelled`
-- Incluye `result` cuando `status == "completed"`
-- Incluye `error` cuando `status == "failed"`
+`scripts/verify_jobs_integration.mjs` contra `scripts/serve_api.py --port 18003`, loopback, sin AWS. N=50, T=2, raíz 314159265. El cliente TypeScript recorre config/preview, create duplicado, consulta de progreso, rechazo de token distinto, result, exportación CSV y cancelación de terminal sin cambiarlo.
 
-### 2.3 POST /v1/jobs/{jobId}/cancel
-**Respuesta 202:**
-- Cancelación cooperativa
-- Detiene en la próxima réplica
+| Réplicas | Resultado | Hash científico |
+|---|---|---|
+| 2 | completed; mismo hash que compare síncrono | `sha256:0a87c2d4a2923e6ef0fb186081be6243af2c297702eb9150fa1ed48c64ae4187` |
+| 31 | completed; aceptado por contrato cliente y exportable | `sha256:08125143c7ef5937ae6c8df19155009499e4ebf57b8bbca586a00fe5d6a1641b` |
 
-## 3. Pruebas implementadas
+Salida local final: `.tools/jobs-validation-2026-10-27T15-04-33.221Z/`. Una ejecución inicial equivalente quedó en `.tools/jobs-validation-2026-10-27T14-55-08.772Z/`. `scripts/reproduce.py` reprodujo `result-31.json` en otro proceso y devolvió el mismo hash. El script final también pide frames en el caso de 2 réplicas; frames no alteran el hash científico.
 
-1. ✅ `test_create_job_returns_pending_status` - Trabajo sin auto_start queda pending
-2. ✅ `test_job_completes_and_returns_result` - Ejecución completa devuelve resultado
-3. ✅ `test_cancel_running_job_stops_execution` - Cancelación cooperativa funciona
-4. ✅ `test_cancel_completed_job_returns_false` - No se puede cancelar trabajo completado
-5. ✅ `test_get_nonexistent_job_returns_none` - Job inexistente devuelve None
-6. ✅ `test_graph_hash_mismatch_fails_job` - Hash incorrecto falla el trabajo
-7. ✅ `test_job_result_matches_sync_compare` - Reproducibilidad verificada
-8. ✅ `test_job_progress_increases_during_execution` - Progreso real sin ETAs
-9. ✅ `test_job_to_dict_includes_result_when_completed` - Serialización correcta
+Para repetir, iniciar el servidor en una terminal y el script en otra:
 
-## 4. Implementación existente
-
-### 4.1 Clase JobRecord
-```python
-@dataclass
-class JobRecord:
-    job_id: str
-    configuration: Configuration
-    expected_graph_hash: str
-    include_representative_frames: bool
-    status: JobStatus
-    created_at: str
-    updated_at: str
-    replicates_completed: int
-    replicates_failed: int
-    replicates_total: int
-    result: dict[str, Any] | None
-    error_message: str | None
-```
-
-### 4.2 Clase LocalJobManager
-```python
-class LocalJobManager:
-    def create_job(...) -> JobRecord
-    def get_job(job_id: str) -> JobRecord | None
-    def cancel_job(job_id: str) -> bool
-```
-
-### 4.3 Integración en API
-- ✅ `jobs_create` endpoint conectado en `api/common.py`
-- ✅ `jobs_get` endpoint conectado
-- ✅ `jobs_cancel` endpoint conectado
-- ✅ Feature flag `asyncJobs: true` en `/v1/config`
-
-## 5. Validación de reproducibilidad
-
-**Semántica:**
-- Lista de índices fijada: `[0, 1, 2, ..., repetitions-1]`
-- Cada réplica deriva semillas por dominio con `replicateIndex`
-- Orden de ejecución no afecta el agregado (orden canónico)
-- Hash de trabajo == hash de ejecución síncrona con mismos parámetros
-
-**Casos de borde:**
-- ✅ Cancelación cooperativa (no aborta cálculo en curso)
-- ✅ Hash de grafo validado antes de iniciar
-- ✅ Réplicas fallidas sin resultado parcial
-- ✅ Estados terminales: `completed`, `failed`, `cancelled`
-
-## 6. Ejecución de pruebas
-
-**Para ejecutar:**
 ```powershell
-cd backend
-..\.tools\bin\uv.exe run pytest tests/test_jobs_local.py -v
+.\backend\.venv\Scripts\python.exe scripts/serve_api.py --port 18003
+.\.tools\node\node.exe --experimental-strip-types scripts/verify_jobs_integration.mjs
 ```
 
-**Resultado esperado:**
-```
-===================== test session starts ======================
-test_jobs_local.py::test_create_job_returns_pending_status PASSED
-test_jobs_local.py::test_job_completes_and_returns_result PASSED
-test_jobs_local.py::test_cancel_running_job_stops_execution PASSED
-test_jobs_local.py::test_cancel_completed_job_returns_false PASSED
-test_jobs_local.py::test_get_nonexistent_job_returns_none PASSED
-test_jobs_local.py::test_graph_hash_mismatch_fails_job PASSED
-test_jobs_local.py::test_job_result_matches_sync_compare PASSED
-test_jobs_local.py::test_job_progress_increases_during_execution PASSED
-test_jobs_local.py::test_job_to_dict_includes_result_when_completed PASSED
+`API_BASE` permite otro servidor local. El script guarda JSON reales en una carpeta nueva ignorada de `.tools`; no guarda tokens. La prueba HTTP Python usa un puerto efímero y un gestor aislado. Sockets y temporales Windows requirieron ejecución con permisos locales suficientes; no se deshabilitaron validaciones para superar ese aislamiento.
 
-===================== 10 passed in ~45s ======================
-```
+## Pendiente posterior
 
-## 7. Próximos pasos
-
-### 7.1 Inmediato
-- [ ] Ejecutar pruebas en entorno con uv/venv instalado
-- [ ] Validar esquemas con openapi-spec-validator
-- [ ] Verificar que no se rompieron pruebas existentes
-
-### 7.2 Para P-04 (AWS)
-- [ ] Step Functions Standard + Distributed Map
-- [ ] Lambda workers por réplica
-- [ ] S3 para manifiestos y resultados
-- [ ] DynamoDB con TTL para metadatos
-- [ ] Revisión de seguridad, cuotas y presupuesto
-
-## 8. Limitaciones conocidas
-
-### 8.1 Implementación local
-- ❌ Sin persistencia (se pierde al reiniciar proceso)
-- ❌ Sin Idempotency-Key
-- ❌ Sin rate limiting específico para jobs
-- ❌ Concurrencia máxima: 2 (configurable)
-- ❌ Sin reintentos automáticos
-
-### 8.2 Exclusiones de este incremento
-- ❌ Streaming de progreso (SSE/WebSocket)
-- ❌ Priorización de trabajos
-- ❌ Recuperación después de reinicio
-- ❌ Infraestructura AWS (eso es P-04)
-
-## 9. Conclusión
-
-✅ **P-03 implementado:**
-- 4 esquemas JSON creados y versionados
-- OpenAPI actualizado con 3 rutas
-- 10 pruebas escritas con casos de aceptación
-- Documentación técnica completa
-- Reproducibilidad verificada por diseño
-
-**Estado:** Listo para ejecución de pruebas y commit.
-
-**Próximo paso:** Instalar entorno (`uv sync`) y ejecutar `pytest tests/test_jobs_local.py -v` para verificación final.
-
----
-
-**Autor:** Freddy Bajaña  
-**Revisado:** Backend team  
-**Versión:** 1.0
+Frontend: selector, polling visible, sesión de credenciales, cancelación y descarga. P-04: almacenamiento durable, orquestación AWS, cuotas/costos y evidencia real de miles de réplicas. Reinicio pierde el estado local y terminales expiran tras una hora; ese límite es explícito. No se desplegaron recursos AWS ni se retomó T-22. P-01/P-02 conservan sus pruebas dentro de la suite general.

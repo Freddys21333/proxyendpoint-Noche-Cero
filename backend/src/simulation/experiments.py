@@ -1,6 +1,7 @@
 """Experimentos y estadísticas — T-09 / CA-09/10."""
 
 import math
+from collections.abc import Callable
 from typing import Any
 
 import numpy as np
@@ -13,6 +14,10 @@ from simulation.engine import SimulationTrace, simulate_paired
 from simulation.network import generate_graph
 
 POLICIES: tuple[Policy, ...] = ("none", "random", "targeted")
+
+
+class ExperimentCancelled(Exception):
+    """Cancelación cooperativa; nunca se convierte en resultado parcial."""
 
 
 def statistics(values: list[int | float | None]) -> dict[str, Any]:
@@ -167,6 +172,11 @@ def run_experiment(
     replicate_order: tuple[int, ...] | None = None,
     policy_order: tuple[Policy, ...] = ("none", "random", "targeted"),
     graph: dict[str, Any] | None = None,
+    checkpoint: Callable[[], None] | None = None,
+    on_replicate: Callable[[int], None] | None = None,
+    on_replicate_failed: Callable[[int], None] | None = None,
+    on_aggregating: Callable[[], None] | None = None,
+    replicate_attempts: int = 1,
 ) -> dict[str, Any]:
     """Dominio síncrono completo o error; sin respuesta parcial ni manifiesto ficticio."""
     n = configuration.repetitions
@@ -177,14 +187,28 @@ def run_experiment(
         raise ValueError("Se requieren las tres políticas.")
     if type(include_representative_frames) is not bool:
         raise ValueError("La opción de frames debe ser booleana.")
+    if type(replicate_attempts) is not int or not 1 <= replicate_attempts <= 2:
+        raise ValueError("Número de intentos inválido.")
     graph = generate_graph(configuration) if graph is None else graph
     graph_hash = json_hash(graph)
     replicates: list[dict[str, Any]] = []
     try:
         for index in order:
-            traces = simulate_paired(
-                configuration, graph, replicate_index=index, policy_order=policy_order
-            )
+            for attempt in range(replicate_attempts):
+                if checkpoint:
+                    checkpoint()
+                try:
+                    traces = simulate_paired(
+                        configuration, graph, replicate_index=index, policy_order=policy_order
+                    )
+                    break
+                except ExperimentCancelled:
+                    raise
+                except Exception:
+                    if attempt + 1 == replicate_attempts:
+                        if on_replicate_failed:
+                            on_replicate_failed(index)
+                        raise
             initial = [
                 event["nodeId"] for event in traces["none"].events if event["cause"] == "initial"
             ]
@@ -200,12 +224,20 @@ def run_experiment(
                 )
             )
             del traces
+            if on_replicate:
+                on_replicate(index)
+        if checkpoint:
+            checkpoint()
+        if on_aggregating:
+            on_aggregating()
         replicates.sort(key=lambda rep: rep["index"])
         result = aggregate(replicates, configuration.root_seed)
         selected = result.pop("representativeIndex")
         traces = simulate_paired(
             configuration, graph, replicate_index=selected, policy_order=policy_order
         )
+        if checkpoint:
+            checkpoint()
         for policy in POLICIES:
             if (
                 _policy_result(traces[policy])["resultHash"]
@@ -222,6 +254,8 @@ def run_experiment(
             if include_representative_frames
             else None,
         )
+    except ExperimentCancelled:
+        raise
     except Exception:
         raise ConfigurationError(
             "SIMULATION_FAILED", 500, "No se pudo completar el experimento."

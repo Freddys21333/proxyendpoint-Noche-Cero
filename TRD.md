@@ -449,6 +449,8 @@ El backend rechaza políticas faltantes o adicionales en base para impedir compa
 
 Estados: `QUEUED -> RUNNING -> AGGREGATING -> SUCCEEDED|FAILED|CANCELLED`. No hay transición desde un estado terminal. El progreso es `replicatesSucceeded + replicatesFailed` sobre `replicatesTotal`, nunca tiempo estimado ficticio.
 
+Actualización P-03 local: [contrato implementado](specs/p03-monte-carlo-jobs.md). El servidor local publica las cuatro rutas con estados minúsculos, 2..100 réplicas y JSON en result; token generado por el cliente y clave idempotente en headers. Cola/retención en memoria y límites publicados. La descarga S3, persistencia de siete días y Distributed Map de este diseño corresponden a P-04 y siguen pendientes.
+
 ### 9.4 Errores
 
 ```json

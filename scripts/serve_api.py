@@ -2,6 +2,8 @@
 
 import argparse
 import base64
+import os
+import re
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -10,13 +12,16 @@ from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend/src"))
 
-from api.compare import handler as compare  # noqa: E402
-from api.config import handler as config  # noqa: E402
-from api.health import handler as health  # noqa: E402
-from api.preview import handler as preview  # noqa: E402
+from api.compare import handler as compare
+from api.config import handler as config
+from api.health import handler as health
+from api.jobs import cancel_handler, create_handler, get_handler, result_handler
+from api.preview import handler as preview
+from simulation.jobs import GLOBAL_JOB_MANAGER
 
 MAX_REQUEST = 65536
 HANDLERS = {
+    "/v1/jobs": create_handler,
     "/v1/health": health,
     "/v1/config": config,
     "/v1/scenarios/preview": preview,
@@ -37,14 +42,22 @@ class LocalHandler(BaseHTTPRequestHandler):
             body = b" " * (MAX_REQUEST + 1)
         else:
             body = self.rfile.read(length)
-        event: dict[str, Any] = dict(
-            version="2.0",
-            rawPath=path,
-            requestContext=dict(http=dict(method=self.command)),
-            body=base64.b64encode(body).decode("ascii"),
-            isBase64Encoded=True,
-        )
-        result = HANDLERS.get(path, health)(event, None)
+        event: dict[str, Any] = {
+            "version": "2.0",
+            "rawPath": path,
+            "headers": dict(self.headers.items()),
+            "requestContext": {"http": {"method": self.command}},
+            "body": base64.b64encode(body).decode("ascii"),
+            "isBase64Encoded": True,
+        }
+        handler = HANDLERS.get(path, health)
+        if re.fullmatch(r"/v1/jobs/[0-9a-f-]{36}", path):
+            handler = get_handler
+        elif re.fullmatch(r"/v1/jobs/[0-9a-f-]{36}/cancel", path):
+            handler = cancel_handler
+        elif re.fullmatch(r"/v1/jobs/[0-9a-f-]{36}/result", path):
+            handler = result_handler
+        result = handler(event, None)
         data = (
             base64.b64decode(result["body"])
             if result["isBase64Encoded"]
@@ -73,6 +86,7 @@ class LocalHandler(BaseHTTPRequestHandler):
 
 
 def create_server(*, port: int = 8000) -> HTTPServer:
+    os.environ["LOCAL_JOBS_ENABLED"] = "1"
     return HTTPServer(("127.0.0.1", port), LocalHandler)
 
 
@@ -89,6 +103,8 @@ def main() -> None:
             server.serve_forever()
         except KeyboardInterrupt:
             pass
+        finally:
+            GLOBAL_JOB_MANAGER.close()
 
 
 if __name__ == "__main__":

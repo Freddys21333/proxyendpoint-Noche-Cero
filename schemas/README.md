@@ -6,7 +6,7 @@ Contrato base v1 para frontend y backend. Los artefactos describen los cuatro ha
 
 | Archivo | Uso |
 |---|---|
-| [openapi.yaml](openapi.yaml) | OpenAPI 3.1.0: cuatro rutas, requests, respuestas, errores y ejemplos. |
+| [openapi.yaml](openapi.yaml) | OpenAPI 3.1.0: cuatro rutas base y cuatro rutas de trabajos locales, contratos/errores/ejemplos. |
 | [common.schema.json](common.schema.json) | Tipos compartidos Draft 2020-12 en `$defs`, incluyendo configuración y resultados completos. |
 | [configuration.schema.json](configuration.schema.json) | Configuración normalizada completa, con todas las propiedades requeridas. |
 | [preview-request.schema.json](preview-request.schema.json) | Solicitud de preview: configuración parcial u omitida. |
@@ -16,7 +16,7 @@ Contrato base v1 para frontend y backend. Los artefactos describen los cuatro ha
 | [preview-result.schema.json](preview-result.schema.json) | Grafo, posiciones, origen y hashes de preview. |
 | [experiment-result.schema.json](experiment-result.schema.json) | Comparación completa, métricas, curvas, manifiesto y representativa. |
 | [error.schema.json](error.schema.json) | Envoltorio común de error y catálogo de códigos. |
-| [examples/index.json](examples/index.json) | Catálogo de los 26 ejemplos y su conexión con esquema, operación y estado HTTP. |
+| [examples/index.json](examples/index.json) | Catálogo de ejemplos base y trabajos locales y su conexión con esquema, operación y estado HTTP. |
 
 Editar `common.schema.json` para cambiar un tipo compartido; los otros JSON Schemas solo referencian su definición. No mantener copias independientes de los tipos en OpenAPI: sus rutas referencian estos mismos archivos. Las referencias son relativas y se pueden resolver localmente; las pruebas usan un registro local sin descargar esquemas desde Internet.
 
@@ -65,3 +65,8 @@ Referencias: [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0.html), [JSON Sch
 `configuration.intervention.combined` activa el submodelo `combined-educational-v1`: costos en centavos, presupuesto, cierre temporal y brigadas. Es un objeto completo opcional; omitirlo conserva el contrato base y sus hashes. JSON Schema valida límites y propiedades; la normalización valida calendarios contra el horizonte y capacidad contra la población. Las filas Daily combinadas incluyen gasto diario/acumulado, saldo, capa cerrada e IDs atendidos por brigadas. Esos datos participan en los hashes y reproducción. El ZIP combinado añade `budget.csv`; los ZIP base no cambian. Semántica, supuestos y límites: [intervenciones combinadas](../docs/intervenciones-combinadas.md).
 
 P-01 amplía opcionalmente ese submodelo con `resourceSchedule` (`daily-inventory-v1`): entregas agrupadas/ordenadas por día, capacidad diaria de dosis e inventario consumible de brigadas. La omisión conserva el contrato combinado anterior. Cada fila Daily incluye recepción/consumo/saldo físico por recurso y el ZIP añade `inventory.csv`. Límites, reglas y evidencia: [P-01](../specs/p01-resource-schedule.md).
+
+
+## Contrato P-03 local
+
+`job-create-request.schema.json`, `job-create-response.schema.json`, `job-status-response.schema.json` y `job-cancel-response.schema.json` referencian definiciones compartidas; descarga usa `experiment-result.schema.json`. `JobConfigurationInput` admite R=2..100; entrada síncrona sigue 2..30. Resultados normalizados admiten hasta 100 para exportación/reproducción. El servidor local publica disponibilidad y jobLimits; no implica soporte durable en Lambda. Tokens solo en headers, clave idempotente al crear y sin resultados parciales. [Semántica, estados, límites y cliente](../specs/p03-monte-carlo-jobs.md).

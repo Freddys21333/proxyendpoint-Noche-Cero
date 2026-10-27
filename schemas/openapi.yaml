@@ -2,9 +2,9 @@ openapi: 3.1.0
 info:
   title: Comité de Contención — API base
   version: 1.0.0
-  description: Contrato de implementación. No hay servicio desplegado. Los ejemplos son mocks construidos
-    a mano; no demuestran simulación ni hashes. Errores de infraestructura fuera del backend pueden no
-    usar el envoltorio de aplicación.
+  description: Contrato de implementación. No hay servicio desplegado. Los ejemplos
+    son mocks construidos a mano; no demuestran simulación ni hashes. Errores de infraestructura
+    fuera del backend pueden no usar el envoltorio de aplicación.
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 servers:
 - url: http://localhost:8000/v1
@@ -28,7 +28,7 @@ paths:
                   externalValue: ./examples/health-response.json
         '429':
           description: Error de aplicación saneado.
-          x-error-codes: &id001
+          x-error-codes:
           - RATE_LIMITED
           content:
             application/json:
@@ -46,7 +46,7 @@ paths:
                 minimum: 0
         '500':
           description: Error de aplicación saneado.
-          x-error-codes: &id002
+          x-error-codes:
           - INTERNAL_ERROR
           - SIMULATION_FAILED
           content:
@@ -62,7 +62,7 @@ paths:
                   externalValue: ./examples/error-500-simulation-failed.json
         '503':
           description: Error de aplicación saneado.
-          x-error-codes: &id003
+          x-error-codes:
           - COMPUTE_UNAVAILABLE
           content:
             application/json:
@@ -89,7 +89,8 @@ paths:
                   externalValue: ./examples/config-response.json
         '429':
           description: Error de aplicación saneado.
-          x-error-codes: *id001
+          x-error-codes:
+          - RATE_LIMITED
           content:
             application/json:
               schema:
@@ -106,7 +107,9 @@ paths:
                 minimum: 0
         '500':
           description: Error de aplicación saneado.
-          x-error-codes: *id002
+          x-error-codes:
+          - INTERNAL_ERROR
+          - SIMULATION_FAILED
           content:
             application/json:
               schema:
@@ -120,7 +123,8 @@ paths:
                   externalValue: ./examples/error-500-simulation-failed.json
         '503':
           description: Error de aplicación saneado.
-          x-error-codes: *id003
+          x-error-codes:
+          - COMPUTE_UNAVAILABLE
           content:
             application/json:
               schema:
@@ -146,13 +150,14 @@ paths:
                   externalValue: ./examples/preview-response.json
           headers:
             Content-Encoding:
-              description: JSON gzip; navegador descomprime antes de parsear. Base64 solo en proxy Lambda.
+              description: JSON gzip; navegador descomprime antes de parsear. Base64
+                solo en proxy Lambda.
               schema:
                 type: string
                 const: gzip
         '400':
           description: Error de aplicación saneado.
-          x-error-codes: &id004
+          x-error-codes:
           - INVALID_JSON
           - UNKNOWN_FIELD
           content:
@@ -168,7 +173,7 @@ paths:
                   externalValue: ./examples/error-400-unknown-field.json
         '404':
           description: Error de aplicación saneado.
-          x-error-codes: &id005
+          x-error-codes:
           - NOT_FOUND
           content:
             application/json:
@@ -180,7 +185,7 @@ paths:
                   externalValue: ./examples/error-404-not-found.json
         '409':
           description: Error de aplicación saneado.
-          x-error-codes: &id006
+          x-error-codes:
           - GRAPH_HASH_MISMATCH
           content:
             application/json:
@@ -192,7 +197,7 @@ paths:
                   externalValue: ./examples/error-409-graph-hash-mismatch.json
         '413':
           description: Error de aplicación saneado.
-          x-error-codes: &id007
+          x-error-codes:
           - REQUEST_TOO_LARGE
           - RESULT_TOO_LARGE
           - GRAPH_TOO_LARGE
@@ -216,7 +221,7 @@ paths:
                   externalValue: ./examples/error-413-frames-too-large.json
         '422':
           description: Error de aplicación saneado.
-          x-error-codes: &id008
+          x-error-codes:
           - VALIDATION_ERROR
           - ORIGIN_EMPTY
           content:
@@ -232,7 +237,8 @@ paths:
                   externalValue: ./examples/error-422-origin-empty.json
         '429':
           description: Error de aplicación saneado.
-          x-error-codes: *id001
+          x-error-codes:
+          - RATE_LIMITED
           content:
             application/json:
               schema:
@@ -249,7 +255,9 @@ paths:
                 minimum: 0
         '500':
           description: Error de aplicación saneado.
-          x-error-codes: *id002
+          x-error-codes:
+          - INTERNAL_ERROR
+          - SIMULATION_FAILED
           content:
             application/json:
               schema:
@@ -263,7 +271,8 @@ paths:
                   externalValue: ./examples/error-500-simulation-failed.json
         '503':
           description: Error de aplicación saneado.
-          x-error-codes: *id003
+          x-error-codes:
+          - COMPUTE_UNAVAILABLE
           content:
             application/json:
               schema:
@@ -274,9 +283,9 @@ paths:
                   externalValue: ./examples/error-503-compute-unavailable.json
       requestBody:
         required: true
-        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de relaciones vacunas<=N,
-          intervención<=T y nodo<N. Los keywords default no modifican el request. Rechazar NaN e infinitos
-          antes del esquema.
+        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de
+          relaciones vacunas<=N, intervención<=T y nodo<N. Los keywords default no
+          modifican el request. Rechazar NaN e infinitos antes del esquema.
         content:
           application/json:
             schema:
@@ -314,13 +323,16 @@ paths:
                   externalValue: ./examples/compare-response-bootstrap.json
           headers:
             Content-Encoding:
-              description: JSON gzip; navegador descomprime antes de parsear. Base64 solo en proxy Lambda.
+              description: JSON gzip; navegador descomprime antes de parsear. Base64
+                solo en proxy Lambda.
               schema:
                 type: string
                 const: gzip
         '400':
           description: Error de aplicación saneado.
-          x-error-codes: *id004
+          x-error-codes:
+          - INVALID_JSON
+          - UNKNOWN_FIELD
           content:
             application/json:
               schema:
@@ -334,7 +346,8 @@ paths:
                   externalValue: ./examples/error-400-unknown-field.json
         '404':
           description: Error de aplicación saneado.
-          x-error-codes: *id005
+          x-error-codes:
+          - NOT_FOUND
           content:
             application/json:
               schema:
@@ -345,7 +358,8 @@ paths:
                   externalValue: ./examples/error-404-not-found.json
         '409':
           description: Error de aplicación saneado.
-          x-error-codes: *id006
+          x-error-codes:
+          - GRAPH_HASH_MISMATCH
           content:
             application/json:
               schema:
@@ -356,7 +370,11 @@ paths:
                   externalValue: ./examples/error-409-graph-hash-mismatch.json
         '413':
           description: Error de aplicación saneado.
-          x-error-codes: *id007
+          x-error-codes:
+          - REQUEST_TOO_LARGE
+          - RESULT_TOO_LARGE
+          - GRAPH_TOO_LARGE
+          - FRAMES_TOO_LARGE
           content:
             application/json:
               schema:
@@ -376,7 +394,9 @@ paths:
                   externalValue: ./examples/error-413-frames-too-large.json
         '422':
           description: Error de aplicación saneado.
-          x-error-codes: *id008
+          x-error-codes:
+          - VALIDATION_ERROR
+          - ORIGIN_EMPTY
           content:
             application/json:
               schema:
@@ -390,7 +410,8 @@ paths:
                   externalValue: ./examples/error-422-origin-empty.json
         '429':
           description: Error de aplicación saneado.
-          x-error-codes: *id001
+          x-error-codes:
+          - RATE_LIMITED
           content:
             application/json:
               schema:
@@ -407,7 +428,9 @@ paths:
                 minimum: 0
         '500':
           description: Error de aplicación saneado.
-          x-error-codes: *id002
+          x-error-codes:
+          - INTERNAL_ERROR
+          - SIMULATION_FAILED
           content:
             application/json:
               schema:
@@ -421,7 +444,8 @@ paths:
                   externalValue: ./examples/error-500-simulation-failed.json
         '503':
           description: Error de aplicación saneado.
-          x-error-codes: *id003
+          x-error-codes:
+          - COMPUTE_UNAVAILABLE
           content:
             application/json:
               schema:
@@ -432,9 +456,9 @@ paths:
                   externalValue: ./examples/error-503-compute-unavailable.json
       requestBody:
         required: true
-        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de relaciones vacunas<=N,
-          intervención<=T y nodo<N. Los keywords default no modifican el request. Rechazar NaN e infinitos
-          antes del esquema.
+        description: JSON estricto <=64 KiB. Aplicar defaults recursivos antes de
+          relaciones vacunas<=N, intervención<=T y nodo<N. Los keywords default no
+          modifican el request. Rechazar NaN e infinitos antes del esquema.
         content:
           application/json:
             schema:
@@ -452,11 +476,16 @@ paths:
       summary: Crear trabajo Monte Carlo asíncrono
       requestBody:
         required: true
-        description: JSON estricto <=64 KiB. Configuración completa con repetitions 2..10000.
+        description: JSON estricto <=64 KiB; trabajos locales 2..100 réplicas y presupuesto
+          de trabajo limitado. Cola en memoria del proceso local.
         content:
           application/json:
             schema:
               $ref: ./job-create-request.schema.json
+            examples:
+              job-create-request:
+                summary: Mock de contrato; no ejecución real
+                externalValue: ./examples/job-create-request.json
       responses:
         '202':
           description: Trabajo creado y aceptado para ejecución
@@ -464,9 +493,13 @@ paths:
             application/json:
               schema:
                 $ref: ./job-create-response.schema.json
+              examples:
+                job-create-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/job-create-response.json
         '400':
           description: Error de aplicación saneado
-          x-error-codes: &id004
+          x-error-codes:
           - INVALID_JSON
           - UNKNOWN_FIELD
           content:
@@ -475,40 +508,103 @@ paths:
                 $ref: ./error.schema.json
         '409':
           description: Error de aplicación saneado
-          x-error-codes: &id006
+          x-error-codes:
           - GRAPH_HASH_MISMATCH
+          - IDEMPOTENCY_CONFLICT
           content:
             application/json:
               schema:
                 $ref: ./error.schema.json
         '422':
           description: Error de aplicación saneado
-          x-error-codes: &id008
+          x-error-codes:
           - VALIDATION_ERROR
-          - ORIGIN_EMPTY
           content:
             application/json:
               schema:
                 $ref: ./error.schema.json
         '503':
           description: Error de aplicación saneado
-          x-error-codes: &id003
+          x-error-codes:
           - COMPUTE_UNAVAILABLE
           content:
             application/json:
               schema:
                 $ref: ./error.schema.json
+        '413':
+          description: Error de aplicación saneado.
+          x-error-codes:
+          - REQUEST_TOO_LARGE
+          - RESULT_TOO_LARGE
+          - GRAPH_TOO_LARGE
+          - FRAMES_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-413-request-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-request-too-large.json
+                error-413-result-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-result-too-large.json
+                error-413-graph-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-graph-too-large.json
+                error-413-frames-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-frames-too-large.json
+        '500':
+          description: Error de aplicación saneado.
+          x-error-codes:
+          - INTERNAL_ERROR
+          - SIMULATION_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-500-internal-error:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-internal-error.json
+                error-500-simulation-failed:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-500-simulation-failed.json
+      parameters:
+      - name: X-Job-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        description: Capacidad generada por el cliente; conservar para consultar/cancelar.
+          Nunca en URL.
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,128}$
   /jobs/{jobId}:
     get:
       operationId: jobsGet
       summary: Consultar estado de un trabajo
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Job-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        description: Capacidad generada por el cliente; conservar para consultar/cancelar.
+          Nunca en URL.
       responses:
         '200':
           description: Estado actual del trabajo
@@ -516,9 +612,13 @@ paths:
             application/json:
               schema:
                 $ref: ./job-status-response.schema.json
+              examples:
+                job-status-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/job-status-response.json
         '404':
           description: Error de aplicación saneado
-          x-error-codes: &id005
+          x-error-codes:
           - JOB_NOT_FOUND
           content:
             application/json:
@@ -529,12 +629,20 @@ paths:
       operationId: jobsCancel
       summary: Cancelar un trabajo en ejecución
       parameters:
-        - name: jobId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Job-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        description: Capacidad generada por el cliente; conservar para consultar/cancelar.
+          Nunca en URL.
       responses:
         '202':
           description: Solicitud de cancelación aceptada
@@ -542,11 +650,93 @@ paths:
             application/json:
               schema:
                 $ref: ./job-cancel-response.schema.json
+              examples:
+                job-cancel-response:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/job-cancel-response.json
         '404':
           description: Error de aplicación saneado
-          x-error-codes: &id005
+          x-error-codes:
           - JOB_NOT_FOUND
           content:
             application/json:
               schema:
                 $ref: ./error.schema.json
+  /jobs/{jobId}/result:
+    get:
+      operationId: jobsResult
+      summary: Descargar resultado completo de trabajo local
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: X-Job-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          pattern: ^[0-9a-f]{64}$
+        description: Capacidad generada por el cliente; conservar para consultar/cancelar.
+          Nunca en URL.
+      responses:
+        '200':
+          description: Resultado científico completo; puede usar gzip.
+          content:
+            application/json:
+              schema:
+                $ref: ./experiment-result.schema.json
+        '404':
+          description: Trabajo no disponible
+          x-error-codes:
+          - JOB_NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '409':
+          description: Resultado aún no completo o trabajo cancelado/fallido
+          x-error-codes:
+          - JOB_NOT_READY
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '413':
+          description: Error de aplicación saneado.
+          x-error-codes:
+          - REQUEST_TOO_LARGE
+          - RESULT_TOO_LARGE
+          - GRAPH_TOO_LARGE
+          - FRAMES_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-413-request-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-request-too-large.json
+                error-413-result-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-result-too-large.json
+                error-413-graph-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-graph-too-large.json
+                error-413-frames-too-large:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-413-frames-too-large.json
+        '503':
+          description: Error de aplicación saneado.
+          x-error-codes:
+          - COMPUTE_UNAVAILABLE
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+              examples:
+                error-503-compute-unavailable:
+                  summary: Mock de contrato; no ejecución real
+                  externalValue: ./examples/error-503-compute-unavailable.json

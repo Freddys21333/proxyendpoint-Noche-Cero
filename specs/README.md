@@ -17,3 +17,5 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 Leer requisitos, diseño y acuerdos antes de tomar una tarea. [Los contratos ejecutables y ejemplos](../schemas/README.md) ya están verificados como artefactos estáticos de T-03, sin confundir mocks con resultados reales. Backend, frontend e infraestructura tienen definidos sus límites e interfaces para avanzar; T-17 conserva las verificaciones externas de AWS.
 
 Se adopta esta organización de tres documentos en lugar del listado anterior de specs numeradas. El detalle de cada incremento se mantiene en sus secciones/tareas y solo se añaden anexos cuando haga falta. Estados de avance: borrador, lista, en implementación, verificada; verificar documentación no implica verificar el software.
+
+Contrato PRO de ejecución: [P-03, trabajos Monte Carlo locales](p03-monte-carlo-jobs.md), backend verificado; interfaz visual y P-04 AWS pendientes.

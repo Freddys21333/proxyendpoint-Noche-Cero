@@ -269,7 +269,7 @@ def reproduce(document: dict[str, Any]) -> str:
     for key, value in runtime_versions().items():
         if document["manifest"][key] != value:
             raise ValueError("El entorno o la versión no coincide con el experimento.")
-    configuration = normalize_configuration(document["configuration"])
+    configuration = normalize_configuration(document["configuration"], for_jobs=True)
     fresh = export_experiment(
         run_experiment(
             configuration,

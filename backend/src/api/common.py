@@ -6,6 +6,7 @@ import gzip
 import json
 import logging
 import os
+import re
 import time
 import uuid
 from datetime import UTC, datetime
@@ -16,11 +17,25 @@ from domain.errors import ConfigurationError
 from domain.reproducibility import canonical_json, json_hash
 from simulation.experiments import run_experiment
 from simulation.exports import ENGINE_VERSION, SCHEMA_VERSION, export_experiment
-from simulation.jobs import GLOBAL_JOB_MANAGER
+from simulation.jobs import (
+    GLOBAL_JOB_MANAGER,
+    MAX_CONCURRENT,
+    MAX_EDGE_DAY_REPLICATES,
+    MAX_JOBS,
+    MAX_REPETITIONS,
+    RETENTION_SECONDS,
+)
 from simulation.network import build_preview, generate_graph
 
 Endpoint = Literal[
-    "health", "config", "preview", "compare", "jobs_create", "jobs_get", "jobs_cancel"
+    "health",
+    "config",
+    "preview",
+    "compare",
+    "jobs_create",
+    "jobs_get",
+    "jobs_cancel",
+    "jobs_result",
 ]
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
@@ -44,8 +59,9 @@ ROUTES = dict(
     preview=("POST", "/scenarios/preview"),
     compare=("POST", "/simulations/compare"),
     jobs_create=("POST", "/jobs"),
-    jobs_get=("GET", "/jobs/{id}"),
-    jobs_cancel=("POST", "/jobs/{id}/cancel"),
+    jobs_get=("GET", "/jobs/{jobId}"),
+    jobs_cancel=("POST", "/jobs/{jobId}/cancel"),
+    jobs_result=("GET", "/jobs/{jobId}/result"),
 )
 DESCRIPTION = (
     "Población sintética inspirada en Manta; synthetic-manta-v1, sin datos personales. "
@@ -166,40 +182,92 @@ def _execute(
             **metadata,
             defaults=normalize_configuration().to_dict(),
             limits=limits,
-            # El servidor local aún no publica las rutas de trabajos P-03.
-            features=dict(asyncJobs=False, representativeFrames=True),
+            features=dict(
+                asyncJobs=os.environ.get("LOCAL_JOBS_ENABLED") == "1", representativeFrames=True
+            ),
             generatorDescription=DESCRIPTION,
+            **(
+                {
+                    "jobLimits": dict(
+                        maxRepetitions=MAX_REPETITIONS,
+                        maxConcurrent=MAX_CONCURRENT,
+                        maxRetained=MAX_JOBS,
+                        retentionSeconds=RETENTION_SECONDS,
+                        maxEdgeDayReplicates=MAX_EDGE_DAY_REPLICATES,
+                    )
+                }
+                if os.environ.get("LOCAL_JOBS_ENABLED") == "1"
+                else {}
+            ),
         )
-    if endpoint == "jobs_get":
-        job_id = event.get("pathParameters", {}).get("id") or event.get("jobId")
-        if not job_id:
-            raise ConfigurationError("JOB_NOT_FOUND", 404, "Identificador de trabajo ausente.")
-        job = GLOBAL_JOB_MANAGER.get_job(job_id)
-        if not job:
-            raise ConfigurationError("JOB_NOT_FOUND", 404, f"Trabajo {job_id} no encontrado.")
-        return dict(**metadata, **job.to_dict())
-    if endpoint == "jobs_cancel":
-        job_id = event.get("pathParameters", {}).get("id") or event.get("jobId")
-        if not job_id:
-            raise ConfigurationError("JOB_NOT_FOUND", 404, "Identificador de trabajo ausente.")
-        success = GLOBAL_JOB_MANAGER.cancel_job(job_id)
-        if not success:
+    if endpoint.startswith("jobs_"):
+        if os.environ.get("LOCAL_JOBS_ENABLED") != "1":
+            raise ConfigurationError("COMPUTE_UNAVAILABLE", 503, "Trabajos locales no habilitados.")
+        headers = {str(k).lower(): v for k, v in event.get("headers", {}).items()}
+        capability = headers.get("x-job-token", "")
+        if not isinstance(capability, str) or re.fullmatch(r"[0-9a-f]{64}", capability) is None:
             raise ConfigurationError(
-                "JOB_NOT_FOUND", 404, f"No se pudo cancelar el trabajo {job_id}."
+                "VALIDATION_ERROR" if endpoint == "jobs_create" else "JOB_NOT_FOUND",
+                422 if endpoint == "jobs_create" else 404,
+                "Capacidad de trabajo no válida.",
             )
-        job = GLOBAL_JOB_MANAGER.get_job(job_id)
-        return dict(**metadata, **job.to_dict())
-    raw = _body(event, limits["maxRequestBytes"])
-    if endpoint == "jobs_create":
+        if endpoint != "jobs_create":
+            job_id = event.get("pathParameters", {}).get("jobId", "")
+            if endpoint == "jobs_result":
+                document = GLOBAL_JOB_MANAGER.result(job_id, capability)
+                document["requestId"] = request_id
+                return document
+            if endpoint == "jobs_cancel":
+                GLOBAL_JOB_MANAGER.cancel_job(job_id, capability=capability)
+            return {**metadata, **GLOBAL_JOB_MANAGER.snapshot(job_id, capability)}
+        key = headers.get("idempotency-key", "")
+        if not isinstance(key, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", key) is None:
+            raise ConfigurationError(
+                "VALIDATION_ERROR", 422, "Idempotency-Key obligatorio y válido."
+            )
         request = parse_request(
-            raw, operation="compare", max_request_bytes=limits["maxRequestBytes"]
+            _body(event, limits["maxRequestBytes"]),
+            operation="jobs",
+            max_request_bytes=limits["maxRequestBytes"],
         )
-        job = GLOBAL_JOB_MANAGER.create_job(
-            request.configuration,
+        cfg = request.configuration
+        previous = GLOBAL_JOB_MANAGER.find_retry(
+            cfg,
             request.expected_graph_hash,
             include_representative_frames=request.include_representative_frames,
+            capability=capability,
+            idempotency_key=key,
         )
-        return dict(**metadata, **job.to_dict(include_result=False))
+        if previous is not None:
+            return {**metadata, **GLOBAL_JOB_MANAGER.snapshot(previous.job_id, capability)}
+        if (
+            request.include_representative_frames
+            and cfg.scenario.population_size * (cfg.scenario.days + 1) > limits["maxFrameStates"]
+        ):
+            raise ConfigurationError(
+                "FRAMES_TOO_LARGE", 413, "Los frames superan el límite permitido."
+            )
+        graph = generate_graph(cfg, max_edges=limits["maxEdges"])
+        if json_hash(graph) != request.expected_graph_hash:
+            raise ConfigurationError(
+                "GRAPH_HASH_MISMATCH", 409, "La red cambió; solicita una nueva vista previa."
+            )
+        if len(graph["edges"]) * cfg.scenario.days * cfg.repetitions > MAX_EDGE_DAY_REPLICATES:
+            raise ConfigurationError(
+                "VALIDATION_ERROR",
+                422,
+                "El lote supera el límite de trabajo local; reduce población, días o réplicas.",
+            )
+        job = GLOBAL_JOB_MANAGER.create_job(
+            cfg,
+            request.expected_graph_hash,
+            graph=graph,
+            include_representative_frames=request.include_representative_frames,
+            capability=capability,
+            idempotency_key=key,
+        )
+        return {**metadata, **GLOBAL_JOB_MANAGER.snapshot(job.job_id, capability)}
+    raw = _body(event, limits["maxRequestBytes"])
     if endpoint == "preview":
         preview = parse_request(
             raw, operation="preview", max_request_bytes=limits["maxRequestBytes"]
@@ -258,27 +326,41 @@ def dispatch(endpoint: Endpoint, event: dict[str, Any], context: Any) -> dict[st
         ):
             raise ConfigurationError("INVALID_JSON", 400, "Contexto HTTP inválido.")
         http = request_context["http"]
-        if http.get("method") != method or event.get("rawPath") not in (path, "/v1" + path):
+        actual_path = event.get("rawPath", "")
+        if not isinstance(actual_path, str):
             raise ConfigurationError("NOT_FOUND", 404, "Ruta no encontrada.")
+        local_path = actual_path[3:] if actual_path.startswith("/v1/") else actual_path
+        pattern = re.escape(path).replace(
+            re.escape("{jobId}"),
+            r"(?P<jobId>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
+        )
+        match = re.fullmatch(pattern, local_path)
+        if http.get("method") != method or match is None:
+            raise ConfigurationError("NOT_FOUND", 404, "Ruta no encontrada.")
+        if "jobId" in match.groupdict():
+            event = {**event, "pathParameters": {"jobId": match.group("jobId")}}
         remaining = getattr(context, "get_remaining_time_in_millis", None)
         if endpoint in ("preview", "compare") and callable(remaining) and remaining() < 1000:
             raise ConfigurationError(
                 "COMPUTE_UNAVAILABLE", 503, "Tiempo de ejecución no disponible."
             )
         payload = _execute(endpoint, event, request_id, limits)
-        if not endpoint.startswith("jobs_"):
-            definition = {
-                "health": "HealthResponse",
-                "config": "ConfigResponse",
-                "preview": "PreviewResponse",
-                "compare": "CompareResponse",
-            }[endpoint]
-            # export_experiment ya valida el documento final, incluido requestId,
-            # además de verificar los hashes de integridad del experimento.
-            if endpoint != "compare":
-                validate_contract(payload, definition)
-        status_code = 202 if endpoint == "jobs_create" else 200
-        response = _response(payload, status_code, endpoint in ("preview", "compare"), limits)
+        definition = {
+            "health": "HealthResponse",
+            "config": "ConfigResponse",
+            "preview": "PreviewResponse",
+            "compare": "CompareResponse",
+            "jobs_create": "JobCreateResponse",
+            "jobs_get": "JobStatusResponse",
+            "jobs_cancel": "JobCancelResponse",
+            "jobs_result": "CompareResponse",
+        }[endpoint]
+        if endpoint != "compare":
+            validate_contract(payload, definition)
+        status_code = 202 if endpoint in ("jobs_create", "jobs_cancel") else 200
+        response = _response(
+            payload, status_code, endpoint in ("preview", "compare", "jobs_result"), limits
+        )
     except ConfigurationError as error:
         error_code = error.code
         response = _error(error, request_id, limits)
