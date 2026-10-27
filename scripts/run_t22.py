@@ -16,9 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend/src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from check_validation_protocol import check_protocol
-from domain.reproducibility import canonical_json
-from simulation.experiments import POLICIES, statistics
+from check_validation_protocol import check_protocol  # noqa: E402
+
+from domain.reproducibility import canonical_json  # noqa: E402
+from simulation.experiments import POLICIES, statistics  # noqa: E402
 
 PROTOCOL_ROOT = ROOT / "specs/validation/t22-v1"
 ATTEMPT_DEFAULT = ROOT / ".tools/t22-v1-attempt-01"

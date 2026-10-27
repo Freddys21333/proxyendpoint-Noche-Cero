@@ -28,7 +28,7 @@ import json
 import re
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -413,7 +413,7 @@ def _build(
 def command_build(args: argparse.Namespace) -> int:
     sources = load_sources(args.sources)
     csv_text, provenance = _build(sources, args.geometry_dir)
-    provenance["imported_at_utc"] = args.imported_at or datetime.now(timezone.utc).strftime(
+    provenance["imported_at_utc"] = args.imported_at or datetime.now(UTC).strftime(
         "%Y-%m-%dT%H:%M:%SZ"
     )
     provenance["csv_sha256"] = text_sha256(csv_text)
