@@ -16,9 +16,12 @@ from domain.errors import ConfigurationError
 from domain.reproducibility import canonical_json, json_hash
 from simulation.experiments import run_experiment
 from simulation.exports import ENGINE_VERSION, SCHEMA_VERSION, export_experiment
+from simulation.jobs import GLOBAL_JOB_MANAGER
 from simulation.network import build_preview, generate_graph
 
-Endpoint = Literal["health", "config", "preview", "compare"]
+Endpoint = Literal[
+    "health", "config", "preview", "compare", "jobs_create", "jobs_get", "jobs_cancel"
+]
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 DEFAULT_LIMITS = dict(
@@ -40,6 +43,9 @@ ROUTES = dict(
     config=("GET", "/config"),
     preview=("POST", "/scenarios/preview"),
     compare=("POST", "/simulations/compare"),
+    jobs_create=("POST", "/jobs"),
+    jobs_get=("GET", "/jobs/{id}"),
+    jobs_cancel=("POST", "/jobs/{id}/cancel"),
 )
 DESCRIPTION = (
     "Población sintética inspirada en Manta; synthetic-manta-v1, sin datos personales. "
@@ -160,10 +166,39 @@ def _execute(
             **metadata,
             defaults=normalize_configuration().to_dict(),
             limits=limits,
-            features=dict(asyncJobs=False, representativeFrames=True),
+            features=dict(asyncJobs=True, representativeFrames=True),
             generatorDescription=DESCRIPTION,
         )
+    if endpoint == "jobs_get":
+        job_id = event.get("pathParameters", {}).get("id") or event.get("jobId")
+        if not job_id:
+            raise ConfigurationError("JOB_NOT_FOUND", 404, "Identificador de trabajo ausente.")
+        job = GLOBAL_JOB_MANAGER.get_job(job_id)
+        if not job:
+            raise ConfigurationError("JOB_NOT_FOUND", 404, f"Trabajo {job_id} no encontrado.")
+        return dict(**metadata, **job.to_dict())
+    if endpoint == "jobs_cancel":
+        job_id = event.get("pathParameters", {}).get("id") or event.get("jobId")
+        if not job_id:
+            raise ConfigurationError("JOB_NOT_FOUND", 404, "Identificador de trabajo ausente.")
+        success = GLOBAL_JOB_MANAGER.cancel_job(job_id)
+        if not success:
+            raise ConfigurationError(
+                "JOB_NOT_FOUND", 404, f"No se pudo cancelar el trabajo {job_id}."
+            )
+        job = GLOBAL_JOB_MANAGER.get_job(job_id)
+        return dict(**metadata, **job.to_dict())
     raw = _body(event, limits["maxRequestBytes"])
+    if endpoint == "jobs_create":
+        request = parse_request(
+            raw, operation="compare", max_request_bytes=limits["maxRequestBytes"]
+        )
+        job = GLOBAL_JOB_MANAGER.create_job(
+            request.configuration,
+            request.expected_graph_hash,
+            include_representative_frames=request.include_representative_frames,
+        )
+        return dict(**metadata, **job.to_dict(include_result=False))
     if endpoint == "preview":
         preview = parse_request(
             raw, operation="preview", max_request_bytes=limits["maxRequestBytes"]
@@ -230,17 +265,19 @@ def dispatch(endpoint: Endpoint, event: dict[str, Any], context: Any) -> dict[st
                 "COMPUTE_UNAVAILABLE", 503, "Tiempo de ejecución no disponible."
             )
         payload = _execute(endpoint, event, request_id, limits)
-        definition = {
-            "health": "HealthResponse",
-            "config": "ConfigResponse",
-            "preview": "PreviewResponse",
-            "compare": "CompareResponse",
-        }[endpoint]
-        # export_experiment ya valida el documento final, incluido requestId,
-        # además de verificar los hashes de integridad del experimento.
-        if endpoint != "compare":
-            validate_contract(payload, definition)
-        response = _response(payload, 200, endpoint in ("preview", "compare"), limits)
+        if not endpoint.startswith("jobs_"):
+            definition = {
+                "health": "HealthResponse",
+                "config": "ConfigResponse",
+                "preview": "PreviewResponse",
+                "compare": "CompareResponse",
+            }[endpoint]
+            # export_experiment ya valida el documento final, incluido requestId,
+            # además de verificar los hashes de integridad del experimento.
+            if endpoint != "compare":
+                validate_contract(payload, definition)
+        status_code = 202 if endpoint == "jobs_create" else 200
+        response = _response(payload, status_code, endpoint in ("preview", "compare"), limits)
     except ConfigurationError as error:
         error_code = error.code
         response = _error(error, request_id, limits)
