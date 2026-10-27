@@ -5,7 +5,7 @@ export function ResourceScheduleEditor({ value, onChange, days, population, init
   days: number; population: number; initialSupplies: number;
 }) {
   const input = (label: string, number: number, max: number, change: (n: number) => void) => <label className="field" key={label}><span>{label}</span>
-    <input type="number" min={0} max={max} step={1} value={Number.isNaN(number) ? '' : number} onChange={event => change(event.target.value === '' ? NaN : Number(event.target.value))} /></label>
+    <div className="input-wrap"><input type="number" min={0} max={max} step={1} value={Number.isNaN(number) ? '' : number} onChange={event => change(event.target.value === '' ? NaN : Number(event.target.value))} /></div></label>
   return <section className="resource-schedule-editor" aria-label="Entregas diarias de recursos">
     <label className="combined-toggle"><input type="checkbox" checked={Boolean(value)} onChange={event => onChange(event.target.checked ? { modelVersion: 'daily-inventory-v1', vaccineDailyCapacity: population, initialBrigadeSupplies: initialSupplies, deliveries: [] } : undefined)} />Programar entregas e inventario diario</label>
     {value && <>

@@ -25,6 +25,8 @@ const seirHelp = [
   ["R", "Exorcizado", "Recuperado o inmune."],
 ] as const;
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
+// Oculto temporalmente; se conservan datos, lógica y pruebas del preset.
+const SHOW_DENGUE_PRESET = false;
 const publishedPreset = ((): { preset: DenguePreset | null; error: string } => {
   try {
     return { preset: readDenguePreset(denguePresetJson), error: "" };
@@ -295,7 +297,7 @@ export default function App() {
         </button>
       </div>
       <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
-      <DenguePresetPanel preset={denguePreset} active={presetActive} error={publishedPreset.error} onLoad={loadDenguePreset} onClear={clearDenguePreset} />
+      {SHOW_DENGUE_PRESET && <DenguePresetPanel preset={denguePreset} active={presetActive} error={publishedPreset.error} onLoad={loadDenguePreset} onClear={clearDenguePreset} />}
       <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
           <Field label="Población" value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />

@@ -10,9 +10,9 @@ export function CombinedInterventions({ value, onChange, days, population }: {
     closureDays: Math.min(days, 7), brigadeCostCents: 200, brigadeDailyCapacity: Math.min(population, 10),
     brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: Math.min(days, 7) })
   const number = (label: string, key: keyof CombinedPlan, max: number, money = false, percent = false) => <label className="field" key={key}>
-    <span>{label}</span><input type="number" min={money && key !== 'budgetCents' ? 0.01 : 0} max={max} step={money ? 0.01 : 1}
+    <span>{label}</span><div className="input-wrap"><input type="number" min={money && key !== 'budgetCents' ? 0.01 : 0} max={max} step={money ? 0.01 : 1}
       value={Number.isNaN(value![key]) ? '' : Number(value![key]) / (money ? 100 : percent ? 0.01 : 1)}
-      onChange={event => onChange({ ...value!, [key]: event.target.value === '' ? NaN : money ? Math.round(Number(event.target.value) * 100) : Number(event.target.value) * (percent ? 0.01 : 1) })} /></label>
+      onChange={event => onChange({ ...value!, [key]: event.target.value === '' ? NaN : money ? Math.round(Number(event.target.value) * 100) : Number(event.target.value) * (percent ? 0.01 : 1) })} /></div></label>
   return <section className="combined-settings" aria-label="Intervenciones combinadas y presupuesto">
     <label className="combined-toggle"><input type="checkbox" checked={Boolean(value)} onChange={event => onChange(event.target.checked ? defaults() : undefined)} />Combinar intervenciones con presupuesto</label>
     {value && <>
