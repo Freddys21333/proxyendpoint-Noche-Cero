@@ -38,11 +38,12 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-02 — Política adaptativa observable (PRO-3)
 
-- [ ] Estado: **en progreso, parcial**. Dependencia: P-01 y decisiones de modelo compatibles.
+- [x] Estado: **implementado, pendiente de verificación**. Dependencia: P-01 y decisiones de modelo compatibles.
 - Formalizar reglas para reasignar dosis, brigadas y cierres según S/E/I/R observados, nuevos casos, contactos activos y saldo. Especificar frecuencia, umbrales y desempates; la primera versión puede ser una heurística voraz explicable.
 - Mantener las estrategias actuales identificadas. Si la nueva regla cambia su significado, añadir nombre/versionado, no sustituir silenciosamente `targeted`. Comparar sin intervención, azar con recursos equivalentes y política propuesta; aclarar cuándo una regla observa estados completos como supuesto educativo.
 - Exportar entradas observadas, acción, motivo, puntuación, recursos/costo y acciones omitidas por límites. No leer eventos futuros, futuros uniformes ni resultados de otras políticas.
 - Aceptación: brote ascendente/descendente, saldo agotado, ausencia de elegibles, cambios de prioridad, reglas estables y límites. Verificar independencia del orden de políticas y semillas por dominio. Recalcular solo brigadas diariamente no cierra esta tarea.
+- **Implementado 2026-10-27:** 3 reglas adaptativas (cierre dinámico, control de brigadas, ring vaccination), campo `adaptiveDecisions` en daily, archivo `adaptive-decisions.csv` en exportación, 9 pruebas (test_adaptive.py + test_adaptive_export.py), especificación completa en `specs/p02-adaptive-policy.md`, evidencia en `docs/evidencia/p02-adaptive.md`. Pendiente: ejecutar pruebas con entorno instalado.
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 

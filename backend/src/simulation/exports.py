@@ -356,6 +356,41 @@ def export_zip(document: dict[str, Any]) -> bytes:
             ),
             rows_by_name["daily"],
         )
+        if document["configuration"]["intervention"]["combined"].get("adaptiveStrategy"):
+            # Extraer decisiones adaptativas si están presentes
+            adaptive_rows = []
+            for rep in document["replicates"]:
+                for policy in ["none", "random", "targeted"]:
+                    for day_data in rep["policies"][policy]["daily"]:
+                        if "adaptiveDecisions" in day_data:
+                            dec = day_data["adaptiveDecisions"]
+                            adaptive_rows.append({
+                                "replicateIndex": rep["index"],
+                                "policy": policy,
+                                "day": day_data["day"],
+                                "enabled": dec["enabled"],
+                                "infectiousFraction": dec["infectiousFraction"],
+                                "closureActive": dec.get("closureActive"),
+                                "brigadesAllowed": dec.get("brigadesAllowed"),
+                                "ringVaccinationActive": dec.get("ringVaccinationActive"),
+                                "triggers": json.dumps(dec.get("triggers", [])),
+                            })
+            if adaptive_rows:
+                table(
+                    "adaptive-decisions",
+                    (
+                        "replicateIndex",
+                        "policy",
+                        "day",
+                        "enabled",
+                        "infectiousFraction",
+                        "closureActive",
+                        "brigadesAllowed",
+                        "ringVaccinationActive",
+                        "triggers",
+                    ),
+                    adaptive_rows,
+                )
     table(
         "summary",
         ("policy", "metric", "n", "mean", "median", "p05", "p95"),

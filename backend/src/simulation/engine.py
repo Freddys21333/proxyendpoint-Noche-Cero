@@ -349,6 +349,17 @@ def simulate_policy(
                 brigadeSuppliesUsedToday=len(brigade_ids),
                 brigadeSuppliesAvailable=brigade_stock,
             )
+        if adaptive:
+            daily[-1].update(
+                adaptiveDecisions={
+                    "enabled": adaptive_enabled,
+                    "triggers": adaptive_reasons,
+                    "infectiousFraction": infectious_fraction,
+                    "closureActive": is_closed_dynamically,
+                    "brigadesAllowed": brigades_allowed,
+                    "ringVaccinationActive": ring_priority,
+                }
+            )
     events.sort(key=lambda event: (event["day"], event["nodeId"], event["cause"]))
     return SimulationTrace(
         daily,
