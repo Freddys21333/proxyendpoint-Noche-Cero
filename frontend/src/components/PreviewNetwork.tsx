@@ -1,19 +1,23 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
 import { Crosshair, ZoomIn, ZoomOut } from 'lucide-react'
-import type { PreviewResponse, CompareResponse, Policy } from '@/lib/api'
+import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { previewNetwork } from '@/lib/preview-network'
 import { Button } from './ui/button'
+import { vaccinationsAtDay } from '@/lib/vaccination'
+import { VaccinationDetails, VaccinationPerson } from './VaccinationDetails'
 import { seirColors } from './seir-colors'
 import './ContactNetwork.css'
 
 const labels = { S: 'Sano', E: 'Mordido', I: 'Zombie', R: 'Exorcizado' }
+const noSelections: VaccinationSelection[] = []
 const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado'], ['neighborhoodId', 'Barrio'] ] as const
 
 export function PreviewNetwork({ preview, layer, resetKey, children, active = true, comparison = null }: {
   preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; active?: boolean; comparison?: CompareResponse | null
 }) {
+  const inspector = useRef<HTMLDetailsElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const network = useRef<cytoscape.Core | null>(null)
   const [selected, setSelected] = useState('')
@@ -31,8 +35,11 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
     const timer = window.setTimeout(() => setDay(value => value + 1), speed)
     return () => window.clearTimeout(timer)
   }, [playing, frames, currentDay, lastDay, speed])
+  const selections = active && comparison ? comparison!.replicates[comparison!.representative.index].policies[policy].selections : noSelections
+  const applied = useMemo(() => vaccinationsAtDay(selections, currentDay), [selections, currentDay])
+  const dose = applied.find(row => String(row.nodeId) === selected)
   const pickerId = useId()
-  const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame), [preview, layer, currentDay, frame])
+  const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections), [preview, layer, currentDay, frame, selections])
   const detail = preview.graph.nodes.find(n => String(n.id) === selected)
   const selectedState = graph.nodes.find(n => n.data.id === selected)?.data.state ?? 'S'
 
@@ -48,6 +55,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         { selector: 'node[!inLayer]', style: { opacity: 0.15 } },
         { selector: 'edge', style: { width: 1, 'line-color': '#a8c0b2', opacity: 0.4, 'curve-style': 'bezier' } },
         { selector: '.focused', style: { 'line-color': '#315d47', width: 2, opacity: 1 } },
+        { selector: 'node[vaccination="effective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'solid' } },
+        { selector: 'node[vaccination="ineffective"]', style: { 'border-width': 4, 'border-color': '#7c3aed', 'border-style': 'dashed' } },
         { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#173e32', opacity: 1 } },
       ],
     })
@@ -102,7 +111,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         </div>
       </div>
       <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${comparison!.representative.index} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}.`} Las personas sin contactos del filtro se atenúan.</p>
-      <details className="node-inspector" open={Boolean(detail)} aria-label="Información de la persona seleccionada">
+      <details ref={inspector} className="node-inspector" open={Boolean(detail)} aria-label="Información de la persona seleccionada">
         <summary>Explorar personas</summary>
         <label htmlFor={pickerId}>Buscar persona por número</label>
         <select id={pickerId} value={selected} onChange={event => setSelected(event.target.value)}>
@@ -113,6 +122,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           <div className="node-context-id">Persona <strong>{String(detail.id).padStart(3, '0')}</strong> · {labels[selectedState]}</div>
           <dl><div><dt>Contactos distintos visibles</dt><dd>{graph.neighbors[selected]?.length ?? 0}</dd></div>
             {groups.map(([key, label]) => detail[key] !== null && <div key={key}><dt>{label}</dt><dd>{detail[key]}</dd></div>)}</dl>
+          {frames && (dose ? <VaccinationPerson selection={dose} /> : <p>{policy === 'none' ? 'Sin intervención: no se aplican vacunas.' : currentDay < comparison!.configuration.intervention.interventionDay ? `Intervención pendiente para el día ${comparison!.configuration.intervention.interventionDay}. Aún no recibió una dosis.` : 'No recibió una dosis en esta estrategia. El estado actual no determina por sí solo su elegibilidad al decidir.'}</p>)}
           <button className="plain-action" onClick={() => network.current?.fit(network.current.getElementById(selected).closedNeighborhood(), 45)}><Crosshair size={14} /> Enfocar conexiones</button>
         </div>}
       </details>
@@ -132,8 +142,10 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
           <label>Velocidad <select aria-label="Velocidad de reproducción" value={speed} onChange={event => setSpeed(Number(event.target.value))}><option value={1400}>Lenta</option><option value={700}>Normal</option><option value={250}>Rápida</option></select></label>
           <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
           <p>R incluye personas recuperadas o inmunizadas. Las vacunas se aplican al registrar el día {comparison!.configuration.intervention.interventionDay}.</p>
-        </> : <><p>{!active ? 'Consulta la red para obtener un nuevo estado inicial.' : comparison ? 'Comparación disponible sin animación: el servidor limitó el tamaño de los estados diarios. Los resultados completos están en Comparación.' : 'Ejecuta Comparar estrategias para cargar una trayectoria real.'}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}
+        </> : <><p>{!active ? 'Consulta la red para obtener un nuevo estado inicial.' : comparison ? 'Comparación disponible sin animación: el servidor limitó el tamaño de los estados diarios. El grafo conserva el preview inicial; abajo puedes consultar el registro completo de vacunación de la réplica.' : 'Ejecuta Comparar estrategias para cargar una trayectoria real.'}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}
       </section>
+      {active && comparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => setPolicy(event.target.value as Policy)}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
+      {active && comparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); setPlaying(false); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
       {children}
     </div>
   </div>

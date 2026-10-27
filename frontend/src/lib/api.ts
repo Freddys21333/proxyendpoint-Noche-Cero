@@ -10,6 +10,7 @@ export type ConfigurationInput = {
 
 type Metadata = { schemaVersion: '1.0'; engineVersion: string; requestId: string }
 export type PersonState = 'S' | 'E' | 'I' | 'R'
+export type VaccinationSelection = { day: number; nodeId: number; score: number | null; rank: number; stateAtDecision: 'S'; contexts: string[]; tieBreak: 'nodeIdAsc' | 'seededRandom'; effective: boolean }
 export type Policy = 'none' | 'random' | 'targeted'
 export type CurveMetric = 's' | 'e' | 'i' | 'r' | 'cumulativeInfected'
 export type Stats = { n: number; mean: number | null; median: number | null; p05: number | null; p95: number | null }
@@ -25,7 +26,7 @@ export type CompareResponse = Metadata & {
     targetedWinRateVsNone: number; targetedWinRateVsRandom: number };
   recommendation: { winner: Policy | 'tie'; confidence: 'descriptive' | 'supported' | 'inconclusive'; reasons: string[]; limitations: string[] };
   manifest: { experimentHash: string; engineVersion: string; schemaVersion: string; buildCommit: string; rootSeed: number; [key: string]: unknown };
-  replicates: { index: number; policies: Record<Policy, { metrics: Record<Metric, number | null>; daily: unknown[]; selections: unknown[]; events: unknown[] | null; resultHash: string }> }[];
+  replicates: { index: number; policies: Record<Policy, { metrics: Record<Metric, number | null>; daily: unknown[]; selections: VaccinationSelection[]; events: unknown[] | null; resultHash: string }> }[];
   representative: { index: number; frames: Record<Policy, PersonState[][]> | null; [key: string]: unknown };
 }
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
@@ -65,7 +66,7 @@ function completeComparison(data: Record<string, unknown>, configuration: Config
   const n = configuration.repetitions, days = configuration.scenario.days + 1
   if (data.graphHash !== graphHash || !containsRequested(data.configuration, configuration) || !object(data.progress) || data.progress.replicatesTotal !== n || data.progress.replicatesSucceeded !== n || data.progress.replicatesFailed !== 0) return false
   if (!Array.isArray(data.replicates) || data.replicates.length !== n || !object(data.aggregatedCurves) || !object(data.summaryByPolicy)) return false
-  if (!data.replicates.every((rep, i) => object(rep) && rep.index === i && object(rep.policies) && policies.every(p => object(rep.policies) && object(rep.policies[p]) && Array.isArray(rep.policies[p].daily) && rep.policies[p].daily.length === days))) return false
+  if (!data.replicates.every((rep, i) => object(rep) && rep.index === i && object(rep.policies) && policies.every(p => object(rep.policies) && object(rep.policies[p]) && Array.isArray(rep.policies[p].daily) && rep.policies[p].daily.length === days && validSelections(rep.policies[p], p, configuration)))) return false
   for (const policy of policies) {
     const curves = data.aggregatedCurves[policy], summary = data.summaryByPolicy[policy]
     if (!Array.isArray(curves) || curves.length !== days || !object(summary)) return false
@@ -78,6 +79,14 @@ function completeComparison(data: Record<string, unknown>, configuration: Config
   const comparisons = [paired.savedVsNone.random, paired.savedVsNone.targeted, paired.gainVsRandom]
   if (!comparisons.every(c => object(c) && Array.isArray(c.values) && c.values.length === n && c.values.every(finite) && ['mean', 'median', 'p05', 'p95'].every(k => finite(c[k])) && (n < 30 ? c.bootstrap === null : object(c.bootstrap) && c.bootstrap.level === 0.95 && c.bootstrap.resamples === 2000 && finite(c.bootstrap.lower) && finite(c.bootstrap.upper) && c.bootstrap.lower <= c.bootstrap.upper))) return false
   return object(data.manifest) && typeof data.manifest.experimentHash === 'string' && /^sha256:[0-9a-f]{64}$/.test(data.manifest.experimentHash) && data.manifest.engineVersion === data.engineVersion && data.manifest.schemaVersion === data.schemaVersion && data.manifest.rootSeed === configuration.rootSeed && typeof data.manifest.buildCommit === 'string' && object(data.representative) && finite(data.representative.index) && Number.isInteger(data.representative.index) && data.representative.index >= 0 && data.representative.index < n && (includeFrames ? validFrames(data, configuration) : data.representative.frames === null)
+}
+
+function validSelections(result: Record<string, unknown>, policy: Policy, configuration: ConfigurationInput): boolean {
+  const rows = result.selections, metrics = result.metrics
+  const { vaccines, interventionDay } = configuration.intervention
+  if (!Array.isArray(rows) || !object(metrics) || rows.length > vaccines || (policy === 'none' && rows.length !== 0)) return false
+  if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && row.day === interventionDay && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
+  return new Set(rows.map(row => row.nodeId)).size === rows.length && new Set(rows.map(row => row.rank)).size === rows.length && metrics.vaccinesAssigned === rows.length && metrics.vaccinesEffective === rows.filter(row => row.effective).length && metrics.vaccinesUnused === vaccines - rows.length
 }
 
 function validFrames(data: Record<string, unknown>, configuration: ConfigurationInput): boolean {

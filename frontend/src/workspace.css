@@ -2988,3 +2988,8 @@ input, .scenario-meta strong, .analysis-status { font-variant-numeric: tabular-n
 .real-playback select { width: 100%; padding: .5rem; border: 1px solid #cbd5cf; border-radius: .4rem; background: white; }
 .real-playback input[type="range"] { width: 100%; accent-color: #173e32; }
 .real-playback .configuration-actions { gap: .5rem; }
+
+.vaccination-details { padding: 20px; border: 1px solid #dce2da; border-radius: 8px; background: white; min-width: 0; }
+.vaccination-details h3, .vaccination-person h4 { margin: 0 0 .6rem; font-weight: 600; }
+.vaccination-details p, .vaccination-person p { margin: .6rem 0; line-height: 1.5; }
+.vaccination-person { border-top: 1px solid #dce2da; padding-top: 1rem; margin-top: 1rem; }

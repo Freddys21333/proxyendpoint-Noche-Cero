@@ -53,3 +53,16 @@ test('playback uses actual person states and the selected day contact schedule',
   assert.deepEqual(graph.nodes.map(node => node.position), previewNetwork(source, 'All layers').nodes.map(node => node.position))
   assert.equal(JSON.stringify(source), before)
 })
+
+test('vaccination markers follow actual dose outcomes and do not replace SEIR states', () => {
+  const source = fixture()
+  const selections = [
+    { day: 2, nodeId: 0, rank: 1, score: 3, stateAtDecision: 'S' as const, contexts: [], tieBreak: 'nodeIdAsc' as const, effective: true },
+    { day: 2, nodeId: 1, rank: 2, score: 2, stateAtDecision: 'S' as const, contexts: [], tieBreak: 'nodeIdAsc' as const, effective: false },
+  ]
+  assert.ok(previewNetwork(source, 'All layers', 1, undefined, selections).nodes.every(node => node.data.vaccination === 'none'))
+  const graph = previewNetwork(source, 'All layers', 2, undefined, selections)
+  assert.deepEqual(graph.nodes.slice(0, 2).map(node => node.data.vaccination), ['effective', 'ineffective'])
+  assert.deepEqual(graph.nodes.map(node => node.data.state), previewNetwork(source, 'All layers').nodes.map(node => node.data.state))
+  assert.ok(previewNetwork(source, 'All layers').nodes.every(node => node.data.vaccination === 'none'))
+})

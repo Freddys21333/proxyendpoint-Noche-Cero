@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { createApiClient, toConfiguration, type CompareResponse } from './api.ts'
 import { defaults } from './scenario.ts'
+import { vaccinationsAtDay, selectionReason } from './vaccination.ts'
 import { comparisonRows } from './comparison.ts'
 
 const fixture = (): CompareResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response-no-frames.json', import.meta.url), 'utf8'))
@@ -91,4 +92,44 @@ test('contract errors are not retried as a comparison without animation', async 
   const client = createApiClient('/v1', async () => { requests++; return Response.json(source) })
   await assert.rejects(client.compareForPlayback(source.configuration, source.graphHash), /contrato/i)
   assert.equal(requests, 1)
+})
+
+const vaccinationFixture = (): CompareResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response-vaccines.json', import.meta.url), 'utf8'))
+
+test('vaccination selections are accepted from the backend contract', async () => {
+  const source = vaccinationFixture()
+  const result = await createApiClient('/v1', async () => Response.json(source)).compare(source.configuration, source.graphHash, undefined, true)
+  assert.deepEqual(result.replicates[0].policies.targeted.selections, source.replicates[0].policies.targeted.selections)
+})
+
+for (const defect of ['missing', 'eligibility', 'score', 'rank', 'effective', 'duplicate', 'day', 'rule', 'inventory'] as const) {
+  test(`rejects invalid vaccination selection ${defect}`, async () => {
+    const source = vaccinationFixture()
+    const result = source.replicates[0].policies.targeted
+    const rows = result.selections as unknown as Record<string, unknown>[]
+    if (defect === 'missing') delete (result as Partial<typeof result>).selections
+    if (defect === 'eligibility') rows[0].stateAtDecision = 'I'
+    if (defect === 'score') rows[0].score = null
+    if (defect === 'rank') rows[0].rank = 0
+    if (defect === 'effective') rows[0].effective = 'yes'
+    if (defect === 'duplicate') rows.push({...rows[0]})
+    if (defect === 'day') rows[0].day = source.configuration.intervention.interventionDay + 1
+    if (defect === 'rule') rows[0].tieBreak = 'seededRandom'
+    if (defect === 'inventory') result.metrics.vaccinesAssigned = 0
+    await assert.rejects(createApiClient('/v1', async () => Response.json(source)).compare(source.configuration, source.graphHash, undefined, true), /contrato/i)
+  })
+}
+
+test('vaccination view hides future doses and restores exact selections when seeking', () => {
+  const selections = vaccinationFixture().replicates[0].policies.targeted.selections.map(row => ({ ...row, day: 3 }))
+  const before = JSON.stringify(selections)
+  assert.deepEqual(vaccinationsAtDay(selections, 2), [])
+  assert.deepEqual(vaccinationsAtDay(selections, 3), [...selections].sort((a, b) => a.rank - b.rank))
+  assert.deepEqual(vaccinationsAtDay(selections, 10), vaccinationsAtDay(selections, 3))
+  assert.deepEqual(vaccinationsAtDay(selections, 0), [])
+  assert.equal(JSON.stringify(selections), before)
+  assert.match(selectionReason(selections[0]), /menor identificador/)
+  const random = vaccinationFixture().replicates[0].policies.random.selections[0]
+  assert.match(selectionReason(random), /sin reemplazo/)
+  assert.match(selectionReason(random), /no usa puntuación/)
 })

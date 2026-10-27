@@ -1,4 +1,4 @@
-import type { PreviewResponse, PersonState } from './api.ts'
+import type { PreviewResponse, PersonState, VaccinationSelection } from './api.ts'
 import type { DemoState } from './contact-network.ts'
 
 export const contextLayers: Record<string, string> = {
@@ -6,7 +6,8 @@ export const contextLayers: Record<string, string> = {
   Neighborhoods: 'neighborhood', 'Bus routes': 'bus',
 }
 
-export function previewNetwork(preview: PreviewResponse, layer: string, day = 0, frame?: PersonState[]) {
+export function previewNetwork(preview: PreviewResponse, layer: string, day = 0, frame?: PersonState[], selections: VaccinationSelection[] = []) {
+  const doses = new Map(selections.filter(row => row.day <= day).map(row => [row.nodeId, row.effective ? 'effective' : 'ineffective']))
   const context = contextLayers[layer]
   if (layer !== 'All layers' && !context) throw new Error('Unknown contact layer')
   const initial = new Set(preview.initialInfectiousNodeIds)
@@ -27,7 +28,7 @@ export function previewNetwork(preview: PreviewResponse, layer: string, day = 0,
     if (!position || !Number.isFinite(position.x) || !Number.isFinite(position.y)) throw new Error('Missing graph position')
     neighbors[String(node.id)] = [...(sets.get(node.id) ?? [])].sort((a, b) => a - b).map(String)
     return { data: { id: String(node.id), state: (frame ? frame[node.id] : initial.has(node.id) ? 'I' : 'S') as DemoState,
-      initial: initial.has(node.id) ? 1 : 0, inLayer: !context || sets.has(node.id) },
+      vaccination: doses.get(node.id) ?? 'none', initial: initial.has(node.id) ? 1 : 0, inLayer: !context || sets.has(node.id) },
       position: { x: position.x * radius, y: position.y * radius } }
   })
   return { nodes, edges, elements: [...nodes, ...edges], neighbors,

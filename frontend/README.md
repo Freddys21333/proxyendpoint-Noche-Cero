@@ -1,10 +1,10 @@
 # Frontend environment
 
-## Estado de integración I-05
+## Estado de integración I-06
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 
-**Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. Comparar estrategias ejecuta ahora el experimento real y muestra curvas agregadas S/E/I/R/acumulados, bandas empíricas, métricas y recomendación. Editar parámetros invalida también ese resultado. La animación reproduce una réplica representativa real con selector de estrategia, día, velocidad, pausa y reinicio; indica semilla e índice, y no representa el promedio. Si el servidor rechaza el tamaño de los frames, se reintenta la comparación sin ellos y se explica la ausencia de animación. ZIP CSV sigue pendiente. Exportar descarga el JSON íntegro reproducible si existe un resultado vigente; si no existe, sigue siendo un borrador explícito. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
+**Consultar red ya dibuja los nodos, contactos activos del día 0 y casos iniciales reales.** Antes de consultar se conserva una demo explícita; editar la configuración después de consultar oculta la red obsoleta y mantiene el foco del formulario. El preview no incluye vacunación ni curvas inventadas. Comparar estrategias ejecuta ahora el experimento real y muestra curvas agregadas S/E/I/R/acumulados, bandas empíricas, métricas y recomendación. Editar parámetros invalida también ese resultado. La animación reproduce una réplica representativa real con selector de estrategia, día, velocidad, pausa y reinicio; indica semilla e índice, y no representa el promedio. Si el servidor rechaza el tamaño de los frames, se reintenta la comparación sin ellos y se explica la ausencia de animación. I-06 añade inventario de dosis por día, marcas de vacunación y lista por posición con acceso al inspector: día, efectividad, elegibilidad, puntuación, contextos y regla de selección registrados por el backend. No anticipa dosis futuras. ZIP CSV sigue pendiente. Exportar descarga el JSON íntegro reproducible si existe un resultado vigente; si no existe, sigue siendo un borrador explícito. Estas notas actualizan el estado descrito en las revisiones históricas de abajo.
 
 Desde raíz: `.\backend\.venv\Scripts\python.exe scripts/serve_api.py` y, en otra terminal, `.\scripts\frontend.ps1 run dev`. En equipos con Node 24/npm 11 basta `npm ci` y `npm run dev` desde frontend. El navegador descomprime gzip automáticamente; no debe decodificar base64 de Lambda porque el puente HTTP/API Gateway ya lo convierte a bytes.
 
@@ -116,3 +116,10 @@ En otra terminal, ejecutar `.\scripts\frontend.ps1 run dev` desde la raíz (o `n
 4. Descargar experimento JSON para usar scripts/reproduce.py. Sin resultado vigente, Exportar descarga solo borrador. Volver al simulador permite reproducir la réplica representativa. ZIP CSV sigue pendiente.
 
 El cliente verifica hash/configuración, total de réplicas, longitud de series, estadísticas y metadatos antes de mostrar éxito. Si falla o se editan parámetros, no se presenta un resultado anterior como actual. Abortar la espera del navegador no garantiza detener el cómputo del servidor.
+
+
+## Detalle de vacunación real (I-06)
+
+Tras comparar, vuelve a Simulador y avanza al día de intervención. El panel Vacunación muestra asignadas/efectivas/sin usar y la lista de personas en orden de selección. Pulsa una persona para abrir su explicación; también funciona el selector del inspector. El borde violeta distingue dosis efectivas (continuo) de fallidas (discontinuo); el color interior conserva S/E/I/R. Una selección fallida consume una dosis y no atribuye inmunidad.
+
+Cambiar estrategia o retroceder actualiza los registros sin recomputar decisiones. Antes de la intervención no se revelan seleccionados futuros. El estado elegible al decidir se conserva separado del estado actual. Sin frames, el registro completo de la representativa sigue disponible con su selector de estrategia; el grafo permanece identificado como preview inicial.
