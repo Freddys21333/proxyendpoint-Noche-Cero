@@ -48,7 +48,9 @@ def test_full_schema_and_real_manifest(exported):
         format_checker=Draft202012Validator.FORMAT_CHECKER,
     ).validate(exported)
     manifest = exported["manifest"]
-    assert manifest["pythonVersion"] == "3.12.14"
+    assert manifest["pythonVersion"] == (
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    )
     assert manifest["dependencies"]["numpy"] == "2.5.4"
     assert manifest["dependencies"]["networkx"] == "3.7"
     assert manifest["experimentHash"] == experiment_hash(exported)
