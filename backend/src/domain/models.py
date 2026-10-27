@@ -38,10 +38,27 @@ class Scenario:
 
 
 @dataclass(frozen=True, slots=True)
+class CombinedIntervention:
+    model_version: Literal["combined-educational-v1"]
+    budget_cents: int
+    vaccine_cost_cents: int
+    closure_cost_cents: int
+    closure_context: str
+    closure_start: int
+    closure_days: int
+    brigade_cost_cents: int
+    brigade_daily_capacity: int
+    brigade_reduction: float
+    brigade_start: int
+    brigade_days: int
+
+
+@dataclass(frozen=True, slots=True)
 class Intervention:
     vaccines: int
     intervention_day: int
     vaccine_efficacy: float
+    combined: CombinedIntervention | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,6 +90,8 @@ class Configuration:
     def to_dict(self) -> dict[str, Any]:
         """Copia completa del contrato; modificarla no cambia este objeto."""
         data: dict[str, Any] = _camelize(asdict(self))
+        if self.intervention.combined is None:
+            data["intervention"].pop("combined", None)
         return data
 
 

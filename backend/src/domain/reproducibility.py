@@ -19,6 +19,7 @@ DOMAINS = (
     "policy-random",
     "layout",
     "bootstrap",
+    "combined-brigades-v1",
 )
 
 

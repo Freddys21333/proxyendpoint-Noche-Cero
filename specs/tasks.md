@@ -56,4 +56,4 @@ Una tarea se cierra con criterios de aceptación cubiertos, verificación ejecut
 
 Orden crítico backend: T-02→T-04→T-05→T-06→T-07→T-08→T-09→T-10→T-11. T-03 precede configuración y mocks. Frontend T-12..15 avanza con contrato mientras backend implementa núcleo; integración real exige T-11. Infra T-17/18 y documentación técnica T-21 pueden preparar borradores en paralelo; despliegue depende del código y viabilidad de cuenta. La revisión inicial no obliga a esperar a terminar todo backend para comenzar UI/IaC.
 
-PRO-1..7 queda fuera de estas casillas, **no iniciado**. Solo abrir tareas PRO después de verificar base; crear pruebas/contratos propios para jobs, persistencia, permisos, costos e idempotencia antes de anunciar procesamiento asíncrono.
+PRO permanece fuera de estas casillas base. El 2026-10-27 el usuario autorizó avanzar intervenciones combinadas y costos/presupuesto con supuestos educativos: [incremento PRO-1/2](../docs/intervenciones-combinadas.md). Llegadas diarias de recursos, jobs, persistencia, permisos e idempotencia de procesamiento asíncrono no están implementados por este incremento.

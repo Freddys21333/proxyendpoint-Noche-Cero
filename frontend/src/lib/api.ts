@@ -1,10 +1,18 @@
 import { fromConfiguration, validateScenario, type Scenario } from './scenario.ts'
 
+export type CombinedPlan = {
+  modelVersion: 'combined-educational-v1'; budgetCents: number; vaccineCostCents: number;
+  closureCostCents: number; closureContext: 'household' | 'school' | 'bus' | 'market' | 'neighborhood';
+  closureStart: number; closureDays: number; brigadeCostCents: number;
+  brigadeDailyCapacity: number; brigadeReduction: number; brigadeStart: number; brigadeDays: number;
+}
+export type CombinedDaily = { day: number; budgetRemainingCents: number; spentCents: number; spentTodayCents: number; closedContext: string | null; brigadesActive: number; brigadeNodeIds: number[] }
+
 export type ConfigurationInput = {
   rootSeed: number; networkMode: 'fixed'; repetitions: number;
   scenario: { populationSize: number; days: number; beta: number; sigma: number; gamma: number;
     initialInfectious: number; origin: { kind: string; value: number | null } };
-  intervention: { vaccines: number; interventionDay: number; vaccineEfficacy: number };
+  intervention: { vaccines: number; interventionDay: number; vaccineEfficacy: number; combined?: CombinedPlan };
   policies: ['none', 'random', 'targeted'];
   network?: { generatorVersion: 'synthetic-manta-v1'; dayZero: 'monday'; weights: Record<'household' | 'school' | 'bus' | 'market' | 'neighborhood', number> };
 }
@@ -117,6 +125,19 @@ function validSelections(result: Record<string, unknown>, policy: Policy, config
   const rows = result.selections, metrics = result.metrics
   const { vaccines, interventionDay } = configuration.intervention
   if (!Array.isArray(rows) || !object(metrics) || rows.length > vaccines || (policy === 'none' && rows.length !== 0)) return false
+  const plan = configuration.intervention.combined
+  if (plan) {
+    if (!Array.isArray(result.daily)) return false
+    let previous = 0
+    for (const [day, row] of result.daily.entries()) {
+      if (!object(row) || row.day !== day || !integerIn(row.spentCents, 0, plan.budgetCents) || !integerIn(row.budgetRemainingCents, 0, plan.budgetCents) || !Array.isArray(row.brigadeNodeIds) || new Set(row.brigadeNodeIds).size !== row.brigadeNodeIds.length || !row.brigadeNodeIds.every(id => integerIn(id, 0, configuration.scenario.populationSize - 1)) || row.brigadesActive !== row.brigadeNodeIds.length || row.brigadeNodeIds.length > plan.brigadeDailyCapacity) return false
+      const cost = rows.filter(selection => object(selection) && selection.day === day).length * plan.vaccineCostCents + row.brigadeNodeIds.length * plan.brigadeCostCents + (row.closedContext === null ? 0 : plan.closureCostCents)
+      if (row.spentTodayCents !== cost || row.spentCents !== previous + cost || row.budgetRemainingCents !== plan.budgetCents - row.spentCents || policy === 'none' && cost !== 0) return false
+      if (row.closedContext !== null && (row.closedContext !== plan.closureContext || day < plan.closureStart || day >= plan.closureStart + plan.closureDays || day >= configuration.scenario.days)) return false
+      if (row.brigadeNodeIds.length && (day < plan.brigadeStart || day >= plan.brigadeStart + plan.brigadeDays || day >= configuration.scenario.days)) return false
+      previous = row.spentCents
+    }
+  }
   if (!rows.every(row => object(row) && Number.isInteger(row.nodeId) && Number(row.nodeId) >= 0 && Number(row.nodeId) < configuration.scenario.populationSize && row.day === interventionDay && row.stateAtDecision === 'S' && typeof row.effective === 'boolean' && Number.isInteger(row.rank) && Number(row.rank) >= 1 && Number(row.rank) <= rows.length && Array.isArray(row.contexts) && new Set(row.contexts).size === row.contexts.length && row.contexts.every(context => ['household', 'school', 'bus', 'market', 'neighborhood'].includes(String(context))) && (policy === 'targeted' ? finite(row.score) && row.score >= 0 && row.tieBreak === 'nodeIdAsc' : row.score === null && row.tieBreak === 'seededRandom'))) return false
   return new Set(rows.map(row => row.nodeId)).size === rows.length && new Set(rows.map(row => row.rank)).size === rows.length && metrics.vaccinesAssigned === rows.length && metrics.vaccinesEffective === rows.filter(row => row.effective).length && metrics.vaccinesUnused === vaccines - rows.length
 }
@@ -192,6 +213,6 @@ export function toConfiguration(s: Scenario, base?: ConfigurationInput): Configu
   return { ...base, rootSeed: s.seed, networkMode: 'fixed', repetitions: s.repetitions,
     scenario: { populationSize: s.population, days: s.days, beta: s.beta, sigma: s.sigma, gamma: s.gamma,
       initialInfectious: s.initial, origin: { kind: s.origin, value: s.origin === 'node' ? s.node : null } },
-    intervention: { vaccines: s.vaccines, interventionDay: s.interventionDay, vaccineEfficacy: s.efficacy },
+    intervention: { vaccines: s.vaccines, interventionDay: s.interventionDay, vaccineEfficacy: s.efficacy, ...(s.combined ? { combined: s.combined } : {}) },
     policies: ['none', 'random', 'targeted'] }
 }

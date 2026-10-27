@@ -1,15 +1,16 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
 import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
-import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
+import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
 import { previewNetwork } from '@/lib/preview-network'
 import { Button } from './ui/button'
-import { vaccinationsAtDay } from '@/lib/vaccination'
+import { vaccinationsAtDay, vaccinationContexts } from '@/lib/vaccination'
 import { VaccinationDetails, VaccinationPerson } from './VaccinationDetails'
 import { seirColors } from './seir-colors'
 import { FloatingSimulationControls } from './FloatingSimulationControls'
+import { usd } from './CombinedCostResults'
 import { simulationModeMessages, type SimulationPlayback, type ComparisonState } from '@/lib/simulation-playback'
 import './ContactNetwork.css'
 
@@ -36,7 +37,10 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
   const applied = useMemo(() => vaccinationsAtDay(selections, currentDay), [selections, currentDay])
   const dose = applied.find(row => String(row.nodeId) === selected)
   const pickerId = useId()
-  const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections), [preview, layer, currentDay, frame, selections])
+  const combined = preview.configuration.intervention.combined
+  const budgetDay = combined && frames && hasComparison ? comparison!.replicates[comparison!.representative.index].policies[policy].daily[currentDay] as CombinedDaily : null
+  const blockedContext = budgetDay?.closedContext ?? null
+  const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections, blockedContext), [preview, layer, currentDay, frame, selections, blockedContext])
   const visibleCounts = playback.counts
   const vaccineBudget = preview.configuration.intervention.vaccines
   const remainingVaccines = vaccineBudget - (frames ? applied.length : 0)
@@ -138,6 +142,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}` : 'Antes de simular'}</small>
       </div>
       </div>
+      {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       <div className="network-view" hidden={!showNetwork}>
         <div ref={container} className="network-canvas" role="img" aria-label={`Red real de ${graph.nodes.length} personas sintéticas, contactos del día ${currentDay}. Seleccione una persona o use el selector.`} />
         <div className="graph-day-label">{frames ? `Día ${currentDay} · ${policyLabels[policy]}` : 'Estado inicial · sin vacunación'}</div>

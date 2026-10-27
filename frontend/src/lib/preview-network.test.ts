@@ -94,3 +94,12 @@ test('circular layout preserves backend preview coordinates and handles unassign
   assert.equal(grouped.filter(p => p.label).length, 1)
   assert.match(grouped.find(p => p.label)!.label, /Sin colegio/)
 })
+
+test('temporary context closure hides only that days matching contacts without changing the graph', () => {
+  const source = fixture()
+  const before = JSON.stringify(source)
+  const closed = previewNetwork(source, 'All layers', 0, undefined, [], 'household')
+  assert.ok(closed.edges.every(edge => edge.data.context !== 'household'))
+  assert.equal(closed.nodes.length, source.graph.nodes.length)
+  assert.equal(JSON.stringify(source), before)
+})

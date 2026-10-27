@@ -47,3 +47,15 @@ test('returning to loaded parameters restores only the same valid scenario', () 
   assert.equal(matchesLoadedScenario(nodeScenario, nodeConfiguration), true)
   assert.equal(matchesLoadedScenario({ ...nodeScenario, node: 13 }, nodeConfiguration), false)
 })
+
+test('combined plans round trip, validate money and restore by value rather than object identity', () => {
+  const combined = { modelVersion: 'combined-educational-v1' as const, budgetCents: 10000, vaccineCostCents: 1000, closureCostCents: 500, closureContext: 'school' as const, closureStart: 0, closureDays: 2, brigadeCostCents: 100, brigadeDailyCapacity: 10, brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: 2 }
+  const scenario = { ...defaults, combined }
+  const configuration = toConfiguration(scenario)
+  assert.deepEqual(fromConfiguration(configuration), scenario)
+  assert.equal(matchesLoadedScenario(structuredClone(scenario), configuration), true)
+  assert.equal(matchesLoadedScenario({ ...scenario, combined: { ...combined, budgetCents: 9999 } }, configuration), false)
+  assert.equal(matchesLoadedScenario(defaults, configuration), false)
+  assert.ok(validateScenario({ ...scenario, combined: { ...combined, vaccineCostCents: 0 } }).length)
+  assert.ok(validateScenario({ ...scenario, combined: { ...combined, closureDays: 91 } }).length)
+})

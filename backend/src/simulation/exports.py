@@ -111,6 +111,31 @@ def _validate(document: dict[str, Any]) -> None:
             raise ValueError("El hash inicial no coincide.")
         for policy in POLICIES:
             result = rep["policies"][policy]
+            plan = document["configuration"]["intervention"].get("combined")
+            if plan:
+                previous = 0
+                for row in result["daily"]:
+                    count = sum(
+                        selection["day"] == row["day"] for selection in result["selections"]
+                    )
+                    brigade_ids = row.get("brigadeNodeIds", [])
+                    cost = (
+                        count * plan["vaccineCostCents"]
+                        + len(brigade_ids) * plan["brigadeCostCents"]
+                        + (plan["closureCostCents"] if row.get("closedContext") else 0)
+                    )
+                    spent = row.get("spentCents")
+                    if (
+                        type(spent) is not int
+                        or row.get("spentTodayCents") != cost
+                        or spent != previous + cost
+                        or row.get("budgetRemainingCents") != plan["budgetCents"] - spent
+                        or spent > plan["budgetCents"]
+                        or row.get("brigadesActive") != len(brigade_ids)
+                        or (policy == "none" and spent != 0)
+                    ):
+                        raise ValueError("El registro de presupuesto no cuadra con las acciones.")
+                    previous = spent
             if result["resultHash"] != json_hash(
                 {key: result[key] for key in ("metrics", "daily", "selections")}
             ):
@@ -242,6 +267,22 @@ def export_zip(document: dict[str, Any]) -> bytes:
         ("events", EVENTS),
     ):
         table(name, ("replicateIndex", "policy", *fields), rows_by_name[name])
+    if document["configuration"]["intervention"].get("combined"):
+        table(
+            "budget",
+            (
+                "replicateIndex",
+                "policy",
+                "day",
+                "spentTodayCents",
+                "spentCents",
+                "budgetRemainingCents",
+                "closedContext",
+                "brigadesActive",
+                "brigadeNodeIds",
+            ),
+            rows_by_name["daily"],
+        )
     table(
         "summary",
         ("policy", "metric", "n", "mean", "median", "p05", "p95"),

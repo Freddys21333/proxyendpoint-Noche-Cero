@@ -12,6 +12,7 @@ from numpy.typing import NDArray
 from domain.models import Configuration, Policy
 from domain.reproducibility import canonical_json, create_rng
 from simulation.network import select_initial
+from strategies.combined import interval_actions
 from strategies.vaccination import vaccinate
 
 FloatArray = NDArray[np.float64]
@@ -39,7 +40,7 @@ class Potentials:
 
 @dataclass(frozen=True)
 class SimulationTrace:
-    daily: list[dict[str, int]]
+    daily: list[dict[str, Any]]
     events: list[dict[str, Any]]
     frames: list[list[str]]
     entry_days: list[dict[str, int]]
@@ -180,15 +181,20 @@ def simulate_policy(
         entries[node] = {"I": 0}
         events.append(_event(0, node, "I", "I", "initial"))
     frames: list[list[str]] = []
-    daily: list[dict[str, int]] = []
+    daily: list[dict[str, Any]] = []
     cumulative = len(initial)
     selections: list[dict[str, Any]] = []
     policy_rng = create_rng(configuration.root_seed, "policy-random", replicate_index)
+    combined = configuration.intervention.combined
+    remaining = combined.budget_cents if combined else 0
+    brigade_rng = create_rng(configuration.root_seed, "combined-brigades-v1", replicate_index)
+    interval_edges = edges
     for day in range(t + 1):
+        before = remaining
         if day:
             states, changes = step_day(
                 states,
-                edges,
+                interval_edges,
                 day=day - 1,
                 beta=configuration.scenario.beta,
                 sigma=configuration.scenario.sigma,
@@ -206,7 +212,11 @@ def simulate_policy(
                 states,
                 edges,
                 policy=policy,
-                vaccines=configuration.intervention.vaccines,
+                vaccines=min(
+                    configuration.intervention.vaccines, remaining // combined.vaccine_cost_cents
+                )
+                if combined
+                else configuration.intervention.vaccines,
                 day=day,
                 efficacy=configuration.intervention.vaccine_efficacy,
                 potentials=p.vaccine[day],
@@ -215,6 +225,22 @@ def simulate_policy(
             for event in vaccine_events:
                 entries[event["nodeId"]]["R"] = day
             events.extend(vaccine_events)
+            if combined:
+                remaining -= len(selections) * combined.vaccine_cost_cents
+        closed_context = None
+        brigade_ids: list[int] = []
+        if combined:
+            interval_edges, spent, closed_context, brigade_ids = interval_actions(
+                combined,
+                states,
+                edges,
+                policy=policy,
+                day=day,
+                last_day=t,
+                remaining=remaining,
+                rng=brigade_rng,
+            )
+            remaining -= spent
         frames.append(states.copy())
         daily.append(
             {
@@ -226,6 +252,15 @@ def simulate_policy(
                 "cumulativeInfected": cumulative,
             }
         )
+        if combined:
+            daily[-1].update(
+                budgetRemainingCents=remaining,
+                spentCents=combined.budget_cents - remaining,
+                spentTodayCents=before - remaining,
+                closedContext=closed_context,
+                brigadesActive=len(brigade_ids),
+                brigadeNodeIds=brigade_ids,
+            )
     events.sort(key=lambda event: (event["day"], event["nodeId"], event["cause"]))
     return SimulationTrace(
         daily,

@@ -6,13 +6,13 @@ export const contextLayers: Record<string, string> = {
   Neighborhoods: 'neighborhood', 'Bus routes': 'bus',
 }
 
-export function previewNetwork(preview: PreviewResponse, layer: string, day = 0, frame?: PersonState[], selections: VaccinationSelection[] = []) {
+export function previewNetwork(preview: PreviewResponse, layer: string, day = 0, frame?: PersonState[], selections: VaccinationSelection[] = [], blockedContext: string | null = null) {
   const doses = new Map(selections.filter(row => row.day <= day).map(row => [row.nodeId, row.effective ? 'effective' : 'ineffective']))
   const context = contextLayers[layer]
   if (layer !== 'All layers' && !context) throw new Error('Unknown contact layer')
   const initial = new Set(preview.initialInfectiousNodeIds)
   const positions = new Map(preview.positions.map(p => [p.nodeId, p]))
-  const edges = preview.graph.edges.filter(e => e.activeDays.includes(day) && (!context || e.context === context))
+  const edges = preview.graph.edges.filter(e => e.activeDays.includes(day) && e.context !== blockedContext && (!context || e.context === context))
     .map(e => ({ data: { id: `edge-${e.id}`, source: String(e.u), target: String(e.v), context: e.context } }))
   const neighbors: Record<string, string[]> = {}
   const sets = new Map<number, Set<number>>()

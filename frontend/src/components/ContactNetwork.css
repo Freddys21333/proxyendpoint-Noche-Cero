@@ -641,3 +641,16 @@
 .person-inspector-body .node-context dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
 .person-inspector-body .plain-action { display: flex; margin-top: 12px; }
 @media (max-width: 600px) { .simulator-workbench .floating-person-inspector.node-inspector { z-index: 31; width: min(280px, calc(100% - 24px)); } .simulator-workbench .floating-person-inspector:not([open]) { width: auto; } }
+
+.combined-settings { margin-top: 16px; padding-top: 16px; border-top: 1px solid #dbe4dd; }
+.combined-toggle { display: flex; align-items: start; gap: 8px; font-size: 14px; font-weight: 600; }
+.combined-toggle input { margin-top: 3px; accent-color: #315f47; }
+.combined-settings p { margin: 12px 0; font-size: 13px; line-height: 1.5; color: #52695a; }
+.combined-settings details { margin: 12px 0; padding-top: 12px; border-top: 1px solid #e5ece6; }
+.combined-settings summary { cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+.combined-settings .configuration-fields { gap: 12px; }
+.combined-budget-status { margin: 0; padding: 8px 16px; font-size: 12px; line-height: 1.5; background: #edf4ec; color: #36583e; }
+.combined-table-scroll { overflow-x: auto; }
+.combined-cost-results table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.combined-cost-results th, .combined-cost-results td { padding: 12px; text-align: left; border-bottom: 1px solid #dbe4dd; }
+.combined-cost-results caption { text-align: left; padding: 12px 0; color: #52695a; }

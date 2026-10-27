@@ -59,3 +59,7 @@ Con el entorno instalado, desde `backend/`:
 Las pruebas validan todos los JSON Schemas y ejemplos, la especificación OpenAPI, sus referencias a ejemplos y casos negativos. No invocan AWS ni handlers. Resultado observado y ciclo rojo/verde en [la evidencia de T-03](../docs/evidencia/backend-contratos.md).
 
 Referencias: [OpenAPI 3.1](https://spec.openapis.org/oas/v3.1.0.html), [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12), [registro local de python-jsonschema](https://python-jsonschema.readthedocs.io/en/stable/referencing/).
+
+## Extensión educativa opcional de intervenciones (2026-10-27)
+
+`configuration.intervention.combined` activa el submodelo `combined-educational-v1`: costos en centavos, presupuesto, cierre temporal y brigadas. Es un objeto completo opcional; omitirlo conserva el contrato base y sus hashes. JSON Schema valida límites y propiedades; la normalización valida calendarios contra el horizonte y capacidad contra la población. Las filas Daily combinadas incluyen gasto diario/acumulado, saldo, capa cerrada e IDs atendidos por brigadas. Esos datos participan en los hashes y reproducción. El ZIP combinado añade `budget.csv`; los ZIP base no cambian. Semántica, supuestos y límites: [intervenciones combinadas](../docs/intervenciones-combinadas.md).

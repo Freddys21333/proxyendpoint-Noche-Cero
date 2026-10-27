@@ -11,6 +11,7 @@ from jsonschema import Draft202012Validator
 
 from domain.errors import ConfigurationError, FieldIssue
 from domain.models import (
+    CombinedIntervention,
     CompareRequest,
     Configuration,
     Intervention,
@@ -186,6 +187,28 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
         )
     if issues:
         _fail_validation(issues)
+    combined = intervention.get("combined")
+    if combined:
+        for name in ("closure", "brigade"):
+            start, duration = combined[name + "Start"], combined[name + "Days"]
+            if start > scenario["days"] or (duration and start + duration > scenario["days"]):
+                _fail_validation(
+                    [
+                        FieldIssue(
+                            f"configuration.intervention.combined.{name}Days",
+                            "La intervención debe caber en los intervalos del horizonte.",
+                        )
+                    ]
+                )
+        if combined["brigadeDailyCapacity"] > scenario["populationSize"]:
+            _fail_validation(
+                [
+                    FieldIssue(
+                        "configuration.intervention.combined.brigadeDailyCapacity",
+                        "La capacidad no puede superar la población.",
+                    )
+                ]
+            )
     weights = candidate["network"]["weights"]
     result = Configuration(
         root_seed=int(candidate["rootSeed"]),
@@ -207,6 +230,22 @@ def normalize_configuration(payload: object = _OMITTED) -> Configuration:
             vaccines=int(intervention["vaccines"]),
             intervention_day=int(intervention["interventionDay"]),
             vaccine_efficacy=_float(intervention["vaccineEfficacy"]),
+            combined=CombinedIntervention(
+                model_version="combined-educational-v1",
+                budget_cents=combined["budgetCents"],
+                vaccine_cost_cents=combined["vaccineCostCents"],
+                closure_cost_cents=combined["closureCostCents"],
+                closure_context=combined["closureContext"],
+                closure_start=combined["closureStart"],
+                closure_days=combined["closureDays"],
+                brigade_cost_cents=combined["brigadeCostCents"],
+                brigade_daily_capacity=combined["brigadeDailyCapacity"],
+                brigade_reduction=_float(combined["brigadeReduction"]),
+                brigade_start=combined["brigadeStart"],
+                brigade_days=combined["brigadeDays"],
+            )
+            if combined
+            else None,
         ),
         policies=("none", "random", "targeted"),
         network=Network(

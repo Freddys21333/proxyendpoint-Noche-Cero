@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { CompareResponse, CurveMetric, Metric, Stats } from '@/lib/api'
 import { metricLabels, policyLabels } from '@/lib/comparison'
 import ComparisonChart from './ComparisonChart'
+import { CombinedCostResults } from './CombinedCostResults'
 
 const policies = ['none', 'random', 'targeted'] as const
 const metricNames: Record<Metric, string> = { cumulativeInfected: 'Infectados acumulados', peakInfectious: 'Pico de Zombies', peakDay: 'Primer día del pico', finalInfectious: 'Zombies al final', outbreakDuration: 'Día de extinción', vaccinesAssigned: 'Dosis asignadas', vaccinesEffective: 'Dosis efectivas', vaccinesUnused: 'Dosis sin usar' }
@@ -18,6 +19,7 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
     ['Mejora: dirigida frente a aleatoria', result.pairedComparisons.gainVsRandom],
   ] as const
   return <>
+    <CombinedCostResults result={result} />
     <div className="results-heading"><h1 id="results-title">Comparación de estrategias</h1><p>Experimento real · {result.configuration.repetitions} réplicas · {result.configuration.scenario.populationSize} personas · {result.configuration.scenario.days} días · Semilla {result.configuration.rootSeed}</p></div>
     <section className="results-example" aria-label="Recomendación del experimento">
       <h2>{rec.winner === 'tie' ? 'Empate en la media de infectados' : `Menor media de infectados: ${policyLabels[rec.winner]}`}</h2>

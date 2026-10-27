@@ -41,6 +41,7 @@ export function experimentFiles(result: CompareResponse): Record<string, string>
     }
   }
   table('daily', ['replicateIndex', 'policy', 'day', 's', 'e', 'i', 'r', 'cumulativeInfected'], tables.daily)
+  if (result.configuration.intervention.combined) table('budget', ['replicateIndex', 'policy', 'day', 'spentTodayCents', 'spentCents', 'budgetRemainingCents', 'closedContext', 'brigadesActive', 'brigadeNodeIds'], tables.daily)
   table('metrics', ['replicateIndex', 'policy', ...metrics], tables.metrics)
   table('selections', ['replicateIndex', 'policy', ...selections], tables.selections)
   table('events', ['replicateIndex', 'policy', ...events], tables.events)

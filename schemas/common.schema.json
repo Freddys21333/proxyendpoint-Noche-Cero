@@ -172,6 +172,9 @@
           "minimum": 0,
           "maximum": 1,
           "default": 1.0
+        },
+        "combined": {
+          "$ref": "#/$defs/CombinedIntervention"
         }
       },
       "required": [],
@@ -312,7 +315,7 @@
       },
       "required": [],
       "additionalProperties": false,
-      "description": "Validar relaciones después de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+      "description": "Validar relaciones despuÃƒÂ©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
     },
     "Origin": {
       "type": "object",
@@ -457,6 +460,9 @@
           "minimum": 0,
           "maximum": 1,
           "default": 1.0
+        },
+        "combined": {
+          "$ref": "#/$defs/CombinedIntervention"
         }
       },
       "required": [
@@ -624,7 +630,7 @@
         "network"
       ],
       "additionalProperties": false,
-      "description": "Validar relaciones después de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+      "description": "Validar relaciones despuÃƒÂ©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
     },
     "PreviewRequest": {
       "type": "object",
@@ -1189,6 +1195,46 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 2000
+        },
+        "budgetRemainingCents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "spentCents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "spentTodayCents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "closedContext": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Context"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "brigadesActive": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "brigadeNodeIds": {
+          "type": "array",
+          "maxItems": 2000,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1999
+          }
         }
       },
       "required": [
@@ -2356,6 +2402,84 @@
         "error"
       ],
       "additionalProperties": false
+    },
+    "CombinedIntervention": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "const": "combined-educational-v1",
+          "type": "string"
+        },
+        "budgetCents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "vaccineCostCents": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "closureCostCents": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "closureContext": {
+          "$ref": "#/$defs/Context"
+        },
+        "closureStart": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "closureDays": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "brigadeCostCents": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "brigadeDailyCapacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "brigadeReduction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "brigadeStart": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "brigadeDays": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        }
+      },
+      "required": [
+        "modelVersion",
+        "budgetCents",
+        "vaccineCostCents",
+        "closureCostCents",
+        "closureContext",
+        "closureStart",
+        "closureDays",
+        "brigadeCostCents",
+        "brigadeDailyCapacity",
+        "brigadeReduction",
+        "brigadeStart",
+        "brigadeDays"
+      ],
+      "additionalProperties": false,
+      "description": "Supuestos educativos editables. Costos enteros en centavos; prioridad vacunas, cierre, brigadas. No son tarifas reales."
     }
   }
 }

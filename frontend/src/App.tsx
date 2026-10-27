@@ -1,4 +1,5 @@
 import { experimentZip } from '@/lib/export-experiment';
+import { CombinedInterventions } from '@/components/CombinedInterventions';
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, FlaskConical, RotateCcw, X } from "lucide-react";
@@ -294,6 +295,12 @@ export default function App() {
             <p>σ y γ son probabilidades diarias, no duraciones.</p>
           </div>
         )}
+        <CombinedInterventions value={scenario.combined} days={scenario.days} population={scenario.population} onChange={combined => {
+          editedFields.current.add('combined');
+          const next = { ...scenario };
+          if (combined) next.combined = combined; else delete next.combined;
+          applyScenario(next);
+        }} />
         {errors.length > 0 && (
           <div className="configuration-errors" role="alert">
             <strong>Revise la configuración</strong>

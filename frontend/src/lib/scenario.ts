@@ -1,10 +1,10 @@
-import type { ConfigurationInput } from './api.ts'
+import type { ConfigurationInput, CombinedPlan } from './api.ts'
 export const defaults = {
   population: 1000, days: 90, beta: 0.08, sigma: 0.333333, gamma: 0.142857,
   initial: 1, vaccines: 100, interventionDay: 0, efficacy: 1, repetitions: 30,
   seed: 20261026, origin: 'random', node: 0,
 }
-export type Scenario = typeof defaults
+export type Scenario = typeof defaults & { combined?: CombinedPlan }
 export type Preset = 'double_beta' | 'half_vaccines' | 'market_origin' | 'partial_efficacy_50'
 
 export function applyPreset(base: Scenario, preset: Preset): Scenario {
@@ -34,6 +34,20 @@ export function validateScenario(s: Scenario): string[] {
   }
   if (!['random', 'household', 'school', 'bus', 'market', 'neighborhood', 'node'].includes(s.origin)) errors.push('Choose a valid origin.')
   if (s.origin === 'node') integer(s.node, 0, s.population - 1, 'Node ID')
+  if (s.combined) {
+    const p = s.combined
+    if (p.modelVersion !== 'combined-educational-v1') errors.push('Modelo combinado no admitido.')
+    integer(p.budgetCents, 0, 100000000, 'Presupuesto en centavos')
+    for (const cost of [p.vaccineCostCents, p.closureCostCents, p.brigadeCostCents]) integer(cost, 1, 1000000, 'Costo en centavos')
+    integer(p.brigadeDailyCapacity, 0, s.population, 'Capacidad diaria de brigadas')
+    if (!Number.isFinite(p.brigadeReduction) || p.brigadeReduction < 0 || p.brigadeReduction > 1) errors.push('La reducción de brigadas debe estar entre 0 y 100 %.')
+    if (!['household', 'school', 'bus', 'market', 'neighborhood'].includes(p.closureContext)) errors.push('Tipo de contacto de cierre inválido.')
+    for (const [start, days] of [[p.closureStart, p.closureDays], [p.brigadeStart, p.brigadeDays]]) {
+      integer(start, 0, s.days, 'Inicio de intervención combinada')
+      integer(days, 0, s.days, 'Duración de intervención combinada')
+      if (days && start + days > s.days) errors.push('Las intervenciones combinadas deben caber en el horizonte.')
+    }
+  }
   return errors
 }
 
@@ -42,17 +56,25 @@ export function fromConfiguration(c: ConfigurationInput): Scenario {
     sigma: c.scenario.sigma, gamma: c.scenario.gamma, initial: c.scenario.initialInfectious,
     vaccines: c.intervention.vaccines, interventionDay: c.intervention.interventionDay,
     efficacy: c.intervention.vaccineEfficacy, repetitions: c.repetitions, seed: c.rootSeed,
-    origin: c.scenario.origin.kind, node: c.scenario.origin.value ?? 0 }
+    origin: c.scenario.origin.kind, node: c.scenario.origin.value ?? 0,
+    ...(c.intervention.combined ? { combined: { ...c.intervention.combined } } : {}) }
 }
 
 export function matchesLoadedScenario(scenario: Scenario, configuration: ConfigurationInput): boolean {
   if (validateScenario(scenario).length) return false
   const loaded = fromConfiguration(configuration)
-  return (Object.keys(loaded) as (keyof Scenario)[]).every(key =>
-    key === 'node' && scenario.origin !== 'node' || scenario[key] === loaded[key])
+  const keys = new Set([...Object.keys(loaded), ...Object.keys(scenario)] as (keyof Scenario)[])
+  return [...keys].every(key => {
+    if (key === 'node' && scenario.origin !== 'node') return true
+    if (key !== 'combined') return scenario[key] === loaded[key]
+    if (!scenario.combined || !loaded.combined) return scenario.combined === loaded.combined
+    return Object.entries(loaded.combined).every(([name, value]) => scenario.combined![name as keyof CombinedPlan] === value)
+  })
 }
 
 export function applyServerDefaults(current: Scenario, configuration: ConfigurationInput, edited: ReadonlySet<keyof Scenario>): Scenario {
   const incoming = fromConfiguration(configuration)
-  return Object.fromEntries((Object.keys(incoming) as (keyof Scenario)[]).map(key => [key, edited.has(key) ? current[key] : incoming[key]])) as Scenario
+  const next = Object.fromEntries((Object.keys(incoming) as (keyof Scenario)[]).map(key => [key, edited.has(key) ? current[key] : incoming[key]])) as Scenario
+  if (edited.has('combined') && current.combined) next.combined = { ...current.combined }
+  return next
 }

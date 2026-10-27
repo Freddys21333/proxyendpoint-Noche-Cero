@@ -110,6 +110,8 @@ La hipótesis es que `targeted` reduce en promedio los infectados acumulados al 
 
 ### 4.2 Alcance PRO — implementar después de aprobar la base
 
+Actualización 2026-10-27: el usuario autorizó avanzar PRO-1 y costos/presupuesto de PRO-2 con supuestos educativos editables antes de cerrar el gate base. Incremento y límites documentados en [intervenciones combinadas](docs/intervenciones-combinadas.md). Esto no aprueba la base ni incluye inventario con llegadas diarias, adaptación o calibración real.
+
 - **PRO-1:** varias intervenciones combinadas: vacunas, cierre temporal de una capa y brigadas de fumigación simuladas.
 - **PRO-2:** costos unitarios, presupuesto total, inventario y recursos que llegan por día.
 - **PRO-3:** estrategia adaptativa que recalcula prioridades con el estado observado.
