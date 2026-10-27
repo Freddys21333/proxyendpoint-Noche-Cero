@@ -1,0 +1,168 @@
+{
+ "schema_version": "manabi-dengue-provenance-v1",
+ "dataset_id": "manabi-dengue-weekly-v1",
+ "generated_by": "scripts/p05_import_dengue.py",
+ "csv_path": "data/p05/manabi-dengue-weekly.csv",
+ "row_count": 94,
+ "geography": {
+  "level": "province",
+  "name": "MANABI",
+  "display_name": "Manabí",
+  "granularity_note": "La gaceta publica el agregado provincial. No existe desagregación cantonal ni de Manta en esta fuente."
+ },
+ "disease": "dengue",
+ "unit": "casos notificados",
+ "value_kind": "weekly_cases",
+ "is_cumulative": false,
+ "publisher": "Ministerio de Salud Pública del Ecuador",
+ "publisher_unit": "Subsecretaría de Vigilancia, Prevención y Control de la Salud / Dirección Nacional de Vigilancia Epidemiológica",
+ "series_name": "Gacetas de Enfermedades Transmitidas por Vectores (ETV)",
+ "case_definition": "Casos de dengue notificados al Sistema VIEpi (DSSA + DCSA + DG). Datos preliminares sujetos a validación según la propia gaceta.",
+ "data_status": "preliminar",
+ "terms": "Documento público oficial del MSP. No se redistribuye el PDF: solo se versionan el hash, la geometría extraída y la tabla normalizada.",
+ "usage": {
+  "wired_into_simulator": false,
+  "note": "Datos reales de vigilancia. No se mezclan con posiciones OSM ni con los casos sintéticos del motor SEIR; esta versión solo los normaliza y audita."
+ },
+ "snapshots": [
+  {
+   "snapshot_id": "msp-etv-se53-2025",
+   "year": 2025,
+   "edition": "SE 53/2025",
+   "cut_off_week": 53,
+   "url": "https://www.salud.gob.ec/wp-content/uploads/2026/01/Enfermedades-Trasmitidas-por-Vectores-DNVE-SE-53.pdf",
+   "sha256": "c44b829b5e74b71467f424922d0cd9b4142dab08cd31c74e1825f57ca5c5141b",
+   "byte_size": 1208818,
+   "pdf_pages": 8,
+   "pdf_created_utc": "2026-01-08T13:29:37Z",
+   "chart_page": 3,
+   "chart_title": "Casos de Dengue en MANABI, histórico desde el año 2021 hasta el año 2024 por semana epidemiológica, año 2025",
+   "title_note": "El título dice «hasta el año 2024» pero la leyenda incluye 2025 y la serie importada es la de 2025; el año se fija por la leyenda y las etiquetas impresas, no por el título.",
+   "extraction": {
+    "method": "polilínea vectorial del año en curso + etiquetas impresas",
+    "labels": 53,
+    "candidates": 5,
+    "selected_color": "0.9294,0.4000,0.3647",
+    "week_spacing_points": 17.1509,
+    "scale_slope_px_per_case": -0.377282,
+    "scale_intercept": 430.125,
+    "weeks": 53,
+    "first_week": 1,
+    "last_week": 53,
+    "sum_cases": 6313,
+    "min_cases": 18,
+    "max_cases": 279,
+    "positional_label_mismatches": [
+     {
+      "week": 26,
+      "geometry": 164,
+      "printed": 113
+     },
+     {
+      "week": 27,
+      "geometry": 113,
+      "printed": 164
+     }
+    ]
+   },
+   "controls": [
+    {
+     "kind": "rate-components",
+     "component_labels": [
+      "DCSA SE1-52",
+      "DG SE1-52",
+      "DSSA SE1-52",
+      "DSSA SE53"
+     ],
+     "component_rates": [
+      64.4,
+      2.77,
+      311.72,
+      1.08
+     ],
+     "total_rate": 379.97,
+     "implied_population": 1661446.956,
+     "component_cases": [
+      1070,
+      46,
+      5179,
+      18
+     ],
+     "reconstructed_total": 6313,
+     "weekly_total": 6313,
+     "passed": true
+    }
+   ],
+   "notes": [
+    "La tabla provincial de 2025 publica tasas por 100 000 habitantes, no casos; el control es indirecto.",
+    "Las etiquetas de las semanas 26 y 27 se solapan en el gráfico: el orden impreso no coincide con el orden de los vértices. Se usa el orden del eje x y el multiconjunto de etiquetas.",
+    "La gaceta nacional reporta 37.840 casos en 2025; Manabí representa 6.313 de ese total."
+   ]
+  },
+  {
+   "snapshot_id": "msp-etv-se41-2026",
+   "year": 2026,
+   "edition": "SE 41/2026",
+   "cut_off_week": 41,
+   "url": "https://www.salud.gob.ec/wp-content/uploads/2026/10/ETV_Gaceta_41.pdf",
+   "sha256": "decd710e03b4f2356b03981e2d35a34a9facc7a5208435f0eaa0da6fafd0f9d6",
+   "byte_size": 1182136,
+   "pdf_pages": 8,
+   "pdf_created_utc": "2026-10-21T13:06:28Z",
+   "chart_page": 3,
+   "chart_title": "Casos de dengue en MANABI, histórico desde el año 2021 hasta el año 2026 por semana epidemiológica.",
+   "title_note": "Serie del año en curso hasta la semana 41.",
+   "extraction": {
+    "method": "polilínea vectorial del año en curso + etiquetas impresas",
+    "labels": 41,
+    "candidates": 6,
+    "selected_color": "0.7843,0.3216,0.0000",
+    "week_spacing_points": 17.1509,
+    "scale_slope_px_per_case": -0.323478,
+    "scale_intercept": 421.0676,
+    "weeks": 41,
+    "first_week": 1,
+    "last_week": 41,
+    "sum_cases": 11946,
+    "min_cases": 51,
+    "max_cases": 517,
+    "positional_label_mismatches": []
+   },
+   "controls": [
+    {
+     "kind": "official-total",
+     "official_total": 11946,
+     "weekly_total": 11946,
+     "passed": true
+    },
+    {
+     "kind": "case-components",
+     "components": {
+      "DCSA SE1-40": 2249,
+      "DG SE1-40": 72,
+      "DSSA SE1-40": 9261,
+      "DCSA SE41": 11,
+      "DSSA SE41": 353
+     },
+     "component_total": 11946,
+     "weekly_total": 11946,
+     "passed": true
+    }
+   ],
+   "notes": [
+    "La serie está incompleta: cubre hasta la SE 41, no todo el año 2026.",
+    "La tabla provincial cierra con 11.946 casos, idéntico a la suma de las 41 semanas del gráfico.",
+    "La gaceta advierte que los datos son preliminares y están sujetos a validación."
+   ]
+  }
+ ],
+ "known_limits": [
+  "Granularidad provincial: no hay datos de Manta ni cantonales en esta fuente.",
+  "Datos preliminares: una gaceta posterior puede revisar semanas ya publicadas.",
+  "Las series de 2021 a 2024 aparecen en el gráfico sin etiquetas impresas y no se importan en esta versión.",
+  "La fuente no publica la fecha calendario de cada semana epidemiológica.",
+  "Estos datos no se mezclan con posiciones OSM ni con los casos sintéticos del simulador; no alimentan el motor SEIR."
+ ],
+ "imported_at_utc": "2026-10-27T00:00:00Z",
+ "csv_sha256": "e51b0858624ccd32349e86fcee57777bc1834579b80416e21ce54b1b11d1913a"
+}

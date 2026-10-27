@@ -1,0 +1,3 @@
+# P-05: el CSV se audita por SHA-256; debe conservar LF en cualquier clon.
+data/p05/*.csv text eol=lf
+data/p05/**/*.json text eol=lf

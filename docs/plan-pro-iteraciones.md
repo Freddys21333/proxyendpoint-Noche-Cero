@@ -126,6 +126,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** no hay dataset real trazable; usar cifras inventadas invalidaría la calibración.
 
+**Estado 2026-10-27:** cerrada en local. Dataset `manabi-dengue-weekly-v1` con 94 semanas (2025 S1–53, 2026 S1–41) desde las gacetas ETV SE 53/2025 y SE 41/2026 del MSP. Importador con `download`/`extract`/`build`/`verify`/`render`, geometría versionada, procedencia completa y controles de totales: directo en 2026 (11 946) e indirecto por tasas en 2025 (6 313). Evidencia en [p05-dengue-manabi-2026-10-27.md](evidencia/p05-dengue-manabi-2026-10-27.md) y pruebas en [plan-pruebas-local.md](plan-pruebas-local.md). Límites declarados: granularidad provincial (sin Manta), datos preliminares y 2026 incompleto. No alimenta el motor SEIR. **P-06 sigue pendiente**: que la serie exista no equivale a una calibración validada.
+
 **Alcance:**
 
 - Seleccionar publicaciones oficiales del MSP (gacetas vectoriales) con datos utilizables de Manabí.

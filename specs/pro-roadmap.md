@@ -65,12 +65,31 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-05 — Incorporar datos reales de dengue en Manabí (PRO-5)
 
-- [ ] Estado: **no iniciado**. Puede investigarse en paralelo al diseño; debe preceder a P-06.
-- Punto de partida oficial consultado el 2026-10-27: [gacetas vectoriales del MSP](https://www.salud.gob.ec/gacetas-vectoriales/) y [archivo 2025](https://www.salud.gob.ec/gacetas-vectoriales-2025/). Son fuentes candidatas, no un dataset ya importado o calibrado.
-- Elegir publicaciones concretas con observaciones utilizables de Manabí; registrar URL, edición, fecha de publicación, corte, período cubierto, licencia/condiciones, hash y copia permitida de la fuente. Registrar tabla/página y método si se extrae PDF; revisar extracción visualmente.
-- Construir tabla normalizada con geografía, semana epidemiológica/fecha, casos, definición del caso y unidad. Distinguir incidencia de acumulados y ceros de ausencias. Tratar correcciones y duplicados; no sumar informes acumulados de semanas sucesivas.
-- Usar población oficial si se necesitan tasas, con fuente y año; no repartir casos provinciales entre cantones ni personas sintéticas sin metodología explícita. Si no hay granularidad de Manta, etiquetar Manabí y declarar la limitación. Los domicilios OSM no se convierten en casos reales.
-- Aceptación: descarga/extracción repetible, controles de totales y faltantes, procedencia completa y separación de fuentes frente a supuestos. Si no se consigue una serie suficiente, dejar pendiente la calibración en lugar de inventarla.
+- [x] Estado: **cerrado en local** (2026-10-27). Dataset `manabi-dengue-weekly-v1`: 94 semanas (2025 S1–53, 2026 S1–41), 18 259 casos, procedencia completa, geometría versionada, controles de totales y separación explícita del simulador. P-06 sigue pendiente.
+- Punto de partida oficial consultado el 2026-10-27: [gacetas vectoriales del MSP](https://www.salud.gob.ec/gacetas-vectoriales/) y [archivo 2025](https://www.salud.gob.ec/gacetas-vectoriales-2025/). Fuentes efectivamente usadas: gaceta ETV SE 53/2025 y SE 41/2026.
+- [x] Elegir publicaciones concretas con observaciones utilizables de Manabí; registrar URL, edición, fecha de publicación, corte, período cubierto, licencia/condiciones, hash y copia permitida de la fuente. Registrar tabla/página y método si se extrae PDF; revisar extracción visualmente.
+- [x] Construir tabla normalizada con geografía, semana epidemiológica/fecha, casos, definición del caso y unidad. Distinguir incidencia de acumulados y ceros de ausencias. Tratar correcciones y duplicados; no sumar informes acumulados de semanas sucesivas.
+- [x] Usar población oficial si se necesitan tasas, con fuente y año; no repartir casos provinciales entre cantones ni personas sintéticas sin metodología explícita. Si no hay granularidad de Manta, etiquetar Manabí y declarar la limitación. Los domicilios OSM no se convierten en casos reales.
+- [x] Aceptación: descarga/extracción repetible, controles de totales y faltantes, procedencia completa y separación de fuentes frente a supuestos. Si no se consigue una serie suficiente, dejar pendiente la calibración en lugar de inventarla.
+
+**Resultado 2026-10-27**
+
+| Pieza | Ruta | Comprobación |
+|---|---|---|
+| Manifiesto | `data/p05/sources.json` | URL, edición, corte, SHA-256 y controles por gaceta |
+| Geometría | `data/p05/geometry/*.json` | Etiquetas + todas las polilíneas candidatas + la elegida |
+| Tabla | `data/p05/manabi-dengue-weekly.csv` | 94 filas, `weekly_cases`, sin acumulados ni duplicados |
+| Procedencia | `data/p05/manabi-dengue-provenance.json` | Hash del CSV, método, controles y límites |
+| Importador | `scripts/p05_import_dengue.py` | `download`/`extract`/`build`/`verify`/`render` |
+| Lógica | `backend/src/data/dengue.py` | Selección, escala, derivación y controles |
+| Pruebas | `backend/tests/test_p05_dengue.py` | 13 pruebas; suite backend 369 |
+
+- Control 2026: suma de 41 semanas = 11 946 = `Total Casos` de la tabla provincial (exacto) y desglose por clasificación (2 249 + 72 + 9 261 + 11 + 353).
+- Control 2025: las tasas 64,40 + 2,77 + 311,72 + 1,08 = 379,97 y la población implícita reconstruyen 1 070 + 46 + 5 179 + 18 = 6 313 casos (indirecto, declarado).
+- Semanas 26 y 27 de 2025 tienen etiquetas solapadas; el orden se resuelve por la geometría y queda registrado.
+- `provenance.usage.wired_into_simulator = false`: el dataset no alimenta el motor SEIR ni se mezcla con OSM o casos sintéticos.
+- Evidencia: [p05-dengue-manabi-2026-10-27.md](../docs/evidencia/p05-dengue-manabi-2026-10-27.md). Pruebas: [plan-pruebas-local.md](../docs/plan-pruebas-local.md#4-p-05--datos-reales-de-dengue-en-manabí).
+- Límites: granularidad provincial (sin Manta), datos preliminares, 2026 incompleto (S41), sin fechas calendario y sin series 2021–2024.
 
 ### P-06 — Modelo y preset calibrado, validación fuera de muestra (PRO-5)
 

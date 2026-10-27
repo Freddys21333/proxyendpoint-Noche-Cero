@@ -4,7 +4,7 @@ Este documento reúne las pruebas que **ya existen y se pueden ejecutar** sobre 
 
 - Última actualización: 2026-10-27.
 - Rama de referencia: `feat/backend-contratos`.
-- Tipos: **A** = prueba unitaria automatizada; **I** = integración HTTP real; **B** = verificación en navegador real.
+- Tipos: **A** = prueba unitaria automatizada; **D** = pipeline de datos reproducible (sin red); **I** = integración HTTP real; **B** = verificación en navegador real.
 - Evidencia cruda: `.tools/` (no versionado). Informes y figuras: `docs/evidencia/`.
 - Sin secretos: los tokens de trabajo viven en `sessionStorage` y nunca se pegan en documentos ni capturas.
 
@@ -151,7 +151,84 @@ Precondición: API y UI levantadas; vista **Explorar red** con una vista previa 
 
 Figuras: `docs/evidencia/figuras/p03-formulario-preview.jpeg`, `p03-trabajo-completado.jpeg`, `p03-trabajo-cancelado.jpeg`. Informe: [p03-ui-2026-10-27.md](evidencia/p03-ui-2026-10-27.md).
 
-## 4. Regresión mínima antes de cerrar una iteración
+## 4. P-05 — Datos reales de dengue en Manabí
+
+Funcionalidad implementada: importación verificable de la serie semanal de dengue de Manabí (2025 y 2026) desde las gacetas vectoriales del MSP. Incluye geometría versionada, selección de la polilínea por coincidencia con las etiquetas impresas, controles de totales, tabla normalizada y procedencia. **No** se conecta al motor SEIR y **no** se mezcla con posiciones OSM ni con casos sintéticos.
+
+Fuente: gaceta ETV SE 53/2025 y SE 41/2026 del Ministerio de Salud Pública del Ecuador. Dataset: `manabi-dengue-weekly-v1`, 94 semanas, 18 259 casos.
+
+### 4.1 Pruebas automatizadas (A)
+
+Precondición: ninguna; no requiere red, PDF ni PyMuPDF. Desde `backend/`:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests/test_p05_dengue.py -q
+```
+
+| ID | Qué comprueba | Resultado esperado |
+|---|---|---|
+| P05-A1 | La selección exige exactamente una polilínea | 4 valores correctos; dos candidatas idénticas → error |
+| P05-A2 | Una polilínea que no reproduce las etiquetas se descarta | error `no reproducidas` |
+| P05-A3 | Un eje de semanas irregular se rechaza | error `irregular` |
+| P05-A4 | 2026 reproduce sus 41 etiquetas y el total de la tabla | 41 valores; suma 11 946; 0 desajustes posicionales |
+| P05-A5 | 2025 reproduce sus 53 etiquetas y la tasa publicada | 53 valores; suma 6 313; desajustes (26, 164, 113) y (27, 113, 164) |
+| P05-A6 | Los controles del manifiesto pasan y el hash es válido | 2 controles en 2026, 1 en 2025; SHA-256 hexadecimal de 64 |
+| P05-A7 | La tasa 2025 reconstruye casos enteros | 1 070 + 46 + 5 179 + 18 = 6 313 |
+| P05-A8 | Totales, tasas o componentes incoherentes se rechazan | 3 errores distintos |
+| P05-A9 | El CSV coincide con la procedencia y está normalizado | 94 filas; SHA-256 congelado; `wired_into_simulator = false` |
+| P05-A10 | Ida y vuelta del CSV | bytes idénticos |
+| P05-A11 | Semana duplicada | error `duplicada` |
+| P05-A12 | Orden, rango de semana y provincia | 3 errores distintos |
+| P05-A13 | Geometría incompleta | 3 errores distintos |
+
+Referencia de la iteración: **13/13** pruebas nuevas; suite backend **369 pruebas** en verde.
+
+### 4.2 Pipeline reproducible (D)
+
+Desde la raíz. No requieren red ni el PDF:
+
+```powershell
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py verify
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py build --imported-at 2026-10-27T00:00:00Z
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py render
+```
+
+| ID | Qué comprueba | Resultado esperado |
+|---|---|---|
+| P05-D1 | `verify` recalcula desde la geometría y compara con lo publicado | `status: passed`, `csv_sha256 e51b0858…`, 94 filas, 18 259 casos |
+| P05-D2 | `build` es idempotente | mismo `csv_sha256` que P05-D1 |
+| P05-D3 | `render` es determinista | el SVG no cambia entre ejecuciones |
+
+Salida real de P05-D1 (2026-10-27):
+
+```json
+{"status":"passed","dataset_id":"manabi-dengue-weekly-v1","csv_sha256":"e51b0858624ccd32349e86fcee57777bc1834579b80416e21ce54b1b11d1913a","rows":94,"years":[2025,2026],"weeks":94,"total_cases":18259,"snapshots":[{"snapshot_id":"msp-etv-se53-2025","weeks":53,"sum_cases":6313,"controls":["rate-components"],"positional_label_mismatches":2},{"snapshot_id":"msp-etv-se41-2026","weeks":41,"sum_cases":11946,"controls":["official-total","case-components"],"positional_label_mismatches":0}]}
+```
+
+Regeneración completa (solo si hace falta; el paso `extract` requiere red en `download` y PyMuPDF ≥1.28):
+
+```powershell
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py download
+python -m pip install pymupdf
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py extract
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py build --imported-at 2026-10-27T00:00:00Z
+backend\.venv\Scripts\python.exe scripts\p05_import_dengue.py verify
+```
+
+Si el MSP publica una revisión del PDF en la misma URL, `download` y `extract` fallan por hash: el cambio exige revisión explícita.
+
+### 4.3 Límites
+
+- Granularidad **provincial**: no hay datos de Manta ni cantonales.
+- Datos **preliminares**: una gaceta posterior puede revisar semanas publicadas.
+- 2026 llega hasta la SE 41; 2025 cubre 53 semanas.
+- Las series 2021–2024 del gráfico no tienen etiquetas impresas y no se importan.
+- El control de 2025 es **indirecto** (tasas por 100 000), no una tabla de casos.
+- El dataset no alimenta el motor SEIR y no es calibración; P-06 sigue abierto.
+
+Evidencia: [p05-dengue-manabi-2026-10-27.md](evidencia/p05-dengue-manabi-2026-10-27.md) y figura [p05-dengue-manabi.svg](evidencia/figuras/p05-dengue-manabi.svg).
+
+## 5. Regresión mínima antes de cerrar una iteración
 
 Desde `backend/`:
 
@@ -170,11 +247,12 @@ npm run typecheck
 npm run build
 ```
 
-Resultado de referencia (2026-10-27, I-04): 356 pruebas backend; 130 pruebas frontend; Ruff, formato, mypy, typecheck y build correctos.
+Resultado de referencia (2026-10-27, I-03): 369 pruebas backend; 130 pruebas frontend; Ruff, formato, mypy, typecheck y build correctos.
 
-## 5. Límites de este documento
+## 6. Límites de este documento
 
 - P-04 (AWS, Distributed Map, miles de réplicas) no existe en local y por eso no tiene pruebas aquí.
+- P-05 no tiene prueba de navegador: es un pipeline de datos. Su verificación es por hash, controles de totales y pruebas unitarias.
 - La aceptación humana T-13..T-16 (teclado, contraste con personas, tiempos de demo, guion sorpresa) requiere personas y acceso; no se simula con scripts.
 - Las capturas prueban lo que muestran; no sustituyen los hashes ni la reproducibilidad que verifican los scripts.
 - T-22 sigue incompleto: ninguna cifra de estas pruebas debe citarse como gate científico.

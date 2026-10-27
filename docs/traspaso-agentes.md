@@ -18,9 +18,9 @@ El proyecto ya tiene un motor SEIR reproducible, comparación pareada de tres po
 Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar evidencia y contratos. Faltan:
 
 - T-22 completo: matriz primaria y contrastes, no solo controles.
-- P-02: editor/historial visual y aceptación UI; el backend adaptativo ya está verificado.
-- P-03/P-04: pantalla de jobs y luego AWS; backend/cliente locales ya verificados.
-- P-05/P-06: datos reales trazables y calibración fuera de muestra.
+- P-02: aceptación humana UI; editor, historial y backend adaptativo ya verificados en local.
+- P-04: AWS; la pantalla de jobs ya usa la API real (P-03 cerrada en local, no durable).
+- P-06: calibración y validación fuera de muestra sobre la serie real ya importada.
 - P-08: informe determinista para alcaldía.
 - P-07: aceptación de sincronización, accesibilidad y rendimiento.
 - T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
@@ -186,8 +186,9 @@ Evidencia: [estado del frontend PRO](estado-frontend-pro-2026-10-27.md), [integr
 - **P-01:** calendario de llegadas, inventario inicial, capacidad diaria, acumulación, costos educativos y exportación. Verificado localmente; no cierra todo PRO-1/2.
 - **P-09:** mapa geográfico y capa de agentes como presentación. No cambia modelo, contratos ni hashes.
 - **PRO-1/2 parcial:** vacunas, cierre de capa, brigadas, presupuesto y costos educativos; falta aceptación integral y límites visibles.
-- **P-02 backend local:** `adaptive-v1`, reglas, anillo, motivos, exportación y reproducción verificados; falta editor/historial visual.
-- **P-03 backend/cliente local:** `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible; falta pantalla de jobs y P-04.
+- **P-02 backend y UI local:** `adaptive-v1`, reglas, anillo, motivos, exportación, reproducción, editor, variante e historial diario verificados; falta aceptación humana T-13..T-16.
+- **P-03 local (no durable):** `/v1/jobs`, cola, token, idempotencia, cancelación, resultado reproducible y pantalla PRO conectada a la API real; falta P-04 (AWS) y durabilidad.
+- **P-05:** `manabi-dengue-weekly-v1`, 94 semanas reales de dengue de Manabí (2025 S1–53, 2026 S1–41) con importador reproducible, geometría versionada, procedencia y controles de totales. Provincial, preliminar y **sin** conexión al motor SEIR.
 - **P-07 parcial:** reproducción y mapa sincronizados; faltan aceptación, transiciones, rendimiento y accesibilidad.
 
 ---
@@ -264,11 +265,11 @@ Antes de ejecutar, revisar `scripts/run_t22.py`. Su compilación, Ruff y corrida
 
 | ID | Estado | Qué implementar | Aceptación mínima |
 |---|---|---|---|
-| P-02 | Backend local | Editor/historial visual y aceptación UI; el backend `adaptive-v1` ya cubre observaciones, umbrales, prioridades, desempates, recursos, costo, motivos y exportación. | Escenarios ascendente/descendente, saldo agotado, sin elegibles, cambio de prioridad, sin futuro, independencia de orden y comparación justa; falta cerrar UI. |
-| P-03 | Backend/cliente local | Pantalla de jobs, sesión de credenciales y P-04; `/v1/jobs`, manifiesto, progreso, cancelación, idempotencia y agregado completo ya existen localmente. | Mismo agregado en distinto orden, reintentos sin duplicar, cancelación trazable y reproducción secuencial; falta UI conectada sin fixtures. |
+| P-02 | Backend/UI local | Backend `adaptive-v1` (observaciones, umbrales, prioridades, desempates, recursos, costo, motivos, exportación) y editor/historial visual verificados localmente. | Falta aceptación humana T-13..T-16: escenarios ascendente/descendente, saldo agotado, sin elegibles, cambio de prioridad, sin futuro, independencia de orden y comparación justa. |
+| P-03 | Local, no durable | `/v1/jobs`, manifiesto, progreso, cancelación, idempotencia, agregado completo y pantalla PRO conectada a la API real. | Cumplido en local: mismo agregado en distinto orden, reintentos sin duplicar, cancelación trazable y reproducción secuencial. Reiniciar el servidor pierde los trabajos; eso es P-04. |
 | P-04 | No iniciado | Step Functions Distributed Map, Lambda por réplica, S3, IAM mínimo, cuotas, concurrencia, costos. | Terraform válido, prueba pequeña, 100 y ≥1.000 réplicas con integridad/costo; sin 10.000 sin autorización. |
-| P-05 | No iniciado | Fuente oficial de dengue/Manabí: URL, edición, fecha, corte, licencia, hash, tabla normalizada, faltantes. | Descarga/extracción repetible, totales/faltantes controlados, procedencia completa; si no alcanza, P-06 queda pendiente. |
-| P-06 | No iniciado | Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre, preset versionado. | Otro proceso reproduce ajuste y validación retenida; resultados desfavorables visibles; no confundir datos importados con calibración. |
+| P-05 | Cerrado en local | Hecho: `manabi-dengue-weekly-v1`, 94 semanas (2025 S1–53, 2026 S1–41), 18 259 casos, desde las gacetas ETV SE 53/2025 y SE 41/2026 del MSP. | Cumplido: importador `download`/`extract`/`build`/`verify`/`render`, geometría versionada, procedencia con hash, control directo 2026 (11 946) e indirecto por tasas 2025 (6 313). Límites: provincial, preliminar, 2026 incompleto. |
+| P-06 | Siguiente, no iniciado | Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre, preset versionado, sobre la serie de P-05. | Otro proceso reproduce ajuste y validación retenida; resultados desfavorables visibles; no confundir datos importados con calibración. |
 | P-07 | Parcial | Sincronización mapa/red/curva/tabla, pausa/seek/velocidad/reinicio, foco, movimiento reducido, rendimiento. | Sin divergencias; frames coherentes con hash/réplica/día; accesibilidad y rendimiento aceptados; no inventar contagios ni trayectos. |
 | P-08 | No iniciado | Informe determinista para alcaldía, preferible PDF, desde experimento validado. | Cifras coinciden con JSON; fuentes, hash, costos, incertidumbre y límites; PDF revisado y reproducible; no ocultar pérdidas. |
 
@@ -305,10 +306,10 @@ Detalle completo: [specs/pro-roadmap.md](../specs/pro-roadmap.md) y [specs/pro-w
 ### 7.2 PRO
 
 - [x] P-01 inventario diario, verificado localmente.
-- [ ] P-02 backend local; falta UI/aceptación.
-- [ ] P-03 backend/cliente local; falta pantalla y P-04.
+- [ ] P-02 backend y UI locales; falta aceptación humana.
+- [ ] P-03 local no durable; falta P-04.
 - [ ] P-04 AWS Distributed Map, no iniciado.
-- [ ] P-05 datos reales, no iniciado.
+- [x] P-05 datos reales de dengue/Manabí, verificado localmente (94 semanas, 2025–2026).
 - [ ] P-06 calibración, no iniciado.
 - [ ] P-07 mapa/animación, parcial.
 - [ ] P-08 informe para alcaldía, no iniciado.
@@ -364,16 +365,16 @@ No cambiar hashes, defaults, fórmulas, contratos ni semillas sin actualizar pru
 
 ### Prioridad 3 — P-05 y P-06
 
-- P-05 primero: fuente oficial, procedencia, hash, normalización y límites.
+- [x] P-05 cerrado en local: fuente oficial, procedencia, hash, normalización, controles de totales y límites declarados.
+- La fuente es **provincial** y **preliminar**: no hay Manta ni datos cantonales; 2026 llega a la SE 41.
+- El dataset **no alimenta el motor SEIR** (`wired_into_simulator = false`). Importar datos no es calibrar.
+- P-06 es lo siguiente: variable observada, ajuste/validación separados, incertidumbre y preset versionado.
 - No inventar datos ni repartir casos provinciales sin metodología.
-- P-06 solo después: variable observada, ajuste/validación separados, incertidumbre y preset versionado.
-- Si no hay serie suficiente, dejar P-06 pendiente.
 
-### Prioridad 4 — P-03 UI y P-04
+### Prioridad 4 — P-04 (AWS)
 
-- El backend/cliente local de P-03 ya está verificado.
-- Reemplazar fixtures de `frontend/src/pro/` por API real y cerrar sesión de credenciales.
-- P-04 solo con autorización de gasto y presupuesto de prueba.
+- P-03 está cerrada en local: la pantalla PRO usa la API real, con credenciales de sesión, sondeo, cancelación y reintento.
+- P-04 solo con autorización de gasto y presupuesto de prueba; requiere durabilidad, cuotas y Distributed Map.
 
 ### Prioridad 5 — P-08 y P-07
 
@@ -447,8 +448,8 @@ No guardar credenciales, correos, tokens ni datos personales en evidencia.
 
 | Frente | Último estado auditado |
 |---|---|
-| Backend | 356 pruebas, Ruff y mypy correctos. |
-| Frontend | 116 pruebas, typecheck y build correctos. |
+| Backend | 369 pruebas, Ruff y mypy correctos (23 archivos fuente). |
+| Frontend | 130 pruebas, typecheck y build correctos. |
 | Benchmark local | 44,3 s para N1000/T90/R30 sin frames; 8,5× mejor que 377,9 s. |
 | T-22 controles | 5/5 PASA; matriz primaria/contrastes pendientes. |
 | T-22 exportación | `base-root-0` JSON ~8,3 MB; exportación ~2 min; reproducción pendiente para la matriz. |
@@ -538,13 +539,17 @@ Reemplaza fixtures de frontend/src/pro/ por contrato real. No presentes
 repetitions síncronas como jobs. Documenta evidencia y límites.
 ```
 
-### 13.4 P-05/P-06
+### 13.4 P-06 (P-05 ya cerrado)
 
 ```text
-Lee AGENTS.md y specs/pro-roadmap.md. Trabaja solo en P-05 (y P-06 solo si
-P-05 está cerrado). Usa fuente oficial, registra URL/edición/fecha/corte/
-licencia/hash, normaliza y documenta faltantes. No inventes ni repartas casos
-sin metodología. Si no hay serie suficiente, deja P-06 pendiente y explícalo.
+Lee AGENTS.md, docs/plan-pro-iteraciones.md y
+docs/evidencia/p05-dengue-manabi-2026-10-27.md. Trabaja solo en P-06 sobre
+manabi-dengue-weekly-v1. Define variable observada y función de observación,
+separa ajuste y validación fuera de muestra, reporta identificabilidad,
+incertidumbre y un preset versionado reproducible. Recuerda que la serie es
+provincial y preliminar: no la presentes como evidencia de riesgo local ni
+repartas casos entre personas sintéticas. No ajustes y valides con la misma
+ventana. Si el resultado es desfavorable, consérvalo.
 ```
 
 ### 13.5 AWS/T-17..T-21

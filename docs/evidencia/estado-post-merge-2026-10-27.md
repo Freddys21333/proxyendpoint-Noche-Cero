@@ -76,11 +76,13 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 
 ### I-03 — P-05 datos reales de dengue/Manabí
 
-- [ ] Elegir fuente oficial utilizable y registrar URL, edición, fecha, corte, período, licencia y hash.
-- [ ] Extraer y normalizar geografía, semana/fecha, casos, definición y unidad; revisar visualmente.
-- [ ] Distinguir incidencia de acumulados, ceros de ausencias, correcciones y duplicados.
-- [ ] Documentar faltantes y límites si no hay granularidad de Manta.
-- [ ] No inventar datos ni repartir casos provinciales sin metodología.
+- [x] Elegir fuente oficial utilizable y registrar URL, edición, fecha, corte, período, licencia y hash. Gacetas ETV SE 53/2025 y SE 41/2026 del MSP, con SHA-256 y tamaño verificados.
+- [x] Extraer y normalizar geografía, semana/fecha, casos, definición y unidad; revisar visualmente. Gráfico vectorial: la polilínea se elige porque reproduce exactamente el multiconjunto de etiquetas impresas.
+- [x] Distinguir incidencia de acumulados, ceros de ausencias, correcciones y duplicados. `value_kind = weekly_cases`, `is_cumulative = false`, semana duplicada rechazada.
+- [x] Documentar faltantes y límites si no hay granularidad de Manta. Granularidad provincial, datos preliminares, 2026 hasta SE 41, sin fechas calendario.
+- [x] No inventar datos ni repartir casos provinciales sin metodología. `wired_into_simulator = false`; no se mezcla con OSM ni con casos sintéticos.
+- [x] Controles de totales: directo en 2026 (11 946) e indirecto por tasas en 2025 (1 070 + 46 + 5 179 + 18 = 6 313).
+- Evidencia: [p05-dengue-manabi-2026-10-27](p05-dengue-manabi-2026-10-27.md) y [plan de pruebas local](../plan-pruebas-local.md).
 
 ### I-04 — P-03 UI y cierre local
 
@@ -180,7 +182,7 @@ Los hashes de evidencia antiguos de P-02/P-03 corresponden a estados intermedios
 1. Commit y push de esta documentación y del runner T-22.
 2. Cerrar T-22: primaria, contrastes, reproducciones, informe y gate.
 3. Repetir en UI los escenarios de saldo agotado y sin elegibles de P-02; el resto de I-02 ya está verificado localmente.
-4. P-03 UI cerrada localmente (I-04); continuar con P-05 y P-06 con datos reales y validación fuera de muestra.
+4. P-03 UI cerrada localmente (I-04) y P-05 cerrado localmente (I-03, 94 semanas de dengue de Manabí); continuar con P-06 (calibración y validación fuera de muestra).
 5. P-08 desde un experimento validado.
 6. P-07 con aceptación de sincronización, accesibilidad y rendimiento.
 7. P-04/T-17..T-21 solo con autorización de gasto.

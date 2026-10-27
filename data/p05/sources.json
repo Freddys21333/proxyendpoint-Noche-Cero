@@ -1,0 +1,99 @@
+{
+  "schema_version": "manabi-dengue-sources-v1",
+  "dataset_id": "manabi-dengue-weekly-v1",
+  "geography": {
+    "level": "province",
+    "name": "MANABI",
+    "display_name": "Manabí",
+    "granularity_note": "La gaceta publica el agregado provincial. No existe desagregación cantonal ni de Manta en esta fuente."
+  },
+  "disease": "dengue",
+  "unit": "casos notificados",
+  "value_kind": "weekly_cases",
+  "is_cumulative": false,
+  "publisher": "Ministerio de Salud Pública del Ecuador",
+  "publisher_unit": "Subsecretaría de Vigilancia, Prevención y Control de la Salud / Dirección Nacional de Vigilancia Epidemiológica",
+  "series_name": "Gacetas de Enfermedades Transmitidas por Vectores (ETV)",
+  "case_definition": "Casos de dengue notificados al Sistema VIEpi (DSSA + DCSA + DG). Datos preliminares sujetos a validación según la propia gaceta.",
+  "data_status": "preliminar",
+  "terms": "Documento público oficial del MSP. No se redistribuye el PDF: solo se versionan el hash, la geometría extraída y la tabla normalizada.",
+  "snapshots": [
+    {
+      "snapshot_id": "msp-etv-se53-2025",
+      "year": 2025,
+      "edition": "SE 53/2025",
+      "cut_off_week": 53,
+      "expected_weeks": 53,
+      "url": "https://www.salud.gob.ec/wp-content/uploads/2026/01/Enfermedades-Trasmitidas-por-Vectores-DNVE-SE-53.pdf",
+      "sha256": "c44b829b5e74b71467f424922d0cd9b4142dab08cd31c74e1825f57ca5c5141b",
+      "byte_size": 1208818,
+      "pdf_pages": 8,
+      "pdf_created_utc": "2026-01-08T13:29:37Z",
+      "chart_page": 3,
+      "chart_title": "Casos de Dengue en MANABI, histórico desde el año 2021 hasta el año 2024 por semana epidemiológica, año 2025",
+      "title_note": "El título dice «hasta el año 2024» pero la leyenda incluye 2025 y la serie importada es la de 2025; el año se fija por la leyenda y las etiquetas impresas, no por el título.",
+      "controls": [
+        {
+          "kind": "rate-components",
+          "component_labels": ["DCSA SE1-52", "DG SE1-52", "DSSA SE1-52", "DSSA SE53"],
+          "component_rates": [64.4, 2.77, 311.72, 1.08],
+          "total_rate": 379.97,
+          "source_page": 2,
+          "source_table": "Tabla 1. Tasa de incidencia acumulada de Dengue por cada 100 mil habitantes por provincia, año 2025"
+        }
+      ],
+      "notes": [
+        "La tabla provincial de 2025 publica tasas por 100 000 habitantes, no casos; el control es indirecto.",
+        "Las etiquetas de las semanas 26 y 27 se solapan en el gráfico: el orden impreso no coincide con el orden de los vértices. Se usa el orden del eje x y el multiconjunto de etiquetas.",
+        "La gaceta nacional reporta 37.840 casos en 2025; Manabí representa 6.313 de ese total."
+      ]
+    },
+    {
+      "snapshot_id": "msp-etv-se41-2026",
+      "year": 2026,
+      "edition": "SE 41/2026",
+      "cut_off_week": 41,
+      "expected_weeks": 41,
+      "url": "https://www.salud.gob.ec/wp-content/uploads/2026/10/ETV_Gaceta_41.pdf",
+      "sha256": "decd710e03b4f2356b03981e2d35a34a9facc7a5208435f0eaa0da6fafd0f9d6",
+      "byte_size": 1182136,
+      "pdf_pages": 8,
+      "pdf_created_utc": "2026-10-21T13:06:28Z",
+      "chart_page": 3,
+      "chart_title": "Casos de dengue en MANABI, histórico desde el año 2021 hasta el año 2026 por semana epidemiológica.",
+      "title_note": "Serie del año en curso hasta la semana 41.",
+      "controls": [
+        {
+          "kind": "official-total",
+          "official_total": 11946,
+          "source_page": 2,
+          "source_table": "Tabla provincial de Dengue, fila MANABI, columna «Total Casos», Ecuador 2026 SE 41"
+        },
+        {
+          "kind": "case-components",
+          "components": [
+            {"label": "DCSA SE1-40", "cases": 2249},
+            {"label": "DG SE1-40", "cases": 72},
+            {"label": "DSSA SE1-40", "cases": 9261},
+            {"label": "DCSA SE41", "cases": 11},
+            {"label": "DSSA SE41", "cases": 353}
+          ],
+          "source_page": 2,
+          "source_table": "Tabla provincial de Dengue, fila MANABI, Ecuador 2026 SE 41"
+        }
+      ],
+      "notes": [
+        "La serie está incompleta: cubre hasta la SE 41, no todo el año 2026.",
+        "La tabla provincial cierra con 11.946 casos, idéntico a la suma de las 41 semanas del gráfico.",
+        "La gaceta advierte que los datos son preliminares y están sujetos a validación."
+      ]
+    }
+  ],
+  "known_limits": [
+    "Granularidad provincial: no hay datos de Manta ni cantonales en esta fuente.",
+    "Datos preliminares: una gaceta posterior puede revisar semanas ya publicadas.",
+    "Las series de 2021 a 2024 aparecen en el gráfico sin etiquetas impresas y no se importan en esta versión.",
+    "La fuente no publica la fecha calendario de cada semana epidemiológica.",
+    "Estos datos no se mezclan con posiciones OSM ni con los casos sintéticos del simulador; no alimentan el motor SEIR."
+  ]
+}
