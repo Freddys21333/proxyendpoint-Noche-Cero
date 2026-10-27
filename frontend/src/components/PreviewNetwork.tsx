@@ -20,17 +20,19 @@ const noSelections: VaccinationSelection[] = []
 const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado'], ['neighborhoodId', 'Barrio'] ] as const
 
 export type PreviewNetworkProps = {
-  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; panelActions?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState
+  preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; panelActions?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState;
+  renderTools?: (view: 'network' | 'map') => ReactNode
 }
 
-export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, mapView }: PreviewNetworkProps & {
-  playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; mapView?: ReactNode
+export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, mapView,
+  selectedPersonId: selected, onSelectPerson: setSelected, onFocusPerson, renderTools }: PreviewNetworkProps & {
+  playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; mapView?: ReactNode;
+  selectedPersonId: string; onSelectPerson: (id: string) => void; onFocusPerson: (id: string) => void
 }) {
   const inspector = useRef<HTMLDetailsElement>(null)
   const container = useRef<HTMLDivElement>(null)
   const network = useRef<cytoscape.Core | null>(null)
   const [layout, setLayout] = useState<NetworkLayout>('neighborhoodId')
-  const [selected, setSelected] = useState('')
   const { day: currentDay, policy, playing, speed, frames, lastDay, frame, dispatch } = playback
   const showNetwork = view === 'network'
   const hasComparison = active && comparison && (playback.mode === 'representative' || playback.mode === 'no-frames')
@@ -84,9 +86,9 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     resize.observe(container.current)
     cy.fit(undefined, 20)
     return () => { resize.disconnect(); cy.destroy(); network.current = null }
-  }, [preview])
+  }, [preview, setSelected])
 
-  useEffect(() => { setSelected('') }, [preview])
+  useEffect(() => { setSelected('') }, [preview, setSelected])
 
   useEffect(() => {
     const cy = network.current
@@ -128,11 +130,28 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     const cy = network.current
     if (cy) cy.zoom({ level: Math.max(cy.minZoom(), Math.min(cy.maxZoom(), cy.zoom() * factor)), renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } })
   }
+  const availability = {
+    preview: 'Pulsa Comparar estrategias para reproducir.',
+    pending: 'Calculando la trayectoria…',
+    invalid: 'Consulta la red para actualizar el escenario.',
+    error: 'Reintenta la comparación para reproducir.',
+    'no-frames': 'Este resultado no incluye trayectoria individual.',
+    representative: '',
+  }[playback.mode]
+  const transport = <section className="persistent-playback playback-transport" aria-label="Reproducción de la simulación">
+    <div className="playback-heading"><h3>Reproducción</h3><div className="playback-time">{frames ? <><span>Día</span><strong>{currentDay} <small>/ {lastDay}</small></strong></> : <span>Sin trayectoria</span>}</div></div>
+    <div className="playback-actions">
+      <Button type="button" variant="ghost" className="playback-primary" aria-label="Reproducir simulación" aria-describedby={!frames ? 'playback-availability' : undefined} title="Reproducir" disabled={!frames || playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} />{playing ? 'Reproduciendo' : 'Reproducir'}</Button>
+      <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!frames || !playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
+      <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" disabled={!frames} onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
+      <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={!frames || currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
+    </div>
+    {!frames && <p id="playback-availability" role="status">{availability}</p>}
+  </section>
   return <div className="simulator-workbench network-workbench">
     <section className={`network-demo-panel simulation-visualizer${active ? '' : ' simulation-outdated'}`} aria-label={!active ? 'Vista previa pendiente' : showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
       <div className="simulation-visualizer-content" inert={!active} aria-hidden={!active}>
       <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa · sin vacunación'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
-      <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver solo sus conexiones del día y filtro actuales.' : `Ubicaciones sintéticas, sin domicilios reales. ${simulationModeMessages[playback.mode]}`}</p>
       <div className="population-inventory-summary">
       <div className="seir-instrument" aria-label={frames ? 'Estados de la población en el día seleccionado' : 'Estados iniciales de la población del preview'}>
         {(Object.keys(labels) as (keyof typeof labels)[]).map(state => <div key={state} aria-label={`${labels[state]}: ${visibleCounts[state]}`} style={{ '--state-color': seirColors[state].marker } as CSSProperties}>
@@ -145,7 +164,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}${inventoryDay ? ' · recibidas hasta hoy' : ''}` : 'Antes de simular'}</small>
       </div>
       </div>
-      {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       <div className="network-view" hidden={!showNetwork}>
         <div ref={container} className="network-canvas" role="img" aria-label={`Red real de ${graph.nodes.length} personas sintéticas, contactos del día ${currentDay}. Seleccione una persona o use el selector.`} />
         <div className="network-zoom" aria-label="Herramientas de exploración">
@@ -184,39 +202,28 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </div>
       </div>}
     </section>
-    <FloatingSimulationControls actions={panelActions}>
-      {frames ? (
-        <section className="temporal-chart-panel real-playback" aria-label="Reproducción de réplica real">
-          <h3>Réplica representativa</h3>
-          <p>Trayectoria real de una réplica. Los promedios y rangos están en Comparación.</p>
+    <FloatingSimulationControls actions={panelActions} transport={transport}>
+        <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
+          <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
+          <fieldset className="playback-settings" disabled={!frames}>
           <label>Estrategia <select aria-label="Estrategia de la animación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
           <div className="network-playback" role="group" aria-label="Reproductor de simulación real">
-            <div className="playback-time"><span>Día actual</span><strong>{currentDay} <small>/ {lastDay}</small></strong></div>
-            <div className="playback-actions">
-              <Button type="button" variant="ghost" aria-label="Reproducir simulación" title="Reproducir" disabled={playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} /></Button>
-              <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
-              <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
-              <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
-            </div>
-            <label className="playback-timeline"><span>{playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'Explorar días'}</span><input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label>
+            <label className="playback-timeline"><span>{!frames ? 'Día de reproducción' : playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'Explorar días'}</span><input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label>
             <label className="playback-speed"><span>Velocidad</span><select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>0,5×</option><option value={700}>1×</option><option value={350}>2×</option><option value={175}>4×</option></select></label>
           </div>
-          <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
-          <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>
+          </fieldset>
+          {frames && <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>}
         </section>
-      ) : playback.mode === 'pending' || playback.mode === 'error' ? (
-        <section className="temporal-chart-panel real-playback" aria-label="Estado de la simulación">
-          <h3>{playback.mode === 'pending' ? 'Comparación en curso' : 'Trayectoria no disponible'}</h3>
-          <p role="status">{simulationModeMessages[playback.mode]}</p>
-        </section>
-      ) : null}
+      <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver sus conexiones.' : 'Ubicaciones sintéticas en Manta. Pulsa un punto del mapa para ver a la persona.'}</p>
+      {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       {schedule && <ResourceInventory row={inventoryDay} schedule={schedule} day={currentDay} initialVaccines={preview.configuration.intervention.vaccines} />}
       {hasComparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
-      {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={schedule ? (comparison!.replicates[comparison!.representative.index].policies[policy].daily[frames ? currentDay : comparison!.configuration.scenario.days] as InventoryDaily).vaccinesReceivedTotal : comparison!.configuration.intervention.vaccines} policy={policy} selectedId={frames ? undefined : selected} onSelect={id => { setSelected(id); dispatch({ type: 'pause' }); if (frames) requestAnimationFrame(() => inspector.current?.scrollIntoView({ block: 'center', behavior: 'smooth' })) }} />}
+      {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={schedule ? (comparison!.replicates[comparison!.representative.index].policies[policy].daily[frames ? currentDay : comparison!.configuration.scenario.days] as InventoryDaily).vaccinesReceivedTotal : comparison!.configuration.intervention.vaccines} policy={policy} selectedId={selected} onSelect={onFocusPerson} />}
       <div className="network-layout-control" hidden={!showNetwork}>
         <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); dispatch({ type: 'pause' }) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
         <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>
       </div>
+      {renderTools?.(view)}
       {children}
     </FloatingSimulationControls>
   </div>

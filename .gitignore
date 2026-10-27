@@ -37,3 +37,11 @@ Thumbs.db
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
 .impeccable/mocks/
+
+# Agent / tool caches and logs
+.codegraph/
+.codex/
+.taste-skill/
+.impeccable/
+frontend/.impeccable/
+odd/

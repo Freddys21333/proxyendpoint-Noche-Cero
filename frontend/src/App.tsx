@@ -342,17 +342,24 @@ export default function App() {
   const compareButton = (
     <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
   );
+  const cancelComparison = () => {
+    invalidateComparison();
+    setApiFailure(null);
+    setView("simulator");
+    setNotice("Comparación cancelada. Tus parámetros se conservan.");
+  };
   const configurationActions = (
     <div className="configuration-actions">
       {remotePreview ? <>{compareButton}{previewButton}</> : <>{previewButton}{compareButton}</>}
       <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
         <ArrowDownToLine size={17} /> Exportar
       </button>
+      {comparisonPending && <button type="button" className="plain-action cancel-comparison" onClick={cancelComparison}>Cancelar comparación</button>}
     </div>
   );
 
   return (
-    <div className="minimal-workspace noche-cero">
+    <div className={`minimal-workspace noche-cero${view === "simulator" ? " simulator-page" : ""}`}>
       <header className="simulation-header">
         <a className="simulation-brand" href="#" onClick={(event) => { event.preventDefault(); setView("simulator"); }} aria-label="Noche Cero, inicio">
           <span className="brand-sigil" aria-hidden="true"><Network size={24} strokeWidth={1.9} /></span>
@@ -375,19 +382,16 @@ export default function App() {
         )}
         {view === "simulator" ? (
           <>
-            <div className="simulation-toolbar">
-              <div className="simulation-intro"><h1>Explora la red.<br /><em>Sigue el brote.</em></h1><p>Configura un escenario sintético en Manta, consulta sus contactos y compara estrategias de contención.</p></div>
-              <span className="synthetic-badge">● Población sintética</span>
-            </div>
+            <h1 className="sr-only">Explorar la población y simular el brote</h1>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions}><section className="visualizer-tools" aria-label="Controles de la red">              <div className="simulation-tools">
-                <label className="simulation-layer"><span>Tipo de contacto</span>
-                  <select value={layer} onChange={(event) => setLayer(event.target.value)}>
+              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions} renderTools={visualizerView => <section className="visualizer-tools" aria-label="Controles de la vista"><div className="simulation-tools">
+                <label className="simulation-layer"><span>Tipo de contacto{visualizerView === 'map' ? ' · solo Red' : ''}</span>
+                  <select value={layer} disabled={visualizerView === 'map'} aria-describedby={visualizerView === 'map' ? 'contact-filter-help' : undefined} onChange={(event) => setLayer(event.target.value)}>
                     {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
-                <button type="button" className="plain-action" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} /> Centrar red</button>
-              </div></section>{parameterPanel}</ContactNetwork>
+                <button type="button" className="plain-action" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} />{visualizerView === 'map' ? 'Centrar mapa' : 'Centrar red'}</button>
+              </div>{visualizerView === 'map' && <p id="contact-filter-help" className="contact-filter-help">Cambia a Red para filtrar contactos. El mapa muestra todas las personas.</p>}</section>}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : view === "results" ? (
@@ -402,7 +406,7 @@ export default function App() {
                 onOpenParameters={() => { setView("simulator"); setApiFailure(null); }}
                 onRepreview={() => { setView("simulator"); setApiFailure(null); void run(); }}
               />}
-              <div className="comparison-empty-actions">{!comparisonPending && <Button type="button" className="comparison-start" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}<button type="button" className="plain-action" onClick={() => setView("simulator")}>{remotePreview ? "Volver a la red" : "Configurar escenario"}</button></div></div>
+              <div className="comparison-empty-actions">{comparisonPending ? <Button type="button" className="comparison-start" onClick={cancelComparison}>Cancelar comparación</Button> : <Button type="button" className="comparison-start" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}<button type="button" className="plain-action" onClick={() => setView("simulator")}>{remotePreview ? "Volver a la red" : "Configurar escenario"}</button></div></div>
               <div className="comparison-empty-steps" aria-label="Pasos de la comparación"><span><b>01</b> Consulta la red</span><span><b>02</b> Ejecuta réplicas</span><span><b>03</b> Examina resultados</span></div>
             </div>}
             {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver a la red</button>}
@@ -412,7 +416,6 @@ export default function App() {
             <ProWorkspace comparison={comparison} comparisonPending={comparisonPending} onShowSimulator={() => setView("simulator")} onShowResults={() => setView("results")} />
           </Suspense>
         )}
-        <footer className="simulation-footer">Modelo educativo · No utilizar para decisiones sanitarias reales.</footer>
       </main>
       <Dialog.Root open={modal !== null} onOpenChange={(open) => { if (!open) setModal(null); }}>
         <Dialog.Portal>

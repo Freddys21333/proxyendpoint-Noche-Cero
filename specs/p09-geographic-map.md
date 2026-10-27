@@ -19,10 +19,12 @@ La vista **Mapa** consume el mismo día, política, réplica y frames que la vis
 
 - Mapa Leaflet con teselas públicas de OpenStreetMap y atribución visible.
 - Vista **Red | Mapa** dentro del mismo espacio de trabajo; la cámara y el mapa permanecen montados al cambiar de vista.
-- Trece polígonos `landuse=residential` de OSM como máscara de referencia; no son barrios oficiales ni los cinco barrios sintéticos del modelo.
+- Veintidós polígonos `landuse=residential` de OSM como máscara de referencia, con cobertura ampliada al oeste; no son barrios oficiales ni los cinco barrios sintéticos del modelo.
+- Hogares distribuidos según el área disponible y candidatos separados; cámara ajustada a cada escenario nuevo con zoom fraccional hasta 16 y radios de marcadores adaptados al zoom.
 - Asignación de posiciones sintéticas, deterministas y sin consumo del RNG del backend.
 - Sincronización con día, política, réplica, reproducción, pausa, velocidad y selección de persona.
-- Selector de personas accesible por teclado y reutilización de marcadores entre frames sin reconstruir el mapa.
+- Búsqueda de personas por número accesible por teclado, selección directa de puntos y reutilización de marcadores entre frames sin reconstruir el mapa.
+- Visualizador bajo la navegación superior, panel de parámetros con scroll independiente y botones de acción persistentes; contadores superpuestos a la escena.
 - Manejo de fallo de teselas con **Reintentar mapa**, sin bloquear la red ni la simulación.
 - Movimiento reducido respetado por los controles existentes; no se añaden animaciones decorativas.
 
@@ -39,9 +41,9 @@ La vista **Mapa** consume el mismo día, política, réplica y frames que la vis
 
 La fuente y el procedimiento están en [docs/manta-geography.md](../docs/manta-geography.md):
 
-- Recurso versionado: `frontend/src/data/manta-residential.json`, versión `manta-residential-osm-v2`.
+- Recurso versionado: `frontend/src/data/manta-residential.json`, versión `manta-residential-osm-v3`.
 - Preparador reproducible: `scripts/prepare-manta-geography.mjs`.
-- Espacio de nombres de posiciones: `mantalab-geography-v2`.
+- Espacio de nombres de posiciones: `mantalab-geography-v3`.
 - Derivación: FNV-1a local + Mulberry32 a partir de versión del recurso, `rootSeed`, `graphHash` y `householdId`.
 - La asignación no consume el RNG del backend, no cambia el experimento y no se escribe en las respuestas de `preview`/`compare`.
 - Las posiciones del backend (`positions`) siguen siendo el layout circular de presentación; la UI puede reubicar nodos según [agreements.md](agreements.md) §2 sin alterar `graphHash`.
@@ -67,7 +69,7 @@ Regla de consistencia: un frame solo se pinta si pertenece al mismo `graphHash`,
 | P09-CA-01 | El mapa abre en Manta con atribución OSM, arrastre y zoom seguro para el scroll | `geographic-map.test.ts` |
 | P09-CA-02 | Redimensionar o reintentar conserva un solo mapa; desmontar libera listeners y callbacks tardíos | `geographic-map.test.ts` |
 | P09-CA-03 | Un fallo de teselas se muestra sin romper la red ni la simulación | `geographic-map.test.ts` |
-| P09-CA-04 | El recurso versionado contiene trece polígonos residenciales terrestres simples y evidencia de origen | `manta-geography.test.ts` |
+| P09-CA-04 | El recurso versionado contiene veintidós polígonos residenciales terrestres simples y evidencia de origen, con extensión al oeste | `manta-geography.test.ts` |
 | P09-CA-05 | Todas las personas reciben posiciones interiores deterministas sin mutar el experimento | `manta-geography.test.ts` |
 | P09-CA-06 | Las posiciones dependen de semilla/grafo/hogar, no del orden, del layout visual, de la política ni del día | `manta-geography.test.ts` |
 | P09-CA-07 | Los grupos de hogar conservan barrio y solo los casos iniciales reales del preview | `manta-geography.test.ts` |
@@ -78,6 +80,9 @@ Regla de consistencia: un frame solo se pinta si pertenece al mismo `graphHash`,
 | P09-CA-12 | Red y Mapa consumen el mismo frame y los mismos conteos diarios por política | `simulation-playback.test.ts` |
 | P09-CA-13 | Una comparación de otro grafo/configuración no puede animar un escenario viejo | `simulation-playback.test.ts` |
 | P09-CA-14 | Un frame inconsistente con su fila diaria se rechaza sin inventar estados | `simulation-playback.test.ts` |
+| P09-CA-15 | Los polígonos mayores alojan más hogares; se conservan cobertura, separación y pertenencia interior | `manta-geography.test.ts` |
+| P09-CA-16 | El zoom cambia los radios sin reconstruir marcadores ni perder selección; desmontar libera el listener | `geographic-agents-layer.test.ts` |
+| P09-CA-17 | La cámara incluye todos los agentes del escenario nuevo y se conserva durante reproducción y resize | `geographic-map.test.ts` |
 
 ## 7. Trazabilidad
 

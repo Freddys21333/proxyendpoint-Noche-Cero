@@ -16,9 +16,18 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
   const stateAt = (agent: GeographicAgent, presentation: AgentPresentation) =>
     presentation.mode === 'representative' ? presentation.frame?.[agent.nodeId] : agent.state
   let disposed = false
+  const radius = (state: GeographicAgent['state']) => {
+    const base = Math.max(1, Math.min(4, 1 + (map.getZoom() - 11) * 0.4))
+    return state === 'I' ? base * 1.5 : base
+  }
+  const resizeMarkers = () => {
+    if (disposed) return
+    for (const [id, marker] of markers) marker.setRadius(radius(states.get(id)!))
+  }
   const destroy = () => {
     if (disposed) return
     disposed = true
+    map.off('zoomend', resizeMarkers)
     for (const marker of markers.values()) marker.off()
     layer.clearLayers()
     layer.remove()
@@ -29,7 +38,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
   try {
     for (const agent of agents) {
       const color = seirColors[agent.state]
-      const marker = leaflet.circleMarker([agent.lat, agent.lng], { renderer, radius: agent.state === 'I' ? 5.5 : 3.5, weight: 1.5,
+      const marker = leaflet.circleMarker([agent.lat, agent.lng], { renderer, radius: radius(agent.state), weight: 0.7,
         color: color.stroke, fillColor: color.marker, fillOpacity: 0.95, bubblingMouseEvents: false })
         .bindPopup(() => popup({ ...agent, state: stateAt(agent, current)! }, current), { maxWidth: 240, maxHeight: 190,
           autoPanPaddingTopLeft: [64, 95], autoPanPaddingBottomRight: [10, 100] })
@@ -39,6 +48,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
     }
     // Initial cases remain visible when household members overlap at city-scale zoom.
     for (const agent of agents) if (agent.state === 'I') markers.get(agent.nodeId)!.bringToFront()
+    map.on('zoomend', resizeMarkers)
   } catch (error) { destroy(); throw error }
   return {
     select: (id: number | null) => {
@@ -57,7 +67,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
         if (states.get(agent.nodeId) !== state) {
           const color = seirColors[state]
           marker.setStyle({ color: color.stroke, fillColor: color.marker })
-          marker.setRadius(state === 'I' ? 5.5 : 3.5)
+          marker.setRadius(radius(state))
           states.set(agent.nodeId, state)
         }
         if (state === 'I') marker.bringToFront()
