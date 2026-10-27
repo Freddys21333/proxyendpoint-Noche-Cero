@@ -7,10 +7,9 @@ import { PreviewNetwork, type PreviewNetworkProps } from './PreviewNetwork'
 
 const GeographicMap = lazy(() => import('./GeographicMap'))
 
-// Shared owner for the real simulation views. The authored demo keeps its own controller.
+// One playback controller keeps the map and contact network synchronized.
 export function SimulationWorkspace({ active = true, comparison = null, comparisonState = 'idle', ...props }: PreviewNetworkProps) {
-  const [view, setView] = useState<'network' | 'map'>('network')
-  const [mapOpened, setMapOpened] = useState(false)
+  const [view, setView] = useState<'network' | 'map'>('map')
   const source = useMemo(() => getSimulationSource(props.preview, comparison, active, comparisonState), [props.preview, comparison, active, comparisonState])
   const lastDay = source.lastDay
   const [state, dispatch] = useReducer(
@@ -30,14 +29,14 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
 
   const playback = { ...state, ...presentation, lastDay, frames, dispatch }
   const viewSelector = <div className="visualizer-view-selector" role="group" aria-label="Vista del visualizador">
+    <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Mapa</button>
     <button type="button" aria-pressed={view === 'network'} onClick={() => setView('network')}>Red</button>
-    <button type="button" aria-pressed={view === 'map'} onClick={() => { setMapOpened(true); setView('map') }}>Mapa</button>
   </div>
-  const mapView = mapOpened ? <div className="network-view geographic-map-view" hidden={view !== 'map'}>
+  const mapView = <div className="network-view geographic-map-view" hidden={view !== 'map'}>
     <Suspense fallback={<p className="geographic-map-loading" role="status">Cargando mapa de Manta…</p>}>
       <GeographicMap visible={view === 'map' && active} preview={props.preview} playback={playback} />
     </Suspense>
-  </div> : null
+  </div>
   return <PreviewNetwork {...props} active={active} comparison={comparison} comparisonState={comparisonState} playback={playback}
     view={view} viewSelector={viewSelector} mapView={mapView} />
 }

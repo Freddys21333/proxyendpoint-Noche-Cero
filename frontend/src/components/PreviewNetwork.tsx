@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { Crosshair, ZoomIn, ZoomOut } from 'lucide-react'
+import { Crosshair, Pause, Play, RotateCcw, StepForward, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -158,13 +158,17 @@ export function PreviewNetwork({ preview, layer, resetKey, children, active = tr
         {frames ? <>
           <p>Trayectoria real de una réplica. Los promedios y rangos están en Comparación.</p>
           <label>Estrategia <select aria-label="Estrategia de la animación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
-          <p><label>Día {currentDay} de {lastDay}<input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label></p>
-          <div className="configuration-actions">
-            <Button type="button" variant="outline" onClick={() => dispatch({ type: 'toggle' })}>{playing ? 'Pausar' : 'Reproducir'}</Button>
-            <Button type="button" variant="outline" disabled={currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}>Día siguiente</Button>
-            <Button type="button" variant="outline" onClick={() => dispatch({ type: 'reset' })}>Volver al día 0</Button>
+          <div className="network-playback" role="group" aria-label="Reproductor de simulación real">
+            <div className="playback-time"><span>Día actual</span><strong>{currentDay} <small>/ {lastDay}</small></strong></div>
+            <div className="playback-actions">
+              <Button type="button" variant="ghost" aria-label="Reproducir simulación" title="Reproducir" disabled={playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} /></Button>
+              <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
+              <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
+              <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
+            </div>
+            <label className="playback-timeline"><span>{playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'Explorar días'}</span><input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label>
+            <label className="playback-speed"><span>Velocidad</span><select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>0,5×</option><option value={700}>1×</option><option value={350}>2×</option><option value={175}>4×</option></select></label>
           </div>
-          <label>Velocidad <select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>Lenta</option><option value={700}>Normal</option><option value={250}>Rápida</option></select></label>
           <p role="status">Día {currentDay} · {playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Los contactos y colores corresponden a este día.</p>
           <p>R incluye personas recuperadas o inmunizadas. Las vacunas se aplican al registrar el día {comparison!.configuration.intervention.interventionDay}.</p>
         </> : <><p role="status">{simulationModeMessages[playback.mode]}</p><p>Las vacunas se aplican al ejecutar la simulación, no en este preview.</p></>}

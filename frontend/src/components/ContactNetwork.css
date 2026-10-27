@@ -554,3 +554,18 @@
   .minimal-workspace .simulation-toolbar > div { flex-wrap: wrap; gap: 4px 16px; }
   .simulator-workbench .network-view { flex: auto; height: 58dvh; min-height: 360px; }
 }
+
+/* Real playback uses the same compact transport design in both views. */
+.simulator-workbench .real-playback .network-playback { grid-template-columns: 1fr auto; gap: 16px 8px; padding: 16px 0; border-top: 0; }
+.simulator-workbench .real-playback .playback-time { display: grid; gap: 2px; }
+.simulator-workbench .real-playback .playback-timeline,
+.simulator-workbench .real-playback .playback-speed { grid-column: 1 / -1; grid-row: auto; display: grid; gap: 8px; }
+.simulator-workbench .real-playback .playback-timeline input { width: 100%; cursor: pointer; }
+.simulator-workbench .real-playback .playback-speed { grid-template-columns: 1fr auto; align-items: center; }
+.simulator-workbench .simulation-empty { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 570px; padding: 48px 28px; text-align: center; background: radial-gradient(ellipse at center, #edf4ed, #f8faf7 70%); }
+.simulation-empty-icon { display: grid; place-items: center; width: 88px; height: 88px; border: 1px solid #c8dbcd; border-radius: 24px; background: #e3eee3; color: #315f47; margin-bottom: 24px; }
+.simulation-empty-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .09em; color: #52695a; }
+.simulator-workbench .simulation-empty h2 { margin: 12px 0; font-size: clamp(24px, 3vw, 36px); color: #203d31; }
+.simulation-empty p { max-width: 460px; line-height: 1.7; color: #52695a; }
+.simulation-empty ol { margin: 24px 0; padding-left: 24px; text-align: left; line-height: 2; color: #365b4a; }
+.simulation-empty .simulation-empty-note { font-size: 13px; }
