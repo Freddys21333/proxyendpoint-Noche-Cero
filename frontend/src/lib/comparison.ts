@@ -3,6 +3,10 @@ import type { CompareResponse, CurveMetric } from './api.ts'
 export const policyLabels = { none: 'Sin intervención', random: 'Aleatoria', targeted: 'Dirigida' }
 export const metricLabels = { s: 'Sanos', e: 'Mordidos', i: 'Zombies', r: 'Exorcizados', cumulativeInfected: 'Infectados acumulados' }
 
+export function pairedOutcome(mean: number): { magnitude: number; label: string } {
+  return { magnitude: Math.abs(mean), label: mean === 0 ? 'sin diferencia media' : `contagios ${mean > 0 ? 'menos' : 'más'}, en promedio` }
+}
+
 export function comparisonRows(result: CompareResponse, metric: CurveMetric) {
   return result.aggregatedCurves.none.map((row, day) => ({ day: row.day,
     none: row[metric].mean!, random: result.aggregatedCurves.random[day][metric].mean!, targeted: result.aggregatedCurves.targeted[day][metric].mean!,

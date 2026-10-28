@@ -4,7 +4,13 @@ import test from 'node:test'
 import { createApiClient, toConfiguration, type CompareResponse } from './api.ts'
 import { defaults } from './scenario.ts'
 import { vaccinationsAtDay, selectionReason } from './vaccination.ts'
-import { comparisonRows } from './comparison.ts'
+import { comparisonRows, pairedOutcome } from './comparison.ts'
+
+test('paired differences explain a loss as more contagions and a tie only as equal means', () => {
+  assert.deepEqual(pairedOutcome(-4), { magnitude: 4, label: 'contagios más, en promedio' })
+  assert.deepEqual(pairedOutcome(4), { magnitude: 4, label: 'contagios menos, en promedio' })
+  assert.deepEqual(pairedOutcome(0), { magnitude: 0, label: 'sin diferencia media' })
+})
 
 const fixture = (): CompareResponse => JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response-no-frames.json', import.meta.url), 'utf8'))
 

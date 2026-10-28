@@ -820,3 +820,25 @@
   .noche-cero .configuration-panel .configuration-fields { grid-template-columns: 1fr; }
   .noche-cero .configuration-panel .configuration-fields > .parameter-field > label { min-height: 0; }
 }
+
+/* Conclusión, comparación pareada y controles: identidad Noche Cero. */
+.noche-cero .results-conclusion { padding: 16px; border-left: 3px solid var(--pumpkin); background: var(--night-card); line-height: 1.7; }
+.noche-cero .paired-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0; }
+.noche-cero .paired-card { min-width: 0; padding: 16px; background: var(--night-card); border: 1px solid var(--night-border); border-top: 3px solid var(--muted); border-radius: 8px; }
+.noche-cero .paired-card--gain { border-top-color: var(--lime); }
+.noche-cero .paired-card--loss { border-top-color: var(--pumpkin); }
+.noche-cero .paired-card h3 { margin: 0 0 16px; font-size: 16px; }
+.noche-cero .paired-card h3 span, .noche-cero .paired-value span { display: block; font-weight: 400; font-size: 13px; line-height: 1.5; margin-top: 5px; color: var(--muted); }
+.noche-cero .paired-card .paired-value { font-size: 30px; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--ink); }
+.noche-cero .paired-card details { margin-top: 16px; }
+.noche-cero .paired-card summary { cursor: pointer; line-height: 1.5; }
+.noche-cero .playback-speed-row { justify-content: flex-start; flex-wrap: wrap; gap: 10px; padding-top: 8px; }
+.noche-cero .playback-accessibility-row { flex-direction: column; align-items: stretch; gap: 8px; }
+.noche-cero .playback-motion-toggle { width: 100%; min-height: 44px; justify-content: center; padding: 10px; font-size: 13px; white-space: normal; border: 2px solid var(--pumpkin); color: var(--ink); }
+.noche-cero .playback-motion-explanation { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.noche-dialog .dialog-back-button { background: var(--pumpkin, #ff8250); color: #171620; border-color: var(--pumpkin, #ff8250); min-height: 44px; font-weight: 600; }
+.noche-dialog .dialog-back-button:hover { background: var(--pumpkin-hover, #e9794b); color: #171620; }
+@media (max-width: 900px) { .noche-cero .paired-cards { grid-template-columns: 1fr; } }
+
+.noche-dialog .modal-close { color: #f1ece4; background: #2b2632; border: 1px solid #635373; border-radius: 5px; }
+.noche-dialog .modal-close:hover { color: #ff8250; border-color: #ff8250; }

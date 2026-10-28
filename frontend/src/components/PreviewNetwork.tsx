@@ -242,13 +242,14 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
           <div className="playback-timeline-group network-playback" role="group" aria-label="Línea de tiempo y velocidad de reproducción">
             <div className="playback-timeline-header">
               <span className="playback-timeline-title">Explorar días</span>
-              <span className="playback-timeline-badge">{playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : `Día ${currentDay} de ${lastDay}`}</span>
+
             </div>
             <label className="playback-timeline">
               <span className="sr-only">Día de la réplica</span>
               <input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} />
             </label>
             <div className="playback-speed-row">
+              <span className="playback-timeline-badge">{currentDay === lastDay ? 'Final de la réplica' : playing ? 'Reproduciendo' : `Día ${currentDay} de ${lastDay}`}</span>
               <label className="playback-speed">
                 <span>Velocidad</span>
                 <select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}>
@@ -258,22 +259,22 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
                   <option value={175}>4×</option>
                 </select>
               </label>
-              <span className="playback-status-pill">{currentDay === lastDay ? 'Final alcanzado' : playing ? 'En reproducción' : 'En pausa'}</span>
+
             </div>
           </div>
           <p className="playback-status-summary" role="status">{`Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.`}</p>
           <div className="playback-accessibility-row">
             <button type="button" className={`playback-motion-toggle${playback.reducedMotion ? ' active' : ''}`}
-              aria-pressed={Boolean(playback.reducedMotion)}
+              aria-pressed={Boolean(playback.reducedMotion)} aria-describedby="motion-mode-help"
               onClick={() => dispatch({ type: 'reduced-motion', enabled: !playback.reducedMotion })}
               title={playback.reducedMotion ? 'Desactivar modo de movimiento reducido (volver a animaciones normales)' : 'Activar modo de movimiento reducido para evitar mareo o sensibilidad visual'}
-              aria-label={playback.reducedMotion ? 'Desactivar movimiento reducido' : 'Activar movimiento reducido para accesibilidad'}>
+              aria-label={'Reducir movimiento'}>
               <Sparkles size={13} aria-hidden="true" />
-              <span>{playback.reducedMotion ? 'Movimiento reducido' : 'Movimiento normal'}</span>
+              <span>Reducir movimiento: {playback.reducedMotion ? 'activado' : 'desactivado'}</span>
             </button>
             <span className="playback-keyboard-hint" title="Atajos accesibles: Espacio (Play/Pausa), ← / → (Retroceder/Avanzar día), Inicio (Día 0)">Atajos: Espacio, ← / →</span>
           </div>
-          <p className="playback-motion-explanation">{playback.reducedMotion ? 'Modo accesible activo: animaciones minimizadas.' : 'Accesibilidad: reduce animaciones si tienes sensibilidad al movimiento.'}</p>
+          <p id="motion-mode-help" className="playback-motion-explanation">Normal: conserva las animaciones de la interfaz. Reducido: minimiza animaciones y transiciones. No cambia los días, la velocidad elegida ni los resultados.</p>
           {!frames && <p id="playback-availability" role="status">{availability}</p>}
         </section>
         <section className="playback-strategy-group" aria-label="Estrategia visualizada">

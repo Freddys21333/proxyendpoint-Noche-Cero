@@ -20,8 +20,8 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
   return <section className="pro-workspace" aria-labelledby="pro-title">
     <header className="pro-heading">
       <div>
-        <h1 id="pro-title">PRO</h1>
-        <p>Estado de las capacidades PRO y trabajos Monte Carlo.</p>
+        <h1 id="pro-title">Monte Carlo</h1>
+        <p>Estado de las trabajos Monte Carlo.</p>
       </div>
       <span className={`pro-badge${jobsEnabled ? '' : ' pro-badge--muted'}`}>Trabajos: {jobsEnabled ? (awsJobs ? 'AWS' : 'servidor local') : 'deshabilitados'}</span>
     </header>
@@ -57,7 +57,7 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
         : <>La comparación está disponible. Los trabajos grandes en AWS siguen pendientes de implementación (P-04).</>}
     </div>
 
-    <nav className="pro-section-nav" aria-label="Secciones PRO">
+    <nav className="pro-section-nav" aria-label="Secciones Monte Carlo">
       <button type="button" aria-current="page"><ListChecks size={17} aria-hidden="true" /> Trabajos</button>
       <button type="button" disabled title="Se habilitará al cerrar el contrato de evidencia"><Database size={17} aria-hidden="true" /> Evidencia <small>Próximamente</small></button>
     </nav>

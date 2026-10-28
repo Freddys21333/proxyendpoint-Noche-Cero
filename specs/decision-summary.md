@@ -1,5 +1,13 @@
 # Resumen de decisión para UX
 
+Actualización 28/10/2026: `conclusion` opcional (texto del backend, máximo 6000
+caracteres) añade una lectura de impacto/costos/gasto/beneficio. No cambia criterio
+ni optimiza presupuesto. Se excluye del hash científico como el resto de esta
+proyección; cuando existe se comprueba al cargar/reproducir. Se conserva validación
+exacta de todos los campos antiguos cuando el texto no está presente. No alterar
+la redacción generada en futuras versiones sin preservar su compatibilidad.
+[Evidencia](../docs/evidencia/ajustes-comparacion-controles-2026-10-28.md).
+
 Estado: **verificado localmente**, 2026-10-27. [Evidencia](../docs/evidencia/resumen-decision-2026-10-27.md). Alcance autorizado: completar datos explicativos para UX-02/03/04/05, RF-12/13/19. Sin alterar motor, presupuesto, recomendación ni T-22. Este incremento no cierra todo el backlog de UX ni la aceptación humana integral.
 
 ## Contrato

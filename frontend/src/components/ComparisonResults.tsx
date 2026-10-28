@@ -7,6 +7,7 @@ import { CombinedCostResults } from './CombinedCostResults'
 import { AdaptiveDecisionsPanel } from './AdaptiveDecisionsPanel'
 import { MayorReportDownload } from './MayorReportDownload'
 import { DecisionSummaryResults } from './DecisionSummaryResults'
+import { PairedComparisons } from './PairedComparisons'
 
 const policies = ['none', 'random', 'targeted'] as const
 const metricNames: Record<Metric, string> = { cumulativeInfected: 'Infectados acumulados', peakInfectious: 'Pico de Zombies', peakDay: 'Primer día del pico', finalInfectious: 'Zombies al final', outbreakDuration: 'Día de extinción', vaccinesAssigned: 'Dosis asignadas', vaccinesEffective: 'Dosis efectivas', vaccinesUnused: 'Dosis sin usar' }
@@ -18,22 +19,20 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
   const [metric, setMetric] = useState<Metric>('cumulativeInfected')
   const rec = result.recommendation
   const labels = { ...policyLabels, targeted: policyVariantLabel('targeted', result.configuration) }
-  const comparisons = [
-    ['Contagios evitados: aleatoria frente a no intervenir', result.pairedComparisons.savedVsNone.random],
-    ['Contagios evitados: dirigida frente a no intervenir', result.pairedComparisons.savedVsNone.targeted],
-    ['Mejora: dirigida frente a aleatoria', result.pairedComparisons.gainVsRandom],
-  ] as const
   return <>
     <div className="results-heading"><h1 id="results-title">¿Qué estrategia reduce más los contagios?</h1><p>{result.configuration.scenario.populationSize} personas sintéticas · {result.configuration.scenario.days} días · {result.configuration.repetitions} repeticiones con el mismo escenario</p><a className="plain-action" href="#result-downloads">Descargar resultados</a></div>
     <section className="results-example" aria-label="Recomendación del experimento">
       <h2>{rec.winner === 'tie' ? 'Empate en la media de infectados' : `Menor media de infectados: ${labels[rec.winner]}`}</h2>
       <p>{confidence[rec.confidence]}</p>
       <p>Objetivo: reducir el promedio de personas que se infectan durante la simulación.</p>
+      <p className="results-conclusion">{result.decisionSummary?.conclusion ?? 'La conclusión se basa en contagios medios. Para añadir la explicación económica del backend, genera una comparación nueva con la versión actual de la API.'}</p>
       {rec.confidence !== 'supported' && <p>La menor media no demuestra por sí sola una ventaja consistente. No hay evidencia suficiente para recomendar una única estrategia con confianza.</p>}
       <details><summary>Por qué se obtuvo esta conclusión</summary><ul>{rec.reasons.map((reason, i) => <li key={i}>{reason.replaceAll('targeted', 'Dirigida').replaceAll('random', 'Aleatoria').replaceAll('none', 'Sin intervención')}</li>)}</ul></details>
       <p>Simulación educativa; no es una predicción sanitaria real.</p>
     </section>
     <DecisionSummaryResults result={result} />
+    <CombinedCostResults result={result} />
+    <PairedComparisons result={result} />
     <section className="results-example" aria-label="Curvas reales del experimento">
       <h2>¿Cómo cambia el brote con los días?</h2>
       <label>Estado o métrica de la curva <select aria-label="Métrica de la curva" value={curve} onChange={event => setCurve(event.target.value as CurveMetric)}>{Object.entries(metricLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
@@ -46,7 +45,6 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
       <div className="export-downloads"><button type="button" className="plain-action" onClick={onExport}>Descargar experimento (JSON)</button><button type="button" className="plain-action" onClick={onExportCsv}>Descargar tablas (ZIP con CSV)</button></div>
       <p>PDF y HTML: informe para compartir. JSON: experimento completo para reproducir. ZIP: tablas CSV y eventos de la repetición representativa.</p>
     </section>
-    <CombinedCostResults result={result} />
     <details className="chart-table"><summary>Ver estadísticas y detalles del experimento</summary>
     <h2>Métricas por estrategia</h2><div className="comparison-table-scroll"><table>
       <caption>Medias del experimento. La extinción usa solo réplicas con E+I=0; las demás están censuradas.</caption>
@@ -58,10 +56,6 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
         const stats: Stats = result.summaryByPolicy[policy][metric]
         return <tr key={policy}><th scope="row">{labels[policy]}</th><td>{stats.n}</td><td>{number(stats.mean)}</td><td>{number(stats.median)}</td><td>{number(stats.p05)}</td><td>{number(stats.p95)}</td></tr>
       })}</tbody></table></div><p className="table-scroll-hint">Desliza horizontalmente para ver todas las columnas.</p>
-    </section>
-    <section className="results-example"><h2>Diferencias pareadas</h2><p>Valores negativos indican que la estrategia evaluada perdió frente a su referencia.</p>
-      {comparisons.map(([label, comp]) => <div key={label}><h3>{label}</h3><p>Media {number(comp.mean)} · Mediana {number(comp.median)} · P05–P95 {number(comp.p05)} a {number(comp.p95)}</p><p>{comp.bootstrap ? `IC bootstrap 95%: ${number(comp.bootstrap.lower)} a ${number(comp.bootstrap.upper)} · ${comp.bootstrap.resamples} remuestras` : 'Sin IC bootstrap: requiere 30 réplicas.'}</p></div>)}
-      <p>Dirigida supera a aleatoria en {number(result.pairedComparisons.targetedWinRateVsRandom * 100)}% de las réplicas; a no intervenir en {number(result.pairedComparisons.targetedWinRateVsNone * 100)}%.</p>
     </section>
     <AdaptiveDecisionsPanel result={result} />
     <section className="results-example"><h2>Reproducibilidad y límites</h2><p>Semilla {result.configuration.rootSeed} · Motor {result.engineVersion} · Schema {result.schemaVersion} · Build {result.manifest.buildCommit} · Región configurada {region ?? 'no disponible'}</p><p className="experiment-hash">{result.manifest.experimentHash}</p><p>{result.generatedAt}</p><ul>{rec.limitations.map((text, i) => <li key={i}>{text}</li>)}</ul></section>

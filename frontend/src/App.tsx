@@ -462,10 +462,10 @@ export default function App() {
         <nav aria-label="Navegación principal" className="simulation-navigation">
           <button type="button" aria-current={view === "simulator" ? "page" : undefined} onClick={() => setView("simulator")}>Explorar red</button>
           <button type="button" aria-current={view === "results" ? "page" : undefined} onClick={() => setView("results")}>Comparación</button>
-          <button type="button" aria-current={view === "pro" ? "page" : undefined} onClick={() => setView("pro")} title="Experimentos Monte Carlo">PRO</button>
+          <button type="button" aria-current={view === "pro" ? "page" : undefined} onClick={() => setView("pro")} title="Experimentos Monte Carlo">Monte Carlo</button>
           <button type="button" onClick={event => { dialogReturn.current = event.currentTarget; setModal("help"); }}><CircleHelp size={17} /> Ayuda</button>
         </nav>
-        <span className={`simulation-status simulation-status--${serverStatus}`} role="status"><span className="status-beacon" aria-hidden="true" />{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {view === "pro" ? "PRO" : comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
+        <span className={`simulation-status simulation-status--${serverStatus}`} role="status"><span className="status-beacon" aria-hidden="true" />{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}</span>
       </header>
       <main id="main-content" tabIndex={-1} className="simulation-main">
         {notice && (
@@ -505,7 +505,7 @@ export default function App() {
             {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver al mapa y reproducir una repetición</button>}
           </section>
         ) : (
-          <Suspense fallback={<div className="simulation-loading" role="status">Cargando PRO…</div>}>
+          <Suspense fallback={<div className="simulation-loading" role="status">Cargando Monte Carlo…</div>}>
             <ProWorkspace comparison={comparison} comparisonPending={comparisonPending} config={serverConfig} preview={remotePreview} onShowSimulator={() => setView("simulator")} onShowResults={() => setView("results")} />
           </Suspense>
         )}
@@ -541,7 +541,7 @@ export default function App() {
               <div>{comparison ? <><p>Elige el formato: PDF o HTML para compartir; JSON para reproducir; ZIP con CSV para analizar.</p><MayorReportDownload result={comparison} /></> : <p>Descarga los parámetros en JSON. Este borrador no incluye resultados. Compara estrategias para habilitar PDF, HTML y tablas CSV.</p>}</div>
             )}
             <div className="modal-actions">
-              <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
+              <Button className="dialog-back-button" variant="outline" onClick={() => setModal(null)}>Volver</Button>
               {modal === "export" && comparison && <Button variant="outline" onClick={exportCsv}>Descargar ZIP con CSV</Button>}
               {modal === "export" && <Button className="action-primary" onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento (JSON)" : "Descargar borrador (JSON)"}</Button>}
             </div>
