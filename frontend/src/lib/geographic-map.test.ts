@@ -16,6 +16,7 @@ function fixture() {
     setView(center: number[], zoom: number) { Object.assign(options, { center, zoom }); return this },
     fitBounds(bounds: number[][], camera: unknown) { Object.assign(options, { bounds, camera, fits: Number(options.fits ?? 0) + 1 }); return this },
     getZoom() { return 13 }, on() {}, off() {},
+    closePopup() { options.popupClosed = true; return this },
     invalidateSize(value: unknown) { calls.resizes++; assert.deepEqual(value, { pan: false }); return this },
     remove() { calls.removed++ },
   }
@@ -28,13 +29,14 @@ function fixture() {
   return { calls, listeners, options, runtime, container, messages, layer }
 }
 
-test('the base map opens in Manta with OSM attribution, dragging and wheel-safe zoom controls', () => {
+test('the base map opens in Manta with OSM attribution, dragging and mouse-wheel zoom controls', () => {
   const f = fixture()
   const view = mountGeographicMap(f.container, f.runtime, message => f.messages.push(message))
   const center = f.options.center as number[]
   assert.ok(center[0] < -0.9 && center[0] > -1.1)
   assert.ok(center[1] < -80.6 && center[1] > -80.9)
-  assert.equal(f.options.scrollWheelZoom, false)
+  assert.equal(f.options.scrollWheelZoom, true)
+  assert.equal(f.options.zoomAnimation, false)
   assert.equal(f.options.dragging, true)
   assert.equal(f.options.zoomControl, true)
   assert.equal(f.options.attributionControl, true)
@@ -70,7 +72,10 @@ test('a new scenario waits until the hidden map is visible, fits agents once and
   view.updateAgents({ mode: 'preview', day: 0, policy: 'targeted', frame: undefined, representativeIndex: null })
   view.resize(); view.retry()
   assert.equal(f.options.fits, 1)
+  const sizeChecks = f.calls.resizes
   view.recenter()
+  assert.equal(f.calls.resizes, sizeChecks + 1)
+  assert.equal(f.options.popupClosed, true)
   assert.equal(f.options.fits, 2)
   assert.deepEqual(f.options.bounds, agents.map(a => [a.lat, a.lng]))
   Object.assign(f.container, { clientWidth: 0, clientHeight: 0 })

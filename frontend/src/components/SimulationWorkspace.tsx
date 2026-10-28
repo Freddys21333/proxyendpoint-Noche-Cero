@@ -54,14 +54,14 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
     <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')}>Mapa</button>
     <button type="button" aria-pressed={view === 'network'} onClick={() => setView('network')}>Red</button>
   </div>
-  const mapView = <div className="network-view geographic-map-view" hidden={view !== 'map'}>
+  const renderMap = (highlightedIds: ReadonlySet<number> | null) => <div className="network-view geographic-map-view" hidden={view !== 'map'}>
     <Suspense fallback={<p className="geographic-map-loading" role="status">Cargando mapa de Manta…</p>}>
       <GeographicMap visible={view === 'map' && active} preview={props.preview} playback={playback}
-        resetKey={props.resetKey} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId} focusRequest={focusRequest} onChooseOrigin={active ? props.onChooseOrigin : undefined} />
+        resetKey={props.resetKey} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId} focusRequest={focusRequest} onChooseOrigin={active ? props.onChooseOrigin : undefined} highlightedIds={highlightedIds} />
     </Suspense>
   </div>
   return <PreviewNetwork {...props} active={active} comparison={comparison} comparisonState={comparisonState} playback={playback}
-    view={view} viewSelector={viewSelector} mapView={mapView} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId}
+    view={view} viewSelector={viewSelector} renderMap={renderMap} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId}
     onFocusPerson={id => {
       setSelectedPersonId(id)
       setFocusRequest(previous => ({ id: Number(id), version: (previous?.version ?? 0) + 1 }))

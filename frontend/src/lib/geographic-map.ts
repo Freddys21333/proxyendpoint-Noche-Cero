@@ -15,6 +15,7 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
   let pendingBounds: [number, number][] | null = null
   let agentBounds: [number, number][] | null = null
   let destroyed = false
+  let highlightedIds: ReadonlySet<number> | null = null
   const fitAgents = () => {
     if (!pendingBounds || !container.clientWidth || !container.clientHeight) return
     map!.fitBounds(pendingBounds, {
@@ -42,7 +43,7 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
 
   try {
     map = leaflet.map(container, {
-      scrollWheelZoom: false, dragging: true, zoomControl: true, attributionControl: true, zoomSnap: 0.25,
+      scrollWheelZoom: true, zoomAnimation: false, dragging: true, zoomControl: true, attributionControl: true, zoomSnap: 0.25,
     })
     map.setView(mantaCenter, 13)
     tiles = leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,13 +62,21 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
       if (destroyed) return
       agents?.destroy()
       agents = createGeographicAgentLayer(map!, leaflet, values, popup, onSelect)
+      if (highlightedIds !== null) agents.highlightPeople(highlightedIds)
       agentBounds = values.length ? values.map(agent => [agent.lat, agent.lng]) : null
       pendingBounds = agentBounds
       fitAgents()
     },
     selectAgent: (id: number | null) => { if (!destroyed) agents?.select(id) },
+    highlightPeople: (ids: ReadonlySet<number> | null) => {
+      if (destroyed) return
+      highlightedIds = ids
+      agents?.highlightPeople(ids)
+    },
     recenter: () => {
       if (destroyed) return
+      map!.closePopup()
+      map!.invalidateSize({ pan: false })
       pendingBounds = agentBounds
       fitAgents()
     },

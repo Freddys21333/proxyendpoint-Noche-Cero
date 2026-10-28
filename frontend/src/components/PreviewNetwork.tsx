@@ -21,13 +21,13 @@ const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'R
 
 export type PreviewNetworkProps = {
   preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; panelActions?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState;
-  renderTools?: (view: 'network' | 'map') => ReactNode
+  renderTools?: (view: 'network' | 'map', matchingPeople?: number) => ReactNode
   onChooseOrigin?: (id: number) => void
 }
 
-export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, mapView,
+export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, renderMap,
   selectedPersonId: selected, onSelectPerson: setSelected, onFocusPerson, renderTools, onChooseOrigin }: PreviewNetworkProps & {
-  playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; mapView?: ReactNode;
+  playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; renderMap?: (highlightedIds: ReadonlySet<number> | null) => ReactNode;
   selectedPersonId: string; onSelectPerson: (id: string) => void; onFocusPerson: (id: string) => void
 }) {
   const inspector = useRef<HTMLDetailsElement>(null)
@@ -47,6 +47,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
   const inventoryDay = schedule && budgetDay ? budgetDay as CombinedDaily & InventoryDaily : null
   const blockedContext = budgetDay?.closedContext ?? null
   const graph = useMemo(() => previewNetwork(preview, layer, currentDay, frame, frames ? selections : noSelections, blockedContext), [preview, layer, currentDay, frame, selections, blockedContext])
+  const highlightedIds = useMemo(() => layer === 'All layers' ? null : new Set(graph.nodes.filter(node => node.data.inLayer).map(node => Number(node.data.id))), [graph, layer])
   const visibleCounts = playback.counts
   const vaccineBudget = inventoryDay?.vaccinesReceivedTotal ?? preview.configuration.intervention.vaccines
   const remainingVaccines = inventoryDay?.vaccinesAvailable ?? vaccineBudget - (frames ? applied.length : 0)
@@ -230,7 +231,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </div>
       </details>
       </div>
-      {mapView}
+      {renderMap?.(highlightedIds)}
       <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}. Las vacunas se aplican al ejecutar la simulación, no en esta vista previa.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
       </div>
       {!active && <div className="simulation-update-overlay">
@@ -243,7 +244,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       </div>}
     </section>
     <FloatingSimulationControls actions={panelActions}>
-      {frames && <details className="sidebar-section"><summary>Reproducción y estrategia</summary>
+      {frames && <details className="sidebar-section" open><summary>Reproducción y estrategia</summary>
         {transport}
         <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
           <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
@@ -270,7 +271,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); dispatch({ type: 'pause' }) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
         <p>Cambia la distribución visual, sin modificar los contactos.</p>
       </div>
-      {renderTools?.(view)}
+      {renderTools?.(view, highlightedIds?.size ?? graph.nodes.length)}
       </details>
     </FloatingSimulationControls>
   </div>

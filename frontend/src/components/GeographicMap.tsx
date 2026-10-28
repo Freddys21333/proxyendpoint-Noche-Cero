@@ -43,10 +43,11 @@ function agentPopup(agent: GeographicAgent, presentation: AgentPresentation, onC
   return content
 }
 
-export default function GeographicMap({ visible, preview, playback, resetKey, selectedPersonId, onSelectPerson, focusRequest, onChooseOrigin }: {
+export default function GeographicMap({ visible, preview, playback, resetKey, selectedPersonId, onSelectPerson, focusRequest, onChooseOrigin, highlightedIds }: {
   visible: boolean; preview: PreviewResponse; playback: SimulationPresentation; resetKey: number;
   selectedPersonId: string; onSelectPerson: (id: string) => void; focusRequest: { id: number; version: number } | null;
   onChooseOrigin?: (id: number) => void;
+  highlightedIds: ReadonlySet<number> | null;
 }) {
   const container = useRef<HTMLDivElement>(null)
   const controller = useRef<ReturnType<typeof mountGeographicMap> | null>(null)
@@ -97,6 +98,7 @@ export default function GeographicMap({ visible, preview, playback, resetKey, se
     try { controller.current?.updateAgents(playback) }
     catch { setError('No se pudo actualizar la trayectoria individual. La vista Red sigue disponible.') }
   }, [playback, placement])
+  useEffect(() => { controller.current?.highlightPeople(highlightedIds) }, [highlightedIds, placement])
   useEffect(() => { controller.current?.selectAgent(visible ? selectedId : null) }, [visible, selectedId, placement])
   useEffect(() => {
     if (lastResetKey.current === resetKey) return

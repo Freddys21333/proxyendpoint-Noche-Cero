@@ -24,7 +24,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
     if (!disposed) redraw.call(this)
   }
   const radius = (state: GeographicAgent['state']) => {
-    const base = Math.max(1, Math.min(4, 1 + (map.getZoom() - 11) * 0.4))
+    const base = Math.max(2.5, Math.min(7, 3 + (map.getZoom() - 13) * 0.6))
     return state === 'I' ? base * 1.5 : base
   }
   const resizeMarkers = () => {
@@ -58,6 +58,13 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
     map.on('zoomend', resizeMarkers)
   } catch (error) { destroy(); throw error }
   return {
+    highlightPeople: (ids: ReadonlySet<number> | null) => {
+      if (disposed) return
+      for (const [id, marker] of markers) {
+        const matches = ids === null || ids.has(id)
+        marker.setStyle({ opacity: matches ? 1 : 0.8, fillOpacity: matches ? 0.95 : 0.65 })
+      }
+    },
     select: (id: number | null) => {
       if (disposed) return
       if (id === null) map.closePopup()

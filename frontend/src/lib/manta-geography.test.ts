@@ -32,7 +32,7 @@ test('the versioned OSM resource expands to twenty-two residential polygons acro
   assert.equal(insideRing([-80.71, -0.9], data.features[0].geometry.coordinates[0]), false)
 })
 
-test('larger footprints receive more households while anchors remain separated and every sector is used', () => {
+test('households spread across sectors without letting the largest footprint dominate', () => {
   const data = structuredClone(resource())
   data.features = data.features.slice(0, 2)
   data.features[0].geometry.coordinates = [[[-80.72, -0.98], [-80.719, -0.98], [-80.719, -0.979], [-80.72, -0.979], [-80.72, -0.98]]]
@@ -43,8 +43,8 @@ test('larger footprints receive more households while anchors remain separated a
   const agents = assignGeographicAgents(source, data)
   const small = agents.filter(a => a.sectorId === data.features[0].properties.sectorId)
   const large = agents.filter(a => a.sectorId === data.features[1].properties.sectorId)
-  assert.ok(small.length > 0 && small.length < 30, `small footprint contains ${small.length} households`)
-  assert.ok(large.length > 970)
+  assert.ok(small.length >= 100 && small.length <= 130, `small footprint contains ${small.length} households`)
+  assert.ok(large.length >= 870 && large.length <= 900)
   const nearest = large.map((a, index) => Math.sqrt(Math.min(...large.filter((_, i) => i !== index)
     .map(b => (a.lng - b.lng) ** 2 + (a.lat - b.lat) ** 2))))
   nearest.sort((a, b) => a - b)

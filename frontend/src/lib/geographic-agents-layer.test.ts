@@ -8,6 +8,39 @@ import type { SimulationPresentation } from './simulation-playback.ts'
 import type { CompareResponse, Policy } from './api.ts'
 import { readFileSync } from 'node:fs'
 
+test('contact highlighting preserves marker identity, state, positions and selection', () => {
+  const agents = [0, 1].map(id => ({ id, nodeId: id, lat: -0.96 + id * 0.001, lng: -80.7, state: 'S' })) as GeographicAgent[]
+  const original = JSON.stringify(agents)
+  const records: { center: number[]; style: Record<string, unknown>; opened: number; click?: () => void }[] = []
+  const runtime = {
+    canvas: () => ({ remove() {} }), layerGroup: () => ({ addTo() { return this }, clearLayers() {}, remove() {} }),
+    circleMarker(center: number[], style: Record<string, unknown>) {
+      const record = { center, style: { ...style }, opened: 0 } as typeof records[number]
+      records.push(record)
+      return { bindPopup() { return this }, on(_event: string, handler: () => void) { record.click = handler; return this }, off() {}, addTo() {},
+        bringToFront() { return this }, openPopup() { record.opened++; return this }, getPopup() { return undefined },
+        setStyle(next: Record<string, unknown>) { Object.assign(record.style, next) }, setRadius() {} }
+    },
+  } as unknown as AgentMapRuntime
+  let selected = -1
+  const map = { getZoom: () => 13, on() {}, off() {}, closePopup() {} } as unknown as LeafletMap
+  const layer = createGeographicAgentLayer(map, runtime, agents, () => ({} as HTMLElement), id => { selected = id })
+  layer.highlightPeople(new Set([1]))
+  assert.equal(records[0].style.fillOpacity, 0.65)
+  assert.equal(records[1].style.fillOpacity, 0.95)
+  layer.update({ mode: 'representative', day: 1, policy: 'targeted', frame: ['I', 'R'], representativeIndex: 0 })
+  assert.equal(records[0].style.fillColor, seirColors.I.marker)
+  assert.equal(records[0].style.fillOpacity, 0.65)
+  records[0].click!(); layer.select(0)
+  assert.equal(selected, 0); assert.equal(records[0].opened, 1)
+  layer.highlightPeople(null)
+  assert.ok(records.every(record => record.style.fillOpacity === 0.95 && record.style.opacity === 1))
+  assert.equal(records.length, 2)
+  assert.deepEqual(records.map(record => record.center), agents.map(agent => [agent.lat, agent.lng]))
+  assert.equal(JSON.stringify(agents), original)
+  layer.destroy()
+})
+
 test('Canvas markers retain each original ID, initial state color and selection callback', () => {
   const agents = ['S', 'E', 'I', 'R'].map((state, index) => ({ id: index + 10, nodeId: index + 10, lat: -0.96 + index * 0.001,
     lng: -80.7, state, householdId: 'household-0', neighborhoodId: 'neighborhood-0', sectorId: 'synthetic-sector-0',
@@ -107,11 +140,11 @@ test('live frames update retained markers and the open selection without moving 
     assert.equal(records[selection].opened, 1)
     assert.equal(records[selection].popup.options.autoPan, true)
     const cityRadius = records[0].options.radius
-    assert.ok(cityRadius <= 2, 'city overview uses small markers')
+    assert.ok(cityRadius >= 3, 'city overview keeps people visible')
     assert.equal(typeof mapEvents.zoomend, 'function')
     zoom = 17
     mapEvents.zoomend()
-    assert.ok(records[0].options.radius > cityRadius)
+    assert.ok(records[0].options.radius >= 5, 'close zoom keeps people easy to select')
     assert.ok(records[2].options.radius > records[0].options.radius)
     assert.equal(records.length, size)
     assert.equal(records[selection].opened, 1)

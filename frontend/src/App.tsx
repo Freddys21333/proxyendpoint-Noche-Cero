@@ -477,14 +477,14 @@ export default function App() {
           <>
             <h1 className="sr-only">Explorar la población y simular el brote</h1>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork onChooseOrigin={chooseOrigin} resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions} renderTools={visualizerView => <section className="visualizer-tools" aria-label="Controles de la vista"><div className="simulation-tools">
-                <label className="simulation-layer"><span>Tipo de contacto{visualizerView === 'map' ? ' · solo Red' : ''}</span>
-                  <select value={layer} disabled={visualizerView === 'map'} aria-describedby={visualizerView === 'map' ? 'contact-filter-help' : undefined} onChange={(event) => setLayer(event.target.value)}>
+              <ContactNetwork onChooseOrigin={chooseOrigin} resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions} renderTools={(visualizerView, matchingPeople) => <section className="visualizer-tools" aria-label="Controles de la vista"><div className="simulation-tools">
+                <label className="simulation-layer"><span>Tipo de contacto</span>
+                  <select value={layer} aria-describedby="contact-filter-help" onChange={(event) => setLayer(event.target.value)}>
                     {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>
-                <button type="button" className="plain-action" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} />{visualizerView === 'map' ? 'Centrar mapa' : 'Centrar red'}</button>
-              </div>{visualizerView === 'map' && <p id="contact-filter-help" className="contact-filter-help">Cambia a Red para filtrar contactos. El mapa muestra todas las personas.</p>}</section>}>{parameterPanel}</ContactNetwork>
+                <button type="button" className="plain-action" title="Ajustar la vista para mostrar toda la población" onClick={() => setResetKey((current) => current + 1)}><RotateCcw size={17} />{visualizerView === 'map' ? 'Centrar mapa' : 'Centrar red'}</button>
+              </div><p id="contact-filter-help" className="contact-filter-help">Resalta personas con este tipo de contacto en el día mostrado.{matchingPeople === 0 && <strong> No hay contactos de este tipo hoy.</strong>}</p></section>}>{parameterPanel}</ContactNetwork>
             </Suspense>
           </>
         ) : view === "results" ? (

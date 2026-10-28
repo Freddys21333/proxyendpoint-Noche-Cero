@@ -82,7 +82,7 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
   const features = [...data.features].sort((a, b) => a.properties.sectorId < b.properties.sectorId ? -1 : 1)
   const nodes = [...preview.graph.nodes].sort((a, b) => a.id - b.id)
   if (new Set(nodes.map(n => n.id)).size !== nodes.length) throw new Error('Identificadores de agentes duplicados.')
-  const key = `mantalab-geography-v3:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
+  const key = `mantalab-geography-v4:${data.resourceVersion}:${preview.configuration.rootSeed}:${preview.graphHash}`
   const sectorOrder = [...features]
   const shuffle = randomStream(`${key}:sectors`)
   for (let i = sectorOrder.length - 1; i > 0; i--) {
@@ -106,9 +106,9 @@ export function assignGeographicAgents(preview: PreviewResponse, raw: unknown): 
     return { feature, area: Math.abs(area), households: 0 }
   })
   for (const [household, members] of [...households].sort(([a], [b]) => a < b ? -1 : 1)) {
-    // Cover each footprint first, then balance household density by usable area.
+    // Cover each footprint first; square-root weighting limits visual concentration.
     const footprint = householdIndex < footprints.length ? footprints[householdIndex] :
-      footprints.reduce((best, next) => next.households / next.area < best.households / best.area ? next : best)
+      footprints.reduce((best, next) => next.households / Math.sqrt(next.area) < best.households / Math.sqrt(best.area) ? next : best)
     householdIndex++
     footprint.households++
     const feature = footprint.feature
