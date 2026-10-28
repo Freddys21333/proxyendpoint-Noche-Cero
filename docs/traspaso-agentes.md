@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-27.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último commit:** P-06 (`feat(pro-p06)`), tras P-05 (`0902755`).
+**Último incremento:** P-08 (`git log --grep=pro-p08`), informe local ficticio; P-06 conserva su resultado desfavorable.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -23,7 +23,7 @@ Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar e
 - P-02: aceptación humana UI; editor, historial y backend adaptativo ya verificados en local.
 - P-04: AWS; la pantalla de jobs ya usa la API real (P-03 cerrada en local, no durable).
 - P-06: existe el preset `manabi-dengue-2025-v1`, pero la validación fuera de muestra es desfavorable; no hay versión validada.
-- P-08: informe determinista para alcaldía.
+- P-08: informe PDF verificado localmente en modo ficticio; [contrato](../specs/p08-report.md) y [evidencia](evidencia/p08-informe-2026-10-27.md); no cierra T-22.
 - P-07: aceptación de sincronización, accesibilidad y rendimiento.
 - T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
 
@@ -274,7 +274,7 @@ Antes de ejecutar, revisar `scripts/run_t22.py`. Su compilación, Ruff y corrida
 | P-05 | Cerrado en local | Hecho: `manabi-dengue-weekly-v1`, 94 semanas (2025 S1–53, 2026 S1–41), 18 259 casos, desde las gacetas ETV SE 53/2025 y SE 41/2026 del MSP. | Cumplido: importador `download`/`extract`/`build`/`verify`/`render`, geometría versionada, procedencia con hash, control directo 2026 (11 946) e indirecto por tasas 2025 (6 313). Límites: provincial, preliminar, 2026 incompleto. |
 | P-06 | Cerrado en local, **no validado** | Hecho: `manabi-dengue-2025-v1` sobre `manabi-dengue-weekly-v1`; SEIR de mezcla homogénea con `σ`/`γ` del motor, `N` fijo, NB semanal, ventanas 2025 S1–S35/S36–S53 y 2026 S1–S27/S28–S41, bootstrap 120, perfil de `β` y puente `β_motor = R₀·γ/w̄`. | Cumplido: `scripts/p06_calibrate.py verify` reproduce el preset; panel en la UI con etiqueta y límites. Resultado: pierde frente a persistencia (29,53 vs 14,22 y 268,62 vs 48,86), `N`–`ρ` confundidos y ventana de 371 días fuera del motor. No re-tunear. |
 | P-07 | Parcial | Sincronización mapa/red/curva/tabla, pausa/seek/velocidad/reinicio, foco, movimiento reducido, rendimiento. | Sin divergencias; frames coherentes con hash/réplica/día; accesibilidad y rendimiento aceptados; no inventar contagios ni trayectos. |
-| P-08 | No iniciado | Informe determinista para alcaldía, preferible PDF, desde experimento validado. | Cifras coinciden con JSON; fuentes, hash, costos, incertidumbre y límites; PDF revisado y reproducible; no ocultar pérdidas. |
+| P-08 | Verificado localmente: PDF/API/CLI y descarga; [evidencia](evidencia/p08-informe-2026-10-27.md) | Informe determinista para alcaldía, preferible PDF, desde experimento validado. | Cifras coinciden con JSON; fuentes, hash, costos, incertidumbre y límites; PDF revisado y reproducible; no ocultar pérdidas. |
 
 Detalle completo: [specs/pro-roadmap.md](../specs/pro-roadmap.md) y [specs/pro-workstreams.md](../specs/pro-workstreams.md).
 

@@ -122,6 +122,8 @@ P-01 verificado localmente (2026-10-27): [calendario opcional de entregas e inve
 - **PRO-6:** mapa o grafo animado del avance, identificado como una réplica concreta.
 - **PRO-7:** informe para el alcalde en lenguaje simple, generado mediante plantilla determinista; un LLM es opcional.
 
+  P-08 local (2026-10-27) concreta PRO-7 como PDF descargable desde resultados completos: escenario, comparación, incertidumbre, recursos, gasto/saldo, límites y trazabilidad al JSON. [Contrato y aceptación](specs/p08-report.md). Validar integridad del documento no equivale a aprobar T-22 ni a predicción epidemiológica; el modo ficticio permanece explícito.
+
 Ampliación de planificación solicitada el 2026-10-27: [hoja de ruta PRO](specs/pro-roadmap.md). Priorizar reposición diaria y decisiones adaptativas; preparar Monte Carlo masivo en AWS; incorporar **datos reales**, con dengue en Manabí como candidato prioritario, antes de declarar calibración; completar la reproducción temporal con animación adicional si hay tiempo; preparar informe sencillo con PDF como salida preferida. El mapa ya reproduce estados reales por día y las brigadas ya recalculan destinatarios: ambos son avances parciales, no capacidades ausentes ni PRO completo.
 
 El **mapa geográfico con teselas OSM de Manta** queda registrado como **P-09**, una feature de presentación verificada localmente, separada de P-07 y de los pendientes científicos. Usa trece polígonos residenciales versionados y posiciones sintéticas deterministas; no escribe geografía en la API, no altera hashes y no convierte OSM en dato epidemiológico ni en domicilio real. Ficha y aceptación en [specs/p09-geographic-map.md](specs/p09-geographic-map.md).

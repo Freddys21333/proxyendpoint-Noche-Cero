@@ -362,6 +362,8 @@ No hay transformaciones fijas obligatorias ni botones de presets requeridos. Dup
 
 ## 9. Contrato HTTP `/v1`
 
+P-08 local (2026-10-27): `POST /reports/mayor` recibe un `CompareResponse` completo de hasta 32 MiB y devuelve un PDF adjunto, con errores JSON saneados. Valida hashes, progreso y derivados recalculados; genera con ReportLab fijado en lock, sin volver a ejecutar el motor, almacenar datos ni llamar a un LLM. Comparación y trabajos completos comparten descarga; CLI usa la misma proyección. Plantilla invariante `mayor-report-v1`, sin alterar hashes científicos. [Contrato, límites y pruebas](specs/p08-report.md); OpenAPI es la referencia ejecutable. El límite de configuración de los endpoints existentes no cambia.
+
 ### 9.1 Convenciones
 
 - JSON UTF-8, `Content-Type: application/json`.

@@ -1,5 +1,6 @@
 import { AlertTriangle, Check, Clock, Download, RefreshCw, Square, Trash2 } from 'lucide-react'
 import type { CompareResponse, Policy } from '../lib/api.ts'
+import { MayorReportDownload } from '../components/MayorReportDownload'
 import { policyLabels } from '../lib/comparison.ts'
 import {
   isTerminalJob, jobOutcome, jobProgressPercent, jobStatusDescriptions, jobStatusLabels,
@@ -150,6 +151,7 @@ export function JobStatusPanel({ job, result, resultLoading, cancelling, onCance
       </p>
       <ul className="pro-result-reasons">{result.recommendation.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
       <p className="pro-hash">Hash del experimento <span className="mono">{result.manifest.experimentHash}</span></p>
+      <MayorReportDownload key={result.manifest.experimentHash} result={result} />
     </section>}
   </section>
 }

@@ -5,6 +5,7 @@ import { policyVariantLabel } from '@/lib/adaptive'
 import ComparisonChart from './ComparisonChart'
 import { CombinedCostResults } from './CombinedCostResults'
 import { AdaptiveDecisionsPanel } from './AdaptiveDecisionsPanel'
+import { MayorReportDownload } from './MayorReportDownload'
 
 const policies = ['none', 'random', 'targeted'] as const
 const metricNames: Record<Metric, string> = { cumulativeInfected: 'Infectados acumulados', peakInfectious: 'Pico de Zombies', peakDay: 'Primer día del pico', finalInfectious: 'Zombies al final', outbreakDuration: 'Día de extinción', vaccinesAssigned: 'Dosis asignadas', vaccinesEffective: 'Dosis efectivas', vaccinesUnused: 'Dosis sin usar' }
@@ -51,5 +52,6 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
     </section>
     <AdaptiveDecisionsPanel result={result} />
     <section className="results-example"><h2>Reproducibilidad y límites</h2><p>Motor {result.engineVersion} · Schema {result.schemaVersion} · Build {result.manifest.buildCommit} · Región configurada {region ?? 'no disponible'}</p><p className="experiment-hash">{result.manifest.experimentHash}</p><p>{result.generatedAt}</p><ul>{rec.limitations.map((text, i) => <li key={i}>{text}</li>)}</ul><div className="export-downloads"><button type="button" className="plain-action" onClick={onExport}>Descargar experimento JSON</button><button type="button" className="plain-action" onClick={onExportCsv}>Descargar ZIP con CSV</button></div><p>CSV para análisis; JSON para reproducir. Los eventos del ZIP corresponden solo a la réplica representativa.</p></section>
+    <MayorReportDownload result={result} />
   </>
 }

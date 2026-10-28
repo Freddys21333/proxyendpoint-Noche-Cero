@@ -1,4 +1,4 @@
-import { Database, FileText, ListChecks, ShieldCheck } from 'lucide-react'
+import { Database, ListChecks, ShieldCheck } from 'lucide-react'
 import type { CompareResponse, ConfigResponse, PreviewResponse } from '../lib/api.ts'
 import { policyLabels } from '../lib/comparison.ts'
 import { JobsWorkspace } from './JobsWorkspace.tsx'
@@ -60,10 +60,10 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
     <nav className="pro-section-nav" aria-label="Secciones PRO">
       <button type="button" aria-current="page"><ListChecks size={17} aria-hidden="true" /> Trabajos</button>
       <button type="button" disabled title="Se habilitará al cerrar el contrato de evidencia"><Database size={17} aria-hidden="true" /> Evidencia <small>Próximamente</small></button>
-      <button type="button" disabled title="Se habilitará al cerrar el contrato de informe"><FileText size={17} aria-hidden="true" /> Informe <small>Próximamente</small></button>
     </nav>
 
     <JobsWorkspace config={config} preview={preview} onShowSimulator={onShowSimulator} />
+    <p>El informe para alcaldía se descarga desde Comparación o desde el resultado completo de un trabajo.</p>
 
     <details className="pro-contract">
       <summary><ShieldCheck size={17} aria-hidden="true" /> Estado de integración</summary>

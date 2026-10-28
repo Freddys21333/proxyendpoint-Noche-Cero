@@ -6,6 +6,8 @@
 **Fuentes:** [PRD](../PRD.md) v1.1 y [TRD](../TRD.md) v1.3.
 **Complementos:** [Diseño](design.md), [Acuerdos técnicos](agreements.md) y [Tareas](tasks.md).
 
+**P-08 / PRO-7:** el [contrato del informe](p08-report.md) exige PDF en lenguaje sencillo desde un experimento completo con integridad comprobada, cifras backend, incertidumbre, presupuesto educativo, límites y hash. La integridad del documento no equivale a validación epidemiológica ni aprueba T-22.
+
 ## 1. Propósito y alcance
 
 Construir una herramienta educativa para comparar intervenciones sobre una población sintética inspirada en Manta. El comité configura un brote, ejecuta varias réplicas y decide con curvas, métricas e incertidumbre. El jurado debe poder cambiar la semilla y las condiciones sin editar código.

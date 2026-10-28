@@ -38,7 +38,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
 | P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
 | P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
-| P-08 | No iniciado: no hay informe PDF determinista. |
+| P-08 | Verificado localmente en modo ficticio: PDF determinista, API/CLI y descarga; T-22 independiente. [Evidencia](evidencia/p08-informe-2026-10-27.md). |
 | AWS | No desplegado; `infra/` vacío. Se deja para la última fase. |
 
 Evidencia de partida: [auditoría PRO 2026-10-27](evidencia/auditoria-pro-2026-10-27.md).
@@ -194,6 +194,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-06 — P-08: informe para el alcalde
 
+**Estado 2026-10-27:** verificado localmente por solicitud explícita del usuario. [Contrato](../specs/p08-report.md) y [evidencia](evidencia/p08-informe-2026-10-27.md). Se usa experimento ficticio completo con integridad comprobada; este incremento no cierra el gate científico T-22 ni la aceptación humana integral. PDF/API/CLI y descarga desde comparación y trabajos completos disponibles.
+
 **Problema:** los resultados existen, pero no hay un documento sencillo, determinista y trazable para una autoridad.
 
 **Alcance:**
@@ -322,7 +324,7 @@ Reglas heredadas que no se pueden romper:
 | I-03 | Completada localmente: dataset real y verificado | `git log --grep=pro-p05` | `docs/evidencia/p05-dengue-manabi-2026-10-27.md` |
 | I-04 | Completada localmente: backend, cliente y UI con API real | `git log --grep=pro-p03` | `docs/evidencia/p03-ui-2026-10-27.md` |
 | I-05 | Completada localmente: preset `fitted-not-validated`, validación desfavorable publicada | `git log --grep=pro-p06` | `docs/evidencia/p06-dengue-manabi-2026-10-27.md` |
-| I-06 | Pendiente | — | — |
+| I-06 | Verificado localmente, informe ficticio reproducible | `git log --grep=pro-p08` | `docs/evidencia/p08-informe-2026-10-27.md` |
 | I-07 | Pendiente | — | — |
 | I-08 | Pendiente | — | — |
 | I-09 | Pendiente | — | — |

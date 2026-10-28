@@ -16,12 +16,12 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-27
 
-Rama de trabajo: `feat/backend-contratos`. Último commit: P-06 (`feat(pro-p06)`), tras P-05 (`0902755`). Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
+Rama de trabajo: `feat/backend-contratos`. Último incremento: P-08 (`git log --grep=pro-p08`); conserva P-06 ajustado, no validado. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **391 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **135 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **404 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
+| Frontend base | **137 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
 | Rendimiento | Benchmark por defecto `N=1000/T=90/R=30`: **44,3 s** sin frames, 8,5× mejor que 377,9 s. | Objetivo backend ≤25 s no alcanzado; benchmark AWS no ejecutado. |
 | T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
@@ -31,7 +31,7 @@ Rama de trabajo: `feat/backend-contratos`. Último commit: P-06 (`feat(pro-p06)`
 | P-05 | Verificado localmente: `manabi-dengue-weekly-v1` con 94 semanas (2025 S1–53, 2026 S1–41), importador reproducible, geometría versionada, procedencia y controles de totales. | Nada pendiente en P-05; la granularidad provincial y los datos preliminares quedan como límites declarados. |
 | P-06 | Cerrado en local con resultado **desfavorable**: `manabi-dengue-2025-v1` (`fitted-not-validated`), ventanas fijadas antes de mirar, bootstrap 120, perfil condicional, puente al motor y panel en la UI. | La validación pierde frente a persistencia (29,53 vs 14,22 y 268,62 vs 48,86); no hay versión validada y P-08 debe citar la etiqueta. |
 | P-07 | Parcial: reproducción y mapa sincronizados. | Aceptación de transiciones, rendimiento, accesibilidad y movimiento reducido. |
-| P-08 | No iniciado. | Informe determinista para alcaldía, preferiblemente PDF, desde experimento validado. |
+| P-08 | Verificado localmente: informe PDF determinista desde experimento ficticio completo, API/CLI y descarga en comparación/trabajos. | T-22 y aceptación humana integral siguen independientes. [Evidencia](docs/evidencia/p08-informe-2026-10-27.md). |
 | P-09 | Verificado localmente como presentación. | Mantener separación entre OSM, posiciones sintéticas y riesgo real. |
 | AWS/entrega | No desplegado. `infra/` vacío. Región decidida: `us-east-2`. | T-17..T-21: IaC, staging, URL pública, benchmark, costos, Budget, arquitectura SVG y pitch. |
 
@@ -92,7 +92,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - [x] P-05: datos reales de dengue en Manabí; verificado localmente (94 semanas, 2025–2026).
 - [x] P-06: calibración y preset versionado; cerrado en local con `manabi-dengue-2025-v1`, etiquetado `fitted-not-validated` porque la validación pierde frente a persistencia.
 - [ ] P-07: mapa/animación; parcial, falta aceptación.
-- [ ] P-08: informe para alcaldía; no iniciado.
+- [x] P-08: informe PDF para alcaldía verificado localmente, modo ficticio; contrato, API/CLI, descarga y evidencia. No aprueba T-22.
 - [x] P-09: mapa geográfico y capa de agentes; verificado localmente como presentación.
 
 ## 7. Funcionalidades que ya existen
@@ -120,7 +120,7 @@ Prioridad inmediata:
 2. **P-02, cierre de aceptación.** El editor, la etiqueta de variante y el historial diario ya funcionan contra el motor real ([evidencia](docs/evidencia/p02-ui-2026-10-27.md)). Falta la aceptación humana T-13..T-16 y repetir en UI los escenarios de saldo agotado y sin elegibles.
 3. **P-03 cerrada en local / P-04.** Rutas `/v1/jobs`, cliente y pantalla PRO verificados localmente ([evidencia](docs/evidencia/p03-ui-2026-10-27.md)). Queda P-04 AWS.
 4. **P-06 cerrada en local, resultado desfavorable.** El preset `manabi-dengue-2025-v1` existe y se reproduce (`scripts/p06_calibrate.py verify`), pero la validación pierde frente a persistencia ([evidencia](docs/evidencia/p06-dengue-manabi-2026-10-27.md)). No se re-tunea: P-08 debe citar la etiqueta `fitted-not-validated`.
-5. **P-08.** Informe determinista para alcaldía con cifras del JSON, costos, incertidumbre, fuentes, hash y límites.
+5. **P-08 cerrada localmente.** Informe PDF con cifras del JSON, costos, incertidumbre, fuentes, hash y límites; no reimplementar. [Contrato](specs/p08-report.md) y [evidencia](docs/evidencia/p08-informe-2026-10-27.md).
 6. **P-07.** Cerrar sincronización mapa/red/curva/tabla, pausa/seek/velocidad, foco, movimiento reducido y rendimiento.
 7. **P-04/T-17..T-21.** Terraform, staging, Distributed Map, URL pública, benchmark, costos, Budget, arquitectura y documentación de entrega.
 
@@ -205,7 +205,7 @@ Comandos, pasos y resultados esperados de cada funcionalidad PRO ya cerrada est�
 - **P-03 es local y no durable.** La pantalla PRO usa la API real, pero reiniciar el servidor pierde los trabajos; la UI solo avisa. No es AWS ni evidencia de miles de réplicas.
 - **Los datos de P-05 son provinciales y preliminares.** `manabi-dengue-weekly-v1` no tiene granularidad de Manta, 2026 llega hasta la SE 41 y el dataset no alimenta el simulador. No es calibración ni evidencia de riesgo local; el control de 2025 es indirecto (tasas), no una tabla de casos.
 - **El preset de P-06 no está validado.** `manabi-dengue-2025-v1` pierde frente a persistencia en 2025 y 2026 (`fitted-not-validated`); su `β` es preciso solo condicionado al modelo y `N`–`ρ` siguen confundidos. No re-tunear ventanas ni semillas, y no presentarlo como calibración validada.
-- **P-01/P-09 no cierran PRO.** P-02, P-03 y P-06 tienen backend, cliente y UI locales verificados; P-04 y P-08 siguen abiertos, y T-13..T-16 por aceptación humana.
+- **P-01/P-09 no cierran PRO.** P-02, P-03, P-06 y P-08 tienen implementación local verificada; P-04 sigue abierto, y T-13..T-16 por aceptación humana. P-08 no equivale a aprobar T-22.
 - **El mapa no es evidencia epidemiológica.** OSM y posiciones sintéticas no prueban riesgo ni movilidad real.
 - **El Budget no está operativo.** 0/2 destinatarios verificados; una alerta no detiene el gasto.
 - **No hay URL pública ni AWS desplegado.** `infra/` está vacío.

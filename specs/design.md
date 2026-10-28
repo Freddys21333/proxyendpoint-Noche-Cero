@@ -9,6 +9,8 @@
 
 ## 1. Arquitectura y límites
 
+**P-08 local:** [diseño y aceptación](p08-report.md). `simulation/report.py` valida exportación y derivados, proyecta cifras y genera PDF con ReportLab; `POST /v1/reports/mayor` y CLI comparten esa lógica. El frontend solo solicita y descarga el archivo. No cambia motor, RNG ni hashes científicos. Este incremento sustituye la mención anterior del PDF como diseño pendiente; AWS conserva su estado.
+
 Se conserva la arquitectura de TRD §1–3: Python 3.12, NumPy y NetworkX para motor; React, TypeScript y Vite con Cytoscape.js y Recharts para interfaz; Amplify Hosting, API Gateway HTTP API y Lambda para base. Versiones exactas y locks se incorporan al preparar cada entorno. No se agrega framework HTTP sin decisión documentada.
 
 ```mermaid

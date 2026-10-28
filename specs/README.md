@@ -4,6 +4,7 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 
 | Documento | Contenido | Estado |
 |---|---|---|
+| [P-08: informe para alcaldía](p08-report.md) | PDF reproducible, endpoint, CLI, cifras, presupuesto e incertidumbre | Verificado localmente; T-22 y aceptación humana integral independientes |
 | [Mejoras del sistema y UX](mejoras-sistema-ux.md) | Backlog UX-01..UX-08: recorrido, recomendación, indicadores, presupuesto educativo, parámetros, mapa y accesibilidad | Planificado; excluye pitch y AWS; sin cierre de aceptación |
 | [requirements.md](requirements.md) | Alcance, requisitos RF/CA, parámetros y aceptación | Borrador para revisión del equipo |
 | [design.md](design.md) | Módulos, contratos, motor, UI, AWS y acuerdos D-01..D-08 | Diseño adoptado; verificación AWS pendiente |

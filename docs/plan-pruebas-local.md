@@ -360,3 +360,19 @@ Resultado de referencia (2026-10-27, I-05): 391 pruebas backend; 135 pruebas fro
 - La aceptación humana T-13..T-16 (teclado, contraste con personas, tiempos de demo, guion sorpresa) requiere personas y acceso; no se simula con scripts.
 - Las capturas prueban lo que muestran; no sustituyen los hashes ni la reproducibilidad que verifican los scripts.
 - T-22 sigue incompleto: ninguna cifra de estas pruebas debe citarse como gate científico.
+
+
+## P-08 · Informe PDF para alcaldía (2026-10-27)
+
+Desde la raíz, con API local en `:8000` y Vite en `:5174` para la comprobación HTTP:
+
+```powershell
+backend/.venv/Scripts/python.exe scripts/verify_report.py --api-base http://127.0.0.1:5174/v1
+backend/.venv/Scripts/python.exe scripts/report_mayor.py .tools/p08-evidence/experiment.json --output .tools/p08-evidence/informe-cli.pdf
+```
+
+Sin servidor, omitir `--api-base`. La primera orden ejecuta N60/T7/R30 con presupuesto, entregas y semilla fija; guarda JSON fuente, proyección y PDF en `.tools/p08-evidence/`. Comprueba determinismo y, con API, igualdad de bytes. La segunda genera PDF desde el JSON sin volver a simular.
+
+Desde `backend/`: `.venv/Scripts/python.exe -m pytest tests/test_report.py -q` (13 casos). Desde `frontend/`: `npm test -- --run` incluye pruebas del cliente PDF. En navegador: ejecutar comparación → descargar informe junto a exportaciones; alternativamente crear trabajo → leer resultado completo → descargar informe. Nunca habilitarlo para resultado parcial. Probar error/reintento e invalidación al cambiar escenario.
+
+Resultado observado: 404 pruebas backend, 137 frontend, Ruff/mypy/tipos/build correctos. [Contrato](../specs/p08-report.md) y [evidencia](evidencia/p08-informe-2026-10-27.md). T-22 y aceptación humana integral conservan sus pendientes.
