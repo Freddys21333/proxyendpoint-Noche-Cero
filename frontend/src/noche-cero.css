@@ -492,6 +492,9 @@
 .noche-cero .comparison-empty { min-height: 280px; background: var(--night-raised); border-color: var(--night-border); }
 .noche-cero .comparison-empty::before, .noche-cero .comparison-empty::after { content: none; }
 .noche-cero .comparison-empty h1 { max-width: 28ch; font-size: 28px; text-wrap: balance; }
+.noche-cero .results-reading-guide { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--night-border); max-width: 75ch; }
+.noche-cero .results-reading-guide h2 { margin: 0 0 8px; font-size: 18px; color: var(--ink); }
+.noche-cero .results-reading-guide p { margin: 8px 0 0; color: #cabecb; font-size: 14px; line-height: 1.6; }
 .noche-dialog .help-steps { list-style: decimal; padding-left: 24px; }
 .noche-dialog .help-steps li { padding-left: 4px; }
 .noche-dialog .help-steps li::before { content: none; }

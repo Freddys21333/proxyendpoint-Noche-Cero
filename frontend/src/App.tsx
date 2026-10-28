@@ -396,7 +396,7 @@ export default function App() {
   };
   const configurationActions = (
     <div className="configuration-actions">
-      <p id="scenario-next-step" className="scenario-next-step" role="status">{pending ? 'Preparando la población…' : comparisonPending ? 'Comparación en curso…' : remotePreview ? comparison ? 'Resultados listos para explorar o exportar.' : 'Red lista. Compara las tres estrategias.' : 'Consulta la red para habilitar la comparación.'}</p>
+      <p id="scenario-next-step" className="scenario-next-step" role="status">{pending ? 'Preparando la población…' : comparisonPending ? 'Comparación en curso…' : remotePreview ? comparison ? 'Revisa la comparación y luego explora los días en Reproducción y estrategia.' : 'Red lista. Compara las tres estrategias.' : 'Configura el escenario y consulta la red para comparar.'}</p>
       {previewButton}{compareButton}
       <button type="button" className="plain-action" title={comparison ? "Elige cómo descargar los resultados del experimento." : "Descarga los parámetros actuales como borrador."} onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
         <ArrowDownToLine size={17} /> Exportar
@@ -444,6 +444,11 @@ export default function App() {
           </>
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
+            {comparison && <section className="results-reading-guide" aria-labelledby="reading-guide-title">
+              <h2 id="reading-guide-title">Cómo leer la comparación</h2>
+              <p>Compara los infectados acumulados y el pico de zombies entre estrategias. Revisa también la variación entre repeticiones: una media menor no garantiza el mismo resultado en cada simulación.</p>
+              <p>Después, vuelve a la red y abre <strong>Reproducción y estrategia</strong> para recorrer los días de una repetición. Esa trayectoria no representa el promedio.</p>
+            </section>}
             {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
               <div className="comparison-empty-content"><h1 id="results-title">Compara las estrategias de vacunación</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} repeticiones con tres estrategias…` : remotePreview ? "La red está lista. Compara las estrategias Sin intervención, Aleatoria y Dirigida con la misma población." : "Configura un escenario y consulta la red antes de comparar."}</p>
               {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}

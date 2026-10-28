@@ -203,9 +203,10 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </div>
       </div>}
     </section>
-    <FloatingSimulationControls actions={panelActions} transport={frames ? transport : undefined}>
+    <FloatingSimulationControls actions={panelActions}>
       {children}
       {frames && <details className="sidebar-section"><summary>Reproducción y estrategia</summary>
+        {transport}
         <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
           <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
           <fieldset className="playback-settings" disabled={!frames}>
