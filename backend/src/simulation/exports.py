@@ -20,7 +20,7 @@ from domain.reproducibility import (
     canonical_json,
     json_hash,
 )
-from simulation.decision_summary import decision_summary
+from simulation.decision_summary import decision_summary, summary_matches
 from simulation.experiments import POLICIES, run_experiment
 from simulation.playback import validate_playback
 
@@ -233,7 +233,9 @@ def _validate(document: dict[str, Any]) -> None:
                 raise ValueError("El hash de política no coincide.")
 
     validate_playback(document)
-    if "decisionSummary" in document and document["decisionSummary"] != decision_summary(document):
+    if "decisionSummary" in document and not summary_matches(
+        document["decisionSummary"], decision_summary(document)
+    ):
         raise ValueError("El resumen de decisión no coincide con las réplicas.")
 
 
@@ -316,7 +318,9 @@ def reproduce(document: dict[str, Any]) -> str:
     ):
         if canonical_json(fresh[key]) != canonical_json(document[key]):
             raise ValueError("Los datos reproducidos no coinciden con el documento.")
-    if "decisionSummary" in document and fresh["decisionSummary"] != document["decisionSummary"]:
+    if "decisionSummary" in document and not summary_matches(
+        document["decisionSummary"], fresh["decisionSummary"]
+    ):
         raise ValueError("El resumen de decisión no se reproduce.")
     return cast(str, fresh["manifest"]["experimentHash"])
 

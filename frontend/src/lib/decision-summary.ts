@@ -12,6 +12,7 @@ export type DecisionSummary = {
   confidence: 'descriptive' | 'inconclusive' | 'supported'; bestPolicies: Policy[];
   nearestAlternative: { policies: Policy[]; gapMean: number } | null;
   policies: Record<Policy, DecisionPolicySummary>;
+  conclusion?: string;
 }
 const policies = ['none', 'random', 'targeted'] as const
 const reasons = new Set(['closure_budget_exhausted', 'closure_no_active_contacts', 'no_infectious_hold_brigades', 'vaccine_stock_empty', 'vaccine_capacity_zero', 'vaccine_budget_exhausted', 'vaccine_no_eligible', 'brigade_capacity_zero', 'brigade_stock_empty', 'brigade_budget_exhausted', 'brigade_no_eligible'])
@@ -22,6 +23,7 @@ const nullable = (value: unknown, check: (value: unknown) => boolean) => value =
 const policyList = (value: unknown, max: number): value is Policy[] => Array.isArray(value) && value.length > 0 && value.length <= max && new Set(value).size === value.length && value.every(p => policies.includes(p))
 
 export function validDecisionSummary(value: unknown): value is DecisionSummary {
+  if (object(value) && value.conclusion !== undefined && (typeof value.conclusion !== 'string' || !value.conclusion.length || value.conclusion.length > 6000)) return false
   if (!object(value) || value.modelVersion !== 'decision-summary-v1' || value.criterion !== 'minimize-mean-cumulative-infected' || !['descriptive', 'inconclusive', 'supported'].includes(String(value.confidence)) || !policyList(value.bestPolicies, 3) || !object(value.policies)) return false
   const nearest = value.nearestAlternative
   const best = value.bestPolicies

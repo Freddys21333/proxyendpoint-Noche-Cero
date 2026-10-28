@@ -49,12 +49,12 @@ def test_summary_tampering_rejected_but_legacy_json_remains_valid():
     assert old["manifest"]["experimentHash"] == source["manifest"]["experimentHash"]
 
 
-def projection(values, plan=None):
+def projection(values, plan=None, spent=None):
     """Entradas unitarias de aritmética; no son evidencia de simulación."""
     rows = {
         policy: {
             "metrics": {"cumulativeInfected": value, "vaccinesAssigned": 0},
-            "daily": [{"spentCents": 0 if policy == "none" else 1000}],
+            "daily": [{"spentCents": (spent or {}).get(policy, 0 if policy == "none" else 1000)}],
         }
         for policy, value in values.items()
     }
@@ -88,6 +88,33 @@ def test_negative_benefit_and_cost_ratios_and_runner_up_ties():
     assert summary["nearestAlternative"] == {"policies": ["none"], "gapMean": 2}
     tied = projection(dict(none=10, random=10, targeted=8))
     assert tied["nearestAlternative"] == {"policies": ["none", "random"], "gapMean": 2}
+
+
+def test_conclusion_explains_cost_benefit_without_inventing_an_optimizer():
+    summary = projection(dict(none=20, random=15, targeted=10), {"budgetCents": 2000})
+    assert "USD 10,00" in summary["conclusion"]
+    assert "menor costo por contagio evitado" in summary["conclusion"]
+    assert "no es concluyente" in summary["conclusion"]
+    tied = projection(dict(none=10, random=10, targeted=10), {"budgetCents": 2000})
+    assert "empate" in tied["conclusion"]
+    assert "Sin intervención registra el menor gasto directo: USD 0,00" in tied["conclusion"]
+    assert "más rentable" not in tied["conclusion"]
+    expensive = projection(
+        dict(none=20, random=16, targeted=10),
+        {"budgetCents": 2000},
+        spent={"random": 100, "targeted": 2000},
+    )
+    assert "Otra intervención tiene menor costo por contagio evitado" in expensive["conclusion"]
+    assert "gasto medio es mayor" in expensive["conclusion"]
+
+
+def test_legacy_summary_without_conclusion_still_loads_and_reproduces():
+    from simulation.exports import reproduce
+
+    source = experiment()
+    del source["decisionSummary"]["conclusion"]
+    assert load_export(canonical_json(source)) == source
+    assert reproduce(source) == source["manifest"]["experimentHash"]
 
 
 @pytest.mark.parametrize("budget", [0, 10000])

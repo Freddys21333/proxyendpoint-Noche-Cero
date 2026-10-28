@@ -11,6 +11,8 @@ function summary(): DecisionSummary {
 
 test('decision summary accepts unavailable economics and rejects malformed numbers and ranking', () => {
   assert.equal(validDecisionSummary(summary()), true)
+  assert.equal(validDecisionSummary({ ...summary(), conclusion: 'Conclusión calculada por el backend.' }), true)
+  assert.equal(validDecisionSummary({ ...summary(), conclusion: 12 }), false)
   for (const mutate of [
     (s: DecisionSummary) => { s.policies.random.infectedMean = Infinity },
     (s: DecisionSummary) => { s.policies.random.spentMeanCents = 1 },
