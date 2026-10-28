@@ -1,0 +1,40 @@
+{
+  "StartAt": "Prepare", "TimeoutSeconds": 3600,
+  "States": {
+    "Prepare": {
+      "Type": "Task", "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {"FunctionName": "${prepare}", "Payload.$": "$"},
+      "OutputPath": "$.Payload", "Next": "Batches",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "ResultPath": "$.failure", "Next": "Failed"}]
+    },
+    "Batches": {
+      "Type": "Map", "ItemsPath": "$.batches", "MaxConcurrency": 2, "ResultPath": null,
+      "ItemProcessor": {
+        "ProcessorConfig": {"Mode": "DISTRIBUTED", "ExecutionType": "STANDARD"},
+        "StartAt": "Worker",
+        "States": {
+          "Worker": {
+            "Type": "Task", "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {"FunctionName": "${worker}", "Payload.$": "$"},
+            "OutputPath": "$.Payload", "End": true,
+            "Retry": [{"ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"], "IntervalSeconds": 2, "MaxAttempts": 1, "BackoffRate": 2}]
+          }
+        }
+      },
+      "Next": "Aggregate",
+      "Catch": [{"ErrorEquals": ["States.ALL"], "ResultPath": "$.failure", "Next": "Failed"}]
+    },
+    "Aggregate": {
+      "Type": "Task", "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {"FunctionName": "${aggregate}", "Payload": {"jobId.$": "$.jobId"}},
+      "End": true,
+      "Catch": [{"ErrorEquals": ["States.ALL"], "ResultPath": "$.failure", "Next": "Failed"}]
+    },
+    "Failed": {
+      "Type": "Task", "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {"FunctionName": "${failure}", "Payload": {"jobId.$": "$.jobId"}},
+      "Next": "Failure"
+    },
+    "Failure": {"Type": "Fail", "Error": "JobFailed", "Cause": "Trabajo sin resultado completo"}
+  }
+}

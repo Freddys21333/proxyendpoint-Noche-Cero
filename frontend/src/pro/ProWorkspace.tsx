@@ -16,13 +16,14 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
   onShowResults: () => void
 }) {
   const jobsEnabled = Boolean(config?.features.asyncJobs)
+  const awsJobs = config?.features.jobBackend === 'aws'
   return <section className="pro-workspace" aria-labelledby="pro-title">
     <header className="pro-heading">
       <div>
         <h1 id="pro-title">PRO</h1>
-        <p>Estado de las capacidades PRO y trabajos Monte Carlo locales.</p>
+        <p>Estado de las capacidades PRO y trabajos Monte Carlo.</p>
       </div>
-      <span className={`pro-badge${jobsEnabled ? '' : ' pro-badge--muted'}`}>Trabajos: {jobsEnabled ? 'servidor local' : 'deshabilitados'}</span>
+      <span className={`pro-badge${jobsEnabled ? '' : ' pro-badge--muted'}`}>Trabajos: {jobsEnabled ? (awsJobs ? 'AWS' : 'servidor local') : 'deshabilitados'}</span>
     </header>
 
     <section className="pro-current" aria-labelledby="pro-current-title">
@@ -52,7 +53,7 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
     </section>
 
     <div className="pro-demo-note" role="note">
-      {jobsEnabled ? <>Los trabajos de este servidor son locales y se pierden al reiniciarlo. Las credenciales se descartan al cerrar la pestaña.</>
+      {jobsEnabled ? <>{awsJobs ? 'Los trabajos se guardan en AWS durante un día. Máximo un trabajo activo y tres nuevos al día; dos trabajadores en paralelo.' : 'Los trabajos locales se pierden al reiniciar el servidor.'} Las credenciales se descartan al cerrar la pestaña.</>
         : <>La comparación está disponible. Los trabajos grandes en AWS siguen pendientes de implementación (P-04).</>}
     </div>
 
@@ -66,7 +67,7 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
       : <p role="status">Trabajos asíncronos deshabilitados en este despliegue. Usa la comparación del simulador.</p>}
     <p>El informe para alcaldía se descarga desde Comparación o desde el resultado completo de un trabajo.</p>
 
-    {jobsEnabled && <details className="pro-contract">
+    {jobsEnabled && !awsJobs && <details className="pro-contract">
       <summary><ShieldCheck size={17} aria-hidden="true" /> Estado de integración</summary>
       <div className="pro-contract-grid">
         <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>Verificado localmente</strong></div>

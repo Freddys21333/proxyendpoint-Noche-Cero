@@ -31,7 +31,7 @@ resource "aws_apigatewayv2_api" "api" {
   cors_configuration {
     allow_origins  = concat(["https://${var.frontend_branch}.${aws_amplify_app.frontend.default_domain}"], var.allowed_origins)
     allow_methods  = ["GET", "POST", "OPTIONS"]
-    allow_headers  = ["content-type", "content-encoding", "accept"]
+    allow_headers  = ["content-type", "content-encoding", "accept", "x-job-token", "idempotency-key"]
     expose_headers = ["content-disposition"]
     max_age        = 300
   }
@@ -78,6 +78,7 @@ resource "aws_lambda_function" "function" {
       SCHEMA_VERSION               = "1.0"
       BUILD_COMMIT                 = var.build_commit
       LOCAL_JOBS_ENABLED           = "0"
+      AWS_JOBS_ENABLED             = var.enable_aws_jobs ? "1" : "0"
       DEPLOYMENT_PROFILE           = "staging-bounded-v1"
       MAX_SYNC_EDGE_DAY_REPLICATES = "3000000"
       MAX_REQUEST_BYTES            = "65536"

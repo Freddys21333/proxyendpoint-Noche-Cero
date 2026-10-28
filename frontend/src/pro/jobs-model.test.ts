@@ -104,7 +104,7 @@ test('the job reuses the previewed scenario and only replaces replicates and see
 })
 
 test('API errors are translated and unknown codes keep a generic message', () => {
-  assert.match(jobErrorMessage({ code: 'JOB_NOT_FOUND' }), /expiró o el servidor local se reinició/)
+  assert.match(jobErrorMessage({ code: 'JOB_NOT_FOUND' }), /Puede haber expirado/)
   assert.match(jobErrorMessage({ code: 'JOB_NOT_READY' }), /todavía no tiene un resultado completo/)
   assert.match(jobErrorMessage({ code: 'IDEMPOTENCY_CONFLICT' }), /idempotencia/)
   assert.equal(jobErrorMessage({ code: 'DESCONOCIDO' }), 'No se pudo completar la operación con el trabajo.')

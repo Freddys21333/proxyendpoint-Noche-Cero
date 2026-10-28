@@ -19,16 +19,16 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
   const seedId = useId()
   const replicateError = errors.replicates
   const seedError = errors.rootSeed
-  const quickValues = [...new Set([2, 5, 10, 50, Math.min(100, maxReplicates)])].filter(value => value >= JOB_REPLICATE_MIN && value <= maxReplicates)
+  const quickValues = [...new Set([2, 5, 10, 50, Math.min(1000, maxReplicates)])].filter(value => value >= JOB_REPLICATE_MIN && value <= maxReplicates)
   const canSubmit = available && hasPreview && !busy && maxReplicates >= JOB_REPLICATE_MIN && !replicateError && !seedError
 
   return <section className="pro-card pro-form-card" aria-labelledby="pro-job-form-title">
     <div className="pro-card-heading">
       <div>
         <h2 id="pro-job-form-title">Nuevo trabajo</h2>
-        <p>{maxReplicates >= JOB_REPLICATE_MIN ? `Ejecuta el escenario vigente como trabajo local de 2 a ${maxReplicates.toLocaleString('es-EC')} réplicas.` : 'Reduce el tamaño del escenario para ejecutar trabajos locales.'}</p>
+        <p>{maxReplicates >= JOB_REPLICATE_MIN ? `Ejecuta el escenario vigente como trabajo de 2 a ${maxReplicates.toLocaleString('es-EC')} réplicas.` : 'Reduce el tamaño del escenario para ejecutar trabajos.'}</p>
       </div>
-      <span className={`pro-badge${available ? '' : ' pro-badge--muted'}`}>{available ? 'Backend local' : 'Sin trabajos'}</span>
+      <span className={`pro-badge${available ? '' : ' pro-badge--muted'}`}>{available ? 'Backend conectado' : 'Sin trabajos'}</span>
     </div>
 
     {!available && <div className="pro-alert pro-alert--warning" role="alert">
@@ -117,7 +117,7 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
           <dd>Fija, misma realización por réplica</dd>
         </div>
       </dl>
-      <p className="pro-form-note"><Gauge size={16} aria-hidden="true" /> El progreso lo informa el servidor local; el token de acceso vive solo en esta sesión del navegador. No se consulta AWS.</p>
+      <p className="pro-form-note"><Gauge size={16} aria-hidden="true" /> El progreso lo informa el servidor. La credencial de acceso vive solo en esta sesión del navegador.</p>
       <button type="submit" className="pro-primary" disabled={!canSubmit}>
         <Play size={17} aria-hidden="true" /> {busy ? 'Creando trabajo…' : 'Iniciar trabajo'}
       </button>

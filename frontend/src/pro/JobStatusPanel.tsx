@@ -60,7 +60,7 @@ export function JobStatusPanel({ job, result, resultLoading, cancelling, onCance
       </div>
       <div className="pro-status-badges">
         <span className={`pro-status pro-status--${job.status.toLowerCase()}`}>{outcome.label}</span>
-        <span className="pro-badge pro-badge--muted">Servidor local</span>
+        <span className="pro-badge pro-badge--muted">Trabajo Monte Carlo</span>
       </div>
     </div>
 
@@ -131,7 +131,7 @@ export function JobStatusPanel({ job, result, resultLoading, cancelling, onCance
         <h3>Resultado agregado</h3>
         <span className="pro-badge">{result.configuration.repetitions} réplicas completas</span>
       </div>
-      <p>Agregado real del servidor local para este trabajo. La incertidumbre, las diferencias pareadas y los límites completos están en la comparación del simulador.</p>
+      <p>Agregado real del servidor para este trabajo. La incertidumbre, las diferencias pareadas y los límites completos están en la comparación del simulador.</p>
       <div className="pro-table-scroll">
         <table>
           <caption>Media por estrategia en este trabajo</caption>

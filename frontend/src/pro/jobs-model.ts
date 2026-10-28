@@ -29,7 +29,7 @@ export const jobStatusLabels: Record<ProJobStatus, string> = {
 }
 
 export const jobStatusDescriptions: Record<ProJobStatus, string> = {
-  PENDING: 'El trabajo está aceptado y espera turno de ejecución en el servidor local.',
+  PENDING: 'El trabajo está aceptado y espera turno de ejecución en el servidor.',
   RUNNING: 'Las réplicas se están procesando. El progreso muestra conteos reales del servidor.',
   AGGREGATING: 'Las réplicas terminaron y el servidor está construyendo el agregado.',
   SUCCEEDED: 'El agregado está completo y el resultado puede consultarse.',
@@ -50,13 +50,13 @@ const apiStatuses: Record<JobResponse['status'], ProJobStatus> = {
 export const jobErrorLabels: Record<string, string> = {
   SIMULATION_FAILED: 'Una réplica falló y el servidor no completó el agregado.',
   RESULT_TOO_LARGE: 'El resultado supera el tamaño que el servidor puede entregar.',
-  JOB_NOT_FOUND: 'El trabajo no existe, expiró o el servidor local se reinició. Crea uno nuevo.',
+  JOB_NOT_FOUND: 'El trabajo no está disponible. Puede haber expirado; si era local, pudo perderse al reiniciar.',
   JOB_NOT_READY: 'El trabajo todavía no tiene un resultado completo.',
   IDEMPOTENCY_CONFLICT: 'Esa clave de idempotencia ya identifica otra solicitud. Crea el trabajo de nuevo.',
   VALIDATION_ERROR: 'El servidor rechazó la solicitud del trabajo por un dato inválido.',
   REQUEST_TOO_LARGE: 'La configuración del trabajo supera el tamaño permitido.',
-  NETWORK_ERROR: 'No se pudo conectar con el servidor local. Comprueba que esté iniciado.',
-  HTTP_ERROR: 'El servidor local respondió con un error al operar el trabajo.',
+  NETWORK_ERROR: 'No se pudo conectar con el servidor. Comprueba que esté iniciado.',
+  HTTP_ERROR: 'El servidor respondió con un error al operar el trabajo.',
 }
 
 export function statusFromApi(status: JobResponse['status']): ProJobStatus {
@@ -101,7 +101,7 @@ export function validateJobDraft(draft: ProJobDraft, limits?: JobLimits, preview
   } else if (preview && draft.rootSeed !== preview.configuration.rootSeed) {
     errors.rootSeed = 'La semilla debe coincidir con la vista previa. Cámbiala en el simulador y consulta la red de nuevo.'
   }
-  if (max < JOB_REPLICATE_MIN) errors.replicates = 'Esta red supera la capacidad local. Reduce población o duración y consulta la red de nuevo.'
+  if (max < JOB_REPLICATE_MIN) errors.replicates = 'Esta red supera la capacidad del servidor. Reduce población o duración y consulta la red de nuevo.'
   return errors
 }
 

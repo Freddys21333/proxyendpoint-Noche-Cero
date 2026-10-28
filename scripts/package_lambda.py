@@ -39,6 +39,11 @@ def main():
             for path in sorted(target.rglob("*")):
                 if path.is_file() and "__pycache__" not in path.parts:
                     archive.write(path, path.relative_to(target).as_posix())
+        with zipfile.ZipFile(args.output) as archive:
+            if sum(item.file_size for item in archive.infolist()) > 262_144_000:
+                raise ValueError("El paquete descomprimido supera el límite de Lambda.")
+            if args.output.stat().st_size > 52_428_800:
+                raise ValueError("El ZIP supera la carga directa Lambda; requiere otra estrategia de paquete.")
     print(f"ZIP Linux: {args.output} ({args.output.stat().st_size} bytes)")
 
 
