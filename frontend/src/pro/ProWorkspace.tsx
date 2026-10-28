@@ -29,7 +29,7 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
       <div className="pro-current-heading">
         <div>
           <h2 id="pro-current-title">Experimento disponible ahora</h2>
-          <p>Comparación síncrona del motor local, con 2 a 30 réplicas y tres políticas pareadas.</p>
+          <p>Comparación del motor, con 2 a 30 réplicas y tres políticas pareadas.</p>
         </div>
         <span className="pro-badge">Backend real</span>
       </div>
@@ -52,9 +52,8 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
     </section>
 
     <div className="pro-demo-note" role="note">
-      <strong>Servidor local.</strong> Los trabajos usan <span className="mono">/v1/jobs</span> del backend local y el escenario ya previsualizado.
-      El token de acceso vive solo en <span className="mono">sessionStorage</span>; cerrar la pestaña descarta la credencial.
-      No se consulta AWS y el resultado no es evidencia científica hasta completar T-22.
+      {jobsEnabled ? <>Los trabajos de este servidor son locales y se pierden al reiniciarlo. Las credenciales se descartan al cerrar la pestaña.</>
+        : <>La comparación está disponible. Los trabajos grandes en AWS siguen pendientes de implementación (P-04).</>}
     </div>
 
     <nav className="pro-section-nav" aria-label="Secciones PRO">
@@ -62,10 +61,12 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
       <button type="button" disabled title="Se habilitará al cerrar el contrato de evidencia"><Database size={17} aria-hidden="true" /> Evidencia <small>Próximamente</small></button>
     </nav>
 
-    <JobsWorkspace config={config} preview={preview} onShowSimulator={onShowSimulator} />
+    {jobsEnabled
+      ? <JobsWorkspace config={config} preview={preview} onShowSimulator={onShowSimulator} />
+      : <p role="status">Trabajos asíncronos deshabilitados en este despliegue. Usa la comparación del simulador.</p>}
     <p>El informe para alcaldía se descarga desde Comparación o desde el resultado completo de un trabajo.</p>
 
-    <details className="pro-contract">
+    {jobsEnabled && <details className="pro-contract">
       <summary><ShieldCheck size={17} aria-hidden="true" /> Estado de integración</summary>
       <div className="pro-contract-grid">
         <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>Verificado localmente</strong></div>
@@ -74,6 +75,6 @@ export function ProWorkspace({ comparison, comparisonPending, config, preview, o
         <div><span>Pendiente</span><strong>P-04 en AWS</strong></div>
       </div>
       <p>La pantalla usa estados, progreso, cancelación y resultado del servidor local. Las cifras de un trabajo solo son válidas para su hash y su configuración; la ejecución distribuida de miles de réplicas sigue pendiente en P-04.</p>
-    </details>
+    </details>}
   </section>
 }

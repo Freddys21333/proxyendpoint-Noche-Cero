@@ -35,7 +35,7 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
       <ShieldCheck size={19} aria-hidden="true" />
       <div>
         <strong>Trabajos asíncronos deshabilitados</strong>
-        <p>Este servidor anunció <span className="mono">features.asyncJobs:false</span>. Inicia la API con <span className="mono">scripts/serve_api.py</span> para habilitar <span className="mono">/v1/jobs</span>.</p>
+        <p>Los trabajos no están disponibles en este despliegue. Puedes comparar estrategias en el simulador con el tamaño de escenario permitido.</p>
       </div>
     </div>}
 
