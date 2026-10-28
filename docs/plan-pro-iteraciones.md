@@ -76,6 +76,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-01 — Rendimiento base y gate T-22
 
+**Actualización local Windows 2026-10-27:** [carga/exportación optimizadas con equivalencia](evidencia/rendimiento-validacion-2026-10-27.md): carga 32,75–44,36 s → 6,05–6,17 s, reexportación 18,18–21,51 s → 12,14–13,28 s en un JSON N1000/T90/R2. Motor R30 controlado antes/después 13,603/13,796 s, mismos resultados; la referencia de 44,3 s inferior corresponde a Linux y se conserva como histórica. El objetivo ≤25 s se observó en esta corrida Windows del motor, sin certificar p95/HTTP total/AWS. I-01 sigue abierto por T-22.
+
 **Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico no está ejecutado.
 
 **Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22: protocolo congelado y **cinco controles técnicos PASA**; matriz primaria y contrastes pendientes. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md) y [protocolo T-22](../specs/validation/t22-v1/README.md).

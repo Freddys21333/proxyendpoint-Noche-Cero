@@ -1,5 +1,7 @@
 # Plan de pruebas local (acumulativo)
 
+Rendimiento de carga/exportación: `backend/.venv/Scripts/python.exe -X utf8 scripts/benchmark_exports.py .tools/p07-backend/experiment.json --output .tools/exports-benchmark.json`. Verifica contenido y bytes canónicos, restaurando solo la fecha volátil de exportación, y mide por separado carga/reexportación. [Aceptación](../specs/performance-exports.md), [mediciones antes/después](evidencia/rendimiento-validacion-2026-10-27.md). La suite actual backend tiene 443 pruebas; no implica aprobar T-22.
+
 P-07 backend: desde `backend/`, `.venv/Scripts/python.exe -m pytest tests/test_playback_integrity.py -q` (14 casos). Desde raíz, `backend/.venv/Scripts/python.exe scripts/verify_playback.py` genera N1000/T90/R2, valida una exportación real y mide el control temporal; resultados en `.tools/p07-backend/`. [Aceptación](../specs/p07-backend-playback.md) y [evidencia](evidencia/p07-backend-2026-10-27.md). No cierra la aceptación UI de P-07 ni T-22.
 
 Este documento reúne las pruebas que **ya existen y se pueden ejecutar** sobre las funcionalidades PRO implementadas en local. Crece junto con el código: una funcionalidad sin implementación no aparece aquí. No sustituye a la aceptación humana de T-13..T-16 ni autoriza AWS/P-04.

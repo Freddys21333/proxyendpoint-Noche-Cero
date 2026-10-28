@@ -260,8 +260,8 @@ def export_experiment(
 
 def load_export(body: bytes) -> dict[str, Any]:
     document = decode_json_document(body, max_bytes=MAX_DOCUMENT_BYTES)
-    validate_contract(document, "CompareResponse")
     result = cast(dict[str, Any], document)
+    # _validate ya comprueba el contrato completo antes de acceder a sus campos.
     _validate(result)
     return result
 

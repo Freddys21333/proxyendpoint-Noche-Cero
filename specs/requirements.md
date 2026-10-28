@@ -10,6 +10,8 @@
 
 ## 1. Propósito y alcance
 
+Rendimiento sin cambios científicos: [aceptación y límites de carga/exportación](performance-exports.md). Se exige igualdad de contenido y hashes, validación equivalente y reproducción antes/después; no se alteran las reglas del modelo para obtener tiempos menores.
+
 P-07 backend: la [aceptación de integridad temporal](p07-backend-playback.md) concreta RF-12/13/19 para comprobar frames/eventos opcionales, identidad, semillas y conteos antes de entregar o cargar experimentos. No incorpora geografía ni calcula ciencia en frontend; aceptación visual y T-22 conservan su estado.
 
 Construir una herramienta educativa para comparar intervenciones sobre una población sintética inspirada en Manta. El comité configura un brote, ejecuta varias réplicas y decide con curvas, métricas e incertidumbre. El jurado debe poder cambiar la semilla y las condiciones sin editar código.

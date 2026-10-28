@@ -77,6 +77,8 @@ El diagrama final de entrega se genera desde esta fuente como `docs/arquitectura
 
 Objetivo: `N=1000`, `T=90`, `R=30` debe terminar en ≤25 s de backend para mantenerse dentro de la integración HTTP. Si el benchmark no lo cumple, se reduce el límite síncrono documentado y la UI envía ese caso al flujo asíncrono; nunca se aumenta silenciosamente el timeout.
 
+Medición local 2026-10-27: [validación y exportación optimizadas](docs/evidencia/rendimiento-validacion-2026-10-27.md), con contenido y hashes conservados y sin cambios del motor. El control Windows mide 13,60/13,80 s de motor antes/después; esto no incluye toda la respuesta HTTP y no sustituye la aceptación de latencia total o AWS. Las referencias Linux históricas se conservan por separado.
+
 ### 2.3 Flujo PRO
 
 1. `POST /v1/jobs` valida, normaliza, guarda un manifiesto y devuelve `202`.

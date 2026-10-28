@@ -4,6 +4,7 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 
 | Documento | Contenido | Estado |
 |---|---|---|
+| [Rendimiento de validación/exportación](performance-exports.md) | Optimización con equivalencia de datos, hashes y validador estándar | Verificado localmente; mediciones Windows, sin cerrar T-22 ni p95/AWS |
 | [P-07: integridad backend de reproducción](p07-backend-playback.md) | Identidad de réplica, frames/eventos, transiciones y conteos, sin cambios del motor | Backend verificado localmente; P-07 integral pendiente de aceptación UI |
 | [P-08: informe para alcaldía](p08-report.md) | PDF reproducible, endpoint, CLI, cifras, presupuesto e incertidumbre | Verificado localmente; T-22 y aceptación humana integral independientes |
 | [Mejoras del sistema y UX](mejoras-sistema-ux.md) | Backlog UX-01..UX-08: recorrido, recomendación, indicadores, presupuesto educativo, parámetros, mapa y accesibilidad | Planificado; excluye pitch y AWS; sin cierre de aceptación |

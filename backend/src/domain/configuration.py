@@ -3,11 +3,13 @@
 import copy
 import json
 import math
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal, cast, overload
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, validators
+from jsonschema.exceptions import ValidationError
 
 from domain.errors import ConfigurationError, FieldIssue
 from domain.models import (
@@ -28,6 +30,37 @@ from domain.models import (
 
 MAX_REQUEST_BYTES = 65536
 _OMITTED = object()
+_STATE_SCHEMA = {"type": "string", "enum": ["S", "E", "I", "R"]}
+
+
+def _primitive_items(
+    validator: Any,
+    items: Any,
+    instance: Any,
+    schema: Any,
+) -> Iterator[ValidationError]:
+    """Atajo equivalente para calendarios/estados; todo lo demás usa Draft."""
+    if (
+        items == {"type": "integer", "minimum": 0, "maximum": 180}
+        and "prefixItems" not in schema
+        and type(instance) is list
+        and all(type(day) is int and 0 <= day <= 180 for day in instance)
+    ):
+        # min/maxItems, uniqueItems y el resto del esquema se siguen evaluando.
+        return
+    if (
+        items == _STATE_SCHEMA
+        and "prefixItems" not in schema
+        and type(instance) is list
+        and all(type(state) is str and state in ("S", "E", "I", "R") for state in instance)
+    ):
+        return
+    yield from Draft202012Validator.VALIDATORS["items"](validator, items, instance, schema)
+
+
+_ResultValidator = validators.extend(  # type: ignore[no-untyped-call]
+    Draft202012Validator, {"items": _primitive_items}
+)
 
 
 @lru_cache(maxsize=1)
@@ -55,6 +88,47 @@ def _validator(name: str) -> Draft202012Validator:
             "$ref": "#/$defs/" + name,
         }
     )
+
+
+@lru_cache(maxsize=4)
+def _result_validator(name: str) -> Any:
+    return _ResultValidator(
+        {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": _result_definitions(),
+            "$ref": "#/$defs/" + name,
+        },
+        format_checker=Draft202012Validator.FORMAT_CHECKER,
+    )
+
+
+@lru_cache(maxsize=1)
+def _result_definitions() -> dict[str, Any]:
+    """Resolver State plano una vez, sin modificar el contrato compartido."""
+    definitions = _definitions()
+    if definitions.get("State") != _STATE_SCHEMA:
+        return definitions
+    has_ids = False
+
+    def inline(value: Any) -> Any:
+        nonlocal has_ids
+        if isinstance(value, dict):
+            has_ids |= "$id" in value
+            if value == {"$ref": "#/$defs/State"}:
+                return copy.deepcopy(_STATE_SCHEMA)
+            return {
+                key: copy.deepcopy(item)
+                if key in ("const", "enum", "default", "examples")
+                else inline(item)
+                for key, item in value.items()
+            }
+        if isinstance(value, list):
+            return [inline(item) for item in value]
+        return value
+
+    result = inline(definitions)
+    # Un $id interno puede cambiar la base de resolución: usar el contrato original.
+    return definitions if has_ids else cast(dict[str, Any], result)
 
 
 def _fail_validation(issues: list[FieldIssue]) -> None:
@@ -364,7 +438,7 @@ def validate_contract(value: object, definition: str) -> None:
     issues = _json_issues(value, "")
     if issues:
         _fail_validation(issues)
-    formatted = _validator(definition).evolve(format_checker=Draft202012Validator.FORMAT_CHECKER)
+    formatted = _result_validator(definition)
     if not formatted.is_valid(value):
         # Solo los documentos inválidos necesitan recorrer otra vez el contrato
         # para conservar los errores de campos y su precedencia histórica.

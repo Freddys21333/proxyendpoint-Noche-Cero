@@ -9,6 +9,8 @@
 
 ## 1. Arquitectura y límites
 
+Optimización local de resultados: [diseño de validación equivalente](performance-exports.md). Extensión conservadora de Draft202012Validator para arrays primitivos reconocidos y eliminación de una validación duplicada en carga. Esquema compartido, diagnósticos, integridad temporal, motor y hashes conservados; sin nuevas dependencias.
+
 P-07 backend: [integridad temporal](p07-backend-playback.md) mediante `simulation/playback.py`, compartida por exportación/carga/ZIP y sus consumidores API. Reutiliza la selección representativa vigente; verifica trazas sin RNG ni nueva simulación. No cambia esquemas, rutas, campos ni hashes; frames/eventos ausentes conservan su semántica opcional.
 
 **P-08 local:** [diseño y aceptación](p08-report.md). `simulation/report.py` valida exportación y derivados, proyecta cifras y genera PDF con ReportLab; `POST /v1/reports/mayor` y CLI comparten esa lógica. El frontend solo solicita y descarga el archivo. No cambia motor, RNG ni hashes científicos. Este incremento sustituye la mención anterior del PDF como diseño pendiente; AWS conserva su estado.

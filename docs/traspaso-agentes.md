@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-27.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** backend P-07 (`git log --grep=pro-p07`), integridad temporal; P-08 local verificado; P-06 conserva su resultado desfavorable.
+**Último incremento:** rendimiento de validación (`git log --grep=rendimiento`); P-07 backend y P-08 locales verificados; P-06 conserva su resultado desfavorable.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -454,7 +454,7 @@ No guardar credenciales, correos, tokens ni datos personales en evidencia.
 |---|---|
 | Backend | 391 pruebas, Ruff y mypy correctos (24 archivos fuente). |
 | Frontend | 135 pruebas, typecheck y build correctos. |
-| Benchmark local | 44,3 s para N1000/T90/R30 sin frames; 8,5× mejor que 377,9 s. |
+| Benchmark local | Windows N1000/T90/R30: 13,80 s de motor (control anterior 13,60 s, resultados idénticos); Linux histórico 44,3 s. [Carga/exportación optimizadas](evidencia/rendimiento-validacion-2026-10-27.md); no certifica latencia HTTP total ni AWS. |
 | T-22 controles | 5/5 PASA; matriz primaria/contrastes pendientes. |
 | T-22 exportación | `base-root-0` JSON ~8,3 MB; exportación ~2 min; reproducción pendiente para la matriz. |
 | AWS | No desplegado; sin benchmark ni URL pública. |

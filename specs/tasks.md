@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 27 de octubre de 2026
-**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación backend tras avance I-07 (P-07): 418 pruebas backend, 137 frontend, Ruff/mypy/tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
+**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación backend tras optimizar carga/exportación: 443 pruebas backend, 137 frontend, Ruff/mypy/tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
