@@ -17,6 +17,8 @@ from api.config import handler as config
 from api.health import handler as health
 from api.jobs import cancel_handler, create_handler, get_handler, result_handler
 from api.preview import handler as preview
+from api.report import handler as report
+from simulation.exports import MAX_DOCUMENT_BYTES
 from simulation.jobs import GLOBAL_JOB_MANAGER
 
 MAX_REQUEST = 65536
@@ -26,20 +28,22 @@ HANDLERS = {
     "/v1/config": config,
     "/v1/scenarios/preview": preview,
     "/v1/simulations/compare": compare,
+    "/v1/reports/mayor": report,
 }
 
 
 class LocalHandler(BaseHTTPRequestHandler):
     def _handle(self) -> None:
         path = urlsplit(self.path).path
+        max_request = MAX_DOCUMENT_BYTES if path == "/v1/reports/mayor" else MAX_REQUEST
         try:
             length = int(self.headers.get("Content-Length", "0"))
         except ValueError:
             length = -1
         if self.headers.get("Transfer-Encoding") or length < 0:
             body = b"{"  # El adapter produce INVALID_JSON sin interpretar datos no soportados.
-        elif length > MAX_REQUEST:
-            body = b" " * (MAX_REQUEST + 1)
+        elif length > max_request:
+            body = b" " * (max_request + 1)
         else:
             body = self.rfile.read(length)
         event: dict[str, Any] = {

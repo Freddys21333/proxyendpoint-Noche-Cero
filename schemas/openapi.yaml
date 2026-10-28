@@ -11,6 +11,55 @@ servers:
   description: Referencia local; servidor no implementado
 security: []
 paths:
+  /reports/mayor:
+    post:
+      operationId: mayorReport
+      summary: Informe educativo para alcaldía desde un experimento completo
+      description: Valida integridad y recalcula agregados; no ejecuta el motor ni certifica validez epidemiológica. Máximo 32 MiB de entrada; PDF reproducible sin almacenamiento.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./experiment-result.schema.json
+      responses:
+        '200':
+          description: PDF adjunto, plantilla mayor-report-v1
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: JSON inválido
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '405':
+          description: Método no permitido
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '413':
+          description: Documento o PDF demasiado grande
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '422':
+          description: Experimento incompleto o inconsistente
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
+        '500':
+          description: No se pudo generar el informe
+          content:
+            application/json:
+              schema:
+                $ref: ./error.schema.json
   /health:
     get:
       operationId: health

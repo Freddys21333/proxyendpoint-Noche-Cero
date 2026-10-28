@@ -59,6 +59,7 @@ def test_openapi_is_valid_and_exposes_base_and_local_job_routes() -> None:
         "/config",
         "/scenarios/preview",
         "/simulations/compare",
+        "/reports/mayor",
         "/jobs",
         "/jobs/{jobId}",
         "/jobs/{jobId}/cancel",
