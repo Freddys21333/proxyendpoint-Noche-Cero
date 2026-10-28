@@ -203,7 +203,9 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </div>
       </div>}
     </section>
-    <FloatingSimulationControls actions={panelActions} transport={transport}>
+    <FloatingSimulationControls actions={panelActions} transport={frames ? transport : undefined}>
+      {children}
+      {frames && <details className="sidebar-section"><summary>Reproducción y estrategia</summary>
         <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
           <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
           <fieldset className="playback-settings" disabled={!frames}>
@@ -215,17 +217,21 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
           </fieldset>
           {frames && <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>}
         </section>
-      <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos distintos en este día y filtro. Solo se muestran sus conexiones directas. Haz clic en el fondo para ocultarlas.` : 'Cada punto es una persona. Selecciona un nodo o busca una persona para ver sus conexiones.' : 'Ubicaciones sintéticas en Manta. Pulsa un punto del mapa para ver a la persona.'}</p>
+      </details>}
+      {(combined || hasComparison) && <details className="sidebar-section"><summary>Intervenciones y registro</summary>
       {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       {schedule && <ResourceInventory row={inventoryDay} schedule={schedule} day={currentDay} initialVaccines={preview.configuration.intervention.vaccines} />}
       {hasComparison && !frames && <label>Estrategia del registro de vacunación <select aria-label="Estrategia del registro de vacunación" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>}
       {hasComparison && <VaccinationDetails selections={selections} day={frames ? currentDay : comparison!.configuration.scenario.days} interventionDay={comparison!.configuration.intervention.interventionDay} vaccines={schedule ? (comparison!.replicates[comparison!.representative.index].policies[policy].daily[frames ? currentDay : comparison!.configuration.scenario.days] as InventoryDaily).vaccinesReceivedTotal : comparison!.configuration.intervention.vaccines} policy={policy} selectedId={selected} onSelect={onFocusPerson} />}
+      </details>}
+      <details className="sidebar-section"><summary>{showNetwork ? 'Vista y contactos' : 'Vista del mapa'}</summary>
+      <p className="network-meaning">{showNetwork ? selected ? `Persona ${selected} · ${graph.neighbors[selected]?.length ?? 0} contactos en este día y filtro. Haz clic en el fondo para ocultar sus conexiones.` : 'Cada punto es una persona. Selecciona un punto o usa Explorar personas para ver sus conexiones.' : 'Ubicaciones sintéticas en Manta. Pulsa un punto para ver a la persona.'}</p>
       <div className="network-layout-control" hidden={!showNetwork}>
         <label>Organizar personas por <select aria-label="Distribución visual de la red" value={layout} onChange={event => { setLayout(event.target.value as NetworkLayout); dispatch({ type: 'pause' }) }}>{Object.entries(layoutModes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <p>Agrupación visual según pertenencia real; no es un mapa geográfico. El filtro de contactos funciona por separado.</p>
+        <p>Cambia la distribución visual, sin modificar los contactos.</p>
       </div>
       {renderTools?.(view)}
-      {children}
+      </details>
     </FloatingSimulationControls>
   </div>
 }

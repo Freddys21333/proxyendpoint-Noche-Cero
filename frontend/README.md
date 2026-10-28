@@ -6,6 +6,8 @@ El frontend conserva el simulador, la comparación y PRO bajo la identidad **Noc
 
 Checklist de capacidades, contratos y pendientes del frontend PRO: [estado al 2026-10-27](../docs/estado-frontend-pro-2026-10-27.md).
 
+La [auditoría de UX y usabilidad](../docs/ux-usability-audit-2026-10-27.md) registra los hallazgos de Nielsen, el recorrido inicial y los límites de accesibilidad comprobados. El panel presenta Escenario y Vacunación antes de las herramientas desplegables; consultar confirma la red sin abrir un diálogo y las acciones conservan su posición. Reproducción aparece al disponer de una trayectoria. PRO y el informe local mantienen pendientes editoriales identificados en la auditoría.
+
 Para revisar localmente: iniciar el backend con `backend/.venv/bin/python scripts/serve_api.py`, iniciar Vite con `npm run dev -- --host 127.0.0.1 --port 5174` desde `frontend/` y abrir `http://127.0.0.1:5174/`. El proxy Vite dirige `/v1` al backend local.
 
 ## Estado de integración I-09

@@ -23,7 +23,7 @@ const seirHelp = [
   ["R", "Exorcizado", "Recuperado o inmune."],
 ] as const;
 const api = createApiClient(import.meta.env.VITE_API_BASE_URL || "/v1");
-type Modal = "help" | "export" | "run" | null;
+type Modal = "help" | "export" | null;
 type WorkspaceView = "simulator" | "results" | "pro";
 type ApiOperation = "startup" | "preview" | "comparison";
 
@@ -68,6 +68,9 @@ function Field({
         {approximate && <span className="input-approx" aria-hidden="true">≈</span>}
         <input
           id={id}
+          name={label}
+          autoComplete="off"
+          inputMode={step === 1 ? "numeric" : "decimal"}
           type="number"
           aria-label={`${label}${unit ? ` (${unit})` : ""}`}
           aria-describedby={descriptions}
@@ -120,6 +123,10 @@ export default function App() {
   const comparisonController = useRef<AbortController | null>(null);
   const loadedScenario = useRef<{ preview: PreviewResponse; comparison: CompareResponse | null } | null>(null);
 
+  useEffect(() => {
+    if (remotePreview) previewSubmit.current?.focus({ preventScroll: true });
+  }, [remotePreview]);
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -143,7 +150,6 @@ export default function App() {
     previewController.current = null;
     setRemotePreview(null);
     setPending(false);
-    setModal((current) => current === "run" ? null : current);
   };
 
 
@@ -222,10 +228,10 @@ export default function App() {
           .replace(" to ", " y ")
           .replace(" and ", " y ")
           .replace("Population", "Población")
-          .replace("Horizon", "Duración de la simulación")
+          .replace("Horizon", "Duración")
           .replace("Initial cases", "Casos iniciales")
           .replace("Vaccines", "Vacunas")
-          .replace("Intervention day", "Día de intervención")
+          .replace("Intervention day", "Día de vacunación")
           .replace("Replicates", "Repeticiones del experimento")
           .replace("Seed", "Semilla")
           .replace("Transmission", "Transmisión")
@@ -233,7 +239,7 @@ export default function App() {
           .replace("Recovery", "Recuperación")
           .replace("Efficacy", "Eficacia")
           .replace("Node ID", "Número de persona")
-          .replace("Choose a valid origin.", "Seleccione un origen válido."),
+          .replace("Choose a valid origin.", "Elige un origen válido."),
       ),
     );
     if (issues.length) return;
@@ -250,9 +256,7 @@ export default function App() {
       loadedScenario.current = { preview: result, comparison: null };
       setRemotePreview(result);
       setServerStatus("ready");
-      dialogReturn.current = 'preview';
-      setModal("run");
-      setNotice("Vista previa recibida. La red muestra los contactos iniciales de tus parámetros.");
+      setNotice(`Red lista: ${nf.format(result.graph.nodes.length)} personas y ${nf.format(result.graph.edges.length)} contactos. Ya puedes comparar estrategias.`);
     } catch (error) {
       if (controller.signal.aborted) return;
       const apiError = error instanceof ApiError ? error : new ApiError(0, "NETWORK_ERROR", "No se pudo consultar la red.");
@@ -300,16 +304,16 @@ export default function App() {
   const parameterPanel = (
     <section className="configuration-panel" aria-labelledby="parameters-title">
       <div className="configuration-heading">
-        <h2 id="parameters-title">Parámetros</h2>
+        <h2 id="parameters-title">Escenario</h2>
         <button type="button" className="plain-action" onClick={reset}>
           <RotateCcw size={16} /> Restablecer
         </button>
       </div>
-      <p role="status">{serverConfig ? 'Configuración del servidor cargada.' : serverStatus === 'checking' ? 'Cargando configuración; puedes editar mientras esperas.' : 'Servidor no disponible. Tus entradas se conservan.'}</p>
+      {!serverConfig && <p role="status">{serverStatus === 'checking' ? 'Cargando configuración; puedes editar mientras esperas.' : 'Servidor no disponible. Tus entradas se conservan.'}</p>}
       <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
           <Field label="Población" help="50 a 2000 personas." value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
-          <Field label="Duración de la simulación" help="1 a 180 días." value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
+          <Field label="Duración" help="1 a 180 días." value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
           <label className="field origin-field">
             <span>Origen del brote</span>
             <div className="select-wrap">
@@ -331,9 +335,15 @@ export default function App() {
           {scenario.origin === "node" && (
             <Field label="Número de persona" help="Identificador de la persona donde comienza el brote; la numeración empieza en 0." value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} maxMessage="El número de persona debe ser menor que la población. Elige un identificador de la red." />
           )}
-          <Field label={scenario.combined?.resourceSchedule ? 'Vacunas iniciales' : 'Vacunas disponibles'} value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} maxMessage="Las vacunas disponibles no pueden superar la población. Reduce las dosis o aumenta la población." />
-          <Field label="Eficacia de la vacuna" value={scenario.efficacy} onChange={(value) => update("efficacy", value)} compact percentage unit="%" min={0} max={100} step="any" />
         </div>
+        <fieldset className="scenario-section">
+          <legend>Vacunación</legend>
+          <div className="configuration-fields">
+            <Field label={scenario.combined?.resourceSchedule ? 'Dosis iniciales' : 'Dosis disponibles'} value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} maxMessage="Las dosis no pueden superar la población. Reduce las dosis o aumenta la población." />
+            <Field label="Eficacia" value={scenario.efficacy} onChange={(value) => update("efficacy", value)} compact percentage unit="%" min={0} max={100} step="any" />
+          </div>
+          <Field label="Día de vacunación" help="0 = inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La vacunación debe comenzar dentro de la simulación. Reduce el día o aumenta la duración." />
+        </fieldset>
         <button type="button" className="advanced-toggle" onClick={() => setAdvanced(!advanced)} aria-expanded={advanced} aria-controls="advanced-parameters">
           Parámetros avanzados <ChevronDown size={16} className={advanced ? "rotate" : ""} />
         </button>
@@ -341,7 +351,6 @@ export default function App() {
           <div className="configuration-advanced" id="advanced-parameters">
             <div className="configuration-fields">
               <Field label="Casos iniciales" help="Infectados al inicio." value={scenario.initial} onChange={(value) => update("initial", value)} unit="personas" min={1} max={Math.min(20, scenario.population)} />
-              <Field label="Día de intervención" help="0 = inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La intervención debe ocurrir dentro de la simulación. Reduce el día o aumenta la duración." />
               <Field label="Probabilidad diaria de pasar de mordido a zombie" value={scenario.sigma} onChange={(value) => update("sigma", value)} compact percentage unit="%" min={0} max={100} step="any" />
               <Field label="Probabilidad diaria de recuperación" value={scenario.gamma} onChange={(value) => update("gamma", value)} compact percentage unit="%" min={0} max={100} step="any" />
               <Field label="Repeticiones del experimento" help="2 a 30 repeticiones para medir la variación." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
@@ -358,7 +367,7 @@ export default function App() {
         }} />
         {errors.length > 0 && (
           <div className="configuration-errors" role="alert">
-            <strong>Revise la configuración</strong>
+            <strong>Revisa la configuración</strong>
             <ul>{errors.map((error) => <li key={error}>{error}</li>)}</ul>
           </div>
         )}
@@ -374,10 +383,10 @@ export default function App() {
   );
 
   const previewButton = (
-    <Button type="submit" form="scenario-form" className={`validate-button${remotePreview ? " validate-button--secondary" : ""}`} ref={previewSubmit} title={!serverConfig ? "Espera a que el servidor esté disponible." : pending ? "La red se está preparando." : "Crea la red de personas y contactos con estos parámetros."} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+    <Button type="submit" form="scenario-form" className={`validate-button${remotePreview ? " validate-button--secondary" : ""}`} ref={previewSubmit} aria-describedby="scenario-next-step" title={!serverConfig ? "Espera a que el servidor esté disponible." : pending ? "La red se está preparando." : "Crea la red de personas y contactos con estos parámetros."} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
   );
   const compareButton = (
-    <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} title={!remotePreview ? "Primero consulta la red." : comparisonPending ? "La comparación está en curso." : "Compara las estrategias usando el mismo escenario."} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
+    <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} aria-describedby="scenario-next-step" title={!remotePreview ? "Primero consulta la red." : comparisonPending ? "La comparación está en curso." : "Compara las estrategias usando el mismo escenario."} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
   );
   const cancelComparison = () => {
     invalidateComparison();
@@ -387,7 +396,8 @@ export default function App() {
   };
   const configurationActions = (
     <div className="configuration-actions">
-      {remotePreview ? <>{compareButton}{previewButton}</> : <>{previewButton}{compareButton}</>}
+      <p id="scenario-next-step" className="scenario-next-step" role="status">{pending ? 'Preparando la población…' : comparisonPending ? 'Comparación en curso…' : remotePreview ? comparison ? 'Resultados listos para explorar o exportar.' : 'Red lista. Compara las tres estrategias.' : 'Consulta la red para habilitar la comparación.'}</p>
+      {previewButton}{compareButton}
       <button type="button" className="plain-action" title={comparison ? "Elige cómo descargar los resultados del experimento." : "Descarga los parámetros actuales como borrador."} onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
         <ArrowDownToLine size={17} /> Exportar
       </button>
@@ -397,6 +407,7 @@ export default function App() {
 
   return (
     <div className={`minimal-workspace noche-cero${view === "simulator" ? " simulator-page" : ""}`}>
+      <a className="skip-link" href="#main-content">Saltar al contenido</a>
       <header className="simulation-header">
         <a className="simulation-brand" href="#" onClick={(event) => { event.preventDefault(); setView("simulator"); }} aria-label="Noche Cero, inicio">
           <span className="brand-sigil" aria-hidden="true"><Network size={24} strokeWidth={1.9} /></span>
@@ -410,7 +421,7 @@ export default function App() {
         </nav>
         <span className={`simulation-status simulation-status--${serverStatus}`} role="status"><span className="status-beacon" aria-hidden="true" />{serverStatus === "ready" ? "Servidor disponible" : serverStatus === "checking" ? "Conectando" : "Servidor sin conexión"}<span className="simulation-status-context"> · {view === "pro" ? "PRO · trabajos de ejemplo" : comparison ? "Experimento real" : remotePreview ? "Vista previa real" : "Sin vista previa actual"}</span></span>
       </header>
-      <main className="simulation-main">
+      <main id="main-content" tabIndex={-1} className="simulation-main">
         {notice && (
           <div className="simulation-notice" role="status">
             <span>{notice}</span>
@@ -434,7 +445,7 @@ export default function App() {
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
             {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
-              <div className="comparison-empty-content"><h1 id="results-title">Las decisiones necesitan evidencia.</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : remotePreview ? "La red está lista. Ejecuta la comparación para medir las tres estrategias bajo el mismo escenario." : "Consulta primero la red para generar una población sintética y luego compara las estrategias."}</p>
+              <div className="comparison-empty-content"><h1 id="results-title">Compara las estrategias de vacunación</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} repeticiones con tres estrategias…` : remotePreview ? "La red está lista. Compara las estrategias Sin intervención, Aleatoria y Dirigida con la misma población." : "Configura un escenario y consulta la red antes de comparar."}</p>
               {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}
               {apiFailure?.operation === "comparison" && <ApiErrorPanel
                 error={apiFailure.error}
@@ -444,7 +455,6 @@ export default function App() {
                 onRepreview={() => { setView("simulator"); setApiFailure(null); void run(); }}
               />}
               <div className="comparison-empty-actions">{comparisonPending ? <Button type="button" className="comparison-start" onClick={cancelComparison}>Cancelar comparación</Button> : <Button type="button" className="comparison-start" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}<button type="button" className="plain-action" onClick={() => setView("simulator")}>{remotePreview ? "Volver a la red" : "Configurar escenario"}</button></div></div>
-              <div className="comparison-empty-steps" aria-label="Pasos de la comparación"><span><b>01</b> Consulta la red</span><span><b>02</b> Ejecuta réplicas</span><span><b>03</b> Examina resultados</span></div>
             </div>}
             {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver a la red</button>}
           </section>
@@ -459,14 +469,14 @@ export default function App() {
           <Dialog.Backdrop className="modal-dimmer" />
           <Dialog.Popup className={`modal minimal-dialog noche-dialog${modal === "help" ? " help-dialog" : ""}`} finalFocus={() => { const target = dialogReturn.current === 'preview' ? previewSubmit.current : dialogReturn.current; return target?.isConnected ? target : false; }}>
             <button className="modal-close" onClick={() => setModal(null)} aria-label="Cerrar diálogo"><X size={19} /></button>
-            <Dialog.Title>{modal === "help" ? "Acerca del simulador" : modal === "run" ? "Vista previa de la población" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
+            <Dialog.Title>{modal === "help" ? "Cómo usar el simulador" : comparison ? "Exportar experimento" : "Exportar configuración"}</Dialog.Title>
             {modal === "help" ? (
               <div className="help-content">
-                <p>Este simulador trabaja con una población sintética de Manta y el motor real del servidor.</p>
+                <p>Explora cómo cambia un brote ficticio en una población sintética de Manta.</p>
                 <ol className="help-steps">
-                  <li><strong>Consulta la red.</strong> Ajusta la población y los contactos; el servidor devuelve la red inicial con ubicaciones sintéticas.</li>
-                  <li><strong>Compara estrategias.</strong> Ejecuta las tres políticas con réplicas reales y revisa medias y dispersión en Comparación.</li>
-                  <li><strong>Reproduce una réplica.</strong> Vuelve al simulador, cambia de estrategia y recorre los días. Esa trayectoria no es el promedio.</li>
+                  <li><strong>Consulta la red.</strong> Configura el escenario. Verás las personas y sus contactos al inicio del brote.</li>
+                  <li><strong>Compara estrategias.</strong> Revisa Sin intervención, Aleatoria y Dirigida en Comparación. Cada repetición utiliza otros sorteos.</li>
+                  <li><strong>Explora los días.</strong> Vuelve a la red y pulsa Reproducir. En Reproducción y estrategia puedes cambiar la estrategia. Se muestra una repetición, no el promedio.</li>
                 </ol>
                 <section className="help-section" aria-labelledby="help-seir-title">
                   <h3 id="help-seir-title">Estados SEIR</h3>
@@ -479,17 +489,13 @@ export default function App() {
                     ))}
                   </dl>
                 </section>
-                <p className="help-note">Antes de comparar, el grafo representa el estado inicial. Las vacunas se aplican al ejecutar la simulación. Modelo educativo: no usar para decisiones sanitarias reales.</p>
+                <p className="help-note">Las vacunas se aplican al comparar estrategias, desde el día configurado. Modelo educativo: no usar para decisiones sanitarias reales.</p>
               </div>
             ) : (
-              <p>{modal === "run"
-                ? "La red se calculó en el servidor con tus parámetros. El explorador muestra esta red real y su estado inicial; todavía no se ejecutó una comparación."
-                : comparison ? "Descarga el experimento completo con parámetros, versiones, semillas y resultados reproducibles." : "Descargue un borrador de los parámetros en JSON. No incluye resultados de simulación ni un experimento reproducible."}</p>
+              <p>{comparison ? "JSON conserva el experimento para reproducirlo. ZIP incluye tablas CSV para analizar los resultados." : "Descarga los parámetros en JSON. Este borrador no incluye resultados."}</p>
             )}
-            {modal === "run" && remotePreview && <div className="run-summary"><span>{nf.format(remotePreview.graph.nodes.length)} personas</span><span>{nf.format(remotePreview.graph.edges.length)} contactos</span><span>Semilla {remotePreview.configuration.rootSeed}</span></div>}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
-              {modal === "run" && <Button className="action-primary" disabled={comparisonPending} onClick={runComparison}>Comparar estrategias</Button>}
               {modal === "export" && comparison && <Button variant="outline" onClick={exportCsv}>Descargar ZIP con CSV</Button>}
               {modal === "export" && <Button className="action-primary" onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
             </div>

@@ -5,12 +5,12 @@ export function ResourceScheduleEditor({ value, onChange, days, population, init
   days: number; population: number; initialSupplies: number;
 }) {
   const input = (label: string, number: number, max: number, change: (n: number) => void) => <label className="field" key={label}><span>{label}</span>
-    <input type="number" min={0} max={max} step={1} value={Number.isNaN(number) ? '' : number} onChange={event => change(event.target.value === '' ? NaN : Number(event.target.value))} /></label>
+    <input type="number" name={label} autoComplete="off" inputMode="numeric" min={0} max={max} step={1} value={Number.isNaN(number) ? '' : number} onChange={event => change(event.target.value === '' ? NaN : Number(event.target.value))} /></label>
   return <section className="resource-schedule-editor" aria-label="Entregas diarias de recursos">
     <label className="combined-toggle"><input type="checkbox" checked={Boolean(value)} onChange={event => onChange(event.target.checked ? { modelVersion: 'daily-inventory-v1', vaccineDailyCapacity: population, initialBrigadeSupplies: initialSupplies, deliveries: [] } : undefined)} />Programar entregas e inventario diario</label>
     {value && <>
       <p>Las entregas llegan antes de las acciones del día. Se paga al usar, sin aumentar el presupuesto. Lo no utilizado se acumula sin caducidad.</p>
-      <p>Con este modo, se vacuna diariamente desde el día de intervención, una sola dosis por persona, según inventario, capacidad y presupuesto. El campo Vacunas iniciales indica el stock al comenzar.</p>
+      <p>La vacunación diaria comienza en el Día de vacunación, según inventario, capacidad y presupuesto. Dosis iniciales indica las disponibles al comenzar; cada persona recibe como máximo una.</p>
       <div className="configuration-fields">
         {input('Dosis máximas por día', value.vaccineDailyCapacity, population, n => onChange({ ...value, vaccineDailyCapacity: n }))}
         {input('Insumos iniciales de brigadas', value.initialBrigadeSupplies, 360000, n => onChange({ ...value, initialBrigadeSupplies: n }))}
