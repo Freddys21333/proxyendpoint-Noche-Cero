@@ -43,6 +43,45 @@ Abrir [sitio local](http://127.0.0.1:5174/) y [health local](http://127.0.0.1:80
 
 Los trabajos locales viven en memoria y se pierden al reiniciar la API. AWS usa almacenamiento durable con expiración. No se necesitan credenciales AWS para probar el motor y la interfaz local.
 
+## Track B: parámetros y reproducción de resultados
+
+**Semilla raíz por defecto: `20261026`** (`rootSeed`). La API publica la configuración vigente en `GET /v1/config`, campo `defaults`; la interfaz la carga al iniciar. El perfil AWS `staging-bounded-v1` reduce población y horizonte para respetar los límites de la API síncrona.
+
+| Parámetro | Local por defecto | AWS staging por defecto |
+|---|---|---|
+| Población (`populationSize`) | 1000 | 200 |
+| Horizonte (`days`) | 90 días | 20 días |
+| Repeticiones (`repetitions`) | 30 | 30 |
+| Semilla (`rootSeed`) | 20261026 | 20261026 |
+| Red (`networkMode`) | `fixed` | `fixed` |
+| Transmisión por contacto (`beta`) | 0.08 | 0.08 |
+| Progresión E → I (`sigma`) | 0.333333 | 0.333333 |
+| Recuperación I → R (`gamma`) | 0.142857 | 0.142857 |
+| Infectados iniciales (`initialInfectious`) | 1 | 1 |
+| Origen (`origin`) | `random`, valor `null` | `random`, valor `null` |
+| Vacunas (`vaccines`) | 100 | 100 |
+| Día de intervención (`interventionDay`) | 0 | 0 |
+| Eficacia (`vaccineEfficacy`) | 1.0 | 1.0 |
+| Políticas (`policies`) | `none`, `random`, `targeted` | `none`, `random`, `targeted` |
+| Generador (`generatorVersion`) | `synthetic-manta-v1` | `synthetic-manta-v1` |
+| Día cero (`dayZero`) | lunes (`monday`) | lunes (`monday`) |
+| Pesos hogar/colegio/bus/mercado/barrio | 1.0 / 0.6 / 0.45 / 0.5 / 0.2 | iguales |
+
+Los valores beta/sigma/gamma son parámetros diarios del modelo educativo. Por defecto no se añade un presupuesto monetario, calendario de llegadas, política adaptativa ni intervención combinada: si se activan, también deben conservarse en la configuración exportada. `fixed` reutiliza la red entre réplicas; las fuentes de aleatoriedad se derivan por dominio e índice y se emparejan entre políticas.
+
+Para repetir la comparación inicial de AWS, iniciar una sesión sin configuración previa, comprobar estos valores, pulsar **Consultar red** y **Comparar estrategias**, y descargar el **JSON del experimento**. Para repetirla localmente, establecer explícitamente N=200/T=20 antes de consultar la red; los defaults locales N=1000/T=90 corresponden a otro experimento. La semilla se consulta/cambia en los parámetros avanzados.
+
+Para reproducir exactamente un resultado guardado, conservar el JSON completo —no solo la semilla—, la revisión del código y las versiones de Python y dependencias indicadas en `manifest`. Con ese entorno instalado, desde la raíz:
+
+```powershell
+# Sustituir por la ruta del JSON descargado.
+backend/.venv/Scripts/python.exe scripts/reproduce.py "C:/ruta/experiment.json"
+```
+
+El comando vuelve a ejecutar el experimento, verifica los resultados y muestra el mismo `manifest.experimentHash` si la reproducción es correcta; devuelve error ante un entorno incompatible o diferencias. El manifiesto incluye `pythonVersion` y `dependencies`: usar esas versiones exactas, no asumir que cualquier Python 3.12 produce un hash compatible. La prueba AWS registrada usó **Python 3.12.15**.
+
+Como referencia adicional, la [prueba Monte Carlo AWS de 100 réplicas](docs/evidencia/despliegue-main-p04-2026-10-28.md) usó N=60, T=7, diez vacunas, intervención en día 0, un infectado inicial y semilla `20261026`; mantuvo los demás parámetros anteriores y produjo `sha256:af81a59752ecb3fc60f763ef38bc6b9fce5d7f1a0f1981cffd60f612191ba931`. Es un caso distinto del perfil inicial de 30 repeticiones. El protocolo científico T-22 conserva sus propias configuraciones y semillas en [su registro congelado](specs/validation/t22-v1/README.md).
+
 ## Cómo probar
 
 Desde la raíz, con dependencias instaladas:
