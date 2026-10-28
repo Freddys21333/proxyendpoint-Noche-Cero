@@ -124,20 +124,7 @@ Para retirar, revisar y aplicar el plan de destrucción del stack de aplicación
 
 Descargar diagrama actualizado: [PNG en alta resolución](docs/arquitectura-aws.png) · [SVG vectorial](docs/arquitectura-aws.svg).
 
-```mermaid
-flowchart TD
-  U[Interfaz React / Amplify] --> A[HTTP API Gateway]
-  A --> L[Lambda: configuración, preview, comparación e informe]
-  A --> J[Lambda API de trabajos]
-  J --> D[DynamoDB: estado, cuotas e idempotencia]
-  J --> F[Step Functions Standard / Distributed Map]
-  F --> W[Lambda: preparación, lotes y agregación]
-  W --> S[S3 privado: entradas y resultados]
-  J --> S
-  E[EventBridge: recuperación terminal] --> D
-  L --> C[CloudWatch: logs y alarmas]
-  W --> C
-```
+![Arquitectura AWS actualizada: API, trabajos Monte Carlo, almacenamiento y observabilidad](docs/arquitectura-aws.png)
 
 - **Ciencia en backend:** Python/NumPy/NetworkX calculan SEIR, agregados, costos educativos y conclusiones; React presenta el contrato y evita duplicar fórmulas.
 - **Comparación justa:** mismas semillas y recursos entre estrategias, transiciones simultáneas, hashes y manifiesto exportable. No se ocultan empates o pérdidas.
