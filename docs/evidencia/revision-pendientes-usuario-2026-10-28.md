@@ -29,7 +29,7 @@ Fecha: 2026-10-28. Contrasta la lista compartida con el código, pruebas y evide
 
 ## Costos y operación
 
-`docs/costos.md` contiene evidencia histórica provisional de un AWS Budget de USD 20/mes y ahora separa ese límite de una estimación. El costo mensual por arquitectura aún no está calculado y el gasto real del evento no está confirmado. Las capturas antiguas de USD 0 no demuestran que el gasto final fuera cero.
+`docs/costos.md` contiene un subtotal de planificación: USD 1,10/mes para la base y USD 2,26–4,93 con 10.000 réplicas PRO/mes, más S3; usa volúmenes asumidos, una tarifa Step Functions de referencia aún no validada en Ohio y duración Lambda no medida. El gasto real del evento sigue sin confirmarse. El Budget de USD 20 es un umbral de alerta, no la estimación. Las capturas antiguas de USD 0 no demuestran que el gasto final fuera cero.
 
 ## Resultado de esta revisión
 

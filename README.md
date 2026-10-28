@@ -83,4 +83,6 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
+La estimación de planificación, con sus fórmulas, volúmenes supuestos y exclusiones, está en [docs/costos.md](docs/costos.md): subtotal base ~USD 1,10/mes; base más 10.000 réplicas PRO/mes ~USD 2,26–4,93 más S3, antes de confirmar tarifas de Ohio y benchmark Lambda. **No es una cotización ni el gasto real del evento**, que sigue sin confirmarse.
+
 PRO tiene **P-01, P-09 y los backends de P-02/P-03 verificados localmente**. P-02 ya tiene editor e historial visual conectados a resultados reales; P-03 aún muestra fixtures en la interfaz. P-07 sigue parcial; P-04, P-05, P-06 y P-08 permanecen pendientes. La aplicación no está desplegada en AWS. El laboratorio permite probar cierre de capa y reproducción sincronizada, sin acreditar todavía toda la aceptación de animación. Consulta el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md) y el [checklist de estado](docs/evidencia/revision-pendientes-usuario-2026-10-28.md).
