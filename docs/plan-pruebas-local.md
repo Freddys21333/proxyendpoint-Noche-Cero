@@ -394,3 +394,7 @@ Comando ejecutado desde raíz: `backend/.venv/Scripts/python.exe -X utf8 scripts
 ## Rendimiento backend y carga local (2026-10-28)
 
 Ejecutar `scripts/benchmark_api.py --samples 3 --output-dir .tools/backend-perf-repeat` con Python del backend; luego `scripts/benchmark_backend_outputs.py .tools/backend-perf-repeat/experiment-frames.json --samples 3 --load-probe --output .tools/backend-outputs-repeat.json`. Sin otros benchmarks pesados propios simultáneos. El segundo arnés mide PDF HTTP, ZIP local, un job y tres jobs sobre dos workers con consultas health; las capacidades nunca se persisten. Distingue R30 de la comparación y R9 admitido por el límite local para esa red. [Comandos completos y evidencia](evidencia/rendimiento-backend-2026-10-28.md). Suite backend actual: 510 pruebas.
+
+## Ciclo de vida del mapa
+
+`node --experimental-strip-types --test frontend/src/lib/geographic-agents-layer.test.ts` verifica callback de dibujo tardío inocuo después de destroy. Repetir en navegador consulta de población, comparación, PRO→Explorar red, mapa/red, avance/retroceso y redimensionado capturando pageerror. [Evidencia](evidencia/mapa-ciclo-vida-2026-10-28.md): cero pageErrors; tipos/build y 150 pruebas correctos.

@@ -16,7 +16,7 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-28
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: merge de `codex/parametros-comprensibles` ([evidencia](docs/evidencia/merge-parametros-comprensibles-2026-10-28.md)); conserva rendimiento backend, merge de `feat/pro`, T-22 APROBADO, P-05/P-06 y P-08.
+Rama de trabajo: `feat/backend-contratos`. Último incremento: corrección del ciclo de vida del mapa ([evidencia](docs/evidencia/mapa-ciclo-vida-2026-10-28.md)), posterior al merge de `codex/parametros-comprensibles`; conserva rendimiento backend, merge de `feat/pro`, T-22 APROBADO, P-05/P-06 y P-08.
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
@@ -240,3 +240,5 @@ Actualización merge `feat/pro` (2026-10-28): se integraron P-07 UI (retroceso d
 Actualización de rendimiento backend (2026-10-28): 510 pruebas, Ruff/formato/mypy e integración real del cliente correctos. Comprobadores de registros válidos con respaldo Draft; sin cambio de motor/hashes/límites ni protocolo T-22. Se observaron seis comparaciones <25 s, pero staging/p95 y aceptación integral siguen abiertos. Tres jobs R9 sobre dos workers finalizaron con el mismo hash; health máximo 0,53 s. La API :8000 no se reinició. [Evidencia](docs/evidencia/rendimiento-backend-2026-10-28.md).
 
 Actualización merge parámetros comprensibles (2026-10-28): incorporados siete commits de `codex/parametros-comprensibles`, conservando el backend/rendimiento, editor adaptativo, preset oculto y reproducción temporal verificados. 150 pruebas frontend, tipos/build; 510 backend, Ruff/mypy correctos. Flujo real de porcentajes → preview → comparación → reproducción comprobado. Error asíncrono de renderer Leaflet y 404 favicon observados; no se cierra aceptación P-07. [Evidencia](docs/evidencia/merge-parametros-comprensibles-2026-10-28.md).
+
+Corrección posterior del mapa (2026-10-28): el error Leaflet clearRect registrado en el merge quedó corregido con un guard de ciclo de vida del renderer. 150 pruebas frontend, tipos/build y regresión en navegador con cero pageErrors. [Evidencia](docs/evidencia/mapa-ciclo-vida-2026-10-28.md). P-07 integral sigue pendiente; repetir la regresión al actualizar Leaflet.

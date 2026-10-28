@@ -14,7 +14,8 @@ test('Canvas markers retain each original ID, initial state color and selection 
     role: 'community', schoolId: null, busId: null, marketId: null })) as GeographicAgent[]
   const records: { center: number[]; options: any; handlers: Record<string, () => void>; popup?: () => HTMLElement; opened: number; front: boolean }[] = []
   let clears = 0, removed = 0, rendererRemoved = 0
-  const renderer = { remove() { rendererRemoved++ } }
+  let draws = 0
+  const renderer = { _redraw() { assert.equal(rendererRemoved, 0, 'No dibujar un canvas retirado'); draws++ }, remove() { rendererRemoved++ } }
   const group = { addTo() { return this }, clearLayers() { clears++ }, remove() { removed++ } }
   const runtime = {
     canvas() { return renderer }, layerGroup() { return group },
@@ -47,7 +48,11 @@ test('Canvas markers retain each original ID, initial state color and selection 
   layer.select(12)
   assert.equal(records[2].opened, 1)
   const queuedClick = records[0].handlers.click
-  layer.destroy(); layer.destroy(); queuedClick()
+  const queuedDraw = renderer._redraw
+  queuedDraw()
+  assert.equal(draws, 1)
+  layer.destroy(); layer.destroy(); queuedClick(); queuedDraw()
+  assert.equal(draws, 1)
   assert.deepEqual(selected, [10, 11, 12, 13])
   assert.equal(clears, 1); assert.equal(removed, 1); assert.equal(rendererRemoved, 1)
   assert.ok(records.every(record => Object.keys(record.handlers).length === 0))

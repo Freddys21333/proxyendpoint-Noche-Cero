@@ -16,6 +16,13 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
   const stateAt = (agent: GeographicAgent, presentation: AgentPresentation) =>
     presentation.mode === 'representative' ? presentation.frame?.[agent.nodeId] : agent.state
   let disposed = false
+  // Leaflet puede perder el handle RAF cuando fitBounds fuerza un redraw síncrono.
+  // Ese callback ya encolado debe ser inocuo incluso después de renderer.remove().
+  const canvas = renderer as typeof renderer & { _redraw?: () => void }
+  const redraw = canvas._redraw
+  if (redraw) canvas._redraw = function () {
+    if (!disposed) redraw.call(this)
+  }
   const radius = (state: GeographicAgent['state']) => {
     const base = Math.max(1, Math.min(4, 1 + (map.getZoom() - 11) * 0.4))
     return state === 'I' ? base * 1.5 : base

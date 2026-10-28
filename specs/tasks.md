@@ -75,3 +75,5 @@ Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-ro
 - [x] **P-09 — Mapa geográfico y capa de agentes.** Verificado localmente como presentación. Mapa OSM de Manta, trece polígonos residenciales versionados, posiciones deterministas y sincronización con día/política/réplica. No cambia modelo, contratos ni hashes; complementa P-07. [Ficha y aceptación](p09-geographic-map.md).
 
 Direcciones opcionales: vacunación estratégica, antídotos, cuarentena inteligente, mosquito/fumigación, inferencia del paciente cero, hospital saturado y campañas. Centralidad, algoritmos voraces, optimización y aprendizaje por refuerzo son alternativas a evaluar, no una lista de algoritmos obligatorios. Su alcance se decide según el modelo y la evidencia; véase §4 de la hoja de ruta.
+
+Corrección local P-07/P-09 (2026-10-28): [error de canvas de Leaflet resuelto](../docs/evidencia/mapa-ciclo-vida-2026-10-28.md), regresión unitaria y real de navegación/actualización. No cierra la aceptación integral de T-13..T-16 ni P-07.
