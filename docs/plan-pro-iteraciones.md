@@ -34,7 +34,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
 | P-02 | Backend, editor e historial verificados localmente con API real; aceptación integral de escenarios y aceptación humana T-13..T-16 pendientes. |
-| P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, progreso, cancelación, idempotencia y resultado reproducible. Falta pantalla. |
+| P-03 | Backend, cliente y pantalla local verificados: creación, progreso, cancelación, recarga de sesión, resultado y ZIP; aceptación de errores/accesibilidad pendiente. P-04 AWS no iniciado. |
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
 | P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
 | P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
@@ -51,7 +51,7 @@ Evidencia de partida: [auditoría PRO 2026-10-27](evidencia/auditoria-pro-2026-1
 | I-01 | Rendimiento base y T-22 | Sin esto, P-03/P-04 y el Brote Sorpresa son frágiles; además fija el gate científico de la base. | I-00 |
 | I-02 | P-02: decisiones adaptativas | Es el corazón del valor PRO y no necesita AWS. | I-01 |
 | I-03 | P-05: datos reales de dengue en Manabí | Debe existir una fuente trazable antes de calibrar. | I-02 |
-| I-04 | P-03: jobs Monte Carlo locales | Permite lotes reproducibles y acelera calibración sin AWS. | I-01, I-03 |
+| I-04 | P-03: jobs Monte Carlo locales | Permite lotes reproducibles y acelera calibración sin AWS. La interfaz puede avanzar con el backend local mientras se resuelve la licencia de P-05. | I-01; P-05 sigue siendo prerequisito de I-05/P-06 |
 | I-05 | P-06: calibración y preset | Cierra el valor científico con validación fuera de muestra. | I-03, I-04 |
 | I-06 | P-08: informe para el alcalde | Convierte resultados y costos en un entregable usable. | I-05 |
 | I-07 | P-07: cierre de mapa/animación | Pule la experiencia sobre P-09 sin tocar el modelo. | I-06 |
@@ -147,7 +147,9 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** el endpoint síncrono no sirve para lotes grandes ni para calibración; no hay manifiesto, progreso, cancelación ni idempotencia.
 
-**Estado 2026-10-27:** backend y cliente verificados localmente: cuatro rutas, cola, token, idempotencia, cancelación y resultado reproducible. Falta conectar la pantalla de jobs y cerrar P-04; I-04 sigue abierta.
+**Estado 2026-10-28:** backend, cliente y UI local verificados: creación y resultado R=2 y R=31, recuperación tras recarga, descarga ZIP y cancelación R=100 en navegador; 125 pruebas frontend, typecheck y build pasan. Ver [evidencia P-03 UI](evidencia/p03-ui-2026-10-28.md). I-04 sigue abierta para aceptación de estados de error/accesibilidad; P-04 AWS permanece sin iniciar.
+
+**Decisión de dependencia (2026-10-28):** P-05 permanece abierto porque aún no se inspeccionó el XLSX de OBSALUD ni se aclararon condiciones de reutilización. Se permite avanzar solo la integración visual/local de P-03 contra el contrato backend ya verificado: no usa datos de dengue ni declara calibración. P-05 sigue bloqueando P-06; P-04/AWS permanece en I-08.
 
 **Alcance:**
 
@@ -157,6 +159,10 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 - Estado, progreso, errores y cancelación trazables.
 - Almacenamiento local reproducible; sin AWS todavía.
 - Cliente frontend para lanzar y seguir un job, sin presentar resultados parciales como recomendación final.
+- Respetar `jobLimits` anunciados por `/v1/config` (no heredar el límite síncrono ni el fixture de 1.000); token solo en `sessionStorage`, ligado a la pestaña/sesión.
+- En una sesión restaurada, recargar estado desde `/v1/jobs/{id}` y permitir cancelación; usar polling con backoff y abortar peticiones al salir.
+- Crear el job a partir de la configuración actual y el `graphHash` validado por preview; mostrar descarga/resumen solo después de recuperar un resultado completo.
+- Estados de backend desconectado, límite excedido, expiración/credencial inválida, cancelación y resultado fallido visibles en español; no presentar fixtures como trabajos reales.
 
 **Aceptación:**
 
@@ -166,6 +172,7 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 - La reproducción coincide con la ejecución secuencial.
 - Errores y cancelación no dejan resultados parciales presentados como completos.
 - Pruebas de contrato y de integración local.
+- Aceptación navegador: crear R=2, consultar progreso real y resultado reproducible; crear R=31 para comprobar que la ruta de jobs permite valores sobre el límite síncrono; probar cancelación y recarga de pestaña con token de sesión; confirmar límite de servidor en el formulario y estados de error.
 
 ### I-05 — P-06: calibración y preset versionado
 

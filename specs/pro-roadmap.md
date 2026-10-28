@@ -53,7 +53,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 - Detallar `/v1/jobs`, estado/progreso, cancelación, acceso por capacidad, manifiesto y resultados usando el diseño previo del TRD. No ampliar `repetitions` del endpoint síncrono como sustituto.
 - Fijar lista de índices y semillas antes de ejecutar; cada réplica procesa las políticas pareadas sobre el experimento acordado. Validar modelo, recurso de calibración, red fija o regenerada y versiones.
 - Aceptación local: lotes en distinto orden producen el mismo agregado; reintentos no duplican réplicas; errores/cancelación son trazables; solo agregado completo habilita recomendación final; reproducción coincide con ejecución secuencial.
-- **Verificado 2026-10-27:** cuatro rutas locales reales, token, idempotencia, cola/retención, cancelación terminal, reintentos, progreso y resultado reproducible >30. [Contrato P-03](p03-monte-carlo-jobs.md), [evidencia](../docs/evidencia/p03-jobs-local.md). Interfaz visual pendiente; no cierra P-04.
+- **Verificado localmente 2026-10-28:** backend y UI conectados a jobs reales; navegador confirmó R=2/R=31 completadas, recuperación tras recarga, ZIP y cancelación R=100. Límite local publicado: 100 réplicas y 2 concurrentes. Quedan aceptación de errores/accesibilidad; miles en AWS y Distributed Map siguen pendientes P-04. [Contrato P-03](p03-monte-carlo-jobs.md), [evidencia backend](../docs/evidencia/p03-jobs-local.md), [evidencia UI](../docs/evidencia/p03-ui-2026-10-28.md).
 
 ### P-04 — Distributed Map en AWS y evidencia de miles de réplicas (PRO-4)
 
@@ -118,6 +118,6 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ## 5. Orden de trabajo y criterio de inicio
 
-P-01, el backend de P-02/P-03 y P-09 están verificados localmente; seguir con la integración visual de P-02/P-03 y la preparación de P-04 en paralelo, e investigar P-05 para resolver pronto datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente y se apoya en P-09 sin mezclar la aceptación del mapa con la animación. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
+P-01, el backend de P-02/P-03, la UI local de P-02/P-03 y P-09 están verificados localmente; completar aceptación visual/de accesibilidad y preparar P-04 cuando llegue su turno, e investigar P-05 para resolver datos y modelo. P-03 prepara la escalabilidad antes de P-04 y P-06 cierra la calibración tras disponer de datos. P-07 mejora la reproducción existente y se apoya en P-09 sin mezclar la aceptación del mapa con la animación. P-08 puede entregar un informe del escenario ficticio antes de la calibración, con su alcance visible.
 
 Antes de cada implementación: cerrar esquema, ejemplo, semántica temporal, pruebas y cambios de PRD/TRD afectados. Los campos de capacidades pendientes son propuestas; P-01..P-03 tienen contratos vigentes en sus anexos. Conservar la comparación justa, independencia de políticas, exportaciones y reproducibilidad. Cada capacidad pasa a verificada solo con evidencia, sin convertir las ideas opcionales en obligaciones.

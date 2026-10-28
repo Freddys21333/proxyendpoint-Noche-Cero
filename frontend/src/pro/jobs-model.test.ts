@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
+import type { CompareResponse, JobResponse } from '../lib/api.ts'
 import {
-  advanceDemoJob, cancelDemoJob, createDemoJob, isTerminalJob, jobOutcome,
+  advanceDemoJob, cancelDemoJob, createDemoJob, isTerminalJob, jobOutcome, mapApiJob, previewConfigurationForJob,
   jobProgressPercent, validateJobDraft,
 } from './jobs-model.ts'
 import { initialDemoJobs } from './fixtures/jobs.ts'
@@ -15,6 +17,8 @@ test('job draft rejects out-of-range replicates and seeds without clamping', () 
   assert.match(validateJobDraft({ replicates: Number.NaN, rootSeed: 1 }).replicates!, /entero/)
   assert.match(validateJobDraft({ replicates: 10, rootSeed: -1 }).rootSeed!, /entre 0 y/)
   assert.match(validateJobDraft({ replicates: 10, rootSeed: 4294967296 }).rootSeed!, /entre 0 y/)
+  assert.deepEqual(validateJobDraft({ replicates: 100, rootSeed: 1 }, 100), {})
+  assert.match(validateJobDraft({ replicates: 101, rootSeed: 1 }, 100).replicates!, /entre 2 y 100/)
 })
 
 test('a demo job moves through real UI states and keeps a terminal state stable', () => {
@@ -69,4 +73,32 @@ test('the fixture history exposes completed, failed and cancelled states', () =>
   assert.equal(jobs[0].result?.policies.length, 3)
   assert.equal(jobs[1].error?.code, 'REPLICA_FAILED')
   assert.equal(jobs[2].result, null)
+})
+
+test('a real API job maps backend status and progress without simulating progress', () => {
+  const response = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-status-response.json', import.meta.url), 'utf8')) as JobResponse
+  const configuration = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-create-request.json', import.meta.url), 'utf8')).configuration
+  const job = mapApiJob({ ...response, status: 'running', progress: { ...response.progress, replicatesCompleted: 8 } }, configuration)
+  assert.equal(job.source, 'api')
+  assert.equal(job.status, 'RUNNING')
+  assert.deepEqual(job.progress, { total: 31, succeeded: 8, failed: 0 })
+  assert.equal(job.result, null)
+})
+
+test('a completed API job exposes only its complete backend aggregate', () => {
+  const response = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-status-response.json', import.meta.url), 'utf8')) as JobResponse
+  const configuration = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-create-request.json', import.meta.url), 'utf8')).configuration
+  const incomplete = mapApiJob({ ...response, status: 'completed', progress: { ...response.progress, replicatesCompleted: response.progress.replicatesTotal - 1 } }, configuration)
+  assert.equal(incomplete.status, 'SUCCEEDED')
+  assert.equal(incomplete.result, null)
+})
+
+test('preview caps only the synchronous configuration while preserving the job repetitions and root seed', () => {
+  const configuration = JSON.parse(readFileSync(new URL('../../../schemas/examples/job-create-request.json', import.meta.url), 'utf8')).configuration
+  configuration.repetitions = 100
+  const preview = previewConfigurationForJob(configuration, 30)
+  assert.equal(preview.repetitions, 30)
+  assert.equal(configuration.repetitions, 100)
+  assert.equal(preview.rootSeed, configuration.rootSeed)
+  assert.equal(preview.scenario.populationSize, configuration.scenario.populationSize)
 })

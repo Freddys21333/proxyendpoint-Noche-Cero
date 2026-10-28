@@ -43,8 +43,8 @@ Esta tabla es la referencia para saber dónde vive cada pendiente y qué evidenc
 | ID | Backend | Frontend | Contrato | Pruebas |
 |---|---|---|---|---|
 | P-01 | `domain/configuration.py`, `simulation/engine.py`, `simulation/experiments.py`, `simulation/exports.py` | `ResourceScheduleEditor`, `ResourceInventory`, `lib/resource-schedule.ts` | `schemas/common.schema.json` (`resourceSchedule`) | `tests/test_resource_schedule.py`, `test_combined.py`, `test_exports.py`; `lib/scenario.test.ts` |
-| P-02 | Parcial: `strategies/combined.py`, `strategies/vaccination.py` | Sin editor de reglas ni registro de motivos | Sin contrato de política adaptativa | `tests/test_combined.py`, `test_vaccination.py` |
-| P-03 | No iniciado | Pantalla de trabajos con fixtures locales, estados, cancelación y reintento; separada del resumen real de comparación | Sin `/jobs` | `frontend/src/pro/jobs-model.test.ts` (solo modelo de demostración) |
+| P-02 | Backend `adaptive-v1` y editor/historial local conectados | Reglas, anillo, explicaciones y resultados por réplica | Contrato versionado disponible | `tests/test_combined.py`; [evidencia UI](../docs/evidencia/p02-ui-2026-10-28.md); falta aceptación completa |
+| P-03 | Parcial; UI local conectada | Jobs reales, estados backend, cancelación, recuperación en sesión y exportación; faltan aceptar errores/accesibilidad y P-04 AWS | Backend `/v1/jobs` integrado | `frontend/src/pro/jobs-model.test.ts`; [evidencia UI](../docs/evidencia/p03-ui-2026-10-28.md) |
 | P-04 | No iniciado | No iniciado | Sin jobs ni IaC | — |
 | P-05 | No iniciado | No iniciado | Sin dataset versionado | — |
 | P-06 | No iniciado | No iniciado | Sin modelo/preset calibrado | — |

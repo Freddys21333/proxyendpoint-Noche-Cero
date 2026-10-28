@@ -1,5 +1,6 @@
 import { AlertTriangle, Check, Clock, RefreshCw, Square } from 'lucide-react'
 import { policyLabels } from '../lib/comparison.ts'
+import type { CompareResponse } from '../lib/api.ts'
 import {
   isTerminalJob, jobOutcome, jobProgressPercent, jobStatusDescriptions, jobStatusLabels,
   type ProJob, type ProJobStatus,
@@ -21,16 +22,19 @@ function formatDate(value: string): string {
   return Number.isNaN(date.getTime()) ? '—' : dateFormat.format(date)
 }
 
-export function JobStatusPanel({ job, onCancel, onRetry }: {
+export function JobStatusPanel({ job, fullResult, onCancel, onRetry, onForget, onExport }: {
   job: ProJob | null
+  fullResult?: CompareResponse
   onCancel: () => void
   onRetry: () => void
+  onForget: () => void
+  onExport: (result: CompareResponse) => void
 }) {
   if (!job) {
     return <section className="pro-card pro-empty" aria-labelledby="pro-job-status-title">
       <Clock size={28} aria-hidden="true" />
       <h2 id="pro-job-status-title">Sin trabajo activo</h2>
-      <p>Inicia un trabajo de ejemplo o abre uno del historial para revisar sus estados.</p>
+      <p>Inicia un trabajo local o selecciónalo en el historial para revisar su estado.</p>
     </section>
   }
 
@@ -48,7 +52,7 @@ export function JobStatusPanel({ job, onCancel, onRetry }: {
       </div>
       <div className="pro-status-badges">
         <span className={`pro-status pro-status--${job.status.toLowerCase()}`}>{outcome.label}</span>
-        {job.source === 'fixture' && <span className="pro-badge pro-badge--muted">Datos de ejemplo</span>}
+        <span className="pro-badge pro-badge--muted">{job.source === 'fixture' ? 'Datos de ejemplo' : 'Backend local'}</span>
       </div>
     </div>
 
@@ -112,12 +116,12 @@ export function JobStatusPanel({ job, onCancel, onRetry }: {
     {job.status === 'SUCCEEDED' && job.result && <section className="pro-result" aria-label="Resultado agregado del trabajo">
       <div className="pro-result-heading">
         <h3>Resultado agregado</h3>
-        <span className="pro-badge pro-badge--muted">Cifras de ejemplo</span>
+        <span className="pro-badge pro-badge--muted">{job.source === 'fixture' ? 'Cifras de ejemplo' : 'Resultado backend'}</span>
       </div>
-      <p>Vista de la interfaz. Estas cifras no provienen de una simulación real ni deben interpretarse como evidencia.</p>
+      <p>{job.source === 'fixture' ? 'Vista de la interfaz. Estas cifras no provienen de una simulación real ni deben interpretarse como evidencia.' : `Experimento ${job.result.experimentHash}. Las cifras pertenecen a este escenario ficticio y no representan dengue real.`}</p>
       <div className="pro-table-scroll">
         <table>
-          <caption>Resumen de ejemplo por estrategia</caption>
+          <caption>Resumen agregado del trabajo por estrategia</caption>
           <thead><tr><th>Estrategia</th><th>Infectados acumulados</th><th>Pico de zombies</th></tr></thead>
           <tbody>{job.result.policies.map(row => <tr key={row.policy}>
             <th scope="row">{policyLabels[row.policy]}</th>
@@ -126,7 +130,10 @@ export function JobStatusPanel({ job, onCancel, onRetry }: {
           </tr>)}</tbody>
         </table>
       </div>
-      <p className="pro-hash">Hash de ejemplo <span className="mono">{job.result.experimentHash}</span></p>
+      <p className="pro-hash">Hash del experimento <span className="mono">{job.result.experimentHash}</span></p>
     </section>}
+    {job.source === 'api' && job.status === 'SUCCEEDED' && !job.result && <p role="status">Trabajo completado. Recuperando el agregado completo del backend…</p>}
+    {job.source === 'api' && job.result && fullResult && <button type="button" className="pro-secondary" onClick={() => onExport(fullResult)}>Descargar resultado ZIP</button>}
+    {job.source === 'api' && terminal && <div className="pro-actions"><button type="button" className="pro-link-button" onClick={onForget}>Quitar de esta sesión</button></div>}
   </section>
 }

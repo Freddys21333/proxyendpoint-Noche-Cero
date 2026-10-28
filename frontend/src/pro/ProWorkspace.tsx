@@ -1,5 +1,5 @@
 import { Database, FileText, ListChecks, ShieldCheck } from 'lucide-react'
-import type { CompareResponse } from '../lib/api.ts'
+import type { CompareResponse, ConfigResponse, PreviewResponse, createApiClient } from '../lib/api.ts'
 import { policyLabels } from '../lib/comparison.ts'
 import { JobsWorkspace } from './JobsWorkspace.tsx'
 import './ProWorkspace.css'
@@ -7,7 +7,10 @@ import './ProWorkspace.css'
 const policies = ['none', 'random', 'targeted'] as const
 const number = new Intl.NumberFormat('es-EC', { maximumFractionDigits: 1 })
 
-export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, onShowResults }: {
+export function ProWorkspace({ api, serverConfig, preview, comparison, comparisonPending, onShowSimulator, onShowResults }: {
+  api: ReturnType<typeof createApiClient>
+  serverConfig: ConfigResponse | null
+  preview: PreviewResponse | null
   comparison: CompareResponse | null
   comparisonPending: boolean
   onShowSimulator: () => void
@@ -19,7 +22,7 @@ export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, o
         <h1 id="pro-title">PRO</h1>
         <p>Estado de las capacidades PRO y exploración de trabajos.</p>
       </div>
-      <span className="pro-badge pro-badge--demo">Trabajos: demostración</span>
+      <span className={`pro-badge ${serverConfig?.features.asyncJobs ? '' : 'pro-badge--muted'}`}>{serverConfig?.features.asyncJobs ? 'Trabajos: backend local' : 'Trabajos no disponibles'}</span>
     </header>
 
     <section className="pro-current" aria-labelledby="pro-current-title">
@@ -48,28 +51,23 @@ export function ProWorkspace({ comparison, comparisonPending, onShowSimulator, o
       </div>}
     </section>
 
-    <div className="pro-demo-note" role="note">
-      <strong>Datos de ejemplo.</strong> El flujo de trabajos usa fixtures locales para revisar estados, progreso y cancelación.
-      No ejecuta cómputo real, no consulta AWS y no produce resultados científicos.
-    </div>
-
     <nav className="pro-section-nav" aria-label="Secciones PRO">
       <button type="button" aria-current="page"><ListChecks size={17} aria-hidden="true" /> Trabajos</button>
       <button type="button" disabled title="Se habilitará al cerrar el contrato de evidencia"><Database size={17} aria-hidden="true" /> Evidencia <small>Próximamente</small></button>
       <button type="button" disabled title="Se habilitará al cerrar el contrato de informe"><FileText size={17} aria-hidden="true" /> Informe <small>Próximamente</small></button>
     </nav>
 
-    <JobsWorkspace />
+    <JobsWorkspace api={api} serverConfig={serverConfig} comparison={comparison} preview={preview?.configuration ?? null} />
 
     <details className="pro-contract">
       <summary><ShieldCheck size={17} aria-hidden="true" /> Estado de integración</summary>
       <div className="pro-contract-grid">
-        <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>Pendiente</strong></div>
-        <div><span>Backend de trabajos</span><strong>No iniciado</strong></div>
-        <div><span>Esta pantalla</span><strong>Fixture local</strong></div>
-        <div><span>Siguiente paso</span><strong>Conectar estados reales</strong></div>
+        <div><span>Contrato <span className="mono">/v1/jobs</span></span><strong>{serverConfig?.features.asyncJobs ? 'Disponible' : 'No anunciado'}</strong></div>
+        <div><span>Backend de trabajos</span><strong>{serverConfig?.features.asyncJobs ? 'Proceso local' : 'Deshabilitado'}</strong></div>
+        <div><span>Esta pantalla</span><strong>{serverConfig?.features.asyncJobs ? 'API y sessionStorage' : 'Esperando backend'}</strong></div>
+        <div><span>AWS</span><strong>No desplegado</strong></div>
       </div>
-      <p>La conexión reemplazará el fixture por estados, progreso, cancelación y resultado firmado del backend. Hasta entonces, ninguna cifra de esta pantalla debe citarse como evidencia.</p>
+      <p>El backend local pierde los trabajos al reiniciarse y conserva resultados temporalmente. La pantalla solo permite lanzar trabajos dentro de los límites anunciados y presenta un agregado cuando está completo.</p>
     </details>
   </section>
 }

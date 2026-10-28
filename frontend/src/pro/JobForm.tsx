@@ -1,11 +1,15 @@
 import { useId } from 'react'
-import { Gauge, Play, ShieldCheck } from 'lucide-react'
-import { JOB_POLICIES, JOB_REPLICATE_MAX, JOB_REPLICATE_MIN, JOB_SEED_MAX, type ProJobDraft } from './jobs-model.ts'
+import { Gauge, Play } from 'lucide-react'
+import { JOB_POLICIES, JOB_REPLICATE_MIN, JOB_SEED_MAX, type ProJobDraft } from './jobs-model.ts'
 import { policyLabels } from '../lib/comparison.ts'
 
-export function JobForm({ draft, errors, onChange, onSubmit }: {
+export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submitting, available, onChange, onSubmit }: {
   draft: ProJobDraft
   errors: { replicates?: string; rootSeed?: string }
+  maxReplicates: number
+  maxConcurrent: number
+  submitting: boolean
+  available: boolean
   onChange: (draft: ProJobDraft) => void
   onSubmit: () => void
 }) {
@@ -20,7 +24,7 @@ export function JobForm({ draft, errors, onChange, onSubmit }: {
         <h2 id="pro-job-form-title">Nuevo trabajo</h2>
         <p>Configura el experimento antes de enviarlo.</p>
       </div>
-      <span className="pro-badge">Fixture local</span>
+      <span className={`pro-badge ${available ? '' : 'pro-badge--muted'}`}>{available ? 'API local' : 'No disponible'}</span>
     </div>
     <form className="pro-form" onSubmit={event => { event.preventDefault(); onSubmit() }} noValidate>
       <div className="pro-form-grid">
@@ -31,7 +35,7 @@ export function JobForm({ draft, errors, onChange, onSubmit }: {
             type="number"
             inputMode="numeric"
             min={JOB_REPLICATE_MIN}
-            max={JOB_REPLICATE_MAX}
+            max={maxReplicates}
             step={1}
             value={Number.isNaN(draft.replicates) ? '' : draft.replicates}
             aria-invalid={Boolean(replicateError)}
@@ -58,14 +62,14 @@ export function JobForm({ draft, errors, onChange, onSubmit }: {
         </label>
       </div>
       <div className="pro-quick-row" aria-label="Cantidades rápidas de réplicas">
-        {[100, 1000].map(value => <button
+        {[10, 30, 100].filter(value => value <= maxReplicates).map(value => <button
           key={value}
           type="button"
           className="pro-quick"
           aria-pressed={draft.replicates === value}
           onClick={() => onChange({ ...draft, replicates: value })}
         >{value.toLocaleString('es-EC')}</button>)}
-        <span>Máximo de la demostración: {JOB_REPLICATE_MAX.toLocaleString('es-EC')} réplicas.</span>
+        <span>Máximo del servidor: {maxReplicates.toLocaleString('es-EC')} réplicas · hasta {maxConcurrent.toLocaleString('es-EC')} trabajos en paralelo.</span>
       </div>
       <dl className="pro-form-meta">
         <div>
@@ -81,12 +85,8 @@ export function JobForm({ draft, errors, onChange, onSubmit }: {
           <dd>Fija, misma realización por réplica</dd>
         </div>
       </dl>
-      <p className="pro-form-note"><Gauge size={16} aria-hidden="true" /> El progreso de esta pantalla es simulado. No se ejecuta cómputo real ni se consulta AWS.</p>
-      <button type="submit" className="pro-primary"><Play size={17} aria-hidden="true" /> Iniciar trabajo</button>
+      <p className="pro-form-note"><Gauge size={16} aria-hidden="true" /> Trabajo local en el backend. Las réplicas comparten configuración y red; no usa AWS ni datos calibrados.</p>
+      <button type="submit" className="pro-primary" disabled={!available || submitting}><Play size={17} aria-hidden="true" />{submitting ? 'Enviando…' : 'Iniciar trabajo'}</button>
     </form>
-    <div className="pro-contract-note">
-      <ShieldCheck size={17} aria-hidden="true" />
-      <p>Contrato pendiente: esta UI quedará conectada a <span className="mono">/v1/jobs</span> cuando el backend publique estados, idempotencia y resultado firmado.</p>
-    </div>
   </section>
 }

@@ -17,13 +17,13 @@ export function JobHistory({ jobs, activeId, onSelect }: {
     <div className="pro-card-heading">
       <div>
         <h2 id="pro-history-title">Historial de trabajos</h2>
-        <p>Estados de ejemplo para revisar el flujo completo.</p>
+        <p>Trabajos creados desde esta sesión del navegador.</p>
       </div>
-      <span className="pro-badge pro-badge--muted">Datos de ejemplo</span>
+      <span className="pro-badge pro-badge--muted">Sesión actual</span>
     </div>
     <div className="pro-table-scroll">
       <table>
-        <caption>Trabajos de demostración, ordenados del más reciente al más antiguo</caption>
+        <caption>Trabajos locales de la sesión actual, del más reciente al más antiguo</caption>
         <thead><tr><th>Trabajo</th><th>Estado</th><th>Réplicas</th><th>Creado</th><th><span className="pro-sr-only">Acción</span></th></tr></thead>
         <tbody>{jobs.map(job => {
           const outcome = jobOutcome(job)
