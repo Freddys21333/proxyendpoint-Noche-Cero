@@ -1,5 +1,9 @@
 # Publicar, retirar y volver a publicar
 
+Para incluir los trabajos Monte Carlo P-04, seguir además
+[P04-OPERACION.md](P04-OPERACION.md): requieren `enable_aws_jobs=true` explícito.
+El procedimiento base de este documento los deja deshabilitados.
+
 Ejecutar desde la raíz con PowerShell, Terraform >=1.10, AWS CLI, Node y el
 entorno Python backend disponible. Iniciar sesión con `aws login` y comprobar
 `aws sts get-caller-identity`. No guardar credenciales en archivos versionados.

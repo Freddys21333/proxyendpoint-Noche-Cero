@@ -1,5 +1,8 @@
 # Infraestructura base
 
+P-04 está preparado con activación optativa, sin desplegar:
+[operación de trabajos Monte Carlo AWS](P04-OPERACION.md).
+
 Región: `us-east-2`. Cinco funciones Python 3.12 x86_64 (health, config,
 preview, compare e informe PDF), HTTP API y Amplify Hosting estático. Sin VPC,
 NAT, servidores permanentes ni trabajos locales en producción. Los trabajos

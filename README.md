@@ -102,3 +102,5 @@ Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga l
 Para probar la versión local revisada: [guía de inicio y recorrido](docs/probar-local.md). Frontend en http://127.0.0.1:5174 y API en :8000. [Estabilidad verificada](docs/evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y flujo real, sin despliegue AWS.
 
 
+
+**P-04 preparado, sin desplegar:** trabajos duraderos y hasta 1000 réplicas dentro del límite de carga. [Operación y pruebas AWS pendientes](infra/P04-OPERACION.md).

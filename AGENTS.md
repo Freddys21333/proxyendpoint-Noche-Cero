@@ -250,3 +250,11 @@ Corrección posterior del mapa (2026-10-28): el error Leaflet clearRect registra
 Prioridad operativa autorizada (2026-10-28): estabilizar local → mejorar UX → AWS por partes. [Guía de prueba](docs/probar-local.md). El recorrido local fue revisado contra API real; se corrigió preflight de capacidad/semilla de trabajos y favicon. No exigir cerrar calibración nueva, miles de réplicas o jurado para iterar localmente. Esto no marca T-13..T-16/T-23 ni AWS completos. API :8000 y frontend :5174 iniciados para pruebas. [Contrato](specs/local-stability.md), [evidencia](docs/evidencia/estabilidad-local-2026-10-28.md).
 
 
+
+Actualización P-04 (28/10/2026): código/cliente/Terraform preparados en feat/aws-infra,
+sin volver a desplegar. DynamoDB/S3, Standard Distributed Map, un trabajo activo,
+dos workers, tres admisiones por día UTC y hasta 1000 réplicas dentro de 50 millones
+arista-día-réplica. Feature flag enable_aws_jobs=false por defecto. P-03 local conserva
+máximo 100 y síncrono 30. No marcar P-04 cerrado: faltan 100/1000 réplicas reales AWS,
+cuotas/permisos efectivos, navegador desplegado y costo observado. Consultar
+specs/p04-aws-jobs.md, infra/P04-OPERACION.md y docs/evidencia/p04-implementacion-local-2026-10-28.md.
