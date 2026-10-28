@@ -83,9 +83,9 @@ Las siguientes capturas documentan la configuración observada, no una consulta 
 
 Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
 
-PRO tiene **P-01, P-05, P-06, P-08 y P-09 verificados localmente**, y **P-02/P-03 con backend y UI conectados a la API real**; **P-07 está parcial**; **P-04 sigue pendiente**. P-06 se publica como `fitted-not-validated`: la validación fuera de muestra pierde frente a persistencia. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar conceptos de cierre de capa y animación, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+PRO tiene **P-01, P-05, P-06, P-08 y P-09 verificados localmente**, y **P-02/P-03 con backend y UI conectados a la API real**; **P-07 tiene backend y UI integrados, con aceptación en navegador posterior al merge pendiente**; **P-04 sigue pendiente**. P-06 se publica como `fitted-not-validated`: la validación fuera de muestra pierde frente a persistencia. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar cierre de capa y reproducción temporal sincronizada, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
 
-Informe para alcaldía P-08: [contrato y comandos](specs/p08-report.md), [evidencia local](docs/evidencia/p08-informe-2026-10-27.md). Descarga PDF desde Comparación o el resultado completo de un trabajo PRO.
+Informe para alcaldía P-08: [contrato y comandos](specs/p08-report.md), [evidencia local del PDF](docs/evidencia/p08-informe-2026-10-27.md) y [evidencia del informe HTML/CLI](docs/evidencia/p08-informe-html-2026-10-28.md). Descarga PDF desde Comparación o el resultado completo de un trabajo PRO; el mismo panel permite imprimir o descargar el informe como HTML autocontenido.
 
 Rendimiento local: [mediciones de carga/exportación y equivalencia científica](docs/evidencia/rendimiento-validacion-2026-10-27.md). Optimización de validación; motor y hashes conservados.
 

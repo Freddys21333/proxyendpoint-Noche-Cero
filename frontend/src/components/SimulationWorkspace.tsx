@@ -26,6 +26,19 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
   useEffect(() => { dispatch({ type: 'reset' }) }, [comparison, active, props.preview, comparisonState])
   useEffect(() => { setSelectedPersonId(''); setFocusRequest(null) }, [props.preview])
   useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+        if (media.matches) dispatch({ type: 'reduced-motion', enabled: true })
+        const handler = (event: MediaQueryListEvent) => dispatch({ type: 'reduced-motion', enabled: event.matches })
+        media.addEventListener('change', handler)
+        return () => media.removeEventListener('change', handler)
+      }
+    } catch {
+      // Ignorar en entornos de test o sin matchMedia
+    }
+  }, [])
+  useEffect(() => {
     if (presentation.mode !== 'representative') { if (state.playing) dispatch({ type: 'pause' }); return }
     return schedulePlaybackTick({ ...state, day }, lastDay, () => dispatch({ type: 'tick' }))
   }, [state.playing, state.speed, day, lastDay, frames, comparison, active, props.preview, comparisonState, presentation.mode])

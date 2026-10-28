@@ -132,16 +132,16 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-07 — Completar visualización temporal y animación opcional (PRO-6)
 
-Backend verificado localmente (2026-10-27): [validación compartida de integridad temporal](p07-backend-playback.md), trazas reales, rechazo de frames/eventos incoherentes y hashes conservados. [Evidencia](../docs/evidencia/p07-backend-2026-10-27.md). Se mantiene abierta la aceptación integral de UI, controles, accesibilidad y rendimiento visual.
+Backend verificado localmente (2026-10-27): [validación compartida de integridad temporal](p07-backend-playback.md), trazas reales, rechazo de frames/eventos incoherentes y hashes conservados. [Evidencia](../docs/evidencia/p07-backend-2026-10-27.md). El merge de `feat/pro` (2026-10-28) integró la UI: sincronización red/mapa, retroceso de día, atajos de teclado y movimiento reducido ([evidencia UI](../docs/evidencia/p07-mapa-animacion-2026-10-28.md)). Queda la aceptación en navegador posterior al merge, en dispositivos táctiles y el rendimiento visual.
 
-- [ ] Estado: **en progreso**. Base de reproducción disponible; depende de frames/eventos exportados por el modelo correspondiente.
+- [ ] Estado: **UI integrada, aceptación pendiente**. Base de reproducción disponible; depende de frames/eventos exportados por el modelo correspondiente.
 - Aceptar mapa y red sincronizados con día, política y réplica; conservar cámara, selección, coordenadas y conteos. Mostrar límites cuando no hay frames. La curva media nunca determina los estados individuales.
 - Si queda tiempo, interpolar colores/transiciones entre fotogramas e indicar exposiciones únicamente con eventos causales reales registrados. No inventar trayectos, contagios o desplazamientos de personas porque se vea más animado.
 - Aceptación: pausa/seek/velocidad/reinicio y estrategia sin divergencias, entradas obsoletas bloqueadas, rendimiento y accesibilidad evaluados. Respetar preferencia de movimiento reducido; animación decorativa desactivable y sin afectar RNG/hashes.
 
 ### P-08 — Informe para el alcalde, salida preferida PDF (PRO-7)
 
-- [x] Estado: **verificado localmente**, modo ficticio claramente identificado. Experimento completo validado en integridad, sin afirmar validación epidemiológica ni aprobación de T-22. PDF determinista, API/CLI y descarga desde comparación/trabajos. [Contrato](p08-report.md) y [evidencia](../docs/evidencia/p08-informe-2026-10-27.md).
+- [x] Estado: **verificado localmente**, modo ficticio claramente identificado. Experimento completo validado en integridad, sin afirmar validación epidemiológica ni aprobación de T-22. PDF determinista, API/CLI y descarga desde comparación/trabajos. [Contrato](p08-report.md) y [evidencia](../docs/evidencia/p08-informe-2026-10-27.md). El merge de `feat/pro` añadió además el informe HTML imprimible y su CLI ([evidencia](../docs/evidencia/p08-informe-html-2026-10-28.md)).
 - Plantilla determinista con problema, escenario/enfermedad, lugar/período, recursos, intervenciones, estrategias, comparación contra no intervenir y azar, incertidumbre, gasto/saldo, beneficio, recomendación explicada y límites. Incluir fuentes reales cuando existan, configuración, semilla, versiones y hash del experimento.
 - Lenguaje sencillo; explicar contagios evitados y diferencia entre una réplica y promedio. Conservar empates/pérdidas; no prometer ganador para toda semilla. Costo por evitado no aplicable cuando no hay mejora positiva. Separar costos de intervenciones y AWS.
 - Aceptación: las cifras coinciden con el JSON; archivo legible y visualmente revisado, tablas/gráficos sin recortes, fuentes trazables y plantilla reproducible. No fabricar resultados faltantes. Fecha de generación puede ser volátil sin cambiar la evidencia del experimento.

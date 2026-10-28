@@ -1,7 +1,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { closeSync, mkdtempSync, openSync, readFileSync, rmSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { assignGeographicAgents, validateGeographicResource, insideRing } from './manta-geography.ts'
 import type { PreviewResponse } from './api.ts'
@@ -106,12 +108,27 @@ test('invalid geographic masks are rejected instead of producing invented locati
 
 test('the offline preparation command documents its inputs and rejects unknown options before writing', () => {
   const script = fileURLToPath(new URL('../../../scripts/prepare-manta-geography.mjs', import.meta.url))
-  const help = spawnSync(process.execPath, ['--experimental-strip-types', script, '--help'], { encoding: 'utf8' })
-  assert.equal(help.status, 0)
-  assert.match(help.stdout, /--source-dir DIR --extracted-at UTC/)
-  assert.equal(help.stderr, '')
-  const invalid = spawnSync(process.execPath, ['--experimental-strip-types', script, '--unsupported'], { encoding: 'utf8' })
-  assert.equal(invalid.status, 1)
-  assert.match(invalid.stderr, /Invalid argument/)
-  assert.equal(invalid.stdout, '')
+  const directory = mkdtempSync(join(tmpdir(), 'manta-geography-cli-'))
+  const run = (args: string[]) => {
+    const stdoutPath = join(directory, 'stdout.txt')
+    const stderrPath = join(directory, 'stderr.txt')
+    const stdoutFd = openSync(stdoutPath, 'w')
+    const stderrFd = openSync(stderrPath, 'w')
+    const result = spawnSync(process.execPath, ['--experimental-strip-types', script, ...args], { stdio: ['ignore', stdoutFd, stderrFd] })
+    closeSync(stdoutFd)
+    closeSync(stderrFd)
+    return { ...result, stdout: readFileSync(stdoutPath, 'utf8'), stderr: readFileSync(stderrPath, 'utf8') }
+  }
+  try {
+    const help = run(['--help'])
+    assert.equal(help.status, 0)
+    assert.match(help.stdout, /--source-dir DIR --extracted-at UTC/)
+    assert.equal(help.stderr, '')
+    const invalid = run(['--unsupported'])
+    assert.equal(invalid.status, 1)
+    assert.match(invalid.stderr, /Invalid argument/)
+    assert.equal(invalid.stdout, '')
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
 })

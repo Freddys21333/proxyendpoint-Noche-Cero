@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily, InventoryDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -130,6 +130,34 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     const cy = network.current
     if (cy) cy.zoom({ level: Math.max(cy.minZoom(), Math.min(cy.maxZoom(), cy.zoom() * factor)), renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } })
   }
+  useEffect(() => {
+    if (!frames) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return
+      if (target?.isContentEditable) return
+
+      if (event.key === ' ' || event.key === 'k') {
+        event.preventDefault()
+        dispatch({ type: 'toggle' })
+      } else if (event.key === 'ArrowRight' || event.key === 'l') {
+        event.preventDefault()
+        dispatch({ type: 'step' })
+      } else if (event.key === 'ArrowLeft' || event.key === 'j') {
+        event.preventDefault()
+        dispatch({ type: 'step-back' })
+      } else if (event.key === 'Home') {
+        event.preventDefault()
+        dispatch({ type: 'reset' })
+      } else if (event.key === 'End') {
+        event.preventDefault()
+        dispatch({ type: 'seek', day: lastDay })
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [frames, lastDay, dispatch])
+
   const availability = {
     preview: 'Pulsa Comparar estrategias para reproducir.',
     pending: 'Calculando la trayectoria…',
@@ -144,7 +172,17 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       <Button type="button" variant="ghost" className="playback-primary" aria-label="Reproducir simulación" aria-describedby={!frames ? 'playback-availability' : undefined} title="Reproducir" disabled={!frames || playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} />{playing ? 'Reproduciendo' : 'Reproducir'}</Button>
       <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!frames || !playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
       <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" disabled={!frames} onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
+      <Button type="button" variant="ghost" aria-label="Retroceder un día" title="Día anterior" disabled={!frames || currentDay <= 0} onClick={() => dispatch({ type: 'step-back' })}><StepBack size={17} /></Button>
       <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={!frames || currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
+    </div>
+    <div className="playback-accessibility-row">
+      <button type="button" className={`playback-motion-toggle${playback.reducedMotion ? ' active' : ''}`}
+        aria-pressed={Boolean(playback.reducedMotion)}
+        onClick={() => dispatch({ type: 'reduced-motion', enabled: !playback.reducedMotion })}
+        title={playback.reducedMotion ? 'Desactivar modo de movimiento reducido' : 'Activar modo de movimiento reducido'}>
+        {playback.reducedMotion ? 'Movimiento reducido' : 'Movimiento normal'}
+      </button>
+      <span className="playback-keyboard-hint" title="Atajos accesibles: Espacio (Play/Pausa), ← / → (Retroceder/Avanzar día), Inicio (Día 0)">Atajos: Espacio, ← / →</span>
     </div>
     {!frames && <p id="playback-availability" role="status">{availability}</p>}
   </section>

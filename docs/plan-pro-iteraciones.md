@@ -34,14 +34,14 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
 | P-02 | Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. Falta aceptación humana integral (T-13..T-16). |
-| P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, progreso, cancelación, idempotencia y resultado reproducible. Falta pantalla. |
+| P-03 | Backend, cliente y pantalla PRO verificados localmente: `/v1/jobs`, cola, progreso, cancelación, idempotencia, sondeo e historial. Queda P-04 en AWS. |
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
-| P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
-| P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
-| P-08 | Verificado localmente en modo ficticio: PDF determinista, API/CLI y descarga; T-22 independiente. [Evidencia](evidencia/p08-informe-2026-10-27.md). |
+| P-05/P-06 | Cerrados en local: serie real `manabi-dengue-weekly-v1` (94 semanas) y preset calibrado `manabi-dengue-2025-v1` con resultado desfavorable (`fitted-not-validated`). |
+| P-07 | Backend verificado y UI integrada por el merge de `feat/pro`: sincronización red/mapa, `step-back`, atajos y movimiento reducido. Falta aceptación en navegador posterior al merge, rendimiento visual y evaluación táctil. [Evidencia UI](evidencia/p07-mapa-animacion-2026-10-28.md). |
+| P-08 | Verificado localmente en modo ficticio: PDF determinista, API/CLI y descarga; el merge añade HTML imprimible y CLI. T-22 independiente. [Evidencia](evidencia/p08-informe-2026-10-27.md). |
 | AWS | No desplegado; `infra/` vacío. Se deja para la última fase. |
 
-Evidencia de partida: [auditoría PRO 2026-10-27](evidencia/auditoria-pro-2026-10-27.md).
+Evidencia de partida: [auditoría PRO 2026-10-27](evidencia/auditoria-pro-2026-10-27.md). Resolución y verificación del merge de `feat/pro`: [merge-feat-pro-2026-10-28](evidencia/merge-feat-pro-2026-10-28.md).
 
 ## 3. Orden de iteraciones
 
@@ -218,7 +218,9 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-07 — P-07: cierre de mapa y animación
 
-**Avance backend 2026-10-27:** por solicitud explícita se verifica [integridad temporal](../specs/p07-backend-playback.md) sin cambiar el motor ni esperar al gate científico. [Evidencia](evidencia/p07-backend-2026-10-27.md): 418 pruebas backend y contratos HTTP reales pasan. I-07 sigue abierto por controles, accesibilidad, sincronización visual y aceptación humana; T-22 conserva su pendiente.
+**Avance backend 2026-10-27:** por solicitud explícita se verifica [integridad temporal](../specs/p07-backend-playback.md) sin cambiar el motor ni esperar al gate científico. [Evidencia](evidencia/p07-backend-2026-10-27.md): 418 pruebas backend y contratos HTTP reales pasan.
+
+**Avance UI 2026-10-28 (merge de `feat/pro`):** la interfaz de reproducción quedó integrada con navegación bidireccional (`step-back`), atajos de teclado y movimiento reducido, con [evidencia UI](evidencia/p07-mapa-animacion-2026-10-28.md) y pruebas automatizadas en `lib/simulation-playback.test.ts`. I-07 sigue abierto por la aceptación en navegador posterior al merge, el rendimiento visual y la evaluación táctil/móvil; T-22 conserva su estado independiente.
 
 **Problema:** la reproducción y P-09 funcionan, pero falta aceptar sincronización, rendimiento, accesibilidad y transiciones.
 

@@ -14,14 +14,14 @@ La pregunta científica es si `targeted` reduce los infectados acumulados frente
 
 Usuarios principales: comité de contención, jurado/alcaldía que evalúa impacto y limitaciones, operador de una demo de brote sorpresa de menos de cinco minutos, y equipo técnico que reproduce resultados. El idioma de la interfaz y de la documentación es español. La identidad visual es **Noche Cero**.
 
-## 2. Estado real al 2026-10-27
+## 2. Estado real al 2026-10-28
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: T-22 científico completo y APROBADO; 15 experimentos, 450 pares y 17 reproducciones. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
+Rama de trabajo: `feat/backend-contratos`. Último incremento: **merge de `feat/pro`** (P-07 UI, P-08 HTML/CLI, SEO y costos) sobre el estado con T-22 APROBADO; 15 experimentos, 450 pares y 17 reproducciones ([post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md)).
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **486 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **139 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **487 pruebas backend**, Ruff, format, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
+| Frontend base | **147 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción temporal, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa, panel P-06 e informe PDF/HTML. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
 | Rendimiento | Motor `N=1000/T=90/R=30` en Windows: **13,80 s**, control anterior 13,60 s, mismos resultados. Referencia Linux histórica 44,3 s. Carga JSON grande optimizada a ~6 s. [Evidencia](docs/evidencia/rendimiento-validacion-2026-10-27.md). | No acredita p95, tiempo HTTP total ni AWS. Rendimiento HTTP consistente ≤25 s sigue pendiente. |
 | T-22 | **Componente científico APROBADO**: 15/15 experimentos, 450 pares (150 primarios), controles 5/5 y 17 reproducciones. [Evidencia](docs/evidencia/t22-v1-ejecucion.md). | T-23/semilla externa, aceptación humana y entrega integral permanecen pendientes. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
@@ -30,12 +30,12 @@ Rama de trabajo: `feat/backend-contratos`. Último incremento: T-22 científico 
 | P-04 | No iniciado. | Distributed Map, S3, IAM, cuotas, costos y evidencia de miles de réplicas. |
 | P-05 | Verificado localmente: `manabi-dengue-weekly-v1` con 94 semanas (2025 S1–53, 2026 S1–41), importador reproducible, geometría versionada, procedencia y controles de totales. | Nada pendiente en P-05; la granularidad provincial y los datos preliminares quedan como límites declarados. |
 | P-06 | Cerrado en local con resultado **desfavorable**: `manabi-dengue-2025-v1` (`fitted-not-validated`), ventanas fijadas antes de mirar, bootstrap 120, perfil condicional, puente al motor y panel en la UI. | La validación pierde frente a persistencia (29,53 vs 14,22 y 268,62 vs 48,86); no hay versión validada y P-08 debe citar la etiqueta. |
-| P-07 | Backend temporal verificado: identidad, frames/eventos, transiciones y conteos; reproducción/mapa existentes. [Evidencia](docs/evidencia/p07-backend-2026-10-27.md). | Aceptación UI de controles, sincronización, rendimiento, accesibilidad y movimiento reducido. |
-| P-08 | Verificado localmente: informe PDF determinista desde experimento ficticio completo, API/CLI y descarga en comparación/trabajos. | T-22 y aceptación humana integral siguen independientes. [Evidencia](docs/evidencia/p08-informe-2026-10-27.md). |
+| P-07 | Backend temporal verificado ([evidencia](docs/evidencia/p07-backend-2026-10-27.md)) y **UI integrada por el merge de `feat/pro`**: sincronización mapa/red, `step-back`, atajos de teclado y `prefers-reduced-motion` ([evidencia](docs/evidencia/p07-mapa-animacion-2026-10-28.md)). | Aceptación en navegador posterior al merge, evaluación táctil/móvil y rendimiento visual. |
+| P-08 | Verificado localmente: informe PDF determinista desde experimento ficticio completo, API/CLI y descarga en comparación/trabajos; además HTML autocontenido e impresión para alcaldía (`scripts/export_mayor_report_pdf.mjs`). | T-22 y aceptación humana integral siguen independientes. [Evidencia](docs/evidencia/p08-informe-2026-10-27.md) y [HTML](docs/evidencia/p08-informe-html-2026-10-28.md). |
 | P-09 | Verificado localmente como presentación. | Mantener separación entre OSM, posiciones sintéticas y riesgo real. |
 | AWS/entrega | No desplegado. `infra/` vacío. Región decidida: `us-east-2`. | T-17..T-21: IaC, staging, URL pública, benchmark, costos, Budget, arquitectura SVG y pitch. |
 
-La evidencia de partida está en [docs/evidencia/auditoria-pro-2026-10-27.md](docs/evidencia/auditoria-pro-2026-10-27.md), [docs/evidencia/revision-base.md](docs/evidencia/revision-base.md) y [docs/plan-pro-iteraciones.md](docs/plan-pro-iteraciones.md). El estado posterior al merge P-02/P-03 y el checklist completo de pendientes están en [docs/evidencia/estado-post-merge-2026-10-27.md](docs/evidencia/estado-post-merge-2026-10-27.md).
+La evidencia de partida está en [docs/evidencia/auditoria-pro-2026-10-27.md](docs/evidencia/auditoria-pro-2026-10-27.md), [docs/evidencia/revision-base.md](docs/evidencia/revision-base.md) y [docs/plan-pro-iteraciones.md](docs/plan-pro-iteraciones.md). El estado posterior al merge P-02/P-03 y el checklist completo de pendientes están en [docs/evidencia/estado-post-merge-2026-10-27.md](docs/evidencia/estado-post-merge-2026-10-27.md). La resolución y verificación del merge de `feat/pro` está en [docs/evidencia/merge-feat-pro-2026-10-28.md](docs/evidencia/merge-feat-pro-2026-10-28.md).
 
 ## 3. Reglas no negociables
 
@@ -91,7 +91,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - [ ] P-04: miles de réplicas en AWS; no iniciado.
 - [x] P-05: datos reales de dengue en Manabí; verificado localmente (94 semanas, 2025–2026).
 - [x] P-06: calibración y preset versionado; cerrado en local con `manabi-dengue-2025-v1`, etiquetado `fitted-not-validated` porque la validación pierde frente a persistencia.
-- [ ] P-07: backend de integridad temporal verificado; mapa/animación parcial, falta aceptación UI.
+- [ ] P-07: backend de integridad temporal verificado y UI integrada por el merge (`step-back`, atajos, movimiento reducido); falta aceptación en navegador posterior al merge y en dispositivos táctiles.
 - [x] P-08: informe PDF para alcaldía verificado localmente, modo ficticio; contrato, API/CLI, descarga y evidencia. No aprueba T-22.
 - [x] P-09: mapa geográfico y capa de agentes; verificado localmente como presentación.
 
@@ -112,6 +112,8 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - P-03: trabajos Monte Carlo locales con `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible, conectados a la pantalla PRO (creación con la vista previa, credenciales de sesión, sondeo, reintento e historial).
 - P-05: serie semanal real de dengue de Manabí (2025 S1–53 y 2026 S1–41) desde las gacetas ETV del MSP, con importador reproducible, geometría versionada, procedencia, controles de totales y límites. No alimenta el motor SEIR.
 - P-06: calibración del SEIR de mezcla homogénea a la serie de P-05 (`manabi-dengue-2025-v1`): ventanas fijadas antes de mirar, bootstrap 120, perfil de verosimilitud condicional, puente declarado al motor y panel en la UI con la etiqueta «Ajustado, no validado». El resultado de validación es desfavorable y se conserva.
+- P-07 (UI, integrada desde `feat/pro`): reproducción temporal sincronizada entre red y mapa, retroceso de día (`step-back`), atajos de teclado (`Espacio`/`k`, `→`/`l`, `←`/`j`, `Home`, `End`) y movimiento reducido manual o por `prefers-reduced-motion`.
+- P-08 (HTML/CLI, integrado desde `feat/pro`): `buildMayorReportHtml` genera un informe autocontenido imprimible, usado por `scripts/export_mayor_report_pdf.mjs` y por los botones «Imprimir informe» y «Descargar informe (HTML)» de Comparación; el PDF canónico sigue viniendo del backend.
 - P-09: mapa de Manta con polígonos OSM versionados y posiciones sintéticas deterministas.
 
 ## 8. Funcionalidades pendientes que otros agentes deben implementar
@@ -123,7 +125,7 @@ Prioridad inmediata:
 3. **P-03 cerrada en local / P-04.** Rutas `/v1/jobs`, cliente y pantalla PRO verificados localmente ([evidencia](docs/evidencia/p03-ui-2026-10-27.md)). Queda P-04 AWS.
 4. **P-06 cerrada en local, resultado desfavorable.** El preset `manabi-dengue-2025-v1` existe y se reproduce (`scripts/p06_calibrate.py verify`), pero la validación pierde frente a persistencia ([evidencia](docs/evidencia/p06-dengue-manabi-2026-10-27.md)). No se re-tunea: P-08 debe citar la etiqueta `fitted-not-validated`.
 5. **P-08 cerrada localmente.** Informe PDF con cifras del JSON, costos, incertidumbre, fuentes, hash y límites; no reimplementar. [Contrato](specs/p08-report.md) y [evidencia](docs/evidencia/p08-informe-2026-10-27.md).
-6. **P-07, frente UI pendiente.** Backend de integridad temporal verificado; no reimplementar. Cerrar sincronización mapa/red/curva/tabla, pausa/seek/velocidad, foco, movimiento reducido y rendimiento. [Contrato backend](specs/p07-backend-playback.md).
+6. **P-07, aceptación UI posterior al merge.** Backend de integridad temporal verificado y UI integrada (`step-back`, atajos, movimiento reducido); no reimplementar. Falta aprobar en navegador la sincronización mapa/red/curva/tabla, el foco, el rendimiento visual y la evaluación táctil. [Contrato backend](specs/p07-backend-playback.md) y [evidencia UI](docs/evidencia/p07-mapa-animacion-2026-10-28.md).
 7. **P-04/T-17..T-21.** Terraform, staging, Distributed Map, URL pública, benchmark, costos, Budget, arquitectura y documentación de entrega.
 
 ## 9. Comandos de verificación
@@ -206,6 +208,7 @@ Comandos, pasos y resultados esperados de cada funcionalidad PRO ya cerrada est�
 - **No hay URL pública ni AWS desplegado.** `infra/` está vacío.
 - **La semilla del jurado es externa y sigue pendiente.** No agregarla retrospectivamente a las 150 unidades primarias.
 - **La aceptación humana no se mide con el tiempo del script.** CA-12 y RNF-05/06 requieren una persona y acceso.
+- **El merge de `feat/pro` trajo UI y docs, no aceptación nueva.** La reproducción temporal (P-07 UI) y el informe HTML/CLI (P-08) entraron con pruebas automatizadas; la aceptación en navegador posterior al merge sigue pendiente. Los docs de `feat/pro` decían 357/138 pruebas y P-05/P-06 pausados: ese estado ya era obsoleto y no se conservó.
 
 ## 12. Primer día de un agente
 
@@ -230,4 +233,6 @@ resultado observado, evidencia, riesgos y pendientes.
 
 Actualización posterior de API (2026-10-27): en ese incremento, **478 pruebas backend**, Ruff/mypy correctos. [Medición HTTP completa](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s y con frames 33,41 s, n=3. Objetivo consistente ≤25 s pendiente; no certifica staging/AWS ni T-22. Compare reutiliza bytes JSON validados sin modificar hashes.
 
-Actualización T-22 (2026-10-27): componente científico **APROBADO**, medias none/random/targeted 713,6067 / 575,1067 / 359,2067. Protocolo v1 intacto; más I finales con targeted al día 90 y contraste de mercado redundante son límites explícitos. [Informe y auditoría](docs/evidencia/t22-v1-ejecucion.md). Suite actual 486 pruebas backend.
+Actualización T-22 (2026-10-27): componente científico **APROBADO**, medias none/random/targeted 713,6067 / 575,1067 / 359,2067. Protocolo v1 intacto; más I finales con targeted al día 90 y contraste de mercado redundante son límites explícitos. [Informe y auditoría](docs/evidencia/t22-v1-ejecucion.md).
+
+Actualización merge `feat/pro` (2026-10-28): se integraron P-07 UI (retroceso de día, atajos, movimiento reducido), P-08 HTML/CLI, SEO/`index.html`, `docs/costos.md` y sus evidencias, conservando el estado verificado de `feat/backend-contratos` (T-22 aprobado, P-05/P-06 cerradas, P-08 PDF backend). Resolución: docs y specs del lado ya verificado; código fusionado funcionalmente; se descartaron módulos duplicados de `feat/pro` (`pro/adaptive-decisions`, `pro/jobs-errors`, `pro/fixtures/jobs`) porque el lado verificado ya cubre esa lógica. Verificación tras el merge: **487 pruebas backend**, **147 pruebas frontend**, Ruff/format/mypy, typecheck y build correctos; `p05_import_dengue.py verify` y `p06_calibrate.py verify` en `passed`.
