@@ -1,5 +1,13 @@
 # P-08 · Informe para el alcalde
 
+Actualización 28/10/2026: plantilla `mayor-report-v2`, resumen ejecutivo de dos
+páginas con gráficos vectoriales y lenguaje sencillo, autorizado por el usuario.
+Los anexos de configuración/versiones se consultan en el JSON completo; el PDF
+conserva su hash y límites. HTML e impresión también resumidos. El resto de este
+documento conserva el diseño inicial v1 como antecedente. T-22 científico ya está
+aprobado; este cambio de presentación no altera esa evidencia ni cierra aceptación
+humana. [Verificación v2](../docs/evidencia/informe-ejecutivo-v2-2026-10-28.md).
+
 Estado: **verificado localmente**. Aceptación PRO-7 / P-08, RF-13/19. Este incremento local está autorizado expresamente; AWS queda fuera. T-22 sigue pendiente y no se modifica. [Evidencia y límites](../docs/evidencia/p08-informe-2026-10-27.md). La aceptación humana integral T-13..T-16 no se cierra por este incremento.
 
 ## Contrato y diseño

@@ -43,6 +43,10 @@ test('mayor report labels the synthetic scenario, preserves uncertainty and cite
   assert.match(html, /P05–P95/)
   assert.match(html, /empates|diferencias pareadas|incertidumbre/i)
   assert.match(html, /no representa dengue real/i)
+  assert.equal((html.match(/<article class="page">/g) ?? []).length, 2)
+  assert.equal((html.match(/class="bar-row"/g) ?? []).length, 3)
+  assert.match(html, /Resumen para decidir/)
+  assert.doesNotMatch(html, /Anexo: configuración completa/)
 })
 
 test('mayor report keeps losses and escapes configured text for a standalone HTML file', () => {

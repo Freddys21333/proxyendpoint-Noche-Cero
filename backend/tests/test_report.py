@@ -95,7 +95,30 @@ def test_pdf_is_deterministic_and_contains_traceable_text(experiment):
     assert "No hay evidencia suficiente" in text
     assert "fitted-not-validated" in text
     assert report["experimentHash"] in text.replace("\n", "")
-    assert len(reader.pages) >= 2
+    assert len(reader.pages) == 2
+    assert "Resumen para decidir" in text
+    assert "Anexo: configuración completa" not in text
+
+
+def test_executive_pdf_stays_two_pages_with_resources_and_many_replicates():
+    from pypdf import PdfReader
+    from test_combined import PLAN
+
+    configuration = normalize_configuration(
+        {
+            "scenario": {"populationSize": 50, "days": 3},
+            "repetitions": 30,
+            "intervention": {"vaccines": 10, "combined": PLAN},
+        }
+    )
+    source = export_experiment(run_experiment(configuration, include_representative_frames=False))
+    pdf = render_pdf(build_report(source))
+    reader = PdfReader(io.BytesIO(pdf))
+    assert len(reader.pages) == 2
+    text = "\n".join(page.extract_text() for page in reader.pages)
+    assert "Presupuesto" in text
+    assert "empates" in text and "pérdidas" in text
+    assert source["manifest"]["experimentHash"] in text.replace("\n", "")
 
 
 def test_report_http_pdf_and_sane_errors(experiment):
