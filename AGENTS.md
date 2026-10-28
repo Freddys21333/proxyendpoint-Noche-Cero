@@ -14,25 +14,25 @@ La pregunta científica es si `targeted` reduce los infectados acumulados frente
 
 Usuarios principales: comité de contención, jurado/alcaldía que evalúa impacto y limitaciones, operador de una demo de brote sorpresa de menos de cinco minutos, y equipo técnico que reproduce resultados. El idioma de la interfaz y de la documentación es español. La identidad visual es **Noche Cero**.
 
-## 2. Estado real al 2026-10-27
+## 2. Estado real al 2026-10-28
 
-Rama de integración: `feat/pro`. Último commit integrado: `5861407` (`merge(pro): integrar P-02 adaptativa y P-03 jobs locales`). Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
+Rama de integración: `feat/pro`. Último commit integrado: `c65fb13` (`feat(pro-p07): cerrar navegacion temporal, atajos y movimiento reducido en mapa y red`). Evidencia y auditorías: [evidencia](docs/evidencia/).
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **356 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **116 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs, ZIP/JSON y mapa. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **357 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-01, P-02, P-03. | Integración E2E completa y benchmark AWS. |
+| Frontend base | **138 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción temporal, vacunación, jobs locales, ZIP/JSON, mapa OSM e informe PDF/HTML. | T-13..T-16 abiertas por aceptación humana y E2E Playwright. |
 | Rendimiento | Benchmark por defecto `N=1000/T=90/R=30`: **44,3 s** sin frames, 8,5× mejor que 377,9 s. | Objetivo backend ≤25 s no alcanzado; benchmark AWS no ejecutado. |
-| T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
-| PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
-| P-02 | Backend verificado localmente: `adaptive-v1`, reglas, anillo, motivos, exportación y reproducción. | Editor/historial visual y aceptación UI. |
-| P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible. | Pantalla de jobs, sesión de credenciales y P-04 AWS. |
-| P-04 | No iniciado. | Distributed Map, S3, IAM, cuotas, costos y evidencia de miles de réplicas. |
-| P-05/P-06 | No iniciados. | Dataset real trazable de dengue/Manabí, modelo, calibración y validación fuera de muestra. |
-| P-07 | Parcial: reproducción y mapa sincronizados. | Aceptación de transiciones, rendimiento, accesibilidad y movimiento reducido. |
-| P-08 | No iniciado. | Informe determinista para alcaldía, preferiblemente PDF, desde experimento validado. |
+| T-22 | Protocolo v1 ejecutado y **APROBADO** (5 raíces primarias × 30 = 150 réplicas, 5 controles técnicos y 5 contrastes descriptivos; ver [t22-v1-ejecucion.md](docs/evidencia/t22-v1-ejecucion.md)). | Conservar protocolo congelado y reportar límites por raíz. |
+| PRO-1/2 y P-01 | Verificado localmente: llegadas, inventario, capacidad diaria, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
+| P-02 | Verificado localmente en backend y UI: `adaptive-policy-v1`, reglas, anillo, motivos, exportación, editor de umbrales e historial por réplica. | Aceptación con escenarios nuevos ascendentes/descendentes. |
+| P-03 | Verificado localmente en backend y UI: `/v1/jobs`, cola, token, idempotencia, cancelación, polling y descarga ZIP. | P-04 AWS (Distributed Map masivo). |
+| P-04 | No iniciado. | Step Functions Distributed Map, S3, IAM, cuotas, costos y evidencia de miles de réplicas en AWS. |
+| P-05/P-06 | Investigado / Pausado. | Confirmar licencia MSP y resolver granularidad cantonal Manta antes de importar datos reales o calibrar. |
+| P-07 | Verificado localmente: mapa OSM y red sincronizados, paso a paso bidireccional (`step-back`), atajos de teclado y `prefers-reduced-motion`. | Evaluación formal en dispositivos táctiles / móviles. |
+| P-08 | Verificado localmente: informe determinista PDF y HTML para alcaldía desde experimento validado, con script CLI documentado y diálogo web. | No incluye datos reales de dengue por depender de P-05/P-06. |
 | P-09 | Verificado localmente como presentación. | Mantener separación entre OSM, posiciones sintéticas y riesgo real. |
-| AWS/entrega | No desplegado. `infra/` vacío. Región decidida: `us-east-2`. | T-17..T-21: IaC, staging, URL pública, benchmark, costos, Budget, arquitectura SVG y pitch. |
+| AWS/entrega | No desplegado. `infra/` vacío. Región decidida: `us-east-2`. | T-17..T-21: IaC Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura SVG y pitch. |
 
 La evidencia de partida está en [docs/evidencia/auditoria-pro-2026-10-27.md](docs/evidencia/auditoria-pro-2026-10-27.md), [docs/evidencia/revision-base.md](docs/evidencia/revision-base.md) y [docs/plan-pro-iteraciones.md](docs/plan-pro-iteraciones.md). El estado posterior al merge P-02/P-03 y el checklist completo de pendientes están en [docs/evidencia/estado-post-merge-2026-10-27.md](docs/evidencia/estado-post-merge-2026-10-27.md).
 
@@ -77,7 +77,7 @@ Detalle, dependencias y evidencia en [specs/tasks.md](specs/tasks.md).
 - [ ] T-19: staging, smoke y benchmark AWS. Pendiente; sin autorización de gasto.
 - [ ] T-20: frontend público y health desde sesión limpia. Pendiente.
 - [ ] T-21: arquitectura SVG, costos, README, runbook y Budget verificable. Pendiente.
-- [ ] T-22: matriz científica. Protocolo congelado, controles PASA, primaria/contrastes pendientes.
+- [x] T-22: matriz científica. Protocolo v1 ejecutado y **APROBADO** (150 réplicas primarias, 5 controles y 5 contrastes).
 - [ ] T-23: escenarios variables, semilla externa y reproducibilidad operativa. Pendiente.
 
 ## 6. Checklist PRO resumido
@@ -85,13 +85,13 @@ Detalle, dependencias y evidencia en [specs/tasks.md](specs/tasks.md).
 Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto en [specs/pro-workstreams.md](specs/pro-workstreams.md).
 
 - [x] P-01: llegadas diarias e inventario, verificado localmente.
-- [ ] P-02: backend local verificado; falta editor/historial visual y aceptación UI.
-- [ ] P-03: backend y cliente local verificados; falta pantalla de jobs y P-04.
-- [ ] P-04: miles de réplicas en AWS; no iniciado.
-- [ ] P-05: datos reales de dengue en Manabí; no iniciado.
-- [ ] P-06: calibración y preset versionado; no iniciado.
-- [ ] P-07: mapa/animación; parcial, falta aceptación.
-- [ ] P-08: informe para alcaldía; no iniciado.
+- [x] P-02: política adaptativa, editor de umbrales e historial por réplica verificado localmente.
+- [x] P-03: backend y cliente de jobs locales `/v1/jobs` con polling y descarga ZIP verificado localmente.
+- [ ] P-04: miles de réplicas en AWS con Distributed Map; no iniciado.
+- [ ] P-05: datos reales de dengue en Manabí; pausado / investigado por condiciones de licencia y granularidad cantonal.
+- [ ] P-06: calibración y preset versionado; no iniciado (depende de P-05).
+- [x] P-07: mapa/animación temporal sincronizados, navegación bidireccional (`step-back`), atajos y `prefers-reduced-motion`.
+- [x] P-08: informe determinista para alcaldía en PDF y HTML reproducible vía CLI y diálogo web.
 - [x] P-09: mapa geográfico y capa de agentes; verificado localmente como presentación.
 
 ## 7. Funcionalidades que ya existen
@@ -105,22 +105,21 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - API Lambda local con health/config/preview/compare, gzip, validación de hash, límites y errores.
 - Interfaz Noche Cero: preview real, red, filtros, comparación, curvas, tabla, dosis, explicación de selección, reproducción, mapa OSM y exportaciones.
 - P-01: calendario de llegadas, inventario, capacidad, costos educativos y exportación.
-- P-02: política adaptativa backend (`adaptive-v1`), decisiones, motivos, exportación y reproducción.
+- P-02: política adaptativa (`adaptive-policy-v1`), decisiones, motivos, editor de umbrales e historial por réplica.
 - P-03: trabajos Monte Carlo locales con `/v1/jobs`, cola, token, idempotencia, cancelación y resultado reproducible.
+- P-07: visualización temporal sincronizada mapa/red, avance/retroceso paso a paso, atajos de teclado y movimiento reducido.
+- P-08: informe determinista para alcaldía en PDF y HTML reproducible (`scripts/export_mayor_report_pdf.mjs`).
 - P-09: mapa de Manta con polígonos OSM versionados y posiciones sintéticas deterministas.
 
 ## 8. Funcionalidades pendientes que otros agentes deben implementar
 
 Prioridad inmediata:
 
-1. **Terminar T-22.** Ejecutar las cinco raíces primarias y los cinco contrastes; conservar JSON/ZIP/logs; reproducir cada JSON y `base-root-0` tres veces; validar controles y generar informe. No editar el protocolo.
-2. **P-02 UI.** El backend `adaptive-v1` ya está verificado localmente; falta editor/historial visual, aceptación UI y prueba con escenarios nuevos.
-3. **P-03 UI + P-04.** Las rutas `/v1/jobs` y el cliente ya están verificados localmente; falta conectar la pantalla PRO (hoy con fixtures), sesión de credenciales y después P-04 AWS.
-4. **P-05.** Dataset real trazable de dengue/Manabí: URL, edición, fecha, corte, licencia, hash, tabla normalizada, faltantes y límites. Si no alcanza, dejar P-06 pendiente.
-5. **P-06.** Variable observada, función de observación, ajuste/validación separados, identificabilidad, incertidumbre y preset versionado.
-6. **P-08.** Informe determinista para alcaldía con cifras del JSON, costos, incertidumbre, fuentes, hash y límites.
-7. **P-07.** Cerrar sincronización mapa/red/curva/tabla, pausa/seek/velocidad, foco, movimiento reducido y rendimiento.
-8. **P-04/T-17..T-21.** Terraform, staging, Distributed Map, URL pública, benchmark, costos, Budget, arquitectura y documentación de entrega.
+1. **P-04 / T-17..T-21 (Infraestructura y AWS).** Terraform base en `infra/`, API Gateway, Lambdas, Step Functions Distributed Map, S3, IAM mínimo, staging, URL pública HTTPS, benchmark de latencia en la nube, costos y Budget verificable.
+2. **T-16 (E2E y Accesibilidad).** Suite automatizada de pruebas Playwright en navegadores reales cubriendo simulación, jobs, mapa, contraste AA y teclado.
+3. **T-13..T-15 y T-23 (Aceptación humana).** Ensayo de brote sorpresa <5 min, casos manuales, matriz de errores/parciales y prueba con semilla externa del jurado.
+4. **Rendimiento Backend.** Optimizar motor SEIR para bajar de 44,3 s al objetivo de ≤25 s para el benchmark por defecto.
+5. **P-05 / P-06 (Condicionado a autorización).** Resolver licencia y granularidad cantonal para dengue en Manabí antes de incorporar datos reales o calibrar.
 
 ## 9. Comandos de verificación
 

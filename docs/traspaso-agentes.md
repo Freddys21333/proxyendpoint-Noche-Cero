@@ -1,9 +1,9 @@
 # Traspaso para agentes — contexto, estado y backlog
 
-**Fecha de corte:** 2026-10-27.
+**Fecha de corte:** 2026-10-28.
 **Rama de integración:** `feat/pro`.
-**Último commit integrado:** `5861407` (`merge(pro): integrar P-02 adaptativa y P-03 jobs locales`).
-**Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
+**Último commit integrado:** `c65fb13` (`feat(pro-p07): cerrar navegacion temporal, atajos y movimiento reducido en mapa y red`).
+**Estado comprobable:** T-22 aprobado, P-01, P-02, P-03, P-07, P-08 y P-09 verificados localmente; suite backend: 357 pruebas, frontend: 138 pruebas.
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
 
@@ -13,19 +13,17 @@ Este documento explica qué se está construyendo, qué ya funciona, qué falta,
 
 ## 1. Resumen ejecutivo
 
-El proyecto ya tiene un motor SEIR reproducible, comparación pareada de tres políticas, API local, exportación JSON/ZIP, reproducción en proceso nuevo y una interfaz Noche Cero conectada a la API real para preview, comparación, dosis, animación y mapa. La base T-02..T-12 está verificada localmente. La integración de UI existe en gran parte, pero T-13..T-16 siguen abiertas por aceptación, no por ausencia total de código.
+El proyecto ya cuenta con el motor SEIR reproducible verificado, comparación pareada de tres políticas, **gate científico T-22 v1 aprobado** (150 réplicas primarias + 5 controles técnicos + 5 contrastes descriptivos), API local, exportación JSON/ZIP, reproducción en proceso nuevo y una interfaz Noche Cero conectada a la API real para preview, comparación, dosis, animación, jobs asíncronos `/v1/jobs`, mapa OSM de Manta y descarga/impresión directa de informes para alcaldía en PDF y HTML. La base T-02..T-12 y las capacidades PRO locales P-01, P-02, P-03, P-07, P-08 y P-09 están verificadas localmente con 357 pruebas backend y 138 pruebas frontend.
 
-Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar evidencia y contratos. Faltan:
+Lo que resta para la entrega final:
 
-- T-22 completo: matriz primaria y contrastes, no solo controles.
-- P-02: editor/historial visual y aceptación UI; el backend adaptativo ya está verificado.
-- P-03/P-04: pantalla de jobs y luego AWS; backend/cliente locales ya verificados.
-- P-05/P-06: datos reales trazables y calibración fuera de muestra.
-- P-08: informe determinista para alcaldía.
-- P-07: aceptación de sincronización, accesibilidad y rendimiento.
-- T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
+- **P-04 / T-17..T-21:** Infraestructura en la nube con Terraform en `infra/`, Step Functions con Distributed Map, S3, staging, URL pública HTTPS y Budget verificable.
+- **T-16:** Suite automatizada de pruebas de navegador de extremo a extremo (E2E Playwright), accesibilidad WCAG AA y contraste.
+- **T-13..T-15 y T-23:** Aceptación humana de demo sorpresa <5 min, casos de prueba manuales y reproducibilidad con semilla externa del jurado.
+- **Rendimiento Backend:** Optimizar cálculo SEIR de 44,3 s al objetivo de ≤25 s.
+- **P-05/P-06:** Condicionados a obtener licencia oficial de uso y resolver la granularidad cantonal para dengue en Manabí.
 
-**No hay URL pública, no hay AWS desplegado y no hay gate científico aprobado.** Cualquier afirmación distinta debe tratarse como error documental.
+**No hay URL pública ni AWS desplegado (`infra/` vacío); el gate científico T-22 v1 sí está formalmente aprobado.**
 
 ---
 
