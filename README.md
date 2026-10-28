@@ -1,4 +1,6 @@
 # Comité de Contención de Manta
+> Retirado el 28/10/2026 por solicitud del usuario. Las URLs siguientes son históricas. [Guía para publicar y retirar](infra/CICLO-DESPLIEGUE.md).
+
 
 **Staging AWS (28/10/2026):** [abrir sitio](https://staging.djv4hstnt7jgb.amplifyapp.com). Perfil inicial: 200 personas, 20 días y 30 repeticiones; escenarios grandes limitados hasta P-04. [Evidencia y límites](docs/evidencia/aws-base-2026-10-28.md) · [Terraform y operación](infra/README.md).
 
@@ -98,4 +100,5 @@ Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2
 Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga local](docs/evidencia/rendimiento-backend-2026-10-28.md). Medianas de comparación 18,46/19,56 s sin/con animación; 510 pruebas backend. Muestra local limitada, staging/AWS pendiente.
 
 Para probar la versión local revisada: [guía de inicio y recorrido](docs/probar-local.md). Frontend en http://127.0.0.1:5174 y API en :8000. [Estabilidad verificada](docs/evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y flujo real, sin despliegue AWS.
+
 

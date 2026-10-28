@@ -60,3 +60,5 @@ superen 3 000 000 arista-día-réplica (`MAX_SYNC_EDGE_DAY_REPLICATES`). El perf
 local conserva los defaults anteriores; no cambia ninguna semilla ni el motor.
 El error 422 permite reducir la carga. No se acredita el benchmark original.
 
+
+Guía ejecutable del ciclo: [publicar, retirar y recrear](CICLO-DESPLIEGUE.md). El staging del 28/10/2026 fue retirado por solicitud del usuario.

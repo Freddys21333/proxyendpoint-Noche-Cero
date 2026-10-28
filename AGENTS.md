@@ -1,5 +1,7 @@
 # AGENTS.md — traspaso operativo del proyecto
 
+> Estado más reciente: despliegue retirado por solicitud del usuario (28/10/2026). Se conserva Terraform y bootstrap S3. Las menciones de sitio publicado inferiores son históricas. Ver infra/CICLO-DESPLIEGUE.md.
+
 > Actualización AWS 28/10/2026: rama activa feat/aws-infra. Staging base publicado en Amplify + cinco Lambdas + HTTP API. infra/ ya contiene Terraform. El estado histórico inferior de AWS vacío/no publicado queda sustituido por [evidencia AWS](docs/evidencia/aws-base-2026-10-28.md). Perfil inicial 200/20/30 y límite síncrono 3 000 000; caso original 1000/90/30 pendiente de P-04. No declarar aceptación integral ni Budget operativo.
 
 Este archivo es la entrada obligatoria para cualquier agente que trabaje en este repositorio. El contexto ampliado, la trazabilidad y el backlog detallado están en [docs/traspaso-agentes.md](docs/traspaso-agentes.md). Las fuentes de producto y técnica siguen siendo [PRD.md](PRD.md), [TRD.md](TRD.md), [specs/requirements.md](specs/requirements.md), [specs/tasks.md](specs/tasks.md) y [specs/pro-roadmap.md](specs/pro-roadmap.md).
@@ -246,4 +248,5 @@ Actualización merge parámetros comprensibles (2026-10-28): incorporados siete 
 Corrección posterior del mapa (2026-10-28): el error Leaflet clearRect registrado en el merge quedó corregido con un guard de ciclo de vida del renderer. 150 pruebas frontend, tipos/build y regresión en navegador con cero pageErrors. [Evidencia](docs/evidencia/mapa-ciclo-vida-2026-10-28.md). P-07 integral sigue pendiente; repetir la regresión al actualizar Leaflet.
 
 Prioridad operativa autorizada (2026-10-28): estabilizar local → mejorar UX → AWS por partes. [Guía de prueba](docs/probar-local.md). El recorrido local fue revisado contra API real; se corrigió preflight de capacidad/semilla de trabajos y favicon. No exigir cerrar calibración nueva, miles de réplicas o jurado para iterar localmente. Esto no marca T-13..T-16/T-23 ni AWS completos. API :8000 y frontend :5174 iniciados para pruebas. [Contrato](specs/local-stability.md), [evidencia](docs/evidencia/estabilidad-local-2026-10-28.md).
+
 
