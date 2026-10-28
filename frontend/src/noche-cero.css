@@ -504,6 +504,13 @@
 }
 
 /* Task grouping keeps scenario inputs stable before view-specific tools. */
+.noche-cero .simulator-workbench .floating-controls-body .configuration-panel :is(.parameter-field > label, .field > span) {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.noche-cero .floating-controls-body :is(h2, h3, legend, summary, .advanced-toggle, .combined-toggle) { font-weight: 700; }
 .noche-cero { color-scheme: dark; }
 .noche-cero .skip-link { position: fixed; top: 8px; left: 8px; z-index: 2000; padding: 10px 16px; background: var(--pumpkin); color: #1c1517; transform: translateY(-160%); }
 .noche-cero .skip-link:focus { transform: translateY(0); }
