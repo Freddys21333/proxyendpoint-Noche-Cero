@@ -33,25 +33,27 @@ export function AdaptiveStrategyEditor({ value, onChange }: {
   return <section className="adaptive-editor" aria-label="Política adaptativa para la estrategia dirigida">
     <label className="combined-toggle">
       <input type="checkbox" checked={Boolean(value)} onChange={event => onChange(event.target.checked ? defaults() : undefined)} />
-      Política adaptativa para Dirigida
+      Ajustar Dirigida según el brote
     </label>
     {value && <>
-      <p className="adaptive-version">Variante <code>{value.modelVersion}</code>. Solo afecta a Dirigida; Aleatoria conserva su calendario fijo.</p>
+      <p className="adaptive-version">Dirigida ajusta los cierres y la prioridad de vacunación según los casos del día. Aleatoria mantiene su calendario.</p>
       <label className="combined-toggle">
         <input type="checkbox" checked={value.enabled !== false} onChange={event => onChange({ ...value, enabled: event.target.checked })} />
-        Reglas activas
+        Activar estas reglas
       </label>
       <div className="configuration-fields">
-        {percentField('Cierre si I/N alcanza (%)', 'closureInfectionThreshold')}
-        {percentField('Reapertura si I/N baja de (%)', 'reopenInfectionThreshold')}
+        {percentField('Cerrar con este % de zombies', 'closureInfectionThreshold')}
+        {percentField('Reabrir con menos de este %', 'reopenInfectionThreshold')}
       </div>
-      {invalid && <p className="adaptive-error" role="alert">El umbral de reapertura no debe superar el de cierre.</p>}
+      <p>Porcentaje de zombies sobre toda la población.</p>
+      {invalid && <p className="adaptive-error" role="alert">El porcentaje para reabrir debe ser igual o menor al de cierre.</p>}
       <label className="combined-toggle">
         <input type="checkbox" checked={value.ringVaccinationPriority} onChange={event => onChange({ ...value, ringVaccinationPriority: event.target.checked })} />
-        Prioridad de anillo: vacunar primero a quienes tienen más contactos con infecciosos
+        Vacunar primero a quienes tienen más contacto con zombies
       </label>
-      <p className="adaptive-assumption">Las reglas observan I/N, contactos activos, personas elegibles e inventario/presupuesto. Observar los estados completos es un supuesto educativo; el motor no lee eventos futuros ni resultados de otras políticas.</p>
-      {value.enabled === false && <p className="adaptive-note">Con las reglas inactivas se conservan las acciones fijas y el backend registra columnas sin decisiones. Por incluir la configuración, el hash puede diferir de omitir la variante.</p>}
+      <p className="adaptive-assumption">Reglas educativas basadas en los casos y recursos disponibles.</p>
+      {value.enabled === false && <p className="adaptive-note">Reglas pausadas: se usa el calendario configurado.</p>}
+      <details><summary>Detalles del modelo</summary><p>Versión {value.modelVersion}. El modelo conoce los estados de las personas del día actual, no eventos futuros ni resultados de otras estrategias.</p></details>
     </>}
   </section>
 }

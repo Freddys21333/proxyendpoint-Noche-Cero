@@ -565,6 +565,181 @@
 .noche-cero .playback-transport .playback-actions > .playback-primary { background: var(--pumpkin); border-color: var(--pumpkin); color: #1c1517; }
 .noche-cero .playback-transport .playback-actions > button:hover:not(:disabled) { background: #4c302e; color: var(--ink); }
 .noche-cero .playback-transport .playback-actions > button:disabled { opacity: .5; }
+
+.noche-cero .playback-timeline-group {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: #1c1824;
+  border: 1px solid var(--night-border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.noche-cero .playback-timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.noche-cero .playback-timeline-title {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.noche-cero .playback-timeline-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #2b2333;
+  color: var(--pumpkin-soft);
+  border: 1px solid #4d3a54;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.noche-cero .playback-timeline-group .playback-timeline {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.noche-cero .playback-timeline-group .playback-timeline input[type="range"] {
+  width: 100%;
+  accent-color: var(--pumpkin);
+  cursor: pointer;
+  margin: 2px 0;
+}
+
+.noche-cero .playback-speed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px dashed #362c3e;
+}
+
+.noche-cero .playback-speed {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #c4b8c6;
+}
+
+.noche-cero .playback-speed select {
+  background: #171620;
+  color: var(--ink);
+  border: 1px solid #5a505d;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  min-height: 28px;
+}
+
+.noche-cero .playback-status-pill {
+  font-size: 11px;
+  color: #a69bad;
+}
+
+.noche-cero .playback-status-summary {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #b9adbd;
+}
+
+.noche-cero .playback-accessibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.noche-cero .playback-motion-toggle {
+  background: #23202e;
+  border: 1px solid #635373;
+  color: #f0eaf3;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.noche-cero .playback-motion-toggle:hover {
+  background: #372f44;
+  border-color: #8b75a1;
+  color: #ffffff;
+}
+
+.noche-cero .playback-motion-toggle.active {
+  background: var(--pumpkin);
+  border-color: var(--pumpkin);
+  color: #171620;
+  font-weight: 600;
+}
+
+.noche-cero .playback-motion-toggle:focus-visible {
+  outline: 2px solid var(--pumpkin);
+  outline-offset: 2px;
+}
+
+.noche-cero .playback-keyboard-hint {
+  color: #a69bad;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.noche-cero .playback-motion-explanation {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #8f8294;
+  line-height: 1.4;
+}
+
+.noche-cero .playback-strategy-group {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--night-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.noche-cero .playback-strategy-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.noche-cero .playback-strategy-label select {
+  background: #171620;
+  color: var(--ink);
+  border: 1px solid #5a505d;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.noche-cero .playback-strategy-note {
+  margin: 0;
+  font-size: 12px;
+  color: #b9adbd;
+  line-height: 1.45;
+}
 .noche-cero .simulator-workbench .simulation-empty > svg { color: #b6aebd; margin-bottom: 12px; }
 .noche-cero .simulation-empty .simulation-empty-note { margin-top: 16px; }
 .noche-cero .comparison-empty { min-height: 280px; background: var(--night-raised); border-color: var(--night-border); }
