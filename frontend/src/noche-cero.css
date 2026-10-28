@@ -446,6 +446,10 @@
 .noche-cero .configuration-panel .transmission-scale > span { flex: 1; }
 .noche-cero .configuration-panel .transmission-scale > span:last-child { text-align: right; }
 .noche-cero .configuration-panel .origin-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .origin-person-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .origin-person-field > p { margin: 8px 0 0; color: #cabecb; font-size: 12px; line-height: 1.5; }
+.noche-cero .origin-person-action { display: block; width: 100%; min-height: 40px; margin: 10px 0; padding: 8px 10px; border: 1px solid #ff8250; border-radius: 5px; background: #ff8250; color: #1c1517; font: inherit; font-weight: 600; cursor: pointer; }
+.noche-cero .origin-person-action:hover { background: #ffa674; }
 .noche-cero .configuration-panel .transmission-field {
   grid-column: 1 / -1;
   padding: 10px;

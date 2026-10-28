@@ -12,6 +12,8 @@ Para revisar localmente: iniciar el backend con `backend/.venv/bin/python script
 
 ## Estado de integración I-09
 
+Para elegir una persona como origen, consulta la red y pulsa un punto del mapa o selecciona una persona en el inspector de Red. Su ficha ofrece **Elegir como origen del brote**; después consulta de nuevo para aplicar el cambio. Si conoces el número, escríbelo debajo de Origen del brote: la siguiente consulta centrará el mapa en esa persona. [Verificación](../docs/evidencia/origen-visual-2026-10-28.md).
+
 Los parámetros tienen ayudas breves y errores locales. Población/duración y vacunas/eficacia se presentan por pares cuando el ancho lo permite. Eficacia, progresión y recuperación muestran etiqueta y porcentaje, sin símbolos ni explicaciones adicionales. En reposo se muestra una cifra decimal y al enfocar aparece el valor completo; enfocar, desenfocar o abrir/cerrar los parámetros avanzados no modifica el escenario. El motor conserva probabilidades de 0 a 1. El foco naranja se dibuja en el borde exterior de cada campo, sin un segundo cuadro interior.
 
 El mapa geográfico está registrado como feature **P-09** ([ficha](../specs/p09-geographic-map.md)); su alcance, datos y aceptación no se mezclan con P-07 (reproducción temporal) ni con P-05/P-06 (datos reales y calibración).

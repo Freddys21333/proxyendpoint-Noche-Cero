@@ -22,10 +22,11 @@ const groups = [ ['householdId', 'Hogar'], ['schoolId', 'Colegio'], ['busId', 'R
 export type PreviewNetworkProps = {
   preview: PreviewResponse; layer: string; resetKey: number; children?: ReactNode; panelActions?: ReactNode; active?: boolean; comparison?: CompareResponse | null; comparisonState?: ComparisonState;
   renderTools?: (view: 'network' | 'map') => ReactNode
+  onChooseOrigin?: (id: number) => void
 }
 
 export function PreviewNetwork({ preview, layer, resetKey, children, panelActions, active = true, comparison = null, playback, view = 'network', viewSelector, mapView,
-  selectedPersonId: selected, onSelectPerson: setSelected, onFocusPerson, renderTools }: PreviewNetworkProps & {
+  selectedPersonId: selected, onSelectPerson: setSelected, onFocusPerson, renderTools, onChooseOrigin }: PreviewNetworkProps & {
   playback: SimulationPlayback; view?: 'network' | 'map'; viewSelector?: ReactNode; mapView?: ReactNode;
   selectedPersonId: string; onSelectPerson: (id: string) => void; onFocusPerson: (id: string) => void
 }) {
@@ -219,6 +220,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </select>
         {detail && <div className="node-context" aria-live="polite">
           <div className="node-context-id">Persona <strong>{String(detail.id).padStart(3, '0')}</strong> · {labels[selectedState]}</div>
+          {active && onChooseOrigin && <button type="button" className="origin-person-action" onClick={() => onChooseOrigin(Number(selected))}>Elegir como origen del brote</button>}
           <dl><div><dt>Contactos distintos visibles</dt><dd>{graph.neighbors[selected]?.length ?? 0}</dd></div>
             {groups.map(([key, label]) => detail[key] !== null && <div key={key}><dt>{label}</dt><dd>{detail[key]}</dd></div>)}</dl>
           {frames && (dose ? <VaccinationPerson selection={dose} /> : <p>{policy === 'none' ? 'Sin intervención: no se aplican vacunas.' : currentDay < comparison!.configuration.intervention.interventionDay ? `Intervención pendiente para el día ${comparison!.configuration.intervention.interventionDay}. Aún no recibió una dosis.` : 'No recibió una dosis en esta estrategia. El estado actual no determina por sí solo su elegibilidad al decidir.'}</p>)}

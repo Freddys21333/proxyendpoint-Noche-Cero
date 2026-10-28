@@ -24,25 +24,36 @@ const describeAgent = (agent: GeographicAgent, presentation: AgentPresentation) 
   ...([['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado']] as const)
     .filter(([key]) => agent[key] !== null).map(([key, label]) => `${label}: ${groupNumber(agent[key]!)}`),
 ]
-function agentPopup(agent: GeographicAgent, presentation: AgentPresentation) {
+function agentPopup(agent: GeographicAgent, presentation: AgentPresentation, onChooseOrigin?: (id: number) => void) {
   const content = document.createElement('div')
   content.className = 'geographic-agent-popup'
-  for (const line of describeAgent(agent, presentation)) {
+  for (const [index, line] of describeAgent(agent, presentation).entries()) {
     const row = document.createElement('p')
     row.textContent = line
     content.append(row)
+    if (index === 2 && onChooseOrigin) {
+      const button = document.createElement('button')
+      button.type = 'button'
+      button.className = 'origin-person-action'
+      button.textContent = 'Elegir como origen del brote'
+      button.addEventListener('click', () => onChooseOrigin(agent.nodeId))
+      content.append(button)
+    }
   }
   return content
 }
 
-export default function GeographicMap({ visible, preview, playback, resetKey, selectedPersonId, onSelectPerson, focusRequest }: {
+export default function GeographicMap({ visible, preview, playback, resetKey, selectedPersonId, onSelectPerson, focusRequest, onChooseOrigin }: {
   visible: boolean; preview: PreviewResponse; playback: SimulationPresentation; resetKey: number;
   selectedPersonId: string; onSelectPerson: (id: string) => void; focusRequest: { id: number; version: number } | null;
+  onChooseOrigin?: (id: number) => void;
 }) {
   const container = useRef<HTMLDivElement>(null)
   const controller = useRef<ReturnType<typeof mountGeographicMap> | null>(null)
   const [error, setError] = useState<string | null>(null)
   const selectedId = selectedPersonId === '' ? null : Number(selectedPersonId)
+  const originHandler = useRef(onChooseOrigin)
+  useEffect(() => { originHandler.current = onChooseOrigin }, [onChooseOrigin])
   const lastResetKey = useRef(resetKey)
   const [personQuery, setPersonQuery] = useState('')
   const [searchError, setSearchError] = useState<string | null>(null)
@@ -77,7 +88,7 @@ export default function GeographicMap({ visible, preview, playback, resetKey, se
   useEffect(() => {
     setPersonQuery('')
     setSearchError(null)
-    try { controller.current?.setAgents(placement.agents, agentPopup, id => {
+    try { controller.current?.setAgents(placement.agents, (agent, presentation) => agentPopup(agent, presentation, originHandler.current ? id => originHandler.current?.(id) : undefined), id => {
       onSelectPerson(String(id)); setPersonQuery(String(id)); setSearchError(null)
     }) }
     catch { setError('No se pudieron dibujar los agentes. La vista Red sigue disponible.') }

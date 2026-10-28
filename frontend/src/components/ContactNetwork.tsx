@@ -6,7 +6,7 @@ import { SimulationWorkspace } from './SimulationWorkspace'
 import { FloatingSimulationControls } from './FloatingSimulationControls'
 import './ContactNetwork.css'
 
-export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; panelActions?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState; renderTools?: (view: 'network' | 'map') => ReactNode }) {
+export function ContactNetwork(props: { resetKey: number; layer: string; children?: ReactNode; panelActions?: ReactNode; preview?: PreviewResponse | null; comparison?: CompareResponse | null; comparisonState?: ComparisonState; renderTools?: (view: 'network' | 'map') => ReactNode; onChooseOrigin?: (id: number) => void }) {
   const lastPreview = useRef<PreviewResponse | null>(null)
   if (props.preview) lastPreview.current = props.preview
   if (lastPreview.current) return <SimulationWorkspace {...props} preview={lastPreview.current} active={Boolean(props.preview)} />

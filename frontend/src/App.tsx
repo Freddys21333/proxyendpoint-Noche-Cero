@@ -183,6 +183,13 @@ export default function App() {
     editedFields.current.add(key);
     applyScenario({ ...scenario, [key]: value });
   };
+  const chooseOrigin = (id: number) => {
+    if (numericInputError(id, 0, scenario.population - 1, true)) return;
+    editedFields.current.add('origin');
+    editedFields.current.add('node');
+    applyScenario({ ...scenario, origin: 'node', node: id });
+    setNotice(`Persona ${id} elegida como origen. Pulsa Consultar red para aplicar el cambio.`);
+  };
   const reset = () => {
     editedFields.current.clear();
     applyScenario(serverConfig ? fromConfiguration(serverConfig.defaults) : { ...defaults });
@@ -352,15 +359,18 @@ export default function App() {
             </div>
             <small id="origin-help" className="parameter-help">Dónde comienza el brote.</small>
           </label>
+          {scenario.origin === "node" && (
+            <div className="origin-person-field">
+              <Field label="Número de persona" help="Consulta la red para localizarla en el mapa y ver su ficha." value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} maxMessage="El número de persona debe ser menor que la población. Elige una persona de la red." />
+              <p className="parameter-help">O pulsa un punto del mapa o de la red y elige <strong>Elegir como origen del brote</strong>.</p>
+            </div>
+          )}
           <div className="field transmission-field" role="group" aria-label="Facilidad de contagio" aria-describedby="transmission-help">
             <Field label="Facilidad de contagio" value={scenario.beta} onChange={(value) => update("beta", value)} compact percentage unit="de 100" min={0} max={100} step="any" />
             <input className="range" aria-label="Facilidad de contagio" aria-valuetext={Number.isNaN(scenario.beta) ? "Sin valor" : `${percentInputValue(scenario.beta, false)} de 100`} aria-describedby="transmission-help" type="range" min="0" max="100" step="1" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, false)) : 0} onChange={(event) => update("beta", probabilityFromPercent(event.target.value))} />
             <small className="transmission-scale" aria-hidden="true"><span>0 · Sin nuevos contagios</span><span>100 · Mayor facilidad</span></small>
             <small id="transmission-help" className="parameter-help">Mayor valor, mayor facilidad de contagio.</small>
           </div>
-          {scenario.origin === "node" && (
-            <Field label="Número de persona" help="Identificador de la persona donde comienza el brote; la numeración empieza en 0." value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} maxMessage="El número de persona debe ser menor que la población. Elige un identificador de la red." />
-          )}
         </div>
         <fieldset className="scenario-section">
           <legend>Vacunación</legend>
@@ -467,7 +477,7 @@ export default function App() {
           <>
             <h1 className="sr-only">Explorar la población y simular el brote</h1>
             <Suspense fallback={<div className="simulation-loading" role="status">Cargando simulador…</div>}>
-              <ContactNetwork resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions} renderTools={visualizerView => <section className="visualizer-tools" aria-label="Controles de la vista"><div className="simulation-tools">
+              <ContactNetwork onChooseOrigin={chooseOrigin} resetKey={resetKey} layer={layer} preview={remotePreview} comparison={comparison} comparisonState={comparisonPending ? 'running' : comparisonErrors.length ? 'error' : 'idle'} panelActions={configurationActions} renderTools={visualizerView => <section className="visualizer-tools" aria-label="Controles de la vista"><div className="simulation-tools">
                 <label className="simulation-layer"><span>Tipo de contacto{visualizerView === 'map' ? ' · solo Red' : ''}</span>
                   <select value={layer} disabled={visualizerView === 'map'} aria-describedby={visualizerView === 'map' ? 'contact-filter-help' : undefined} onChange={(event) => setLayer(event.target.value)}>
                     {[["All layers", "Todos los tipos"], ["Households", "Hogares"], ["Schools", "Colegios"], ["Market", "Mercado"], ["Neighborhoods", "Barrios"], ["Bus routes", "Rutas de bus"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}

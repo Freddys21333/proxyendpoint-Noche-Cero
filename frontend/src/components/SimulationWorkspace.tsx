@@ -24,7 +24,13 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
   const frames = presentation.mode === 'representative' ? source.frames : null
 
   useEffect(() => { dispatch({ type: 'reset' }) }, [comparison, active, props.preview, comparisonState])
-  useEffect(() => { setView('map'); setSelectedPersonId(''); setFocusRequest(null) }, [props.preview])
+  useEffect(() => {
+    const origin = props.preview.configuration.scenario.origin
+    const id = origin.kind === 'node' && origin.value !== null ? origin.value : null
+    setView('map')
+    setSelectedPersonId(id === null ? '' : String(id))
+    setFocusRequest(id === null ? null : { id, version: 1 })
+  }, [props.preview])
   useEffect(() => {
     try {
       if (typeof window !== 'undefined' && window.matchMedia) {
@@ -51,7 +57,7 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
   const mapView = <div className="network-view geographic-map-view" hidden={view !== 'map'}>
     <Suspense fallback={<p className="geographic-map-loading" role="status">Cargando mapa de Manta…</p>}>
       <GeographicMap visible={view === 'map' && active} preview={props.preview} playback={playback}
-        resetKey={props.resetKey} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId} focusRequest={focusRequest} />
+        resetKey={props.resetKey} selectedPersonId={selectedPersonId} onSelectPerson={setSelectedPersonId} focusRequest={focusRequest} onChooseOrigin={active ? props.onChooseOrigin : undefined} />
     </Suspense>
   </div>
   return <PreviewNetwork {...props} active={active} comparison={comparison} comparisonState={comparisonState} playback={playback}
