@@ -10,6 +10,7 @@ import { defaults, validateScenario, fromConfiguration, applyServerDefaults, mat
 import { readDenguePreset, presetScenario, presetCoversScenario, type DenguePreset } from "@/lib/dengue-preset";
 import denguePresetJson from "@/lib/dengue-preset.json";
 import { DenguePresetPanel } from "@/components/DenguePresetPanel";
+import { MayorReportDownload } from "@/components/MayorReportDownload";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
 import { numericInputError, percentInputValue, probabilityFromPercent } from "@/lib/parameter-input";
 
@@ -489,11 +490,6 @@ export default function App() {
           </>
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
-            {comparison && <section className="results-reading-guide" aria-labelledby="reading-guide-title">
-              <h2 id="reading-guide-title">Cómo leer la comparación</h2>
-              <p>Compara los infectados acumulados y el pico de zombies entre estrategias. Revisa también la variación entre repeticiones: una media menor no garantiza el mismo resultado en cada simulación.</p>
-              <p>Después, vuelve a la red y abre <strong>Reproducción y estrategia</strong> para recorrer los días de una repetición. Esa trayectoria no representa el promedio.</p>
-            </section>}
             {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
               <div className="comparison-empty-content"><h1 id="results-title">Compara las estrategias de vacunación</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} repeticiones con tres estrategias…` : remotePreview ? "La red está lista. Compara las estrategias Sin intervención, Aleatoria y Dirigida con la misma población." : "Configura un escenario y consulta la red antes de comparar."}</p>
               {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}
@@ -506,7 +502,7 @@ export default function App() {
               />}
               <div className="comparison-empty-actions">{comparisonPending ? <Button type="button" className="comparison-start" onClick={cancelComparison}>Cancelar comparación</Button> : <Button type="button" className="comparison-start" disabled={!remotePreview || pending} onClick={runComparison}>Comparar estrategias</Button>}<button type="button" className="plain-action" onClick={() => setView("simulator")}>{remotePreview ? "Volver a la red" : "Configurar escenario"}</button></div></div>
             </div>}
-            {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver a la red</button>}
+            {comparison && <button type="button" className="plain-action" onClick={() => setView("simulator")}>Volver al mapa y reproducir una repetición</button>}
           </section>
         ) : (
           <Suspense fallback={<div className="simulation-loading" role="status">Cargando PRO…</div>}>
@@ -542,12 +538,12 @@ export default function App() {
                 <p className="help-note">Las vacunas se aplican al comparar estrategias, desde el día configurado. Modelo educativo: no usar para decisiones sanitarias reales.</p>
               </div>
             ) : (
-              <p>{comparison ? "JSON conserva el experimento para reproducirlo. ZIP incluye tablas CSV para analizar los resultados." : "Descarga los parámetros en JSON. Este borrador no incluye resultados."}</p>
+              <div>{comparison ? <><p>Elige el formato: PDF o HTML para compartir; JSON para reproducir; ZIP con CSV para analizar.</p><MayorReportDownload result={comparison} /></> : <p>Descarga los parámetros en JSON. Este borrador no incluye resultados. Compara estrategias para habilitar PDF, HTML y tablas CSV.</p>}</div>
             )}
             <div className="modal-actions">
               <Button variant="outline" onClick={() => setModal(null)}>Volver</Button>
               {modal === "export" && comparison && <Button variant="outline" onClick={exportCsv}>Descargar ZIP con CSV</Button>}
-              {modal === "export" && <Button className="action-primary" onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento" : "Descargar borrador"}</Button>}
+              {modal === "export" && <Button className="action-primary" onClick={exportConfig}><ArrowDownToLine size={17} /> {comparison ? "Descargar experimento (JSON)" : "Descargar borrador (JSON)"}</Button>}
             </div>
           </Dialog.Popup>
         </Dialog.Portal>

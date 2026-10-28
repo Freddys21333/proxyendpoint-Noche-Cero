@@ -7,6 +7,7 @@ const colors = { none: "#ff9b68", random: "#87c7e5", targeted: "#bde76b" };
 export default function ComparisonChart({ result, metric }: { result: CompareResponse; metric: CurveMetric }) {
   const rows = comparisonRows(result, metric);
   return <>
+    <p className="chart-axis-guide">Eje horizontal: días desde el inicio. Eje vertical: personas.</p>
     <div className="plot-legend" aria-label="Leyenda de estrategias">{policies.map(policy => <span key={policy}><i className={`line-sample ${policy === "none" ? "baseline" : policy}`} />{policyLabels[policy]}</span>)}</div>
     <div className="chart-wrap"><ResponsiveContainer width="100%" height="100%"><ComposedChart data={rows} margin={{ top: 12, right: 18, bottom: 6, left: -8 }}>
       <CartesianGrid vertical={false} stroke="#4a414e" />

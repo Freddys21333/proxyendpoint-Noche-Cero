@@ -285,6 +285,31 @@
 .noche-cero .results-view :is(.results-example, .comparison-card, .comparison-summary, .comparison-chart-panel),
 .noche-cero .pro-workspace :is(.pro-current, .pro-card, .pro-demo-note) { background: #24212d; border-color: var(--night-border); color: var(--ink); border-radius: 7px; }
 .noche-cero .results-example { margin: 16px 0; }
+.noche-cero .strategy-impact { padding: 20px 0; border-bottom: 1px solid var(--night-border); }
+.noche-cero .strategy-impact:last-child { border-bottom: 0; }
+.noche-cero .strategy-impact h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: 0 0 10px; font-size: 17px; }
+.noche-cero .strategy-impact h3 span { color: #cabecb; font-size: 12px; font-weight: 400; }
+.noche-cero .strategy-impact-track { height: 10px; overflow: hidden; background: #15131c; border-radius: 2px; }
+.noche-cero .strategy-impact-track > span { display: block; height: 100%; background: #ff9b68; }
+.noche-cero .strategy-impact--random .strategy-impact-track > span { background: #87c7e5; }
+.noche-cero .strategy-impact--targeted .strategy-impact-track > span { background: #bde76b; }
+.noche-cero .strategy-impact-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 14px 0 0; }
+.noche-cero .strategy-impact-metrics dt { color: #cabecb; font-size: 13px; }
+.noche-cero .strategy-impact-metrics dd { margin: 5px 0 0; color: var(--ink); font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.noche-cero .strategy-impact-metrics small { display: block; margin-top: 4px; color: #cabecb; font-size: 12px; line-height: 1.5; font-weight: 400; }
+.noche-cero .results-downloads { scroll-margin-top: 90px; }
+.noche-cero .results-downloads .export-downloads,
+.noche-dialog .export-downloads { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.noche-cero .results-downloads .plain-action,
+.noche-dialog .export-downloads .plain-action { min-height: 42px; padding: 9px 12px; border: 1px solid #82758a; border-radius: 5px; color: #ffcca8; background: #171620; white-space: normal; text-align: left; }
+.noche-cero .results-heading > a { display: inline-block; margin: 8px 0; text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 760px) {
+  .noche-cero .strategy-impact-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .noche-cero .results-example select { display: block; width: 100%; margin: 8px 0; }
+}
+@media (max-width: 380px) {
+  .noche-cero .strategy-impact-metrics { grid-template-columns: 1fr; }
+}
 .noche-cero .results-example :is(h2, h3, strong, li, label, th, td, caption) { color: var(--ink); }
 .noche-cero .results-example > p,
 .noche-cero .results-example div > p { color: #bfb4c3; }
