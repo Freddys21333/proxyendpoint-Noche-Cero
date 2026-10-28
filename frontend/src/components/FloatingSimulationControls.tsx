@@ -33,7 +33,7 @@ export function FloatingSimulationControls({ children, actions, transport }: { c
   return <details ref={panel} className="floating-simulation-controls" open>
     <summary aria-controls={id}>
       <SlidersHorizontal size={17} aria-hidden="true" />
-      <span>Controles</span>
+      <span>Escenario y herramientas</span>
       <ChevronDown size={17} className="floating-controls-chevron" aria-hidden="true" />
     </summary>
     {transport && <div className="floating-controls-transport">{transport}</div>}

@@ -13,14 +13,16 @@ import 'leaflet/dist/leaflet.css'
 import './GeographicMap.css'
 
 const stateLabels = { S: 'Sano', E: 'Mordido', I: 'Zombie', R: 'Exorcizado (recuperado o inmune)' }
+const groupNumber = (id: string) => id.replace(/^[a-z-]+-/, '')
 const describeAgent = (agent: GeographicAgent, presentation: AgentPresentation) => [
   `Persona ${agent.nodeId}`, `Día ${presentation.day} · ${presentation.mode === 'representative' ? policyLabels[presentation.policy] : 'Estado inicial'}`,
-  `Estado: ${agent.state} · ${stateLabels[agent.state]}`,
-  ...(presentation.mode === 'representative' ? [`Réplica representativa: ${presentation.representativeIndex}`] : []),
-  `Hogar sintético: ${agent.householdId}`, `Barrio sintético: ${agent.neighborhoodId}`,
-  `Sector geográfico sintético: ${agent.sectorId}`,
+  `Estado: ${stateLabels[agent.state]}`,
+  ...(presentation.mode === 'representative' && presentation.representativeIndex !== null ? [`Simulación mostrada: ${presentation.representativeIndex + 1}`] : []),
+  'Persona y ubicación simuladas.',
+  `Hogar ${groupNumber(agent.householdId)} · Barrio ${groupNumber(agent.neighborhoodId)}`,
+  `Zona del mapa: ${groupNumber(agent.sectorId)}`,
   ...([['schoolId', 'Colegio'], ['busId', 'Ruta de bus'], ['marketId', 'Mercado']] as const)
-    .filter(([key]) => agent[key] !== null).map(([key, label]) => `${label}: ${agent[key]}`),
+    .filter(([key]) => agent[key] !== null).map(([key, label]) => `${label}: ${groupNumber(agent[key]!)}`),
 ]
 function agentPopup(agent: GeographicAgent, presentation: AgentPresentation) {
   const content = document.createElement('div')
@@ -113,7 +115,8 @@ export default function GeographicMap({ visible, preview, playback, resetKey, se
         if (!person) { setSearchError('Escribe el número de una persona de este escenario.'); return }
         setSearchError(null); onSelectPerson(String(person.nodeId)); controller.current?.focusAgent(person)
       }}>
-        <label htmlFor="map-person-search">Número de persona</label>
+        <p className="geographic-search-help">Cada punto es una persona. Pulsa un punto para ver su ficha o busca por número.</p>
+        <label htmlFor="map-person-search">Número de persona (0 a {preview.graph.nodes.length - 1})</label>
         <div className="geographic-person-search-row">
           <input id="map-person-search" type="search" inputMode="numeric" autoComplete="off"
             placeholder={`Ej. ${placement.agents[0].nodeId}`} value={personQuery}

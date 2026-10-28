@@ -6,11 +6,17 @@ El frontend conserva el simulador, la comparación y PRO bajo la identidad **Noc
 
 Checklist de capacidades, contratos y pendientes del frontend PRO: [estado al 2026-10-27](../docs/estado-frontend-pro-2026-10-27.md).
 
+La [auditoría de UX y usabilidad](../docs/ux-usability-audit-2026-10-27.md) registra los hallazgos de Nielsen, el recorrido inicial y los límites de accesibilidad comprobados. El panel presenta Escenario y Vacunación antes de las herramientas desplegables; consultar confirma la red sin abrir un diálogo y las acciones conservan su posición. Reproducción aparece al disponer de una trayectoria. PRO y el informe local mantienen pendientes editoriales identificados en la auditoría.
+
 Para revisar localmente: iniciar el backend con `backend/.venv/bin/python scripts/serve_api.py`, iniciar Vite con `npm run dev -- --host 127.0.0.1 --port 5174` desde `frontend/` y abrir `http://127.0.0.1:5174/`. El proxy Vite dirige `/v1` al backend local.
 
 ## Estado de integración I-09
 
+Los parámetros tienen ayudas breves y errores locales. Población/duración y vacunas/eficacia se presentan por pares cuando el ancho lo permite. Eficacia, progresión y recuperación muestran etiqueta y porcentaje, sin símbolos ni explicaciones adicionales. En reposo se muestra una cifra decimal y al enfocar aparece el valor completo; enfocar, desenfocar o abrir/cerrar los parámetros avanzados no modifica el escenario. El motor conserva probabilidades de 0 a 1. El foco naranja se dibuja en el borde exterior de cada campo, sin un segundo cuadro interior.
+
 El mapa geográfico está registrado como feature **P-09** ([ficha](../specs/p09-geographic-map.md)); su alcance, datos y aceptación no se mezclan con P-07 (reproducción temporal) ni con P-05/P-06 (datos reales y calibración).
+
+**Facilidad de contagio** agrupa un campo pequeño y un slider de 0 a 100. El slider avanza en pasos enteros; el campo admite decimales y muestra una cifra decimal en reposo sin redondear el valor guardado. Las intervenciones combinadas explican su efecto junto al checkbox y sus campos usan bordes y fondos visibles en el tema oscuro. En pantallas estrechas el panel completo participa en el desplazamiento de la página, para que el reproductor no oculte los campos. Las acciones **Consultar red**, **Comparar estrategias** y **Exportar** incluyen tooltips nativos con descripciones según su disponibilidad. El día de reproducción conserva slider y botones **Día anterior / Día siguiente**; retroceder usa la trayectoria registrada, pausa la reproducción y se deshabilita en el día 0 o cuando no hay frames.
 
 Health/config y el botón **Consultar red** usan la API real. El formulario muestra personas/contactos/semilla del preview recibido. Editar o restablecer invalida el preview y cancela la petición pendiente; los errores conservan los valores del formulario. VITE_API_BASE_URL permite una base que ya incluye /v1 (default /v1 mediante proxy Vite local).
 

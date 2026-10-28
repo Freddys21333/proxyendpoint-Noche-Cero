@@ -4,17 +4,17 @@ import { apiErrorView, type ApiOperation } from '@/lib/api-errors'
 
 const fieldLabels: Record<string, string> = {
   'configuration.scenario.populationSize': 'Población',
-  'configuration.scenario.days': 'Horizonte',
-  'configuration.scenario.beta': 'Tasa de transmisión',
+  'configuration.scenario.days': 'Duración',
+  'configuration.scenario.beta': 'Facilidad de contagio',
   'configuration.scenario.sigma': 'Progresión diaria',
   'configuration.scenario.gamma': 'Recuperación diaria',
   'configuration.scenario.initialInfectious': 'Casos iniciales',
   'configuration.scenario.origin': 'Origen del brote',
-  'configuration.intervention.vaccines': 'Vacunas',
-  'configuration.intervention.interventionDay': 'Día de intervención',
-  'configuration.intervention.vaccineEfficacy': 'Eficacia de la vacuna',
-  'configuration.repetitions': 'Réplicas',
-  'configuration.rootSeed': 'Semilla',
+  'configuration.intervention.vaccines': 'Dosis disponibles',
+  'configuration.intervention.interventionDay': 'Día de vacunación',
+  'configuration.intervention.vaccineEfficacy': 'Eficacia',
+  'configuration.repetitions': 'Repeticiones del experimento',
+  'configuration.rootSeed': 'Semilla para reproducir el experimento',
 }
 
 

@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-28.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** rendimiento backend local ([evidencia](evidencia/rendimiento-backend-2026-10-28.md)); 510 pruebas backend. Conserva merge feat/pro, 147 pruebas frontend y T-22 aprobado; P-06 conserva su resultado desfavorable.
+**Último incremento:** merge de `codex/parametros-comprensibles` ([evidencia](evidencia/merge-parametros-comprensibles-2026-10-28.md)); 510 pruebas backend y 150 frontend. Conserva rendimiento, feat/pro y T-22 aprobado; P-06 sigue ajustado, no validado.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -562,3 +562,5 @@ inventes URL, gasto ni resultados de AWS.
 Actualización de rendimiento API (2026-10-27): 478 pruebas backend, Ruff/mypy correctos. [Evidencia HTTP completa](evidencia/api-performance-2026-10-27.md). Compare reutiliza bytes JSON validados; no cambia hashes. ≤25 s consistente y staging siguen pendientes; T-22 científico fue ejecutado y aprobado después de esa medición.
 
 Rendimiento actualizado 2026-10-28: comparación HTTP N1000/T90/R30 con medianas 18,46/19,56 s sin/con frames (6 muestras <25 s), PDF 4,94 s, ZIP backend local 4,36 s. Tres jobs R9 con dos workers completaron; N1000/T90/R30 sigue excediendo el límite local de 50 millones de arista-día-réplicas. No aumentar el límite para ocultarlo. [Todas las muestras, carga y límites](evidencia/rendimiento-backend-2026-10-28.md). No certifica staging/AWS ni latencia universal.
+
+Última integración de frontend (2026-10-28): [merge de codex/parametros-comprensibles](evidencia/merge-parametros-comprensibles-2026-10-28.md), 150 pruebas frontend, tipos/build y 510 pruebas backend/Ruff/mypy correctos. Parámetros comprensibles y flujo plegable incorporados sin tocar backend ni contratos. Se conserva editor adaptativo, step-back y configuración de vacunación. Leaflet clearRect y favicon 404 observados en navegador; aceptación integral sigue pendiente.

@@ -29,7 +29,7 @@
   font-family: "IBM Plex Sans", sans-serif;
 }
 .noche-cero ::selection { background: #ff8250; color: #17121a; }
-.noche-cero :is(button, a, input, select, summary):focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+.noche-cero :is(button, a, input, select, summary):focus-visible { outline: 2px solid var(--pumpkin); outline-offset: 3px; }
 .noche-cero .simulation-header {
   min-height: 78px;
   padding: 0 clamp(18px, 2vw, 36px);
@@ -118,12 +118,21 @@
 .noche-cero .simulator-workbench select,
 .noche-cero .pro-workspace select,
 .noche-cero .pro-workspace input {
-  color: var(--ink); background: #171620; border: 1px solid #5a505d; border-radius: 5px;
+  color: var(--ink); background: #171620; border: 1px solid #82758a; border-radius: 5px;
 }
 .noche-cero .configuration-panel .input-wrap:focus-within,
 .noche-cero .configuration-panel .select-wrap:focus-within { border-color: var(--pumpkin); outline: 1px solid var(--pumpkin); }
 .noche-cero .configuration-panel .input-wrap input,
 .noche-cero .configuration-panel .select-wrap select { color: var(--ink); background: transparent; font-size: 14px; }
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] { color-scheme: light; }
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] option {
+  color: #171620;
+  background-color: #fff;
+}
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] option:checked {
+  color: HighlightText;
+  background-color: Highlight;
+}
 .noche-cero .configuration-panel .input-unit { color: #aaa0b0; font-size: 11px; }
 .noche-cero .pro-field { color: #d1c6d0; font-size: 12px; }
 .noche-cero .pro-field input { min-height: 44px; padding: 8px 10px; font-size: 14px; line-height: 1.3; }
@@ -146,13 +155,13 @@
 .noche-cero .comparison-button:disabled { opacity: .45; }
 .noche-cero .configuration-errors { border: 1px solid #9b5644; border-radius: 6px; background: #3d2526; color: #ffe0d4; }
 
-/* An empty stage has a clearly marked illustration, never fabricated results. */
+/* Empty states explain the next available task. */
 .noche-cero .simulator-workbench .simulation-empty {
   position: relative; display: flex; flex-direction: column; align-items: center;
   min-height: 620px; padding: 34px; text-align: center;
-  background: radial-gradient(ellipse at 50% 36%, #352833 0, #221e2b 43%, #191821 78%);
+  background: var(--night-raised);
 }
-.noche-cero .simulation-empty::before { content: ""; position: absolute; inset: 0; opacity: .18; background-image: radial-gradient(#decfcb 1px, transparent 1px); background-size: 26px 26px; pointer-events: none; }
+.noche-cero .simulation-empty::before { content: none; }
 .noche-cero .empty-network-art { position: relative; width: min(300px, 65%); aspect-ratio: 1; margin: 0 auto 4px; }
 .noche-cero .empty-orbit { position: absolute; border: 1px solid #bd8e695c; border-radius: 50%; }
 .noche-cero .empty-orbit--one { inset: 13%; }
@@ -240,7 +249,7 @@
 .noche-cero .vaccination-details .plain-action { color: #ffc39e; }
 .noche-cero .vaccination-details .plain-action:hover { color: #ffe1cc; }
 .noche-cero .geographic-map { --map-surface: #201d28; --map-ink: #f1ece4; --map-border: #534959; --map-link: #ffb281; }
-.noche-cero .geographic-map .leaflet-tile-pane { filter: brightness(.65) saturate(.8) sepia(.1); }
+.noche-cero .geographic-map .leaflet-tile-pane { filter: none; }
 .noche-cero .simulation-update-overlay { background: #111019a8; }
 .noche-cero .simulation-update-card { border-color: #845341; background: #2a222b; color: var(--ink); box-shadow: 0 18px 55px #06040a99; }
 .noche-cero .simulation-update-icon { background: #4c302e; color: var(--pumpkin); }
@@ -400,4 +409,194 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .noche-cero *, .noche-cero *::before, .noche-cero *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+.noche-cero .configuration-panel .configuration-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+.noche-cero .configuration-panel .parameter-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--night-ink, #f1ece4);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.noche-cero .configuration-panel .parameter-help,
+.noche-cero .configuration-panel .parameter-precision {
+  display: block;
+  color: #cabecb;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.noche-cero .configuration-panel .parameter-precision { font-size: 11px; }
+.noche-cero .configuration-panel .transmission-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #cabecb;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.noche-cero .configuration-panel .transmission-scale > span { flex: 1; }
+.noche-cero .configuration-panel .transmission-scale > span:last-child { text-align: right; }
+.noche-cero .configuration-panel .origin-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .transmission-field {
+  grid-column: 1 / -1;
+  padding: 10px;
+  border: 1px solid #5a505d;
+  border-radius: 6px;
+  background: #201d29;
+}
+.noche-cero .configuration-panel .transmission-field > .parameter-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 2px;
+}
+.noche-cero .configuration-panel .transmission-field .parameter-field > label { margin-bottom: 0; }
+.noche-cero .configuration-panel .transmission-field .parameter-error { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .parameter-error {
+  color: #ffb9a4;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.noche-cero .configuration-panel .input-wrap { position: relative; }
+.noche-cero .configuration-panel .input-wrap input { min-width: 0; }
+.noche-cero .configuration-panel .input-wrap:has(input[aria-invalid="true"]) { border-color: #ffb9a4; }
+.noche-cero .configuration-panel .input-approx {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #cabecb;
+  pointer-events: none;
+}
+.noche-cero .configuration-panel .input-wrap--approximate input { padding-left: 26px; }
+.noche-cero .configuration-panel .input-unit { max-width: 48%; font-size: 11px; }
+.noche-cero .configuration-panel .configuration-advanced .parameter-field--percentage,
+.noche-cero .configuration-panel .parameter-field:has(input[max="4294967295"]) { grid-column: 1 / -1; }
+
+/* One outer focus indicator; inner controls do not draw a second rectangle. */
+.noche-cero.minimal-workspace :is(input, select):focus-visible,
+.noche-cero .configuration-panel :is(input, select):focus-visible {
+  outline: 2px solid var(--pumpkin);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel .input-wrap input:focus,
+.noche-cero .configuration-panel .input-wrap input:focus-visible,
+.noche-cero .configuration-panel .select-wrap select:focus,
+.noche-cero .configuration-panel .select-wrap select:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel input { caret-color: var(--pumpkin); }
+.noche-cero .configuration-panel input::selection { background: #ff8250; color: #1c1517; }
+.noche-cero .configuration-panel .combined-settings .configuration-fields > .field > span {
+  min-height: 3em;
+}
+
+/* Task grouping keeps scenario inputs stable before view-specific tools. */
+.noche-cero { color-scheme: dark; }
+.noche-cero .skip-link { position: fixed; top: 8px; left: 8px; z-index: 2000; padding: 10px 16px; background: var(--pumpkin); color: #1c1517; transform: translateY(-160%); }
+.noche-cero .skip-link:focus { transform: translateY(0); }
+.noche-cero .configuration-panel .scenario-section { min-width: 0; margin: 20px 0 0; padding: 16px 0 0; border: 0; border-top: 1px solid var(--night-border); }
+.noche-cero .scenario-section legend { padding: 0 8px 0 0; color: var(--ink); font-size: 14px; font-weight: 600; }
+.noche-cero .scenario-section > .parameter-field { margin-top: 12px; }
+.noche-cero .configuration-panel .scenario-section .configuration-fields > .parameter-field > label { min-height: 0; }
+.noche-cero .simulator-workbench .sidebar-section { margin: 0; padding: 0 16px; border: 0; border-top: 1px solid var(--night-border); color: var(--ink); }
+.noche-cero .sidebar-section > summary { min-height: 44px; padding-block: 12px; color: var(--ink); font-size: 14px; font-weight: 500; cursor: pointer; }
+.noche-cero .simulator-workbench .sidebar-section :is(.persistent-playback, .network-meaning, .network-layout-control, .visualizer-tools, .vaccination-details) { padding: 0 0 16px; border: 0; background: transparent; }
+.noche-cero .sidebar-section :is(p, label) { font-size: 13px; line-height: 1.5; }
+.noche-cero .sidebar-section :is(select, input) { min-height: 40px; }
+.noche-cero .sidebar-section .simulation-tools { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.noche-cero .sidebar-section .simulation-layer { display: grid; gap: 6px; }
+.noche-cero .sidebar-section :is(.simulation-layer select, .network-layout-control select) { max-width: none; width: 100%; }
+.noche-cero .sidebar-section .simulation-tools > button { justify-self: start; }
+.noche-cero .floating-controls-footer .configuration-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+.noche-cero .configuration-actions .scenario-next-step { grid-column: 1 / -1; margin: 0; color: #cabecb; font-size: 12px; line-height: 1.4; }
+.noche-cero .configuration-actions .validate-button:not(.comparison-button) { grid-column: 1 / -1; }
+.noche-cero .configuration-actions :is(.validate-button, .comparison-button) { width: 100%; min-width: 0; padding-inline: 8px; font-size: 13px; }
+.noche-cero .configuration-actions .plain-action { font-size: 13px; }
+.noche-cero .playback-transport .playback-actions > button { background: #171620; color: var(--ink); border: 1px solid #82758a; }
+.noche-cero .playback-transport .playback-actions > .playback-primary { background: var(--pumpkin); border-color: var(--pumpkin); color: #1c1517; }
+.noche-cero .playback-transport .playback-actions > button:hover:not(:disabled) { background: #4c302e; color: var(--ink); }
+.noche-cero .playback-transport .playback-actions > button:disabled { opacity: .5; }
+.noche-cero .simulator-workbench .simulation-empty > svg { color: #b6aebd; margin-bottom: 12px; }
+.noche-cero .simulation-empty .simulation-empty-note { margin-top: 16px; }
+.noche-cero .comparison-empty { min-height: 280px; background: var(--night-raised); border-color: var(--night-border); }
+.noche-cero .comparison-empty::before, .noche-cero .comparison-empty::after { content: none; }
+.noche-cero .comparison-empty h1 { max-width: 28ch; font-size: 28px; text-wrap: balance; }
+.noche-cero .results-reading-guide { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--night-border); max-width: 75ch; }
+.noche-cero .results-reading-guide h2 { margin: 0 0 8px; font-size: 18px; color: var(--ink); }
+.noche-cero .results-reading-guide p { margin: 8px 0 0; color: #cabecb; font-size: 14px; line-height: 1.6; }
+.noche-cero .strategy-explanation { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--night-border); }
+.noche-cero .strategy-explanation h3 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.noche-cero .strategy-explanation dl { margin: 0; display: grid; gap: 10px; }
+.noche-cero .strategy-explanation dt { color: var(--ink); font-size: 13px; font-weight: 500; }
+.noche-cero .strategy-explanation dd, .noche-cero .strategy-explanation p { margin: 3px 0 0; color: #cabecb; font-size: 12px; line-height: 1.5; }
+.noche-cero .strategy-explanation p { margin-top: 12px; }
+.noche-dialog .help-steps { list-style: decimal; padding-left: 24px; }
+.noche-dialog .help-steps li { padding-left: 4px; }
+.noche-dialog .help-steps li::before { content: none; }
+.noche-dialog :is(button, a):focus-visible { outline: 2px solid #ff8250; outline-offset: 3px; }
+.noche-dialog { overscroll-behavior: contain; }
+.noche-cero .configuration-panel .configuration-advanced .parameter-field--percentage > label,
+.noche-cero .configuration-panel .parameter-field:has(input[max="4294967295"]) > label { min-height: 0; }
+.noche-cero .configuration-panel .transmission-field .range { height: 28px; margin: 4px 0; }
+.noche-cero .configuration-panel .transmission-field .parameter-help,
+.noche-cero .configuration-panel .transmission-scale { font-size: 11px; margin-bottom: 0; }
+.noche-cero .configuration-panel .advanced-toggle { border-bottom: 1px solid var(--night-border); }
+.noche-cero .configuration-panel .combined-settings { border-top: 0; margin-top: 12px; padding-top: 0; }
+.noche-cero .configuration-panel .combined-settings :is(p, small),
+.noche-cero .configuration-panel .configuration-advanced > p {
+  color: #cabecb;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.noche-cero .configuration-panel .combined-settings .combined-toggle-help { margin: 5px 0 10px; font-size: 11px; }
+.noche-cero .configuration-panel .combined-settings .field > span { color: #e4dce6; font-size: 12px; }
+.noche-cero .configuration-panel .combined-settings :is(input[type="number"], input[type="text"], select) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #6b6070;
+  border-radius: 5px;
+  background: #171620;
+  color: #f1ece4;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.noche-cero .configuration-panel .combined-settings :is(input[type="number"], input[type="text"], select):focus {
+  border-color: var(--pumpkin);
+  outline: 1px solid var(--pumpkin);
+  outline-offset: 0;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel .combined-settings input[type="checkbox"] { accent-color: var(--pumpkin); }
+.noche-cero .configuration-panel .combined-settings :is(details, .resource-schedule-editor, .resource-delivery) { border-color: var(--night-border); }
+.noche-cero .configuration-panel .combined-settings :is(summary, legend) { color: #f1ece4; }
+.noche-cero .configuration-panel .combined-settings select { color-scheme: light; }
+.noche-cero .configuration-panel .combined-settings option { color: #171620; background: #fff; }
+.noche-cero .configuration-panel .combined-settings option:checked { color: HighlightText; background: Highlight; }
+.noche-cero .configuration-panel .plain-action:hover { color: #ffcca5; }
+.noche-cero .configuration-actions button:disabled { pointer-events: auto; cursor: not-allowed; }
+@media (max-width: 340px) {
+  .noche-cero .simulation-header { grid-template-columns: minmax(0, 1fr); }
+  .noche-cero .simulation-status { grid-column: 1; grid-row: 2; justify-self: start; margin-left: 0; text-align: left; max-width: none; }
+  .noche-cero .simulation-navigation { grid-row: 3; display: grid; grid-template-columns: 1.25fr 1.25fr .65fr .8fr; min-width: 0; }
+  .noche-cero .simulation-navigation button { min-width: 0; padding-inline: 3px; }
+  .noche-cero .configuration-panel .configuration-fields { grid-template-columns: 1fr; }
+  .noche-cero .configuration-panel .configuration-fields > .parameter-field > label { min-height: 0; }
 }
