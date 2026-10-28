@@ -1,7 +1,8 @@
 # P-04: publicar y probar los trabajos AWS
 
-El código y Terraform están implementados; todavía no hay despliegue P-04 ni
-medición real de costo/tiempo. El sitio anterior continúa retirado.
+Main desplegado el 28/10/2026 con P-04. La prueba AWS de 100 réplicas y el
+flujo en navegador pasaron; 1000 réplicas y costos completos siguen pendientes.
+Ver [evidencia y URL actuales](../docs/evidencia/despliegue-main-p04-2026-10-28.md).
 
 ## Recursos y límites
 

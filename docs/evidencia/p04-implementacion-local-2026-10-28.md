@@ -53,3 +53,5 @@ Suite final: **519 pruebas backend**, Ruff/formato/mypy correctos (31 módulos),
 validador ASL oficial OK, sin diagnósticos. Paquete Linux con SDK AWS construido
 con las versiones científicas fijadas; el constructor verifica límites de ZIP y
 contenido descomprimido de Lambda. No se aplicó Terraform ni se ejecutaron lotes AWS.
+
+Actualización posterior: [main desplegado y prueba real de 100 réplicas](despliegue-main-p04-2026-10-28.md). El estado no desplegado de este informe corresponde a su fase local.

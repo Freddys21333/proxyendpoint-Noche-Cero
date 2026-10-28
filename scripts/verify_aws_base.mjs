@@ -6,12 +6,12 @@ import { fetchMayorReport } from '../frontend/src/lib/mayor-report.ts'
 
 const base = process.argv[2]
 if (!base || !/^https:\/\/[a-z0-9]+\.execute-api\.us-east-2\.amazonaws\.com\/v1$/.test(base)) throw new Error('Indica la API de staging de Ohio.')
-const output = '.tools/aws-smoke'
+const output = `.tools/aws-smoke-${Date.now()}`
 await mkdir(output, { recursive: true })
 const api = createApiClient(base)
 const health = await api.health()
 const config = await api.config()
-assert.equal(config.features.asyncJobs, false)
+assert.equal(config.features.asyncJobs, process.argv.includes('--jobs-enabled'))
 const c = structuredClone(config.defaults)
 Object.assign(c, { repetitions: 2 })
 Object.assign(c.scenario, { populationSize: 60, days: 7, initialInfectious: 2 })

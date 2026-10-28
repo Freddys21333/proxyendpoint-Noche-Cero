@@ -1,4 +1,7 @@
 # Comité de Contención de Manta
+
+**Estado actual — AWS publicado con P-04:** [abrir staging](https://staging.d2uefmypgx02e9.amplifyapp.com). Prueba real de 100 réplicas y navegador correctos; 1000 pendientes de prueba. [Evidencia](docs/evidencia/despliegue-main-p04-2026-10-28.md). Las notas de retirada inferiores describen el despliegue anterior.
+
 > Retirado el 28/10/2026 por solicitud del usuario. Las URLs siguientes son históricas. [Guía para publicar y retirar](infra/CICLO-DESPLIEGUE.md).
 
 

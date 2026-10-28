@@ -1,5 +1,8 @@
 # AGENTS.md — traspaso operativo del proyecto
 
+> Estado actual: main desplegado con P-04 (28/10/2026), aplicación 4e9d3d2. Prueba AWS de 100 réplicas reproducida y PRO de dos réplicas verificados. Hasta 1000 dentro del límite; prueba real de 1000 pendiente. Las notas inferiores de retirada/no desplegado son históricas. Ver docs/evidencia/despliegue-main-p04-2026-10-28.md.
+
+
 > Estado más reciente: despliegue retirado por solicitud del usuario (28/10/2026). Se conserva Terraform y bootstrap S3. Las menciones de sitio publicado inferiores son históricas. Ver infra/CICLO-DESPLIEGUE.md.
 
 > Actualización AWS 28/10/2026: rama activa feat/aws-infra. Staging base publicado en Amplify + cinco Lambdas + HTTP API. infra/ ya contiene Terraform. El estado histórico inferior de AWS vacío/no publicado queda sustituido por [evidencia AWS](docs/evidencia/aws-base-2026-10-28.md). Perfil inicial 200/20/30 y límite síncrono 3 000 000; caso original 1000/90/30 pendiente de P-04. No declarar aceptación integral ni Budget operativo.
