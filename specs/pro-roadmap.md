@@ -31,7 +31,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-01 — Calendario de llegadas e inventario (PRO-2)
 
-- [x] Estado: **verificado localmente**. Dependencia: contrato combinado vigente. Implementación, decisiones cerradas y evidencia: [P-01](p01-resource-schedule.md).
+- [x] Estado: **verificado localmente**. 20 pruebas focalizadas de intervenciones combinadas, costos, entregas e inventario pasan; falta aceptación UI/humana. Dependencia: contrato combinado vigente. [Implementación](p01-resource-schedule.md) y [evidencia](../docs/evidencia/p01-pruebas-combinadas-2026-10-28.md).
 - Definir esquema de entregas por día, tipo y cantidad, con inventario inicial y recursos consumibles frente a capacidad diaria. Distinguir dosis recibidas, atenciones disponibles y financiación; una entrega no aumenta automáticamente el presupuesto.
 - Propuesta a cerrar en contrato: recepción al inicio del día, antes de decidir; acumular remanentes no perecederos. Definir explícitamente cancelación de entregas, caducidad si aplica y si las compras descuentan al recibir o al usar. Evitar pagar dos veces una dosis.
 - Exportar inventario inicial, llegadas, consumo y saldo por recurso/día/réplica/política; límites de coste e inventario son simultáneos. Ninguna estrategia usa recursos antes de su llegada.
@@ -65,7 +65,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-05 — Incorporar datos reales de dengue en Manabí (PRO-5)
 
-- [ ] Estado: **investigación de fuentes iniciada; dataset aún no incorporado**. Debe preceder a P-06. Hallazgos, riesgos de licencia/granularidad y siguientes pasos: [investigación P-05](../docs/evidencia/p05-investigacion-fuentes-2026-10-28.md).
+- [ ] Estado: **estructura de fuente candidata inspeccionada; dataset aún no incorporado** por falta de licencia/condiciones de uso confirmadas. Debe preceder a P-06. Hashes, esquema, riesgos de granularidad y siguientes pasos: [investigación P-05](../docs/evidencia/p05-investigacion-fuentes-2026-10-28.md).
 - Punto de partida oficial consultado el 2026-10-27: [gacetas vectoriales del MSP](https://www.salud.gob.ec/gacetas-vectoriales/) y [archivo 2025](https://www.salud.gob.ec/gacetas-vectoriales-2025/). Son fuentes candidatas, no un dataset ya importado o calibrado.
 - Elegir publicaciones concretas con observaciones utilizables de Manabí; registrar URL, edición, fecha de publicación, corte, período cubierto, licencia/condiciones, hash y copia permitida de la fuente. Registrar tabla/página y método si se extrae PDF; revisar extracción visualmente.
 - Construir tabla normalizada con geografía, semana epidemiológica/fecha, casos, definición del caso y unidad. Distinguir incidencia de acumulados y ceros de ausencias. Tratar correcciones y duplicados; no sumar informes acumulados de semanas sucesivas.

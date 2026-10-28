@@ -30,13 +30,13 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | Motor por defecto | `N=1000`, `T=90`, `R=30`, semilla `20261026`; `none=723,7`, `random=575,1`, `targeted=378,1`; ganancia pareada `196,97` con IC bootstrap `81,62–309,59`; 22 victorias, 6 empates y 2 derrotas frente a random. |
 | Rendimiento | **44,3 s** para el escenario por defecto sin frames, frente a objetivos de ~25 s backend y ~60 s total. |
 | Gate científico | T-22 v1 **APROBADO**: 150 réplicas primarias, cinco controles y cinco contrastes; informe reproducible publicado. |
-| P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. |
+| P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. 20 pruebas focalizadas de costos compartidos/entregas pasan; falta aceptación UI/humana. [Evidencia](evidencia/p01-pruebas-combinadas-2026-10-28.md). |
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
 | P-02 | Backend, editor e historial verificados localmente con API real; aceptación integral de escenarios y aceptación humana T-13..T-16 pendientes. |
 | P-03 | Backend, cliente y pantalla local verificados: creación, progreso, cancelación, recarga de sesión, resultado y ZIP; aceptación de errores/accesibilidad pendiente. P-04 AWS no iniciado. |
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
-| P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
+| P-05/P-06 | P-05: se inspeccionó temporalmente el esquema/hash de fuente candidata, pero no se importó por falta de condiciones de reutilización confirmadas. P-06 sigue bloqueado; no hay calibración. |
 | P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
 | P-08 | No iniciado: no hay informe PDF determinista. |
 | AWS | No desplegado; `infra/` vacío. Se deja para la última fase. |
