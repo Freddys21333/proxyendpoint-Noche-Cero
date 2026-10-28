@@ -171,3 +171,15 @@ Estas son verificaciones operativas de T-17, no dudas del contrato. No requieren
 - [AWS: empaquetado Python Lambda y dependencias nativas](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html).
 
 Las referencias respaldan mecanismos de librerías/servicios. Los supuestos del modelo, tamaños, tiempos y criterios de comparación anteriores son decisiones del proyecto y deben validarse con pruebas/benchmark.
+
+### D-08: incremento AWS base del 28 de octubre de 2026
+
+Se agrega la quinta Lambda `api.report.handler` y `POST /v1/reports/mayor`.
+El cliente envía gzip: máximo 4 MiB comprimidos y 32 MiB descomprimidos,
+con rechazo de gzip inválido y de expansión excesiva antes de validar el JSON.
+Health/config/preview/compare mantienen sus contratos y el motor no cambia.
+Amplify se publica inicialmente mediante carga manual; no requiere token GitHub
+en el estado. La conexión automática del repositorio queda separada.
+La cuota observada de Lambda es 10 en us-east-2; este primer staging usa
+concurrencia sin reserva (-1), API con 2 solicitudes/s y ráfaga 4. No es tope de gasto.
+Los jobs locales se deshabilitan. No se despliegan P-04, SageMaker ni Bedrock.

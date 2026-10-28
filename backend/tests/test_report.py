@@ -11,6 +11,28 @@ from simulation.exports import export_experiment
 from simulation.report import build_report, render_pdf
 
 
+def test_report_accepts_bounded_gzip(experiment, monkeypatch):
+    import base64
+    import gzip
+    import json
+
+    import api.report as endpoint
+
+    event = {
+        "rawPath": "/v1/reports/mayor",
+        "requestContext": {"http": {"method": "POST"}},
+        "headers": {"Content-Encoding": "gzip"},
+        "isBase64Encoded": True,
+        "body": base64.b64encode(gzip.compress(json.dumps(experiment).encode())).decode(),
+    }
+    assert endpoint.handler(event, None)["statusCode"] == 200
+    event["body"] = base64.b64encode(b"invalid gzip").decode()
+    assert endpoint.handler(event, None)["statusCode"] == 400
+    monkeypatch.setattr(endpoint, "MAX_DOCUMENT_BYTES", 100)
+    event["body"] = base64.b64encode(gzip.compress(b" " * 101)).decode()
+    assert endpoint.handler(event, None)["statusCode"] == 413
+
+
 @pytest.fixture
 def experiment():
     return export_experiment(
