@@ -340,3 +340,5 @@ Reglas heredadas que no se pueden romper:
 Actualización I-01 (2026-10-27): [benchmark HTTP completo](evidencia/api-performance-2026-10-27.md), sin frames mediana 24,35 s, con frames 33,41 s (n=3). El objetivo consistente de 25 s permanece abierto; T-22 científico ya está completo y aprobado.
 
 Actualización T-22 (2026-10-27): [matriz completa y gate científico APROBADO](evidencia/t22-v1-ejecucion.md). No modifica protocolo ni motor, no cierra rendimiento, T-23, UI ni AWS. Frente a random: 112/33/5 victorias/empates/pérdidas; mercado redundante y censura explícitos.
+
+Actualización I-01 (2026-10-28): [rendimiento HTTP y salidas](evidencia/rendimiento-backend-2026-10-28.md). Las seis comparaciones finales observadas cumplen <25 s, con medianas 18,46/19,56 s sin/con frames; PDF, ZIP y tres jobs bajo carga local verificados. 510 pruebas y hashes conservados. Aceptación de staging/p95 y carga general siguen pendientes; no se cierra I-08 ni entrega integral.

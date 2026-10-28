@@ -92,3 +92,5 @@ Rendimiento local: [mediciones de carga/exportación y equivalencia científica]
 Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-summary.md), con porcentajes, alternativa siguiente, recursos y motivos registrados calculados en backend. [Verificación local](docs/evidencia/resumen-decision-2026-10-27.md).
 
 Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites. Suite backend actual: 486 pruebas.
+
+Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga local](docs/evidencia/rendimiento-backend-2026-10-28.md). Medianas de comparación 18,46/19,56 s sin/con animación; 510 pruebas backend. Muestra local limitada, staging/AWS pendiente.

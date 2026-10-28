@@ -738,3 +738,7 @@ Los límites, runtimes, cuotas y precios se vuelven a verificar en las fuentes o
 ### Medición HTTP local adicional (2026-10-27)
 
 [API completa hasta parseo del cliente](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s; con frames 33,41 s, n=3 por modo. Objetivo consistente ≤25 s pendiente; sin certificación de p95 staging/AWS.
+
+### Rendimiento local posterior al merge (2026-10-28)
+
+[Medición backend](docs/evidencia/rendimiento-backend-2026-10-28.md): seis comparaciones N1000/T90/R30 observadas <25 s (n=3 por modo); mediana 18,46 s sin frames y 19,56 s con frames. PDF HTTP/ZIP local y jobs R9 medidos; default jobs R30 excede el límite local de 50 millones de arista-día-réplicas. Se conserva el límite. Esta muestra no reemplaza las 20 ejecuciones de staging ni certifica p95 AWS.

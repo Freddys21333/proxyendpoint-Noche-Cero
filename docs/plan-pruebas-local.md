@@ -390,3 +390,7 @@ Resultado observado: 404 pruebas backend, 137 frontend, Ruff/mypy/tipos/build co
 ## T-22 científico completo (2026-10-27)
 
 Comando ejecutado desde raíz: `backend/.venv/Scripts/python.exe -X utf8 scripts/run_t22.py --attempt .tools/t22-v1-attempt-02 --group all`. Quince experimentos/R30, 450 pares, 17 reproducciones y controles 5/5: **APROBADO**. [Informe y límites](evidencia/t22-v1-ejecucion.md). La carpeta no debe sobrescribirse; una repetición completa requiere otra carpeta. Cada JSON puede verificarse con `scripts/reproduce.py`. Suite actual: 486 pruebas backend, Ruff/formato/mypy correctos. Semilla externa y aceptación humana permanecen pendientes.
+
+## Rendimiento backend y carga local (2026-10-28)
+
+Ejecutar `scripts/benchmark_api.py --samples 3 --output-dir .tools/backend-perf-repeat` con Python del backend; luego `scripts/benchmark_backend_outputs.py .tools/backend-perf-repeat/experiment-frames.json --samples 3 --load-probe --output .tools/backend-outputs-repeat.json`. Sin otros benchmarks pesados propios simultáneos. El segundo arnés mide PDF HTTP, ZIP local, un job y tres jobs sobre dos workers con consultas health; las capacidades nunca se persisten. Distingue R30 de la comparación y R9 admitido por el límite local para esa red. [Comandos completos y evidencia](evidencia/rendimiento-backend-2026-10-28.md). Suite backend actual: 510 pruebas.

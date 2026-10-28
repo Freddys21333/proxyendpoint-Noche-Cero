@@ -27,3 +27,5 @@ Se adopta esta organización de tres documentos en lugar del listado anterior de
 Contrato PRO de ejecución: [P-03, trabajos Monte Carlo locales](p03-monte-carlo-jobs.md), backend verificado; interfaz visual y P-04 AWS pendientes.
 
 Rendimiento HTTP completo de comparación: [contrato y alcance](api-performance.md), verificado localmente; objetivo consistente ≤25 s pendiente.
+
+[Rendimiento backend posterior al merge](../docs/evidencia/rendimiento-backend-2026-10-28.md): comparación HTTP, PDF, ZIP y jobs/carga local medidos; objetivo <25 s observado en seis comparaciones, sin certificar staging/p95.

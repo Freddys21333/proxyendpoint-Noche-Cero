@@ -229,3 +229,5 @@ I-09: validConfig/validPreview completan guardas de contrato; preview requiere c
 Optimización interna de API: [preparación de JSON validado y benchmark HTTP](api-performance.md), sin cambio de contrato ni simulación.
 
 T-22 v1 ejecutado sin cambio de modelo: [informe científico y auditoría](../docs/evidencia/t22-v1-ejecucion.md). Gate APROBADO según sumas predefinidas; contraste mercado redundante documentado para un eventual diseño v2, sin modificar v1.
+
+Rendimiento de registros (2026-10-28): comprobadores acotados de esquemas planos en la copia privada, aceptación rápida solo de valores nativos válidos y respaldo Draft para el resto. Sin cache de resultados ni cambios científicos. [Evidencia](../docs/evidencia/rendimiento-backend-2026-10-28.md).

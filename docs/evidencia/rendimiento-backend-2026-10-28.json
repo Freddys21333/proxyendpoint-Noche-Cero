@@ -1,0 +1,1036 @@
+{
+  "date": "2026-10-28",
+  "baseCommit": "a08cb44920b7051215dcb6fb51a5229a2fe602b0",
+  "configurationSourceSHA256": "00faf95fceb6b32c6aba4645de4e39758c673db66874994104b4f9ad3f530ba8",
+  "referenceConfigurationSHA256": "e49136e89a00eb907f17ffc179f4c46a317734ffb77ef0799562bd945e2a1a6a",
+  "reports": {
+    "comparisonBefore": {
+      "benchmarkVersion": "api-http-local-v1",
+      "platform": "Windows-11-10.0.22631-SP0",
+      "python": "3.12.14",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "samples": [
+        {
+          "status": 200,
+          "untilHeadersSeconds": 21.872353100000055,
+          "receiveBodySeconds": 0.0006843000001026667,
+          "inflateSeconds": 0.023958499999935157,
+          "parseSeconds": 0.14392159999988507,
+          "clientTotalSeconds": 22.040917499999978,
+          "requestBytes": 648,
+          "wireBytes": 878872,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.6493131999995967,
+            "simulation": 11.80337950000012,
+            "validationNestedInExport": 5.623336999999992,
+            "exportIncludingValidation": 7.503808700000263,
+            "gzip": 0.41701229999989664,
+            "responseTotal": 0.4229525000000649,
+            "responseSerialization": 8.219999972425285e-05,
+            "httpServerTotal": 21.871788299999935
+          },
+          "frames": false,
+          "index": 0,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 20.235272899999927,
+          "receiveBodySeconds": 0.0007069000002957182,
+          "inflateSeconds": 0.022083500000007916,
+          "parseSeconds": 0.1529516999999032,
+          "clientTotalSeconds": 20.411015000000134,
+          "requestBytes": 648,
+          "wireBytes": 878873,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.5479298999998719,
+            "simulation": 10.764238400000067,
+            "validationNestedInExport": 5.35780079999995,
+            "exportIncludingValidation": 7.051692099999855,
+            "gzip": 0.4094289999998182,
+            "responseTotal": 0.414423799999895,
+            "responseSerialization": 3.299999980299617e-05,
+            "httpServerTotal": 20.234299600000213
+          },
+          "frames": false,
+          "index": 1,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 19.903121300000294,
+          "receiveBodySeconds": 0.0007647999996152066,
+          "inflateSeconds": 0.01500430000032793,
+          "parseSeconds": 0.1448445000000902,
+          "clientTotalSeconds": 20.063734900000327,
+          "requestBytes": 648,
+          "wireBytes": 878871,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.5700541999999587,
+            "simulation": 10.432422899999892,
+            "validationNestedInExport": 5.350492300000042,
+            "exportIncludingValidation": 7.032770600000276,
+            "gzip": 0.41016850000005434,
+            "responseTotal": 0.41539659999989453,
+            "responseSerialization": 3.400000014153193e-05,
+            "httpServerTotal": 19.902704099999937
+          },
+          "frames": false,
+          "index": 2,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 21.528591900000265,
+          "receiveBodySeconds": 0.0009657000000515836,
+          "inflateSeconds": 0.01981099999966318,
+          "parseSeconds": 0.19691390000025422,
+          "clientTotalSeconds": 21.746282500000234,
+          "requestBytes": 647,
+          "wireBytes": 902069,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.603939900000114,
+            "simulation": 10.781002199999875,
+            "validationNestedInExport": 6.222853100000066,
+            "exportIncludingValidation": 8.025353600000017,
+            "gzip": 0.6498098000001846,
+            "responseTotal": 0.6565006000000722,
+            "responseSerialization": 3.990000004705507e-05,
+            "httpServerTotal": 21.528088600000046
+          },
+          "frames": true,
+          "index": 0,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 23.783511699999963,
+          "receiveBodySeconds": 0.0009108000003834604,
+          "inflateSeconds": 0.019843199999741046,
+          "parseSeconds": 0.18904410000004646,
+          "clientTotalSeconds": 23.993309800000134,
+          "requestBytes": 647,
+          "wireBytes": 902068,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.7112122999997155,
+            "simulation": 12.821192600000359,
+            "validationNestedInExport": 5.995125299999927,
+            "exportIncludingValidation": 7.936806499999875,
+            "gzip": 0.6462581999999202,
+            "responseTotal": 0.6535203999997066,
+            "responseSerialization": 4.979999994247919e-05,
+            "httpServerTotal": 23.759210699999585
+          },
+          "frames": true,
+          "index": 1,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 40.50628340000003,
+          "receiveBodySeconds": 0.0014000000001033186,
+          "inflateSeconds": 0.03174379999973098,
+          "parseSeconds": 0.24802260000024035,
+          "clientTotalSeconds": 40.787449800000104,
+          "requestBytes": 647,
+          "wireBytes": 902071,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.809407000000192,
+            "simulation": 19.871855000000323,
+            "validationNestedInExport": 13.647413700000016,
+            "exportIncludingValidation": 17.228578699999616,
+            "gzip": 1.0626060000004145,
+            "responseTotal": 1.0726033999999345,
+            "responseSerialization": 5.050000027040369e-05,
+            "httpServerTotal": 40.50594899999987
+          },
+          "frames": true,
+          "index": 2,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        }
+      ],
+      "preview": [
+        {
+          "status": 200,
+          "untilHeadersSeconds": 5.821262099999785,
+          "receiveBodySeconds": 0.0002328000000488828,
+          "inflateSeconds": 0.015000900000359252,
+          "parseSeconds": 0.11343019999958415,
+          "clientTotalSeconds": 5.949925999999778,
+          "requestBytes": 518,
+          "wireBytes": 683494,
+          "decodedBytes": 6332871,
+          "phasesSeconds": {
+            "responseSerialization": 0.5033648000003268,
+            "gzip": 0.33860029999959806,
+            "responseTotal": 0.8465180999996846,
+            "httpServerTotal": 5.8008537999999135
+          }
+        }
+      ],
+      "summary": [
+        {
+          "frames": false,
+          "n": 3,
+          "medianSeconds": 20.411015000000134,
+          "p95DescriptiveSeconds": 21.877927249999992,
+          "maxSeconds": 22.040917499999978
+        },
+        {
+          "frames": true,
+          "n": 3,
+          "medianSeconds": 23.993309800000134,
+          "p95DescriptiveSeconds": 39.1080358000001,
+          "maxSeconds": 40.787449800000104
+        }
+      ],
+      "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "scientificGate": false,
+      "stagingAcceptance": false,
+      "phaseNote": "validationNestedInExport está incluida en exportIncludingValidation; no sumar fases anidadas"
+    },
+    "comparisonAfter": {
+      "benchmarkVersion": "api-http-local-v1",
+      "platform": "Windows-11-10.0.22631-SP0",
+      "python": "3.12.14",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "samples": [
+        {
+          "status": 200,
+          "untilHeadersSeconds": 17.924697399999786,
+          "receiveBodySeconds": 0.0005794000003334077,
+          "inflateSeconds": 0.015292399999907502,
+          "parseSeconds": 0.1519269999998869,
+          "clientTotalSeconds": 18.092496199999914,
+          "requestBytes": 648,
+          "wireBytes": 878870,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.5686884000001555,
+            "simulation": 10.537815799999862,
+            "validationNestedInExport": 3.393537599999945,
+            "exportIncludingValidation": 4.962249700000029,
+            "gzip": 0.40799779999997554,
+            "responseTotal": 0.41487699999970573,
+            "responseSerialization": 4.360000002634479e-05,
+            "httpServerTotal": 17.9242134000001
+          },
+          "frames": false,
+          "index": 0,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 18.908723999999893,
+          "receiveBodySeconds": 0.0011405000000195287,
+          "inflateSeconds": 0.02276160000019445,
+          "parseSeconds": 0.15972139999985302,
+          "clientTotalSeconds": 19.09234749999996,
+          "requestBytes": 648,
+          "wireBytes": 878873,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.5278542999999445,
+            "simulation": 11.3071688,
+            "validationNestedInExport": 3.3806438000001435,
+            "exportIncludingValidation": 5.114207799999804,
+            "gzip": 0.42812080000021524,
+            "responseTotal": 0.43325599999980113,
+            "responseSerialization": 3.169999990859651e-05,
+            "httpServerTotal": 18.90836360000003
+          },
+          "frames": false,
+          "index": 1,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 18.294006199999785,
+          "receiveBodySeconds": 0.0005203000000619795,
+          "inflateSeconds": 0.01911019999988639,
+          "parseSeconds": 0.15128630000026533,
+          "clientTotalSeconds": 18.464923,
+          "requestBytes": 648,
+          "wireBytes": 878872,
+          "decodedBytes": 8580830,
+          "phasesSeconds": {
+            "graph": 1.6647087999999712,
+            "simulation": 10.779670899999928,
+            "validationNestedInExport": 3.303615400000126,
+            "exportIncludingValidation": 4.958717700000307,
+            "gzip": 0.41979829999991125,
+            "responseTotal": 0.4252056000000266,
+            "responseSerialization": 3.400000014153193e-05,
+            "httpServerTotal": 18.293477599999733
+          },
+          "frames": false,
+          "index": 2,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 18.63726160000033,
+          "receiveBodySeconds": 0.0005449999998745625,
+          "inflateSeconds": 0.021654900000157795,
+          "parseSeconds": 0.15680099999963204,
+          "clientTotalSeconds": 18.816262499999993,
+          "requestBytes": 647,
+          "wireBytes": 902070,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.6308782000000974,
+            "simulation": 10.646240899999611,
+            "validationNestedInExport": 3.6433716999999888,
+            "exportIncludingValidation": 5.232137299999977,
+            "gzip": 0.5986044999999649,
+            "responseTotal": 0.6037379999997938,
+            "responseSerialization": 3.789999982473091e-05,
+            "httpServerTotal": 18.636328299999604
+          },
+          "frames": true,
+          "index": 0,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 19.36757800000032,
+          "receiveBodySeconds": 0.0008966000000327767,
+          "inflateSeconds": 0.017437199999676523,
+          "parseSeconds": 0.16946240000015678,
+          "clientTotalSeconds": 19.555374200000188,
+          "requestBytes": 647,
+          "wireBytes": 902068,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.4759589999998752,
+            "simulation": 11.19285600000012,
+            "validationNestedInExport": 3.634907799999837,
+            "exportIncludingValidation": 5.61423300000024,
+            "gzip": 0.613736699999663,
+            "responseTotal": 0.6188836999999694,
+            "responseSerialization": 4.279999984646565e-05,
+            "httpServerTotal": 19.34332949999998
+          },
+          "frames": true,
+          "index": 1,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        },
+        {
+          "status": 200,
+          "untilHeadersSeconds": 19.67123700000002,
+          "receiveBodySeconds": 0.0004966999999851396,
+          "inflateSeconds": 0.017430999999760388,
+          "parseSeconds": 0.18266730000004827,
+          "clientTotalSeconds": 19.871831999999813,
+          "requestBytes": 647,
+          "wireBytes": 902068,
+          "decodedBytes": 9673406,
+          "phasesSeconds": {
+            "graph": 1.7819746999998642,
+            "simulation": 11.185500200000206,
+            "validationNestedInExport": 3.7129519999998593,
+            "exportIncludingValidation": 5.5610083999999915,
+            "gzip": 0.6456385999999839,
+            "responseTotal": 0.6548112000000401,
+            "responseSerialization": 4.599999965648749e-05,
+            "httpServerTotal": 19.670509499999753
+          },
+          "frames": true,
+          "index": 2,
+          "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97"
+        }
+      ],
+      "preview": [
+        {
+          "status": 200,
+          "untilHeadersSeconds": 3.2571858999999677,
+          "receiveBodySeconds": 0.0008496000000377535,
+          "inflateSeconds": 0.014215400000011869,
+          "parseSeconds": 0.10191299999996772,
+          "clientTotalSeconds": 3.374163899999985,
+          "requestBytes": 518,
+          "wireBytes": 683498,
+          "decodedBytes": 6332871,
+          "phasesSeconds": {
+            "responseSerialization": 0.4271674999999959,
+            "gzip": 0.3088290999999117,
+            "responseTotal": 0.7402885000001334,
+            "httpServerTotal": 3.2571192000000337
+          }
+        }
+      ],
+      "summary": [
+        {
+          "frames": false,
+          "n": 3,
+          "medianSeconds": 18.464923,
+          "p95DescriptiveSeconds": 19.029605049999965,
+          "maxSeconds": 19.09234749999996
+        },
+        {
+          "frames": true,
+          "n": 3,
+          "medianSeconds": 19.555374200000188,
+          "p95DescriptiveSeconds": 19.84018621999985,
+          "maxSeconds": 19.871831999999813
+        }
+      ],
+      "experimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "scientificGate": false,
+      "stagingAcceptance": false,
+      "phaseNote": "validationNestedInExport está incluida en exportIncludingValidation; no sumar fases anidadas"
+    },
+    "outputsBefore": {
+      "kind": "backend-outputs-local-v1",
+      "sourceExperimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "referenceConfigurationSHA256": "e49136e89a00eb907f17ffc179f4c46a317734ffb77ef0799562bd945e2a1a6a",
+      "samples": [
+        {
+          "index": 0,
+          "pdfHttpSeconds": 7.114507799999956,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 6.156428300000243,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        },
+        {
+          "index": 1,
+          "pdfHttpSeconds": 7.026442700000189,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 6.106143900000006,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        },
+        {
+          "index": 2,
+          "pdfHttpSeconds": 6.999731299999894,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 6.237975099999858,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        }
+      ],
+      "job": {
+        "requestedRepetitions": 30,
+        "executedRepetitions": 9,
+        "defaultRejection": {
+          "status": 422,
+          "seconds": 1.9765692999999374,
+          "reason": "El default supera MAX_EDGE_DAY_REPLICATES; no se amplía el límite."
+        },
+        "n": 1,
+        "createHttpSeconds": 1.9715040999999474,
+        "untilReadySecondsIncludingCreateAndPolling": 12.94929809999985,
+        "resultHttpSeconds": 5.937524099999791,
+        "states": [
+          "running",
+          "aggregating",
+          "completed"
+        ],
+        "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+      },
+      "stagingAcceptance": false,
+      "note": "PDF por HTTP incluye carga y parseo servidor; ZIP es función local, no endpoint. Jobs sin carga competidora propia; n=1 descriptivo, no prueba de concurrencia."
+    },
+    "outputsAfter": {
+      "kind": "backend-outputs-local-v1",
+      "sourceExperimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "referenceConfigurationSHA256": null,
+      "samples": [
+        {
+          "index": 0,
+          "pdfHttpSeconds": 5.314097800000127,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 4.390612800000326,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        },
+        {
+          "index": 1,
+          "pdfHttpSeconds": 4.803755999999794,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 4.320050100000117,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        },
+        {
+          "index": 2,
+          "pdfHttpSeconds": 4.936425599999893,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 4.359443400000146,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        }
+      ],
+      "job": {
+        "requestedRepetitions": 30,
+        "executedRepetitions": 9,
+        "defaultRejection": {
+          "status": 422,
+          "seconds": 2.1316289000001234,
+          "reason": "El default supera MAX_EDGE_DAY_REPLICATES; no se amplía el límite."
+        },
+        "n": 1,
+        "createHttpSeconds": 2.067667000000256,
+        "untilReadySecondsIncludingCreateAndPolling": 11.931804600000305,
+        "resultHttpSeconds": 3.9935927000001357,
+        "states": [
+          "running",
+          "aggregating",
+          "completed"
+        ],
+        "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+      },
+      "stagingAcceptance": false,
+      "note": "PDF por HTTP incluye carga y parseo servidor; ZIP es función local, no endpoint. Jobs sin carga competidora propia; n=1 descriptivo, no prueba de concurrencia."
+    },
+    "loadBefore": {
+      "kind": "backend-outputs-local-v1",
+      "sourceExperimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "referenceConfigurationSHA256": "e49136e89a00eb907f17ffc179f4c46a317734ffb77ef0799562bd945e2a1a6a",
+      "samples": [
+        {
+          "index": 0,
+          "pdfHttpSeconds": 13.180479399999967,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 11.696905100000095,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        }
+      ],
+      "job": {
+        "requestedRepetitions": 30,
+        "executedRepetitions": 9,
+        "defaultRejection": {
+          "status": 422,
+          "seconds": 4.201298500000121,
+          "reason": "El default supera MAX_EDGE_DAY_REPLICATES; no se amplía el límite."
+        },
+        "n": 1,
+        "createHttpSeconds": 4.1777995999996165,
+        "untilReadySecondsIncludingCreateAndPolling": 24.10739169999988,
+        "resultHttpSeconds": 10.978659099999732,
+        "states": [
+          "running",
+          "aggregating",
+          "completed"
+        ],
+        "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+      },
+      "loadProbe": {
+        "n": 1,
+        "submittedJobs": 3,
+        "configuredWorkers": 2,
+        "repetitionsEach": 9,
+        "healthHttpSeconds": [
+          0.0022864999996272672,
+          0.0022516000003633962,
+          0.0024828999999044754,
+          0.015241099999911967,
+          0.0021334000002752873,
+          0.009317000000010012,
+          0.004835799999909796,
+          0.0021467999999913445,
+          0.0029182999996919534,
+          0.0028531999996630475,
+          0.016632400000162306,
+          0.002309500000137632,
+          0.002690000000256987,
+          0.022133800000119663,
+          0.002214099999946484,
+          0.0066388000000188185,
+          0.013087399999676563,
+          0.0023051999996823724,
+          0.002553400000124384,
+          0.0020985000001019216,
+          0.019602500000019063,
+          0.002869899999950576,
+          0.00288700000010067,
+          0.014644200000020646,
+          0.002960499999971944,
+          0.0030706000002282963,
+          0.00423529999989114,
+          0.0017324999998891144,
+          0.01622479999969073,
+          0.003352100000029168,
+          0.10857300000043324,
+          0.12067960000013045,
+          0.1402296999999635,
+          0.07751830000006521,
+          0.17165059999979349,
+          0.0616743000000497,
+          0.07996249999996508,
+          0.18450720000009824,
+          0.20182179999983418,
+          0.077745899999627,
+          0.20080649999999878,
+          0.20503159999998388,
+          0.2324562999997397,
+          0.10757239999975354,
+          0.10759339999958684,
+          0.38365280000016355,
+          0.4954827999999907,
+          0.01553379999995741,
+          0.29866219999985333,
+          0.06249649999972462,
+          0.3898208999999042,
+          0.4195224000000053,
+          0.15258459999995466,
+          0.17137469999988753,
+          0.12407150000035472,
+          0.07679680000001099,
+          0.1851212999999916,
+          0.12389170000005834,
+          0.13965969999981098,
+          0.257988800000021,
+          0.13928679999980886,
+          0.00225319999981366,
+          0.012086899999758316,
+          0.0032075999997687177,
+          0.02710910000041622,
+          0.027087899999969522,
+          0.02182249999987107,
+          0.02887979999968593,
+          0.014039799999864044,
+          0.00337939999963055,
+          0.020460800000364543,
+          0.01575989999992089,
+          0.03972359999988839,
+          0.017216199999893433,
+          0.18595260000029157,
+          0.3127473999998074,
+          0.16914420000011887,
+          0.13785619999998744,
+          0.12546840000004522,
+          0.14106169999968188,
+          0.18849749999981213,
+          0.1725624999999127,
+          0.200531299999966,
+          0.1550161999998636,
+          0.09311419999994541,
+          0.15844819999983883,
+          0.27167759999974805
+        ],
+        "maxHealthHttpSeconds": 0.4954827999999907,
+        "outcomes": [
+          {
+            "states": [
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 31.6344323000003,
+            "resultHttpSeconds": 6.399679900000137,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          },
+          {
+            "states": [
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 41.01702840000007,
+            "resultHttpSeconds": 9.164795200000299,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          },
+          {
+            "states": [
+              "pending",
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 50.88669160000018,
+            "resultHttpSeconds": 10.812520500000119,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          }
+        ],
+        "note": "Una tanda local, no certifica capacidad multiusuario ni AWS. Lecturas de resultados medidas después de completar los tres trabajos."
+      },
+      "stagingAcceptance": false,
+      "note": "PDF por HTTP incluye carga y parseo servidor; ZIP es función local, no endpoint. Jobs sin carga competidora propia; n=1 descriptivo, no prueba de concurrencia."
+    },
+    "loadAfter": {
+      "kind": "backend-outputs-local-v1",
+      "sourceExperimentHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "configuration": {
+        "intervention": {
+          "interventionDay": 0,
+          "vaccineEfficacy": 1,
+          "vaccines": 100
+        },
+        "network": {
+          "dayZero": "monday",
+          "generatorVersion": "synthetic-manta-v1",
+          "weights": {
+            "bus": 0.45,
+            "household": 1,
+            "market": 0.5,
+            "neighborhood": 0.2,
+            "school": 0.6
+          }
+        },
+        "networkMode": "fixed",
+        "policies": [
+          "none",
+          "random",
+          "targeted"
+        ],
+        "repetitions": 30,
+        "rootSeed": 20261026,
+        "scenario": {
+          "beta": 0.08,
+          "days": 90,
+          "gamma": 0.142857,
+          "initialInfectious": 1,
+          "origin": {
+            "kind": "random",
+            "value": null
+          },
+          "populationSize": 1000,
+          "sigma": 0.333333
+        }
+      },
+      "referenceConfigurationSHA256": null,
+      "samples": [
+        {
+          "index": 0,
+          "pdfHttpSeconds": 5.464516299999559,
+          "pdfBytes": 8275,
+          "pdfSHA256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038",
+          "zipLocalSeconds": 4.514550199999576,
+          "zipBytes": 767647,
+          "zipSHA256": "f81d6b46c884bcd3cafe3ef33129e0a550d6a181a4e600c1ad51e7e48ded8ebe"
+        }
+      ],
+      "job": {
+        "requestedRepetitions": 30,
+        "executedRepetitions": 9,
+        "defaultRejection": {
+          "status": 422,
+          "seconds": 2.098919100000785,
+          "reason": "El default supera MAX_EDGE_DAY_REPLICATES; no se amplía el límite."
+        },
+        "n": 1,
+        "createHttpSeconds": 2.0089239999997517,
+        "untilReadySecondsIncludingCreateAndPolling": 11.52892189999966,
+        "resultHttpSeconds": 4.1937505999994755,
+        "states": [
+          "running",
+          "aggregating",
+          "completed"
+        ],
+        "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+      },
+      "loadProbe": {
+        "n": 1,
+        "submittedJobs": 3,
+        "configuredWorkers": 2,
+        "repetitionsEach": 9,
+        "healthHttpSeconds": [
+          0.001656399999774294,
+          0.02316400000017893,
+          0.002174199999899429,
+          0.00289009999960399,
+          0.004208199999993667,
+          0.021433699999761302,
+          0.016945399999713118,
+          0.0017296999994869111,
+          0.009995899999921676,
+          0.022873099999742408,
+          0.00335940000059054,
+          0.0017505999994682497,
+          0.002342700000554032,
+          0.003608499999245396,
+          0.001710800000182644,
+          0.002662900000359514,
+          0.0016386000006605173,
+          0.0019690999997692415,
+          0.0030133999998724903,
+          0.006294099999649916,
+          0.002189699999689765,
+          0.02575909999995929,
+          0.0390386999997645,
+          0.21810649999952147,
+          0.2670092999996996,
+          0.1697797000006176,
+          0.2167724000000817,
+          0.18559820000064065,
+          0.5284289999999601,
+          0.523844199999985,
+          0.1535665000001245,
+          0.524021599999287,
+          0.17181930000060675,
+          0.11920720000034635,
+          0.3115396999992299,
+          0.0015698999995947815,
+          0.0017793999995774357,
+          0.003781399999752466,
+          0.0015425000001414446,
+          0.0016633000004731002,
+          0.0013992000003781868,
+          0.02598070000021835,
+          0.013382699999965553,
+          0.013578099999904225,
+          0.012440500000593602,
+          0.017475399999966612,
+          0.0016826000000946806,
+          0.012477400000534544,
+          0.001401100000293809,
+          0.1878567000003386,
+          0.16149570000015956,
+          0.20103300000027957,
+          0.15551649999997608,
+          0.10807120000026771,
+          0.15342340000006516,
+          0.1588285999996515,
+          0.14967989999968268
+        ],
+        "maxHealthHttpSeconds": 0.5284289999999601,
+        "outcomes": [
+          {
+            "states": [
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 21.622953799999777,
+            "resultHttpSeconds": 4.089794800000163,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          },
+          {
+            "states": [
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 25.518725500000073,
+            "resultHttpSeconds": 3.959353899999769,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          },
+          {
+            "states": [
+              "pending",
+              "running",
+              "aggregating",
+              "completed"
+            ],
+            "readySecondsSinceFirstCreate": 33.40726600000016,
+            "resultHttpSeconds": 3.970798100000138,
+            "experimentHash": "sha256:b03aae5c14923c4455cdd3cdb43519ce182412eadffecbdb530433a73245529d"
+          }
+        ],
+        "note": "Una tanda local, no certifica capacidad multiusuario ni AWS. Lecturas de resultados medidas después de completar los tres trabajos."
+      },
+      "stagingAcceptance": false,
+      "note": "PDF por HTTP incluye carga y parseo servidor; ZIP es función local, no endpoint. Jobs sin carga competidora propia; n=1 descriptivo, no prueba de concurrencia."
+    }
+  },
+  "fullDocumentEqualityExceptRequestIdGeneratedAt": true,
+  "reproductionHash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+  "backendTests": 510,
+  "stagingAcceptance": false,
+  "integrationClient": "PASSED: comparación manual, sin vacunas, sin transmisión, adaptativa, jobs/cancelación/idempotencia/token/parcial",
+  "implementationCommit": "f490daf9e53502574f398881cfbac01ba77339f1"
+}

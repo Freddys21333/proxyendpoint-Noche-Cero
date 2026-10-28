@@ -16,13 +16,13 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-28
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: **merge de `feat/pro`** (P-07 UI, P-08 HTML/CLI, SEO y costos) sobre el estado con T-22 APROBADO; 15 experimentos, 450 pares y 17 reproducciones ([post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md)).
+Rama de trabajo: `feat/backend-contratos`. Último incremento: rendimiento de validación y salidas backend verificado localmente ([evidencia](docs/evidencia/rendimiento-backend-2026-10-28.md)); conserva el merge de `feat/pro`, T-22 APROBADO, P-05/P-06 y P-08.
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **487 pruebas backend**, Ruff, format, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **510 pruebas backend**, Ruff, format, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
 | Frontend base | **147 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción temporal, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa, panel P-06 e informe PDF/HTML. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
-| Rendimiento | Motor `N=1000/T=90/R=30` en Windows: **13,80 s**, control anterior 13,60 s, mismos resultados. Referencia Linux histórica 44,3 s. Carga JSON grande optimizada a ~6 s. [Evidencia](docs/evidencia/rendimiento-validacion-2026-10-27.md). | No acredita p95, tiempo HTTP total ni AWS. Rendimiento HTTP consistente ≤25 s sigue pendiente. |
+| Rendimiento | Comparación HTTP N1000/T90/R30: medianas **18,46 s sin frames / 19,56 s con frames**, máximo 19,87 s en 6 muestras. PDF 4,94 s; ZIP local 4,36 s. [Evidencia](docs/evidencia/rendimiento-backend-2026-10-28.md). | Certificación de staging/AWS y carga representativa general pendientes; n=3 por modo no certifica p95. Jobs default R30 excede el límite local de trabajo; se midió R9. |
 | T-22 | **Componente científico APROBADO**: 15/15 experimentos, 450 pares (150 primarios), controles 5/5 y 17 reproducciones. [Evidencia](docs/evidencia/t22-v1-ejecucion.md). | T-23/semilla externa, aceptación humana y entrega integral permanecen pendientes. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
 | P-02 | Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. | Aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles. |
@@ -236,3 +236,5 @@ Actualización posterior de API (2026-10-27): en ese incremento, **478 pruebas b
 Actualización T-22 (2026-10-27): componente científico **APROBADO**, medias none/random/targeted 713,6067 / 575,1067 / 359,2067. Protocolo v1 intacto; más I finales con targeted al día 90 y contraste de mercado redundante son límites explícitos. [Informe y auditoría](docs/evidencia/t22-v1-ejecucion.md).
 
 Actualización merge `feat/pro` (2026-10-28): se integraron P-07 UI (retroceso de día, atajos, movimiento reducido), P-08 HTML/CLI, SEO/`index.html`, `docs/costos.md` y sus evidencias, conservando el estado verificado de `feat/backend-contratos` (T-22 aprobado, P-05/P-06 cerradas, P-08 PDF backend). Resolución: docs y specs del lado ya verificado; código fusionado funcionalmente; se descartaron módulos duplicados de `feat/pro` (`pro/adaptive-decisions`, `pro/jobs-errors`, `pro/fixtures/jobs`) porque el lado verificado ya cubre esa lógica. Verificación tras el merge: **487 pruebas backend**, **147 pruebas frontend**, Ruff/format/mypy, typecheck y build correctos; `p05_import_dengue.py verify` y `p06_calibrate.py verify` en `passed`.
+
+Actualización de rendimiento backend (2026-10-28): 510 pruebas, Ruff/formato/mypy e integración real del cliente correctos. Comprobadores de registros válidos con respaldo Draft; sin cambio de motor/hashes/límites ni protocolo T-22. Se observaron seis comparaciones <25 s, pero staging/p95 y aceptación integral siguen abiertos. Tres jobs R9 sobre dos workers finalizaron con el mismo hash; health máximo 0,53 s. La API :8000 no se reinició. [Evidencia](docs/evidencia/rendimiento-backend-2026-10-28.md).
