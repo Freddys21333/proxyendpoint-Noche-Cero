@@ -10,7 +10,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 |---|---|---|
 | Intervenciones combinadas, costos y presupuesto | PRD §4.2 PRO-1/2; TRD §6.3 | Incremento educativo funcional: vacunas, cierre de una capa y brigadas, saldo diario y exportación. No equivale a completar todo PRO-2. Véase [semántica vigente](../docs/intervenciones-combinadas.md). |
 | Recursos que llegan por días | PRO-2; TRD §6.3 | **Verificado localmente**: P-01 incorpora calendario opcional de reposición, acumulación, capacidad diaria y registro/exportación de inventario. [Contrato](p01-resource-schedule.md). |
-| Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **Backend verificado localmente**: variante adaptativa versionada con cierres por umbral, pausa de brigadas y prioridad de anillo; registros/exportación y cliente compatibles. Pendiente editor e historial visual frontend. [Contrato P-02](p02-adaptive-policy.md). |
+| Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **Backend, editor e historial verificados localmente**: variante versionada con cierres por umbral, pausa de brigadas, prioridad de anillo y decisiones reales del backend visibles por réplica. Aceptación UI focalizada; aceptación integral de escenarios sigue pendiente. [Contrato P-02](p02-adaptive-policy.md), [evidencia UI](../docs/evidencia/p02-ui-2026-10-28.md). |
 | Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **P-03 backend verificado localmente**: trabajos 2..100 con cola limitada, progreso, cancelación, capacidades e idempotencia. La comparación síncrona conserva 2..30. Distributed Map y miles en AWS siguen pendientes P-04. |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
 | Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
@@ -39,12 +39,13 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-02 — Política adaptativa observable (PRO-3)
 
-- [x] Estado: **backend verificado localmente; interfaz específica pendiente**. Dependencia: P-01 y decisiones de modelo compatibles.
+- [x] Estado: **backend, editor e historial verificados localmente**. Dependencia: P-01 y decisiones de modelo compatibles. La aceptación focalizada de UI se ejecutó con API real; no cierra la aceptación integral T-13..T-16.
 - Formalizar reglas para reasignar dosis, brigadas y cierres según S/E/I/R observados, nuevos casos, contactos activos y saldo. Especificar frecuencia, umbrales y desempates; la primera versión puede ser una heurística voraz explicable.
 - Mantener las estrategias actuales identificadas. Si la nueva regla cambia su significado, añadir nombre/versionado, no sustituir silenciosamente `targeted`. Comparar sin intervención, azar con recursos equivalentes y política propuesta; aclarar cuándo una regla observa estados completos como supuesto educativo.
 - Exportar entradas observadas, acción, motivo, puntuación, recursos/costo y acciones omitidas por límites. No leer eventos futuros, futuros uniformes ni resultados de otras políticas.
 - Aceptación: brote ascendente/descendente, saldo agotado, ausencia de elegibles, cambios de prioridad, reglas estables y límites. Verificar independencia del orden de políticas y semillas por dominio. Recalcular solo brigadas diariamente no cierra esta tarea.
 - **Verificado 2026-10-27:** contrato de registros y anillo, conservación, exportación/reproducción, independencia de orden y cliente HTTP. Alcance exacto y límites en [P-02](p02-adaptive-policy.md); resultados y pendientes P-03 en [evidencia](../docs/evidencia/p02-adaptive.md).
+- **UI verificada 2026-10-28:** editor de umbrales/anillo e historial por réplica con resultado real; [evidencia de aceptación](../docs/evidencia/p02-ui-2026-10-28.md).
 
 ### P-03 — Contratos y ejecución local de trabajos Monte Carlo (PRO-4)
 

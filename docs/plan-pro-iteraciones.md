@@ -33,7 +33,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. |
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
-| P-02 | Backend verificado localmente: `adaptive-v1`, reglas, anillo, motivos, exportación y reproducción. Falta UI. |
+| P-02 | Backend, editor e historial verificados localmente con API real; aceptación integral de escenarios y aceptación humana T-13..T-16 pendientes. |
 | P-03 | Backend y cliente verificados localmente: `/v1/jobs`, cola, progreso, cancelación, idempotencia y resultado reproducible. Falta pantalla. |
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
 | P-05/P-06 | No iniciados: no hay dataset real importado ni calibración. |
@@ -102,7 +102,7 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** las brigadas ya se recalculan, pero vacunas y cierres siguen calendarios fijos. No hay una política adaptativa explícita, versionada ni observable.
 
-**Estado 2026-10-27:** backend y contrato cliente verificados localmente (`adaptive-v1`, decisiones, motivos, exportación y reproducción). Falta editor/historial visual y aceptación UI; I-02 sigue abierta.
+**Estado 2026-10-28:** backend, contrato cliente, editor y tabla de historial verificados localmente (`adaptive-policy-v1`, decisiones, motivos, exportación y reproducción). La aceptación UI focalizada con API real pasó; quedan aceptación integral con escenarios ascendentes/descendentes y gates humanos de T-13..T-16. Evidencia: [P-02 UI](evidencia/p02-ui-2026-10-28.md). I-02 queda funcionalmente implementada con esos criterios de aceptación residuales visibles.
 
 **Alcance:**
 
@@ -314,7 +314,7 @@ Reglas heredadas que no se pueden romper:
 |---|---|---|---|
 | I-00 | Completada | `git log --grep=I-00` | `docs/evidencia/auditoria-pro-2026-10-27.md` |
 | I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
-| I-02 | Parcial: backend/cliente verificados; UI pendiente | `5861407` / `ac2ded7` | `docs/evidencia/p02-adaptive.md` |
+| I-02 | Implementación local: backend, cliente, editor e historial; quedan aceptación integral de escenarios y humana | `5861407` / `ac2ded7` | `docs/evidencia/p02-adaptive.md`, `docs/evidencia/p02-ui-2026-10-28.md` |
 | I-03 | Pendiente | — | — |
 | I-04 | Parcial: backend/cliente verificados; UI y P-04 pendientes | `5861407` / `ac2ded7` | `docs/evidencia/p03-jobs-local.md` |
 | I-05 | Pendiente | — | — |

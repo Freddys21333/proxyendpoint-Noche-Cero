@@ -29,6 +29,36 @@ export function CombinedInterventions({ value, onChange, days, population }: {
       <details open><summary>Brigadas simuladas</summary><p>Reducen temporalmente la transmisión de contactos de personas susceptibles atendidas. No curan ni inmunizan.</p>
         <div className="configuration-fields">{number('Costo por persona y día (USD)', 'brigadeCostCents', 10000, true)}{number('Personas atendidas por día', 'brigadeDailyCapacity', population)}{number('Reducción de transmisión (%)', 'brigadeReduction', 100, false, true)}{number('Inicio de brigadas', 'brigadeStart', days)}{number('Días de brigadas (0 desactiva)', 'brigadeDays', days)}</div>
       </details>
+      <details className="adaptive-strategy-editor">
+        <summary>Política adaptativa dirigida</summary>
+        <label className="combined-toggle"><input type="checkbox" checked={Boolean(value.adaptiveStrategy)} onChange={event => {
+          const next = { ...value }
+          if (event.target.checked) next.adaptiveStrategy = {
+            modelVersion: 'adaptive-policy-v1', closureInfectionThreshold: 0.05,
+            reopenInfectionThreshold: 0.02, ringVaccinationPriority: true, enabled: true,
+          }
+          else delete next.adaptiveStrategy
+          onChange(next)
+        }} />Habilitar la variante adaptativa para la estrategia Dirigida</label>
+        {value.adaptiveStrategy && <>
+          <p className="educational-assumption">Versión adaptive-policy-v1. Observa la fracción infecciosa del día y los recursos disponibles; no predice el futuro ni representa diagnóstico real.</p>
+          <label className="combined-toggle"><input type="checkbox" checked={value.adaptiveStrategy.enabled !== false} onChange={event => onChange({
+            ...value, adaptiveStrategy: { ...value.adaptiveStrategy!, enabled: event.target.checked },
+          })} />Aplicar decisiones adaptativas</label>
+          <div className="configuration-fields">
+            <label className="field"><span>Umbral de cierre (% de población infecciosa)</span><input type="number" min={0} max={100} step={0.1}
+              value={value.adaptiveStrategy.closureInfectionThreshold * 100}
+              onChange={event => onChange({ ...value, adaptiveStrategy: { ...value.adaptiveStrategy!, closureInfectionThreshold: event.target.value === '' ? Number.NaN : Number(event.target.value) / 100 } })} /></label>
+            <label className="field"><span>Umbral de reapertura (%)</span><input type="number" min={0} max={100} step={0.1}
+              value={value.adaptiveStrategy.reopenInfectionThreshold * 100}
+              onChange={event => onChange({ ...value, adaptiveStrategy: { ...value.adaptiveStrategy!, reopenInfectionThreshold: event.target.value === '' ? Number.NaN : Number(event.target.value) / 100 } })} /></label>
+          </div>
+          <label className="combined-toggle"><input type="checkbox" checked={value.adaptiveStrategy.ringVaccinationPriority} onChange={event => onChange({
+            ...value, adaptiveStrategy: { ...value.adaptiveStrategy!, ringVaccinationPriority: event.target.checked },
+          })} />Priorizar susceptibles con contactos infecciosos (anillo)</label>
+          <p>Reapertura debe ser igual o inferior al umbral de cierre. La política aleatoria conserva su calendario fijo para que el resultado identifique claramente la variante evaluada.</p>
+        </>}
+      </details>
       <p>Orden diario: dosis, cierre y brigadas. Cada acción se aplica solo si alcanza el saldo. Aleatoria y Dirigida comparten el mismo presupuesto; sus decisiones pueden producir gastos distintos.</p>
     </>}
   </section>
