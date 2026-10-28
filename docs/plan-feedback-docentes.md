@@ -1,10 +1,12 @@
 # Plan de mejoras a partir del feedback docente
 
-Fecha de revisión: 28 de octubre de 2026. Fuente: `zoom-feedback.docx`, facilitado por el equipo. Base de código inspeccionada: rama `front`, commit `32b78ff`; `origin/main` estaba en `a2d52bc`. Referencia adicional de infraestructura: `origin/feat/aws-infra`, commit `d8f18d1`.
+Fecha de revisión: 28 de octubre de 2026. Fuente: `zoom-feedback.docx`, facilitado por el equipo. Base local inspeccionada: rama `front`, commit de aplicación `32b78ff`. Al actualizar referencias antes de publicar se detectó `origin/main` en `4e9d3d2` y `origin/feat/aws-infra` en `6470988`; el plan incorpora esas novedades sin mezclarlas en el checkout.
 
 El objetivo es cerrar las observaciones de los docentes aprovechando lo que ya existe, sin sustituir el motor, perder reproducibilidad ni rehacer la interfaz. Este documento es un plan: su publicación no ejecuta las tareas, instala dependencias ni autoriza desplegar recursos. La revisión fue documental y de código; no se ejecutaron suites, pruebas humanas ni consultas a AWS en este turno.
 
 **Primero: estabilizar el entorno y las descargas; después: aceptar la comparación y el recorrido completo. En paralelo, revisar la infraestructura ya construida y los entregables.** La aplicación tiene muchas funciones implementadas; el principal trabajo pendiente es demostrar que funcionan juntas en la versión que se entregará y que una persona externa las entiende.
+
+**Hay dos estados que reconciliar antes del siguiente cambio de código:** `front` contiene el pulido UX y `main` ya integró infraestructura y trabajos P-04, probados localmente pero no desplegados. No se debe describir todo el repositorio como si careciera de IaC/P-04 ni asumir que la página local ya utiliza esos cambios.
 
 ## 1. Cómo interpretar el estado
 
@@ -30,10 +32,10 @@ Las referencias P corresponden a los párrafos del cuerpo del DOCX, en orden de 
 | Cristy: explicar qué estrategias se comparan (P46–55). | Explicaciones antes de ejecutar y selector de estrategia visualizada diferenciados. | Verificar que el usuario entiende comparar las tres frente a reproducir una. |
 | Cristy: decir cuál conviene y por qué (P56–60). | `recommendation` del backend, confianza, motivos, límites y objetivo visible. | Aceptar ventaja, empate, pérdida y pocas repeticiones; no fijar Dirigida como ganadora. |
 | Reporte comprensible para decidir (P57–60). | PDF, HTML, impresión, JSON y ZIP/CSV tienen implementación y accesos visibles. | **Bloqueo operativo:** PDF y apertura de todos los formatos no tienen aceptación integral del entorno actual. |
-| Más datos: sugerencia de pasar de veinte a unos trescientos (P45). | Comparación síncrona limitada a 2–30 repeticiones; jobs locales con otros límites publicados. | Aclarar qué se cuenta; definir un experimento de precisión/costo antes de ampliar capacidad. |
+| Más datos: sugerencia de pasar de veinte a unos trescientos (P45). | Síncrona 2–30; jobs locales 2–100; P-04 de `main` admite 2–1000 en código, apagado por defecto y sin despliegue. | Aclarar qué se cuenta; planificar precisión/costo y aceptar la ruta existente antes de usarla. |
 | Moderación: UX y usabilidad (P118–119). | Parámetros, flujo, mapa, reproducción y textos han recibido cambios. `32b78ff` agrupa reproducción y mejora movimiento/intervenciones. | Prueba integral, accesibilidad y evaluación humana; no darlo por aceptado solo por tener CSS. |
 | Isabelita: revisar arquitectura y calidad (P110–115). | Separación frontend/backend, contratos y documentación existentes. | Alinear diagrama, código, límites y evidencias de la versión final. |
-| Cristy/equipo: AWS público, README, costos y arquitectura (P44–45, P78–79). | En `front`, `infra/` solo contiene `.gitkeep`. Otra rama contiene IaC y evidencia de staging, **posteriormente retirado por petición del usuario**. | Revisar e integrar selectivamente ese trabajo; publicar de nuevo solo con autorización y aceptación actuales. |
+| Cristy/equipo: AWS público, README, costos y arquitectura (P44–45, P78–79). | `front` conserva `infra/.gitkeep`; `main` ya integró Terraform y P-04. El staging base fue **retirado por petición del usuario**; P-04 no está desplegado. | Reconciliar ramas y revisar/publicar el trabajo existente con autorización y aceptación actuales. |
 | Moderación: CMI, CMMI y riesgos (P123–131). | Hay impacto, recursos, decisiones, registros y límites del modelo. | Organizar esos elementos y registrar riesgos; no construir una pantalla o certificación CMMI. |
 | Moderación: todos deben conocer el producto y coordinar el pitch (P1–12, P29). | No hay evidencia en esta revisión que permita acreditar preparación de los integrantes. | Ensayo conjunto, reparto, preguntas técnicas y demo reproducible. |
 
@@ -45,6 +47,7 @@ Las referencias P corresponden a los párrafos del cuerpo del DOCX, en orden de 
 - [P-06](evidencia/p06-dengue-manabi-2026-10-27.md): resultado fuera de muestra desfavorable. Mantener `fitted-not-validated`; no presentarlo como predictor validado.
 - [Rendimiento backend](evidencia/rendimiento-backend-2026-10-28.md): mediciones locales y 510 pruebas registradas entonces. La comparación reciente registró 152 pruebas frontend. Son antecedentes, no pruebas ejecutadas para publicar este plan.
 - Infraestructura: en `origin/feat/aws-infra`, leer `docs/evidencia/aws-base-2026-10-28.md` y `infra/CICLO-DESPLIEGUE.md`. Hay evidencia histórica de publicación y retirada de 44 recursos de aplicación, conservando bootstrap/estado y Budget. No se comprobaron esos recursos en vivo en esta revisión ni se deben reutilizar las URLs como activas.
+- [P-04 integrado en main](https://github.com/Freddys21333/proxyendpoint-zombie-management/blob/4e9d3d2/docs/evidencia/p04-implementacion-local-2026-10-28.md): repositorio DynamoDB/S3, Standard Distributed Map, workers, agregación, cancelación y recuperación. Registra 519 pruebas backend, 152 frontend y prueba local controlada de 1000 repeticiones; no ejecución desplegada. El plan Terraform de 83 altas no fue aplicado. [Contrato P-04](https://github.com/Freddys21333/proxyendpoint-zombie-management/blob/4e9d3d2/specs/p04-aws-jobs.md) y [operación](https://github.com/Freddys21333/proxyendpoint-zombie-management/blob/4e9d3d2/infra/P04-OPERACION.md) deben leerse al preparar la integración.
 
 ## 3. Secuencia de implementación
 
@@ -69,6 +72,7 @@ No es necesario terminar todas las extensiones para cerrar las observaciones pri
 **Responsable sugerido:** integración, con frontend y backend.
 
 1. Registrar rama, commit, estado de trabajo, versiones e intérpretes; conservar cualquier cambio ajeno. La referencia de este documento incluye el pulido `32b78ff`, que al iniciar la revisión aún no estaba en `origin/main`.
+   Comparar también `front` con `origin/main@4e9d3d2`: infraestructura/P-04 ya están integrados allí. Acordar un candidato unificado antes de modificar dependencias o contratos; no hacer el merge como efecto secundario de elaborar este plan.
 2. Relacionar cada observación y requisito con código, prueba, evidencia y pendiente. Actualizar estados de T-13..T-16 y T-23 sin marcarlos completos por tener implementación.
 3. Capturar una comparación pequeña real y sus exportaciones como referencia de revisión, fuera de fixtures científicas congeladas. Para la demostración principal conservar también el escenario que el equipo quiera defender.
 4. Ejecutar los checks del apartado 6; separar fallos previos de regresiones del cambio. No actualizar hashes ni expectativas para esconder diferencias.
@@ -81,7 +85,7 @@ No es necesario terminar todas las extensiones para cerrar las observaciones pri
 
 **Problema observado:** la API anterior respondió «Ruta no encontrada» al PDF. Tras revisar el arranque, `backend/.venv` carecía de `reportlab`; el runtime general tenía esa biblioteca pero carecía de `jsonschema`. La existencia del endpoint en el código no resuelve un proceso antiguo o un entorno incompleto.
 
-- Crear o sincronizar un entorno del proyecto con Python 3.12 y el lockfile existente; comprobar todas las dependencias juntas. No instalar paquetes en el runtime administrado de Codex ni degradar versiones para hacer desaparecer el error.
+- Crear o sincronizar un entorno del proyecto con Python 3.12 y el lockfile del candidato acordado; comprobar todas las dependencias juntas, incluidas las nuevas de P-04 si se integra `main`. No instalar paquetes en el runtime administrado de Codex ni degradar versiones para hacer desaparecer el error.
 - Confirmar qué intérprete inicia la API y detener/reiniciar únicamente el proceso local identificado, conservando parámetros y archivos. No mezclar manifiestos producidos con versiones incompatibles.
 - Probar `/v1/health`, preview, comparación y `/v1/reports/mayor` con el código candidato. Revisar las correcciones de compresión y límites de la rama AWS antes de portar soluciones duplicadas.
 - Desde comparación y Exportar, descargar PDF, HTML, JSON y ZIP. Abrir PDF y HTML, revisar todas las páginas del PDF y comprobar texto/tablas, firma y tipo de archivo. Abrir ZIP, verificar CRC y CSV. Reproducir el JSON en proceso nuevo con las versiones de su manifiesto.
@@ -189,19 +193,19 @@ Registrar dudas, acciones equivocadas, ayudas necesarias y tiempo humano. Correg
 
 1. Acordar si se quiere ampliar población, repeticiones del mismo escenario o cantidad de escenarios/redes independientes. La transcripción no lo resuelve.
 2. Escribir la pregunta, inputs, límites, precisión a evaluar y presupuesto antes de observar resultados. Para incertidumbre de estrategias, no tratar muchas repeticiones de una red como muchas redes independientes.
-3. Respetar límites publicados: la ruta síncrona actual admite 2–30; jobs locales admiten hasta 100 sujetos a capacidad. Confirmar límites efectivos en `/v1/config`. R=300 no se habilita cambiando solo el máximo de un campo.
-4. Si hace falta R=300, diseñar y aprobar una ruta por lotes con controles de carga, fallos, reintento, cancelación y agregado íntegro; si se necesita AWS durable, depende de P-04.
+3. Respetar límites por modalidad: síncrona 2–30; P-03 local 2–100; P-04 de `main` 2–1000, condicionado a 50 millones de arista-día-réplica y habilitación del servicio. Confirmar límites efectivos en `/v1/config`. R=300 ya es representable en la ruta AWS implementada, pero no está disponible operativamente mientras P-04 permanezca apagado y sin despliegue.
+4. Si hace falta R=300, reutilizar P-04 y cerrar su aceptación de carga, fallos, reintento, cancelación y agregado íntegro. El protocolo documentado comienza con 100 repeticiones AWS autorizadas y, después de revisar duración/errores/costos, 1000 con autorización separada; no ejecutar esos lotes por esta planificación ni sustituirlos por una promesa de precisión.
 5. Medir tiempo y variación con inputs fijados, informar pérdidas y límites. Más repeticiones reducen ruido Monte Carlo, no convierten una red sintética en una predicción real.
 
 **Aceptación:** decisión de escala defendible con evidencia y costo; el número 300 no se impone como requisito confirmado ni como nuevo default de la demo.
 
-### F4.1 Reconciliar la arquitectura y la rama de infraestructura
+### F4.1 Reconciliar front con main y la infraestructura existente
 
 **Responsable sugerido:** infraestructura/integración, con frontend/backend en las intersecciones.
 
-- Revisar `origin/feat/aws-infra` antes de construir IaC nueva. Contiene Terraform, empaquetado, publicación y retirada, evidencia y ajustes de API/compresión/perfil. No mezclarla a ciegas: también modifica `App.tsx`, informes y contratos.
+- Revisar el merge `origin/main@4e9d3d2` y su origen `origin/feat/aws-infra@6470988` antes de construir IaC nueva. Incluyen Terraform, empaquetado, publicación/retirada, ajustes de API/compresión/perfil y P-04 durable. No mezclarlos a ciegas: también modifican `App.tsx`, informes, dependencias, límites y contratos.
 - Comparar contra el candidato actual, incorporar los cambios necesarios en una rama de integración y resolver conflictos conservando el trabajo UX. Probar el conjunto; no inferir compatibilidad porque dos ramas compilan por separado.
-- Distinguir en el diagrama arquitectura local, AWS históricamente probada, recursos retirados y servicios aún propuestos. El staging histórico no incluía persistencia durable de resultados ni cerraba P-04.
+- Distinguir arquitectura local, staging base históricamente probado y retirado, P-04 implementado/probado en local y funciones aún propuestas. El staging histórico no incluía persistencia durable de resultados ni cerraba P-04; el código durable posterior tampoco acredita que esté desplegado.
 - Revisar límites de API y tamaño de PDF/experimento, paquetes Linux, versiones del manifiesto y capacidad del perfil de demostración. No usar un perfil de staging como cambio silencioso de las hipótesis científicas.
 - Preparar responsable, región decidida `us-east-2`, permisos mínimos, cuotas, costos y plan de reversión. No utilizar credenciales o consultar una cuenta por estar disponibles.
 
@@ -217,7 +221,9 @@ La publicación anterior fue retirada expresamente. Antes de recrear recursos se
 - Abrir desde sesión limpia y red externa: salud, configuración, preview, comparación, reproducción y descargas. Comprobar CORS, compresión, límites y versión visible. Los mocks no cierran este criterio.
 - Registrar latencia, errores y carga de una muestra definida. Diferenciar un smoke funcional de un benchmark/p95 de aceptación.
 - Comprobar logs y alertas útiles, retención y costos de todos los servicios. Verificar destinatarios y recepción del Budget; no reenviar mensajes sin autorización. Una alerta no detiene el gasto.
-- Tratar jobs durables/P-04 como incremento separado: cola, estado, idempotencia, almacenamiento, cancelación y cuotas deben probarse antes de miles de repeticiones.
+- Aceptar P-04 existente como incremento separado: permisos y wiring Step Functions→Lambda/EventBridge, idempotencia, almacenamiento, CORS S3, progreso/cancelación en navegador y reproducción del resultado deben probarse con servicios reales. No desarrollar de nuevo los repositorios y workers ya implementados.
+- Confirmar que `/v1/config` publica las capacidades correctas antes de mostrar la ruta AWS como disponible. `enable_aws_jobs` está apagado por defecto. Los controles implementados de un trabajo activo, dos workers, lotes de cinco y tres admisiones diarias compartidas no equivalen a un techo monetario ni a una cuota por usuario.
+- Revisar exposición pública: la implementación documentada no autentica usuarios y un tercero puede agotar la admisión compartida. Las URLs S3 firmadas duran cinco minutos; no guardarlas ni guardar capacidades/tokens en capturas o evidencia. La retirada puede borrar artefactos efímeros: conservar previamente los resultados necesarios y detener trabajos antes de una retirada autorizada.
 
 **Aceptación:** URL actual y flujo completo del commit entregado con evidencia externa; presupuesto y operación documentados. Si permanece retirado, declararlo y mantener la entrega AWS abierta.
 
@@ -291,7 +297,7 @@ No publiques ni uses AWS sin autorización explícita para esa operación.
 - No crear otro motor SEIR, normalizador, generador de red, exportador PDF o recomendador frontend.
 - No rehacer el formulario, la explicación de estrategias, los cuatro indicadores o el reproductor antes de probar sus fallos actuales.
 - No aplicar ciegamente una paleta propuesta por un informe por encima de la identidad Noche Cero y las preferencias ya aceptadas.
-- No desarrollar IaC desde cero sin revisar la rama existente; tampoco declarar vigente su staging retirado.
+- No desarrollar IaC ni P-04 desde cero: ya están integrados en `main`; tampoco declarar vigente su staging retirado o desplegados los jobs.
 - No elevar a 300 un límite ni crear un selector económico sin resolver su significado, contrato y capacidad.
 - No repetir una validación desfavorable hasta conseguir un resultado que parezca favorable.
 
