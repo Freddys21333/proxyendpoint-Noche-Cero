@@ -3,7 +3,7 @@
 import copy
 import json
 import math
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal, cast, overload
@@ -37,6 +37,78 @@ _CONTEXT_SCHEMA = {
 }
 
 
+def _scalar_checker(schema: Any) -> Callable[[Any], bool] | None:
+    if not isinstance(schema, dict):
+        return None
+    kind = schema.get("type")
+    if kind in ("integer", "number") and set(schema) <= {"type", "minimum", "maximum"}:
+
+        def number(value: Any) -> bool:
+            native = type(value) is int or (
+                kind == "number" and type(value) is float and math.isfinite(value)
+            )
+            return bool(
+                native
+                and ("minimum" not in schema or value >= schema["minimum"])
+                and ("maximum" not in schema or value <= schema["maximum"])
+            )
+
+        return number
+    if (
+        set(schema) in ({"enum"}, {"type", "enum"})
+        and kind in (None, "string")
+        and all(type(v) is str for v in schema["enum"])
+    ):
+        choices = frozenset(schema["enum"])
+        return lambda value: type(value) is str and value in choices
+    if (
+        kind == "array"
+        and set(schema) <= {"type", "items", "minItems", "maxItems", "uniqueItems"}
+        and isinstance(schema.get("items"), dict)
+        and schema["items"].get("type") == "integer"
+    ):
+        item_check = _scalar_checker(schema["items"])
+        if item_check is not None:
+            return lambda value: (
+                type(value) is list
+                and len(value) >= schema.get("minItems", 0)
+                and ("maxItems" not in schema or len(value) <= schema["maxItems"])
+                and all(item_check(item) for item in value)
+                and (not schema.get("uniqueItems", False) or len(set(value)) == len(value))
+            )
+    return None
+
+
+def _record_checker(schema: Any) -> Callable[[Any], bool] | None:
+    """Solo reconoce éxitos del subconjunto soportado; lo demás vuelve a Draft."""
+    if not isinstance(schema, dict) or schema.get("type") != "object":
+        return None
+    return _compiled_record(json.dumps(schema, sort_keys=True))
+
+
+@lru_cache(maxsize=128)
+def _compiled_record(serialized: str) -> Callable[[Any], bool] | None:
+    schema = json.loads(serialized)
+    if (
+        set(schema) != {"type", "properties", "required", "additionalProperties"}
+        or schema["additionalProperties"] is not False
+    ):
+        return None
+    checks = {name: _scalar_checker(sub) for name, sub in schema["properties"].items()}
+    allowed, required = set(checks), set(schema["required"])
+
+    def accepts(value: Any) -> bool:
+        if type(value) is not dict or not required <= value.keys() <= allowed:
+            return False
+        for key, item in value.items():
+            check = checks[key]
+            if check is None or not check(item):
+                return False
+        return True
+
+    return accepts
+
+
 def _primitive_items(
     validator: Any,
     items: Any,
@@ -44,6 +116,10 @@ def _primitive_items(
     schema: Any,
 ) -> Iterator[ValidationError]:
     """Atajo equivalente para calendarios/estados; todo lo demás usa Draft."""
+    if type(instance) is list and "prefixItems" not in schema:
+        record_check = _record_checker(items)
+        if record_check is not None and all(record_check(item) for item in instance):
+            return
     if (
         items == {"type": "integer", "minimum": 0, "maximum": 180}
         and "prefixItems" not in schema
@@ -165,6 +241,9 @@ def _result_definitions() -> dict[str, Any]:
                 return copy.deepcopy(_STATE_SCHEMA)
             if inline_context and value == {"$ref": "#/$defs/Context"}:
                 return copy.deepcopy(_CONTEXT_SCHEMA)
+            for name in ("Edge", "Daily"):
+                if value == {"$ref": f"#/$defs/{name}"}:
+                    return inline(definitions[name])
             return {
                 key: copy.deepcopy(item)
                 if key in ("const", "enum", "default", "examples")
