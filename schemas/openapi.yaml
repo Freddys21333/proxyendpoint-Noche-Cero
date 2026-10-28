@@ -525,12 +525,14 @@ paths:
       summary: Crear trabajo Monte Carlo asíncrono
       requestBody:
         required: true
-        description: JSON estricto <=64 KiB; trabajos locales 2..100 réplicas y presupuesto
-          de trabajo limitado. Cola en memoria del proceso local.
+        description: JSON estricto <=64 KiB; local 2..100 réplicas, AWS 2..1000.
+          Límites publicados por config; AWS admite un trabajo activo y tres nuevos por día UTC.
         content:
           application/json:
             schema:
-              $ref: ./job-create-request.schema.json
+              anyOf:
+              - $ref: ./job-create-request.schema.json
+              - $ref: ./aws-job-create-request.schema.json
             examples:
               job-create-request:
                 summary: Mock de contrato; no ejecución real

@@ -197,20 +197,30 @@ def _execute(
             ).to_dict(),
             limits=limits,
             features=dict(
-                asyncJobs=os.environ.get("LOCAL_JOBS_ENABLED") == "1", representativeFrames=True
+                jobBackend="aws" if os.environ.get("AWS_JOBS_ENABLED") == "1" else "local",
+                asyncJobs=os.environ.get("LOCAL_JOBS_ENABLED") == "1"
+                or os.environ.get("AWS_JOBS_ENABLED") == "1",
+                representativeFrames=True,
             ),
             generatorDescription=DESCRIPTION,
             **(
                 {
                     "jobLimits": dict(
-                        maxRepetitions=MAX_REPETITIONS,
-                        maxConcurrent=MAX_CONCURRENT,
-                        maxRetained=MAX_JOBS,
-                        retentionSeconds=RETENTION_SECONDS,
+                        maxRepetitions=1000
+                        if os.environ.get("AWS_JOBS_ENABLED") == "1"
+                        else MAX_REPETITIONS,
+                        maxConcurrent=1
+                        if os.environ.get("AWS_JOBS_ENABLED") == "1"
+                        else MAX_CONCURRENT,
+                        maxRetained=6 if os.environ.get("AWS_JOBS_ENABLED") == "1" else MAX_JOBS,
+                        retentionSeconds=86400
+                        if os.environ.get("AWS_JOBS_ENABLED") == "1"
+                        else RETENTION_SECONDS,
                         maxEdgeDayReplicates=MAX_EDGE_DAY_REPLICATES,
                     )
                 }
                 if os.environ.get("LOCAL_JOBS_ENABLED") == "1"
+                or os.environ.get("AWS_JOBS_ENABLED") == "1"
                 else {}
             ),
         )

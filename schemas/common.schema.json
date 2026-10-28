@@ -561,7 +561,7 @@
           "type": "integer",
           "minimum": 2,
           "default": 30,
-          "maximum": 100
+          "maximum": 1000
         },
         "scenario": {
           "$ref": "#/$defs/Scenario",
@@ -847,6 +847,12 @@
             },
             "representativeFrames": {
               "const": true
+            },
+            "jobBackend": {
+              "enum": [
+                "local",
+                "aws"
+              ]
             }
           },
           "required": [
@@ -1590,7 +1596,7 @@
         "index": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 99
+          "maximum": 999
         },
         "initialInfectiousNodeIds": {
           "type": "array",
@@ -1645,7 +1651,7 @@
         "n": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 100
+          "maximum": 1000
         },
         "mean": {
           "type": "number",
@@ -1785,7 +1791,7 @@
             "type": "number"
           },
           "minItems": 2,
-          "maxItems": 100
+          "maxItems": 1000
         },
         "mean": {
           "type": "number"
@@ -1901,7 +1907,7 @@
         "index": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 99
+          "maximum": 999
         },
         "initialSeed": {
           "type": "object",
@@ -1914,7 +1920,7 @@
             "replicateIndex": {
               "type": "integer",
               "minimum": 0,
-              "maximum": 99
+              "maximum": 999
             },
             "domain": {
               "const": "initial"
@@ -2137,12 +2143,12 @@
         "replicatesTotal": {
           "type": "integer",
           "minimum": 2,
-          "maximum": 100
+          "maximum": 1000
         },
         "replicatesSucceeded": {
           "type": "integer",
           "minimum": 2,
-          "maximum": 100
+          "maximum": 1000
         },
         "replicatesFailed": {
           "type": "integer",
@@ -2246,7 +2252,7 @@
             "$ref": "#/$defs/Replicate"
           },
           "minItems": 2,
-          "maxItems": 100
+          "maxItems": 1000
         },
         "representative": {
           "$ref": "#/$defs/Representative"
@@ -2800,7 +2806,10 @@
       "type": "object",
       "properties": {
         "modelVersion": {
-          "const": "local-jobs-v1"
+          "enum": [
+            "local-jobs-v1",
+            "aws-jobs-v1"
+          ]
         },
         "configurationHash": {
           "$ref": "#/$defs/Hash"
@@ -2825,14 +2834,14 @@
         "replicates": {
           "type": "array",
           "minItems": 2,
-          "maxItems": 100,
+          "maxItems": 1000,
           "items": {
             "type": "object",
             "properties": {
               "index": {
                 "type": "integer",
                 "minimum": 0,
-                "maximum": 99
+                "maximum": 999
               },
               "initialSeedEntropy": {
                 "type": "array",
@@ -2918,12 +2927,12 @@
             "replicatesTotal": {
               "type": "integer",
               "minimum": 2,
-              "maximum": 100
+              "maximum": 1000
             },
             "replicatesCompleted": {
               "type": "integer",
               "minimum": 0,
-              "maximum": 100
+              "maximum": 1000
             },
             "replicatesFailed": {
               "type": "integer",
@@ -3319,6 +3328,134 @@
         "costPerAvoidedCents",
         "avoidedPer100Usd",
         "omissionReasons"
+      ],
+      "additionalProperties": false
+    },
+    "AwsJobConfigurationInput": {
+      "type": "object",
+      "properties": {
+        "rootSeed": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 20261026,
+          "maximum": 4294967295
+        },
+        "networkMode": {
+          "const": "fixed",
+          "default": "fixed"
+        },
+        "repetitions": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 30,
+          "maximum": 1000
+        },
+        "scenario": {
+          "$ref": "#/$defs/ScenarioInput",
+          "default": {
+            "populationSize": 1000,
+            "days": 90,
+            "beta": 0.08,
+            "sigma": 0.333333,
+            "gamma": 0.142857,
+            "initialInfectious": 1,
+            "origin": {
+              "kind": "random",
+              "value": null
+            }
+          }
+        },
+        "intervention": {
+          "$ref": "#/$defs/InterventionInput",
+          "default": {
+            "vaccines": 100,
+            "interventionDay": 0,
+            "vaccineEfficacy": 1.0
+          }
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Policy"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "default": [
+            "none",
+            "random",
+            "targeted"
+          ]
+        },
+        "network": {
+          "$ref": "#/$defs/NetworkInput",
+          "default": {
+            "generatorVersion": "synthetic-manta-v1",
+            "dayZero": "monday",
+            "weights": {
+              "household": 1.0,
+              "school": 0.6,
+              "bus": 0.45,
+              "market": 0.5,
+              "neighborhood": 0.2
+            }
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "description": "Validar relaciones despuÃƒÆ’Ã‚Â©s de completar defaults: vaccines<=N, interventionDay<=T, origin.value<N y initialInfectious<=N. JSON Schema no aplica defaults ni compara campos."
+    },
+    "AwsJobCreateRequest": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "configuration": {
+          "$ref": "#/$defs/AwsJobConfigurationInput"
+        },
+        "expectedGraphHash": {
+          "$ref": "#/$defs/Hash"
+        },
+        "includeRepresentativeFrames": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "configuration",
+        "expectedGraphHash"
+      ],
+      "additionalProperties": false
+    },
+    "AwsJobResultLink": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0"
+        },
+        "engineVersion": {
+          "type": "string"
+        },
+        "requestId": {
+          "type": "string"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "pattern": "^https://[a-z0-9.-]+\\.s3\\.us-east-2\\.amazonaws\\.com/"
+        },
+        "expiresIn": {
+          "const": 300
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "engineVersion",
+        "requestId",
+        "downloadUrl",
+        "expiresIn"
       ],
       "additionalProperties": false
     }

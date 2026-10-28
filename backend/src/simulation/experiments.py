@@ -1,5 +1,6 @@
 """Experimentos y estadísticas — T-09 / CA-09/10."""
 
+import copy
 import math
 from collections.abc import Callable
 from typing import Any
@@ -182,6 +183,7 @@ def run_experiment(
     on_replicate_failed: Callable[[int], None] | None = None,
     on_aggregating: Callable[[], None] | None = None,
     replicate_attempts: int = 1,
+    completed_replicates: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Dominio síncrono completo o error; sin respuesta parcial ni manifiesto ficticio."""
     n = configuration.repetitions
@@ -197,9 +199,13 @@ def run_experiment(
     graph = generate_graph(configuration) if graph is None else graph
     graph_hash = json_hash(graph)
     edge_index = _EdgeIndex(graph["edges"], configuration.scenario.population_size)
-    replicates: list[dict[str, Any]] = []
+    replicates: list[dict[str, Any]] = copy.deepcopy(completed_replicates or [])
+    if completed_replicates is not None and sorted(rep["index"] for rep in replicates) != list(
+        range(n)
+    ):
+        raise ValueError("Lotes incompletos o duplicados.")
     try:
-        for index in order:
+        for index in () if completed_replicates is not None else order:
             for attempt in range(replicate_attempts):
                 if checkpoint:
                     checkpoint()

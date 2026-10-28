@@ -350,12 +350,20 @@ def _float(value: int | float) -> float:
     return 0.0 if value == 0 else float(value)
 
 
-def normalize_configuration(payload: object = _OMITTED, *, for_jobs: bool = False) -> Configuration:
+def normalize_configuration(
+    payload: object = _OMITTED, *, for_jobs: bool = False, for_aws_jobs: bool = False
+) -> Configuration:
     """None explícito nunca equivale a configuración omitida."""
     if payload is _OMITTED:
         payload = {}
     _validate(
-        payload, "JobConfigurationInput" if for_jobs else "ConfigurationInput", "configuration"
+        payload,
+        "AwsJobConfigurationInput"
+        if for_aws_jobs
+        else "JobConfigurationInput"
+        if for_jobs
+        else "ConfigurationInput",
+        "configuration",
     )
     defaults = {
         key: prop["default"]
