@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily, InventoryDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -144,6 +144,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       <Button type="button" variant="ghost" className="playback-primary" aria-label="Reproducir simulación" aria-describedby={!frames ? 'playback-availability' : undefined} title="Reproducir" disabled={!frames || playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} />{playing ? 'Reproduciendo' : 'Reproducir'}</Button>
       <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!frames || !playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
       <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" disabled={!frames} onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
+      <Button type="button" variant="ghost" aria-label="Retroceder un día" title="Día anterior" disabled={!frames || currentDay <= 0} onClick={() => dispatch({ type: 'seek', day: Math.max(0, currentDay - 1) })}><StepBack size={17} /></Button>
       <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={!frames || currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
     </div>
     {!frames && <p id="playback-availability" role="status">{availability}</p>}

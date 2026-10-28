@@ -359,3 +359,67 @@
 @media (prefers-reduced-motion: reduce) {
   .noche-cero *, .noche-cero *::before, .noche-cero *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.noche-cero .configuration-panel .configuration-fields {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.noche-cero .configuration-panel .parameter-field > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--night-ink, #f1ece4);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.noche-cero .configuration-panel .parameter-help,
+.noche-cero .configuration-panel .parameter-precision {
+  display: block;
+  color: #cabecb;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.noche-cero .configuration-panel .parameter-precision { font-size: 11px; }
+.noche-cero .configuration-panel .transmission-scale {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #cabecb;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.noche-cero .configuration-panel .transmission-scale > span { flex: 1; }
+.noche-cero .configuration-panel .transmission-scale > span:last-child { text-align: right; }
+.noche-cero .configuration-panel .transmission-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .transmission-field > .parameter-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  align-items: center;
+  gap: 6px 12px;
+  margin-bottom: 8px;
+}
+.noche-cero .configuration-panel .transmission-field .parameter-field > label { margin-bottom: 0; }
+.noche-cero .configuration-panel .transmission-field .parameter-error { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .parameter-error {
+  color: #ffb9a4;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.noche-cero .configuration-panel .input-wrap { position: relative; }
+.noche-cero .configuration-panel .input-wrap input { min-width: 0; }
+.noche-cero .configuration-panel .input-wrap:has(input[aria-invalid="true"]) { border-color: #ffb9a4; }
+.noche-cero .configuration-panel .input-approx {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #cabecb;
+  pointer-events: none;
+}
+.noche-cero .configuration-panel .input-wrap--approximate input { padding-left: 26px; }
+.noche-cero .configuration-panel .input-unit { max-width: 48%; font-size: 11px; }
+.noche-cero .configuration-panel .parameter-field--percentage,
+.noche-cero .configuration-panel .parameter-field:has(input[max="4294967295"]) { grid-column: 1 / -1; }

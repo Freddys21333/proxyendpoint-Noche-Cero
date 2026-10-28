@@ -1,6 +1,6 @@
 import { experimentZip } from '@/lib/export-experiment';
 import { CombinedInterventions } from '@/components/CombinedInterventions';
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, Network, RotateCcw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { seirColors } from "@/components/seir-colors";
 import { ApiErrorPanel } from "@/components/ApiErrorPanel";
 import { defaults, validateScenario, fromConfiguration, applyServerDefaults, matchesLoadedScenario, type Scenario } from "@/lib/scenario";
 import { ApiError, createApiClient, toConfiguration, type PreviewResponse, type CompareResponse, type HealthResponse, type ConfigResponse } from "@/lib/api";
+import { numericInputError, percentInputValue, probabilityFromPercent } from "@/lib/parameter-input";
 
 const ContactNetwork = lazy(() =>
   import("@/components/ContactNetwork").then((module) => ({ default: module.ContactNetwork })),
@@ -34,6 +35,10 @@ function Field({
   min,
   max,
   step = 1,
+  help,
+  maxMessage,
+  percentage = false,
+  compact = false,
 }: {
   label: string;
   value: number;
@@ -41,26 +46,51 @@ function Field({
   unit?: string;
   min: number;
   max: number;
-  step?: number;
+  step?: number | "any";
+  help?: string;
+  maxMessage?: string;
+  percentage?: boolean;
+  compact?: boolean;
 }) {
+  const id = useId();
+  const [focused, setFocused] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const inputValue = percentage ? percentInputValue(value, focused) : Number.isNaN(value) ? "" : value;
+  const exactValue = percentage && Number.isFinite(value) ? Number(percentInputValue(value, true)) : value;
+  const error = numericInputError(exactValue, min, max, step === 1, maxMessage);
+  const showError = touched && Boolean(error);
+  const approximate = percentage && !compact && !focused && inputValue !== percentInputValue(value, true);
+  const descriptions = [help && !compact ? `${id}-help` : '', percentage && !compact ? `${id}-precision` : '', showError ? `${id}-error` : ''].filter(Boolean).join(' ') || undefined;
   return (
-    <label className="field">
-      <span>{label}</span>
-      <div className="input-wrap">
+    <div className={`field parameter-field${percentage ? " parameter-field--percentage" : ""}`}>
+      <label htmlFor={id}>{label}</label>
+      <div className={`input-wrap${approximate ? " input-wrap--approximate" : ""}`}>
+        {approximate && <span className="input-approx" aria-hidden="true">≈</span>}
         <input
+          id={id}
           type="number"
-          value={Number.isNaN(value) ? "" : value}
-          onChange={(e) =>
-            onChange(e.target.value === "" ? NaN : Number(e.target.value))
-          }
+          aria-label={`${label}${unit ? ` (${unit})` : ""}`}
+          aria-describedby={descriptions}
+          aria-invalid={showError || undefined}
+          value={inputValue}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); setTouched(true); }}
+          onInvalid={() => setTouched(true)}
+          onChange={(e) => {
+            const next = percentage ? probabilityFromPercent(e.target.value) : e.target.value === "" ? NaN : Number(e.target.value);
+            if (!Object.is(next, value)) onChange(next);
+          }}
           min={min}
           max={max}
           step={step}
           required
         />
-        <span className="input-unit">{unit}</span>
+        <span className="input-unit" aria-hidden="true">{unit}</span>
       </div>
-    </label>
+      {help && !compact && <small id={`${id}-help`} className="parameter-help">{help}</small>}
+      {percentage && !compact && <small id={`${id}-precision`} className="parameter-precision">{approximate ? "≈ Valor redondeado. Al editar verás todos los decimales." : "De 0 a 100 %. Al editar se conserva la precisión completa."}</small>}
+      {showError && <small id={`${id}-error`} className="parameter-error" role="alert">{error}</small>}
+    </div>
   );
 }
 
@@ -183,16 +213,20 @@ export default function App() {
     setErrors(
       issues.map((message) =>
         message
+          .replace("Transmission must be between 0 and 1.", "La facilidad de contagio debe estar entre 0 y 100.")
+          .replace("Progression must be between 0 and 1.", "La probabilidad diaria de pasar de mordido a zombie debe estar entre 0 y 100 %.")
+          .replace("Recovery must be between 0 and 1.", "La probabilidad diaria de recuperación debe estar entre 0 y 100 %.")
+          .replace("Efficacy must be between 0 and 1.", "La eficacia de la vacuna debe estar entre 0 y 100 %.")
           .replace(" must be an integer from ", " debe ser un entero entre ")
           .replace(" must be between ", " debe estar entre ")
           .replace(" to ", " y ")
           .replace(" and ", " y ")
           .replace("Population", "Población")
-          .replace("Horizon", "Horizonte")
+          .replace("Horizon", "Duración de la simulación")
           .replace("Initial cases", "Casos iniciales")
           .replace("Vaccines", "Vacunas")
           .replace("Intervention day", "Día de intervención")
-          .replace("Replicates", "Réplicas")
+          .replace("Replicates", "Repeticiones del experimento")
           .replace("Seed", "Semilla")
           .replace("Transmission", "Transmisión")
           .replace("Progression", "Progresión")
@@ -274,28 +308,31 @@ export default function App() {
       <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
       <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
-          <Field label="Población" value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
-          <Field label="Horizonte" value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
+          <Field label="Población" help="Personas sintéticas de la red. Puedes simular entre 50 y 2000." value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
+          <Field label="Duración de la simulación" help="Días que observarás después del inicio del brote, entre 1 y 180." value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
           <label className="field">
             <span>Origen del brote</span>
             <div className="select-wrap">
-              <select value={scenario.origin} onChange={(event) => update("origin", event.target.value)}>
+              <select aria-label="Origen del brote" aria-describedby="origin-help" value={scenario.origin} onChange={(event) => update("origin", event.target.value)}>
                 {[["random", "Origen aleatorio"], ["household", "Hogar"], ["school", "Colegio"], ["bus", "Ruta de bus"], ["market", "Mercado"], ["neighborhood", "Barrio"], ["node", "Persona específica"]].map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
               <ChevronDown size={16} />
             </div>
+            <small id="origin-help" className="parameter-help">Dónde se eligen los casos iniciales. La opción aleatoria usa toda la población.</small>
           </label>
-          <label className="field transmission-field">
-            <span>Tasa de transmisión <output>{Number.isNaN(scenario.beta) ? "—" : scenario.beta.toFixed(2)}</output></span>
-            <input className="range" aria-label="Tasa de transmisión" type="range" min="0" max="1" step="0.01" value={Number.isNaN(scenario.beta) ? 0 : scenario.beta} onChange={(event) => update("beta", Number(event.target.value))} />
-          </label>
+          <div className="field transmission-field" role="group" aria-label="Facilidad de contagio" aria-describedby="transmission-help">
+            <Field label="Facilidad de contagio" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, true)) : NaN} onChange={(value) => update("beta", probabilityFromPercent(String(value)))} compact unit="de 100" min={0} max={100} step="any" />
+            <input className="range" aria-label="Facilidad de contagio" aria-valuetext={Number.isNaN(scenario.beta) ? "Sin valor" : `${percentInputValue(scenario.beta, true)} de 100`} aria-describedby="transmission-help" type="range" min="0" max="100" step="any" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, true)) : 0} onChange={(event) => update("beta", probabilityFromPercent(event.target.value))} />
+            <small className="transmission-scale" aria-hidden="true"><span>0 · Sin nuevos contagios</span><span>100 · Mayor facilidad</span></small>
+            <small id="transmission-help" className="parameter-help">Sube el valor para que el brote se propague con más facilidad. El tipo de contacto también influye. Este número no es el porcentaje de personas que se contagiarán.</small>
+          </div>
           {scenario.origin === "node" && (
-            <Field label="Número de persona" value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} />
+            <Field label="Número de persona" help="Identificador de la persona donde comienza el brote; la numeración empieza en 0." value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} maxMessage="El número de persona debe ser menor que la población. Elige un identificador de la red." />
           )}
-          <Field label={scenario.combined?.resourceSchedule ? 'Vacunas iniciales' : 'Vacunas disponibles'} value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} />
-          <Field label="Eficacia de la vacuna" value={scenario.efficacy * 100} onChange={(value) => update("efficacy", value / 100)} unit="%" min={0} max={100} />
+          <Field label={scenario.combined?.resourceSchedule ? 'Vacunas iniciales' : 'Vacunas disponibles'} help="Dosis disponibles al inicio. Una dosis asignada se consume aunque no resulte efectiva." value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} maxMessage="Las vacunas disponibles no pueden superar la población. Reduce las dosis o aumenta la población." />
+          <Field label="Eficacia de la vacuna" help="Probabilidad de que una dosis proteja a una persona sana: 0 % no protege; 100 % siempre es efectiva." value={scenario.efficacy} onChange={(value) => update("efficacy", value)} percentage unit="%" min={0} max={100} step="any" />
         </div>
         <button type="button" className="advanced-toggle" onClick={() => setAdvanced(!advanced)} aria-expanded={advanced} aria-controls="advanced-parameters">
           Parámetros avanzados <ChevronDown size={16} className={advanced ? "rotate" : ""} />
@@ -303,14 +340,14 @@ export default function App() {
         {advanced && (
           <div className="configuration-advanced" id="advanced-parameters">
             <div className="configuration-fields">
-              <Field label="Casos iniciales" value={scenario.initial} onChange={(value) => update("initial", value)} min={1} max={Math.min(20, scenario.population)} />
-              <Field label="Día de intervención" value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} min={0} max={scenario.days} />
-              <Field label="Progresión σ / día" value={scenario.sigma} onChange={(value) => update("sigma", value)} min={0} max={1} step={0.000001} />
-              <Field label="Recuperación γ / día" value={scenario.gamma} onChange={(value) => update("gamma", value)} min={0} max={1} step={0.000001} />
-              <Field label="Réplicas" value={scenario.repetitions} onChange={(value) => update("repetitions", value)} min={2} max={30} />
-              <Field label="Semilla aleatoria" value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
+              <Field label="Casos iniciales" help="Personas que ya transmiten al inicio del brote, entre 1 y 20." value={scenario.initial} onChange={(value) => update("initial", value)} unit="personas" min={1} max={Math.min(20, scenario.population)} />
+              <Field label="Día de intervención" help="Día en que comienza la vacunación. El día 0 es el inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La intervención debe ocurrir dentro de la simulación. Reduce el día o aumenta la duración." />
+              <Field label="Probabilidad diaria de pasar de mordido a zombie" value={scenario.sigma} onChange={(value) => update("sigma", value)} compact percentage unit="%" min={0} max={100} step="any" />
+              <Field label="Probabilidad diaria de recuperación" value={scenario.gamma} onChange={(value) => update("gamma", value)} compact percentage unit="%" min={0} max={100} step="any" />
+              <Field label="Repeticiones del experimento" help="Ejecuta el mismo escenario varias veces para medir la variación de los resultados. Entre 2 y 30 repeticiones." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
+              <Field label="Semilla para reproducir el experimento" help="Con la misma configuración completa, semilla y versión del motor puedes reproducir el experimento. Cambiarla genera otros sorteos." value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
             </div>
-            <p>σ y γ son probabilidades diarias, no duraciones.</p>
+            <p>Las probabilidades diarias no son duraciones ni garantizan que ese porcentaje exacto de personas cambie de estado. Los demás parámetros se conservan al editar un campo.</p>
           </div>
         )}
         <CombinedInterventions value={scenario.combined} days={scenario.days} population={scenario.population} onChange={combined => {

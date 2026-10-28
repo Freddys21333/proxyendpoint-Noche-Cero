@@ -2,6 +2,39 @@ import { toConfiguration } from './api.ts'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { defaults, applyPreset, validateScenario, applyServerDefaults, fromConfiguration, matchesLoadedScenario } from './scenario.ts'
+import { percentInputValue, probabilityFromPercent, numericInputError } from './parameter-input.ts'
+
+test('probability presentation rounds only the idle display and retains the exact editable percentage', () => {
+  assert.equal(percentInputValue(defaults.sigma, false), '33.3')
+  assert.equal(percentInputValue(defaults.sigma, true), '33.3333')
+  assert.equal(percentInputValue(defaults.gamma, false), '14.3')
+  assert.equal(percentInputValue(defaults.gamma, true), '14.2857')
+  for (const value of [0, 1, defaults.sigma, defaults.gamma, 0.000001, 0.123456789]) {
+    assert.equal(probabilityFromPercent(percentInputValue(value, true)), value)
+  }
+  assert.equal(defaults.sigma, 0.333333)
+  assert.equal(defaults.gamma, 0.142857)
+})
+
+test('percent edits accept both endpoints and preserve empty or out-of-range inputs for validation', () => {
+  assert.equal(probabilityFromPercent('0'), 0)
+  assert.equal(probabilityFromPercent('100'), 1)
+  assert.equal(probabilityFromPercent('14.2857'), 0.142857)
+  assert.ok(Number.isNaN(probabilityFromPercent('')))
+  assert.equal(probabilityFromPercent('101'), 1.01)
+  assert.equal(percentInputValue(1.00001, false), '100.001')
+})
+
+test('field feedback explains required values, integers and dependent limits without changing validation', () => {
+  assert.match(numericInputError(NaN, 0, 100, false), /Completa/)
+  assert.match(numericInputError(1.5, 2, 30, true), /entero/)
+  assert.match(numericInputError(-1, 0, 100, false), /0.*100/)
+  assert.equal(numericInputError(101, 0, 100, true, 'Las vacunas no pueden superar la población.'), 'Las vacunas no pueden superar la población.')
+  assert.equal(numericInputError(14.2857, 0, 100, false), '')
+  assert.equal(numericInputError(0, 0, 100, false), '')
+  assert.equal(numericInputError(100, 0, 100, false), '')
+  assert.deepEqual(validateScenario(defaults), [])
+})
 
 test('each surprise transforms a copy of the base without accumulating changes', () => {
   assert.equal(applyPreset(defaults, 'double_beta').beta, 0.16)
