@@ -495,6 +495,12 @@
 .noche-cero .results-reading-guide { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--night-border); max-width: 75ch; }
 .noche-cero .results-reading-guide h2 { margin: 0 0 8px; font-size: 18px; color: var(--ink); }
 .noche-cero .results-reading-guide p { margin: 8px 0 0; color: #cabecb; font-size: 14px; line-height: 1.6; }
+.noche-cero .strategy-explanation { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--night-border); }
+.noche-cero .strategy-explanation h3 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.noche-cero .strategy-explanation dl { margin: 0; display: grid; gap: 10px; }
+.noche-cero .strategy-explanation dt { color: var(--ink); font-size: 13px; font-weight: 500; }
+.noche-cero .strategy-explanation dd, .noche-cero .strategy-explanation p { margin: 3px 0 0; color: #cabecb; font-size: 12px; line-height: 1.5; }
+.noche-cero .strategy-explanation p { margin-top: 12px; }
 .noche-dialog .help-steps { list-style: decimal; padding-left: 24px; }
 .noche-dialog .help-steps li { padding-left: 4px; }
 .noche-dialog .help-steps li::before { content: none; }

@@ -344,6 +344,15 @@ export default function App() {
           </div>
           <Field label="Día de vacunación" help="0 = inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La vacunación debe comenzar dentro de la simulación. Reduce el día o aumenta la duración." />
         </fieldset>
+        <section className="strategy-explanation" aria-labelledby="strategy-explanation-title">
+          <h3 id="strategy-explanation-title">Estrategias que se compararán</h3>
+          <dl>
+            <div><dt>Sin intervención</dt><dd>No aplica vacunas. Sirve como referencia para medir el efecto de las otras estrategias.</dd></div>
+            <div><dt>Aleatoria</dt><dd>Elige al azar a las personas sanas que recibirán las dosis disponibles.</dd></div>
+            <div><dt>Dirigida</dt><dd>Prioriza a las personas sanas más conectadas con otras personas sanas, considerando la intensidad de los contactos activos del día.</dd></div>
+          </dl>
+          <p>Comparar estrategias ejecuta las tres. Después podrás elegir cuál visualizar, sin repetir la comparación.</p>
+        </section>
         <button type="button" className="advanced-toggle" onClick={() => setAdvanced(!advanced)} aria-expanded={advanced} aria-controls="advanced-parameters">
           Parámetros avanzados <ChevronDown size={16} className={advanced ? "rotate" : ""} />
         </button>
