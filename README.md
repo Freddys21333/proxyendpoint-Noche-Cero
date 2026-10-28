@@ -1,4 +1,6 @@
-# Comité de Contención de Manta
+# Noche Cero · Laboratorio de propagación
+
+**Equipo ProxyEndpoint**
 
 Aplicación web educativa para explorar un brote ficticio de zombis en una población sintética inspirada en Manta. Permite configurar un modelo SEIR, observar la red y el mapa, comparar vacunación dirigida, aleatoria y ninguna intervención con los mismos recursos, y exportar resultados reproducibles e informes breves para alcaldía.
 
