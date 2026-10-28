@@ -65,7 +65,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-05 — Incorporar datos reales de dengue en Manabí (PRO-5)
 
-- [ ] Estado: **no iniciado**. Puede investigarse en paralelo al diseño; debe preceder a P-06.
+- [ ] Estado: **investigación de fuentes iniciada; dataset aún no incorporado**. Debe preceder a P-06. Hallazgos, riesgos de licencia/granularidad y siguientes pasos: [investigación P-05](../docs/evidencia/p05-investigacion-fuentes-2026-10-28.md).
 - Punto de partida oficial consultado el 2026-10-27: [gacetas vectoriales del MSP](https://www.salud.gob.ec/gacetas-vectoriales/) y [archivo 2025](https://www.salud.gob.ec/gacetas-vectoriales-2025/). Son fuentes candidatas, no un dataset ya importado o calibrado.
 - Elegir publicaciones concretas con observaciones utilizables de Manabí; registrar URL, edición, fecha de publicación, corte, período cubierto, licencia/condiciones, hash y copia permitida de la fuente. Registrar tabla/página y método si se extrae PDF; revisar extracción visualmente.
 - Construir tabla normalizada con geografía, semana epidemiológica/fecha, casos, definición del caso y unidad. Distinguir incidencia de acumulados y ceros de ausencias. Tratar correcciones y duplicados; no sumar informes acumulados de semanas sucesivas.
