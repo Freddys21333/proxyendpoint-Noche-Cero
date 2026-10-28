@@ -61,11 +61,11 @@ export type CompareResponse = Metadata & {
 export type HealthResponse = Metadata & { status: 'ok'; region: string; buildCommit: string; generatedAt: string }
 export type ServerLimits = Record<'maxRequestBytes' | 'maxResponseBytes' | 'maxDecodedResponseBytes' | 'maxEdges' | 'maxFrameStates', number>
 export type JobLimits = Record<'maxRepetitions' | 'maxConcurrent' | 'maxRetained' | 'retentionSeconds' | 'maxEdgeDayReplicates', number>
-export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string; features: { asyncJobs: boolean; representativeFrames: boolean }; jobLimits?: JobLimits }
+export type ConfigResponse = Metadata & { defaults: ConfigurationInput; limits: ServerLimits; generatorDescription: string; features: { asyncJobs: boolean; representativeFrames: boolean; jobBackend?: 'local' | 'aws' }; jobLimits?: JobLimits }
 export type JobCredentials = { token: string; idempotencyKey: string }
 export type JobResponse = Metadata & { jobId: string; status: 'pending' | 'running' | 'aggregating' | 'completed' | 'failed' | 'cancelled'; createdAt: string; updatedAt: string; statusUrl: string; resultUrl: string;
   progress: { replicatesTotal: number; replicatesCompleted: number; replicatesFailed: number }; error?: 'SIMULATION_FAILED' | 'RESULT_TOO_LARGE';
-  manifest: { modelVersion: 'local-jobs-v1'; configurationHash: string; graphHash: string; requestHash: string; rootSeed: number; engineVersion: string; rngVersion: 'rng-v1'; runtimeVersions: Record<string, unknown>; replicates: { index: number; initialSeedEntropy: number[] }[] } }
+  manifest: { modelVersion: 'local-jobs-v1' | 'aws-jobs-v1'; configurationHash: string; graphHash: string; requestHash: string; rootSeed: number; engineVersion: string; rngVersion: 'rng-v1'; runtimeVersions: Record<string, unknown>; replicates: { index: number; initialSeedEntropy: number[] }[] } }
 export function createJobCredentials(): JobCredentials {
   return { token: Array.from(crypto.getRandomValues(new Uint8Array(32)), n => n.toString(16).padStart(2, '0')).join(''), idempotencyKey: crypto.randomUUID() }
 }
@@ -113,10 +113,10 @@ function validConfig(data: Record<string, unknown>): boolean {
 function validJob(data: Record<string, unknown>): boolean {
   if (typeof data.jobId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(data.jobId) || !['pending', 'running', 'aggregating', 'completed', 'failed', 'cancelled'].includes(String(data.status)) || !['createdAt', 'updatedAt'].every(k => typeof data[k] === 'string' && Number.isFinite(Date.parse(data[k] as string))) || data.statusUrl !== `/v1/jobs/${data.jobId}` || data.resultUrl !== `/v1/jobs/${data.jobId}/result` || data.result !== undefined) return false
   const p = data.progress, m = data.manifest
-  if (!object(p) || !integerIn(p.replicatesTotal, 2, 100) || !integerIn(p.replicatesCompleted, 0, Number(p.replicatesTotal)) || !integerIn(p.replicatesFailed, 0, 1) || Number(p.replicatesCompleted) + Number(p.replicatesFailed) > Number(p.replicatesTotal)) return false
+  if (!object(p) || !integerIn(p.replicatesTotal, 2, 1000) || !integerIn(p.replicatesCompleted, 0, Number(p.replicatesTotal)) || !integerIn(p.replicatesFailed, 0, 1) || Number(p.replicatesCompleted) + Number(p.replicatesFailed) > Number(p.replicatesTotal)) return false
   if (data.status === 'completed' && (p.replicatesCompleted !== p.replicatesTotal || p.replicatesFailed !== 0)) return false
   if (data.status === 'failed' ? !['SIMULATION_FAILED', 'RESULT_TOO_LARGE'].includes(String(data.error)) : data.error !== undefined) return false
-  return object(m) && m.modelVersion === 'local-jobs-v1' && hash(m.configurationHash) && hash(m.graphHash) && hash(m.requestHash) && integerIn(m.rootSeed, 0, 4294967295) && m.engineVersion === data.engineVersion && m.rngVersion === 'rng-v1' && object(m.runtimeVersions) && m.runtimeVersions.engineVersion === data.engineVersion && m.runtimeVersions.rngVersion === m.rngVersion && Array.isArray(m.replicates) && m.replicates.length === p.replicatesTotal && m.replicates.every((r, i) => object(r) && r.index === i && Array.isArray(r.initialSeedEntropy) && r.initialSeedEntropy.length === 10 && r.initialSeedEntropy[0] === m.rootSeed && r.initialSeedEntropy[1] === i && r.initialSeedEntropy.every(n => integerIn(n, 0, 4294967295)))
+  return object(m) && ['local-jobs-v1', 'aws-jobs-v1'].includes(String(m.modelVersion)) && hash(m.configurationHash) && hash(m.graphHash) && hash(m.requestHash) && integerIn(m.rootSeed, 0, 4294967295) && m.engineVersion === data.engineVersion && m.rngVersion === 'rng-v1' && object(m.runtimeVersions) && m.runtimeVersions.engineVersion === data.engineVersion && m.runtimeVersions.rngVersion === m.rngVersion && Array.isArray(m.replicates) && m.replicates.length === p.replicatesTotal && m.replicates.every((r, i) => object(r) && r.index === i && Array.isArray(r.initialSeedEntropy) && r.initialSeedEntropy.length === 10 && r.initialSeedEntropy[0] === m.rootSeed && r.initialSeedEntropy[1] === i && r.initialSeedEntropy.every(n => integerIn(n, 0, 4294967295)))
 }
 
 function validPreview(data: Record<string, unknown>, requested: ConfigurationInput, limits?: ServerLimits): boolean {
@@ -225,10 +225,10 @@ function validFrames(data: Record<string, unknown>, configuration: Configuration
 
 export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) {
   const base = baseUrl.replace(/\/+$/, '')
-  async function request<T extends Metadata>(path: string, init: RequestInit, valid: (data: Record<string, unknown>) => boolean, limits?: ServerLimits): Promise<T> {
+  async function request<T extends Metadata>(path: string, init: RequestInit, valid: (data: Record<string, unknown>) => boolean, limits?: ServerLimits, external = false): Promise<T> {
     if (typeof init.body === 'string' && limits && new TextEncoder().encode(init.body).length > limits.maxRequestBytes) throw new ApiError(413, 'REQUEST_TOO_LARGE', 'La configuración supera el tamaño permitido por el servidor.')
     let response: Response
-    try { response = await fetcher(`${base}${path}`, { ...init, credentials: 'omit', headers: { Accept: 'application/json', ...init.headers } }) }
+    try { response = await fetcher(external ? path : `${base}${path}`, { ...init, credentials: 'omit', headers: { Accept: 'application/json', ...init.headers } }) }
     catch (error) {
       if (init.signal?.aborted) throw error
       throw new ApiError(0, 'NETWORK_ERROR', 'No se pudo conectar con el servidor. Comprueba que esté iniciado.')
@@ -275,7 +275,13 @@ export function createApiClient(baseUrl = '/v1', fetcher: typeof fetch = fetch) 
     }, data => validJob(data) && object(data.progress) && data.progress.replicatesTotal === configuration.repetitions && object(data.manifest) && data.manifest.graphHash === graphHash && data.manifest.rootSeed === configuration.rootSeed, limits),
     jobStatus: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}`, { signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId),
     cancelJob: (jobId: string, token: string, signal?: AbortSignal) => request<JobResponse>(`/jobs/${encodeURIComponent(jobId)}/cancel`, { method: 'POST', signal, headers: { 'X-Job-Token': token } }, data => validJob(data) && data.jobId === jobId && ['completed', 'failed', 'cancelled'].includes(String(data.status))),
-    jobResult: (jobId: string, token: string, configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => request<CompareResponse>(`/jobs/${encodeURIComponent(jobId)}/result`, { signal, headers: { 'X-Job-Token': token } }, data => completeComparison(data, normalized(configuration), graphHash, includeFrames), limits),
+    jobResult: async (jobId: string, token: string, configuration: ConfigurationInput, graphHash: string, signal?: AbortSignal, includeFrames = false, limits?: ServerLimits) => {
+      const validLink = (data: Record<string, unknown>) => typeof data.downloadUrl === 'string' && /^https:\/\/[a-z0-9.-]+\.s3\.us-east-2\.amazonaws\.com\//.test(data.downloadUrl) && data.expiresIn === 300
+      const data = await request<CompareResponse & { downloadUrl?: string }>(`/jobs/${encodeURIComponent(jobId)}/result`, { signal, headers: { 'X-Job-Token': token } }, data => completeComparison(data, normalized(configuration), graphHash, includeFrames) || validLink(data), limits)
+      if (!data.downloadUrl) return data
+      if (!validLink(data as unknown as Record<string, unknown>)) throw new ApiError(200, 'INVALID_RESPONSE', 'El servidor devolvió un enlace de descarga inválido.')
+      return request<CompareResponse>(data.downloadUrl, { signal }, result => completeComparison(result, normalized(configuration), graphHash, includeFrames), limits, true)
+    },
     health: (signal?: AbortSignal) => request<HealthResponse>('/health', { signal }, data => data.status === 'ok' && typeof data.region === 'string' && typeof data.buildCommit === 'string'),
     config: (signal?: AbortSignal) => request<ConfigResponse>('/config', { signal }, validConfig),
     preview: (configuration: ConfigurationInput, signal?: AbortSignal, limits?: ServerLimits) => {

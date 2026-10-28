@@ -1,10 +1,14 @@
 # Comité de Contención de Manta
+> Retirado el 28/10/2026 por solicitud del usuario. Las URLs siguientes son históricas. [Guía para publicar y retirar](infra/CICLO-DESPLIEGUE.md).
+
+
+**Staging AWS (28/10/2026):** [abrir sitio](https://staging.djv4hstnt7jgb.amplifyapp.com). Perfil inicial: 200 personas, 20 días y 30 repeticiones; escenarios grandes limitados hasta P-04. [Evidencia y límites](docs/evidencia/aws-base-2026-10-28.md) · [Terraform y operación](infra/README.md).
 
 Simulador de propagación y comparación de estrategias de contención sobre una población sintética.
 
 Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; la interfaz muestra preview, comparación y curvas reales y descarga el experimento JSON. La animación de una réplica representativa ya usa estados diarios reales y permite alternar estrategias. El inspector explica las selecciones de vacunas y muestra dosis efectivas/fallidas de la réplica. La red permite agrupación visual por barrio, hogar, colegio, bus o mercado y distribución circular. La vista **Mapa** (feature P-09) sitúa a las personas sintéticas sobre polígonos residenciales OSM versionados sin alterar el modelo ni los hashes. ZIP con CSV disponible para experimentos vigentes; despliegue pendiente. Se conserva además el [prototipo local exploratorio](prototype/README.md) con simulación y visualización.
+**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; la interfaz muestra preview, comparación y curvas reales y descarga el experimento JSON. La animación de una réplica representativa ya usa estados diarios reales y permite alternar estrategias. El inspector explica las selecciones de vacunas y muestra dosis efectivas/fallidas de la réplica. La red permite agrupación visual por barrio, hogar, colegio, bus o mercado y distribución circular. La vista **Mapa** (feature P-09) sitúa a las personas sintéticas sobre polígonos residenciales OSM versionados sin alterar el modelo ni los hashes. ZIP con CSV disponible para experimentos vigentes; staging AWS base publicado (ver actualización siguiente). Se conserva además el [prototipo local exploratorio](prototype/README.md) con simulación y visualización.
 
 ## Documentación
 
@@ -96,3 +100,7 @@ Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2
 Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga local](docs/evidencia/rendimiento-backend-2026-10-28.md). Medianas de comparación 18,46/19,56 s sin/con animación; 510 pruebas backend. Muestra local limitada, staging/AWS pendiente.
 
 Para probar la versión local revisada: [guía de inicio y recorrido](docs/probar-local.md). Frontend en http://127.0.0.1:5174 y API en :8000. [Estabilidad verificada](docs/evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y flujo real, sin despliegue AWS.
+
+
+
+**P-04 preparado, sin desplegar:** trabajos duraderos y hasta 1000 réplicas dentro del límite de carga. [Operación y pruebas AWS pendientes](infra/P04-OPERACION.md).

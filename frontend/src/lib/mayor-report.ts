@@ -1,13 +1,14 @@
 import type { CompareResponse, Policy, Stats } from './api.ts'
 import { policyLabels } from './comparison.ts'
+import { gzipSync, strToU8 } from 'fflate'
 
 export async function fetchMayorReport(result: CompareResponse, signal?: AbortSignal, fetcher: typeof fetch = fetch, baseUrl = '/v1'): Promise<Blob> {
   let response: Response
   try {
     response = await fetcher(`${baseUrl.replace(/\/+$/, '')}/reports/mayor`, {
       method: 'POST', credentials: 'omit', signal,
-      headers: { 'Content-Type': 'application/json', Accept: 'application/pdf' },
-      body: JSON.stringify(result),
+      headers: { 'Content-Type': 'application/json', 'Content-Encoding': 'gzip', Accept: 'application/pdf' },
+      body: new Blob([new Uint8Array(gzipSync(strToU8(JSON.stringify(result))))]),
     })
   } catch (error) {
     if (signal?.aborted) throw error

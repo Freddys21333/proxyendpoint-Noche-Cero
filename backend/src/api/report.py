@@ -1,6 +1,8 @@
 """POST /v1/reports/mayor: PDF desde un experimento completo exportado."""
 
 import base64
+import gzip
+import io
 import uuid
 from typing import Any
 
@@ -18,7 +20,21 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             raise ConfigurationError("NOT_FOUND", 404, "Ruta no disponible.")
         if event.get("requestContext", {}).get("http", {}).get("method") != "POST":
             raise ConfigurationError("METHOD_NOT_ALLOWED", 405, "Usa POST para generar el informe.")
-        raw = _body(event, MAX_DOCUMENT_BYTES)
+        headers = {str(k).lower(): v for k, v in event.get("headers", {}).items()}
+        encoding = headers.get("content-encoding", "identity")
+        if encoding not in ("identity", "gzip"):
+            raise ConfigurationError("INVALID_JSON", 400, "Codificación no admitida.")
+        raw = _body(event, 4 * 1024 * 1024 if encoding == "gzip" else MAX_DOCUMENT_BYTES)
+        if encoding == "gzip":
+            try:
+                with gzip.GzipFile(fileobj=io.BytesIO(raw)) as stream:
+                    raw = stream.read(MAX_DOCUMENT_BYTES + 1)
+            except (OSError, EOFError):
+                raise ConfigurationError("INVALID_JSON", 400, "El gzip no es válido.") from None
+            if len(raw) > MAX_DOCUMENT_BYTES:
+                raise ConfigurationError(
+                    "REQUEST_TOO_LARGE", 413, "El documento supera el límite permitido."
+                )
         try:
             document = decode_json_document(raw, max_bytes=MAX_DOCUMENT_BYTES)
         except ValueError:

@@ -323,8 +323,10 @@ def test_error_codes_match_http_status_and_examples_are_wired_to_operations() ->
         assert any(
             item.get("externalValue") == "./examples/" + entry["file"] for item in wired_examples
         ), entry["file"]
-        response_schema = media["schema"]["$ref"]
-        assert response_schema == "./" + entry["schema"]
+        response_schemas = media["schema"].get(
+            "oneOf", media["schema"].get("anyOf", [media["schema"]])
+        )
+        assert any(item["$ref"] == "./" + entry["schema"] for item in response_schemas)
         if entry.get("status", 0) >= 400:
             assert (
                 example(entry["file"])["error"]["code"]

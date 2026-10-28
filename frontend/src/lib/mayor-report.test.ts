@@ -6,12 +6,15 @@ import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import type { CompareResponse } from './api.ts'
 import { buildMayorReportHtml, fetchMayorReport } from './mayor-report.ts'
+import { gunzipSync, strFromU8 } from 'fflate'
 
 test('report sends the complete experiment and accepts only a PDF', async () => {
   const source = { manifest: { experimentHash: 'sha256:test' } } as CompareResponse
   const blob = await fetchMayorReport(source, undefined, async (url, init) => {
     assert.equal(url, '/v1/reports/mayor')
-    assert.deepEqual(JSON.parse(String(init?.body)), source)
+    assert.equal(new Headers(init?.headers).get('Content-Encoding'), 'gzip')
+    assert.ok(init?.body instanceof Blob)
+    assert.deepEqual(JSON.parse(strFromU8(gunzipSync(new Uint8Array(await init.body.arrayBuffer())))), source)
     return new Response('%PDF-test', { headers: { 'Content-Type': 'application/pdf' } })
   })
   assert.equal(blob.type, 'application/pdf')

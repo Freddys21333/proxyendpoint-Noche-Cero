@@ -112,7 +112,7 @@ export function JobsWorkspace({ config, preview, onShowSimulator }: {
       applyJob(job)
       setActiveId(job.id)
       setResult(null)
-      setNotice({ tone: 'info', text: 'Trabajo aceptado por el servidor local. El progreso se actualiza automáticamente.' })
+      setNotice({ tone: 'info', text: 'Trabajo aceptado por el servidor. El progreso se actualiza automáticamente.' })
     } catch (error) {
       setNotice({ tone: 'error', text: describe(error) })
     } finally {

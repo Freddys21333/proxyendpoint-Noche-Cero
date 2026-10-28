@@ -5,6 +5,25 @@ import type { PreviewResponse, ConfigResponse } from './api.ts'
 import { createApiClient, createJobCredentials, toConfiguration } from './api.ts'
 import { defaults } from './scenario.ts'
 
+test('AWS result follows only a regional S3 link without forwarding the capability', async () => {
+  const result = JSON.parse(readFileSync(new URL('../../../schemas/examples/compare-response-vaccines.json', import.meta.url), 'utf8'))
+  const url = 'https://private-jobs.s3.us-east-2.amazonaws.com/jobs/test/result.json.gz?signature=test'
+  const calls: string[] = []
+  const api = createApiClient('/v1', async (target, init) => {
+    calls.push(String(target))
+    if (calls.length === 1) return Response.json({ schemaVersion: '1.0', engineVersion: '0.1.0', requestId: 'test', downloadUrl: url, expiresIn: 300 })
+    assert.equal(String(target), url)
+    assert.equal(new Headers(init?.headers).has('X-Job-Token'), false)
+    assert.equal(init?.credentials, 'omit')
+    return Response.json(result)
+  })
+  const received = await api.jobResult('job', 'a'.repeat(64), result.configuration, result.graphHash, undefined, result.representative.frames !== null)
+  assert.equal(received.manifest.experimentHash, result.manifest.experimentHash)
+  assert.equal(calls.length, 2)
+  const unsafe = createApiClient('/v1', async () => Response.json({ schemaVersion: '1.0', engineVersion: '0.1.0', requestId: 'test', downloadUrl: 'https://other.example/result', expiresIn: 300 }))
+  await assert.rejects(unsafe.jobResult('job', 'token', result.configuration, result.graphHash), /contrato/)
+})
+
 test('scenario maps to the shared backend request without mutating UI inputs', () => {
   const scenario = { ...defaults, origin: 'node', node: 9 }
   const result = toConfiguration(scenario)

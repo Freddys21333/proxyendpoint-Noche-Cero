@@ -1,0 +1,51 @@
+"""Construye ZIP Linux x86_64 sin copiar dependencias de Windows."""
+
+import argparse
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=ROOT / ".tools/build/backend.zip")
+    args = parser.parse_args()
+    dependencies = tomllib.loads((ROOT / "backend/pyproject.toml").read_text())["project"][
+        "dependencies"
+    ]
+    dependencies = [item.replace("jsonschema==", "jsonschema[format]==") for item in dependencies]
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="lambda-build-") as directory:
+        target = Path(directory)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--target", str(target),
+             "--platform", "manylinux_2_28_x86_64", "--platform", "manylinux2014_x86_64",
+             "--implementation", "cp",
+             "--python-version", "3.12", "--only-binary=:all:", "--no-compile",
+             *dependencies], check=True,
+        )
+        for source in (ROOT / "backend/src").iterdir():
+            if source.is_dir() and source.name != "__pycache__":
+                shutil.copytree(source, target / source.name, ignore=shutil.ignore_patterns("__pycache__"))
+        (target / "schemas").mkdir(exist_ok=True)
+        shutil.copy2(ROOT / "schemas/common.schema.json", target / "schemas/common.schema.json")
+        with zipfile.ZipFile(args.output, "w", zipfile.ZIP_DEFLATED) as archive:
+            for path in sorted(target.rglob("*")):
+                if path.is_file() and "__pycache__" not in path.parts:
+                    archive.write(path, path.relative_to(target).as_posix())
+        with zipfile.ZipFile(args.output) as archive:
+            if sum(item.file_size for item in archive.infolist()) > 262_144_000:
+                raise ValueError("El paquete descomprimido supera el límite de Lambda.")
+            if args.output.stat().st_size > 52_428_800:
+                raise ValueError("El ZIP supera la carga directa Lambda; requiere otra estrategia de paquete.")
+    print(f"ZIP Linux: {args.output} ({args.output.stat().st_size} bytes)")
+
+
+if __name__ == "__main__":
+    main()
