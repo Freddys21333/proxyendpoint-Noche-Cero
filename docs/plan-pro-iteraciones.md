@@ -29,7 +29,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | Base local | 356 pruebas backend y 116 frontend; Ruff, mypy, typecheck y build correctos. |
 | Motor por defecto | `N=1000`, `T=90`, `R=30`, semilla `20261026`; `none=723,7`, `random=575,1`, `targeted=378,1`; ganancia pareada `196,97` con IC bootstrap `81,62–309,59`; 22 victorias, 6 empates y 2 derrotas frente a random. |
 | Rendimiento | **44,3 s** para el escenario por defecto sin frames, frente a objetivos de ~25 s backend y ~60 s total. |
-| Gate científico | Protocolo T-22 congelado; **controles PASA**, primaria/contrastes pendientes. |
+| Gate científico | T-22 v1 **APROBADO**: 150 réplicas primarias, cinco controles y cinco contrastes; informe reproducible publicado. |
 | P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. |
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
@@ -76,9 +76,9 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-01 — Rendimiento base y gate T-22
 
-**Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico no está ejecutado.
+**Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico debe ejecutarse sobre protocolo congelado.
 
-**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22: protocolo congelado y **cinco controles técnicos PASA**; matriz primaria y contrastes pendientes. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md) y [protocolo T-22](../specs/validation/t22-v1/README.md).
+**Estado 2026-10-28:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22 v1 **APROBADO**: 150 primarias en cinco raíces, cinco controles técnicos y cinco contrastes descriptivos; protocolo intacto. El rendimiento ≤25 s sigue abierto y no bloquea el registro del gate. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md), [protocolo T-22](../specs/validation/t22-v1/README.md) e [informe ejecutado](evidencia/t22-v1-ejecucion.md).
 
 **Alcance:**
 
@@ -313,7 +313,7 @@ Reglas heredadas que no se pueden romper:
 | Iteración | Estado | Commit | Evidencia |
 |---|---|---|---|
 | I-00 | Completada | `git log --grep=I-00` | `docs/evidencia/auditoria-pro-2026-10-27.md` |
-| I-01 | En progreso: rendimiento listo, T-22 pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md` |
+| I-01 | Gate T-22 aprobado; objetivo backend ≤25 s pendiente | `git log --grep=I-01` | `docs/evidencia/i01-rendimiento.md`, `docs/evidencia/t22-v1-ejecucion.md` |
 | I-02 | Implementación local: backend, cliente, editor e historial; quedan aceptación integral de escenarios y humana | `5861407` / `ac2ded7` | `docs/evidencia/p02-adaptive.md`, `docs/evidencia/p02-ui-2026-10-28.md` |
 | I-03 | Pendiente | — | — |
 | I-04 | Parcial: backend/cliente verificados; UI y P-04 pendientes | `5861407` / `ac2ded7` | `docs/evidencia/p03-jobs-local.md` |

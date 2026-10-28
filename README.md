@@ -12,7 +12,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
-- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado; controles técnicos ejecutados y PASA; matriz primaria pendiente.
+- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado y ejecutado; gate v1 aprobado con 150 réplicas primarias y 5/5 controles. [Informe y limitaciones](docs/evidencia/t22-v1-ejecucion.md).
 - [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Auditoría PRO de partida](docs/evidencia/auditoria-pro-2026-10-27.md).
@@ -44,7 +44,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es cerrar T-22 (I-01) con la matriz primaria/contrastes y decidir el límite de rendimiento; después siguen la UI de P-02/P-03 y P-05. El protocolo T-22 v1 está preparado y congelado; sus cinco controles técnicos ya pasaron, pero la matriz primaria/contrastes y el resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. T-22 v1 ya está aprobado con el gate congelado; el objetivo backend ≤25 s, las aceptaciones integrales de UI y accesibilidad, P-05/P-06, P-03 UI, P-07 y P-08 siguen abiertos. La infraestructura y AWS se dejan para la última fase y no se han desplegado. Consulta el [informe T-22](docs/evidencia/t22-v1-ejecucion.md), la [revisión de pendientes](docs/evidencia/revision-pendientes-usuario-2026-10-28.md) y el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md) para estado y dependencias.
 
 ## Parámetros previstos
 
@@ -61,7 +61,7 @@ Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). 
 | Duración infecciosa media | 7 días | Supuesto del equipo |
 | Semilla | 20261026 | Supuesto del equipo |
 
-La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; el gate científico de T-22 y el benchmark AWS siguen pendientes. No se afirma que la estrategia supere las líneas base hasta medirlo.
+La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; T-22 v1 aprobó su comparación primaria bajo sus cinco raíces y límites documentados. Esto no demuestra superioridad en todo escenario ni sustituye validación con datos reales. El benchmark AWS sigue pendiente y no se ha desplegado.
 
 ## AWS y pendientes técnicos
 
