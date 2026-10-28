@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-28.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** ciclo de vida del mapa corregido ([evidencia](evidencia/mapa-ciclo-vida-2026-10-28.md)), posterior al merge de `codex/parametros-comprensibles`; 510 pruebas backend y 150 frontend. Conserva rendimiento, feat/pro y T-22 aprobado; P-06 sigue ajustado, no validado.
+**Último incremento:** estabilización local ([evidencia](evidencia/estabilidad-local-2026-10-28.md)), 510 pruebas backend y 151 frontend. [Guía para probar](probar-local.md). Conserva hashes, rendimiento y T-22 aprobado.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -566,3 +566,5 @@ Rendimiento actualizado 2026-10-28: comparación HTTP N1000/T90/R30 con medianas
 Última integración de frontend (2026-10-28): [merge de codex/parametros-comprensibles](evidencia/merge-parametros-comprensibles-2026-10-28.md), 150 pruebas frontend, tipos/build y 510 pruebas backend/Ruff/mypy correctos. Parámetros comprensibles y flujo plegable incorporados sin tocar backend ni contratos. Se conserva editor adaptativo, step-back y configuración de vacunación. Leaflet clearRect y favicon 404 observados en navegador; aceptación integral sigue pendiente.
 
 Corrección del canvas posterior al merge: [regresión Leaflet cerrada](evidencia/mapa-ciclo-vida-2026-10-28.md), 150 pruebas frontend, tipos/build y cambios de población/pantallas/reproducción/redimensionado sin pageErrors. Se conserva el informe del fallo como histórico; no reabrirlo como pendiente actual sin reproducir. P-07 integral sigue abierto.
+
+Decisión operativa del usuario (2026-10-28): priorizar funcionamiento local, luego UX y después AWS por partes. Se revisaron comparación predeterminada, exportaciones reproducidas, reproducción, presupuesto/inventario/sin elegibles, jobs/cancelación/reintento/sesión, errores y ventana estrecha. Se corrigió el máximo de trabajos según límite publicado y la semilla desincronizable, sin tocar backend ni ampliar límites. La aceptación humana y T-23 externos siguen pendientes, sin bloquear nuevas mejoras locales. [Matriz](evidencia/estabilidad-local-2026-10-28.md).

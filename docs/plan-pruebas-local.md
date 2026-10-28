@@ -1,3 +1,5 @@
+**Revisión funcional actual (2026-10-28):** 510 pruebas backend y 151 frontend; [guía de uso local](probar-local.md), [matriz verificada](evidencia/estabilidad-local-2026-10-28.md). Los recuentos dentro de cada incremento histórico describen aquella ejecución.
+
 # Plan de pruebas local (acumulativo)
 
 Datos explicativos UX: con API local, `$env:API_BASE='http://127.0.0.1:18009/v1'; node --experimental-strip-types scripts/verify_decision_summary.mjs`. Comparar proyección con réplicas/registros reales, sin cambiar el criterio de recomendación. [Contrato](../specs/decision-summary.md), [evidencia y pasos de navegador](evidencia/resumen-decision-2026-10-27.md). Backend: 450 pruebas, frontend: 139; Ruff/mypy/tipos/build correctos. No cierra la aceptación humana ni T-22.
@@ -398,3 +400,7 @@ Ejecutar `scripts/benchmark_api.py --samples 3 --output-dir .tools/backend-perf-
 ## Ciclo de vida del mapa
 
 `node --experimental-strip-types --test frontend/src/lib/geographic-agents-layer.test.ts` verifica callback de dibujo tardío inocuo después de destroy. Repetir en navegador consulta de población, comparación, PRO→Explorar red, mapa/red, avance/retroceso y redimensionado capturando pageerror. [Evidencia](evidencia/mapa-ciclo-vida-2026-10-28.md): cero pageErrors; tipos/build y 150 pruebas correctos.
+
+## Regresión local de navegador
+
+Con API :8000 y Vite :5174: `npx --yes @playwright/cli -s=local-check open http://127.0.0.1:5174 --browser=msedge` y luego `npx --yes @playwright/cli -s=local-check run-code --filename=scripts/verify_local_stability.browser.js`. Verifica comparación real, cuatro descargas, reproducción, un job, entrada inválida y comparación estrecha. Crea un trabajo local; no es aceptación humana ni benchmark. Casos de capacidad, semilla, presupuesto, cancelación y recuperación documentados en la [evidencia](evidencia/estabilidad-local-2026-10-28.md).

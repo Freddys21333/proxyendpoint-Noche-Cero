@@ -1,7 +1,7 @@
 # Plan de tareas — versión base
 
 **Fecha:** 27 de octubre de 2026
-**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; T-22 científico ejecutado y APROBADO; infraestructura y despliegue pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación actual backend: 510 pruebas, Ruff/mypy correctos; última verificación frontend: 150 pruebas, tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
+**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; T-22 científico ejecutado y APROBADO; infraestructura y despliegue pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación actual backend: 510 pruebas, Ruff/mypy correctos; última verificación frontend: 151 pruebas, tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
@@ -77,3 +77,5 @@ Detalle, dependencias, entradas/salidas y aceptación en [pro-roadmap.md](pro-ro
 Direcciones opcionales: vacunación estratégica, antídotos, cuarentena inteligente, mosquito/fumigación, inferencia del paciente cero, hospital saturado y campañas. Centralidad, algoritmos voraces, optimización y aprendizaje por refuerzo son alternativas a evaluar, no una lista de algoritmos obligatorios. Su alcance se decide según el modelo y la evidencia; véase §4 de la hoja de ruta.
 
 Corrección local P-07/P-09 (2026-10-28): [error de canvas de Leaflet resuelto](../docs/evidencia/mapa-ciclo-vida-2026-10-28.md), regresión unitaria y real de navegación/actualización. No cierra la aceptación integral de T-13..T-16 ni P-07.
+
+Incremento de estabilidad local (2026-10-28) verificado: [alcance](local-stability.md), [matriz y evidencia](../docs/evidencia/estabilidad-local-2026-10-28.md). Corrige validación previa de trabajos según capacidad/semilla y recurso favicon, y ejecuta navegación/exportaciones/errores/intervenciones/PRO. Se mantienen abiertas las casillas de aceptación humana T-13..T-16 y T-23. Prioridad acordada: local → UX → AWS.

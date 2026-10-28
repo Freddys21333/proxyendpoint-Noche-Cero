@@ -16,12 +16,12 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-28
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: corrección del ciclo de vida del mapa ([evidencia](docs/evidencia/mapa-ciclo-vida-2026-10-28.md)), posterior al merge de `codex/parametros-comprensibles`; conserva rendimiento backend, merge de `feat/pro`, T-22 APROBADO, P-05/P-06 y P-08.
+Rama de trabajo: `feat/backend-contratos`. Último incremento: estabilización del recorrido local ([evidencia](docs/evidencia/estabilidad-local-2026-10-28.md)); 510 pruebas backend y 151 frontend. Conserva las optimizaciones, merges y T-22 aprobado.
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
 | Base backend T-02..T-12 + PRO local | Suite actual: **510 pruebas backend**, Ruff, format, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **150 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción temporal, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa, panel P-06 e informe PDF/HTML. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Frontend base | **151 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción temporal, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa, panel P-06 e informe PDF/HTML. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
 | Rendimiento | Comparación HTTP N1000/T90/R30: medianas **18,46 s sin frames / 19,56 s con frames**, máximo 19,87 s en 6 muestras. PDF 4,94 s; ZIP local 4,36 s. [Evidencia](docs/evidencia/rendimiento-backend-2026-10-28.md). | Certificación de staging/AWS y carga representativa general pendientes; n=3 por modo no certifica p95. Jobs default R30 excede el límite local de trabajo; se midió R9. |
 | T-22 | **Componente científico APROBADO**: 15/15 experimentos, 450 pares (150 primarios), controles 5/5 y 17 reproducciones. [Evidencia](docs/evidencia/t22-v1-ejecucion.md). | T-23/semilla externa, aceptación humana y entrega integral permanecen pendientes. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
@@ -242,3 +242,5 @@ Actualización de rendimiento backend (2026-10-28): 510 pruebas, Ruff/formato/my
 Actualización merge parámetros comprensibles (2026-10-28): incorporados siete commits de `codex/parametros-comprensibles`, conservando el backend/rendimiento, editor adaptativo, preset oculto y reproducción temporal verificados. 150 pruebas frontend, tipos/build; 510 backend, Ruff/mypy correctos. Flujo real de porcentajes → preview → comparación → reproducción comprobado. Error asíncrono de renderer Leaflet y 404 favicon observados; no se cierra aceptación P-07. [Evidencia](docs/evidencia/merge-parametros-comprensibles-2026-10-28.md).
 
 Corrección posterior del mapa (2026-10-28): el error Leaflet clearRect registrado en el merge quedó corregido con un guard de ciclo de vida del renderer. 150 pruebas frontend, tipos/build y regresión en navegador con cero pageErrors. [Evidencia](docs/evidencia/mapa-ciclo-vida-2026-10-28.md). P-07 integral sigue pendiente; repetir la regresión al actualizar Leaflet.
+
+Prioridad operativa autorizada (2026-10-28): estabilizar local → mejorar UX → AWS por partes. [Guía de prueba](docs/probar-local.md). El recorrido local fue revisado contra API real; se corrigió preflight de capacidad/semilla de trabajos y favicon. No exigir cerrar calibración nueva, miles de réplicas o jurado para iterar localmente. Esto no marca T-13..T-16/T-23 ni AWS completos. API :8000 y frontend :5174 iniciados para pruebas. [Contrato](specs/local-stability.md), [evidencia](docs/evidencia/estabilidad-local-2026-10-28.md).

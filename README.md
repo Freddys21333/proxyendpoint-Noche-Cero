@@ -94,3 +94,5 @@ Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-
 Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites. Suite backend actual: 486 pruebas.
 
 Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga local](docs/evidencia/rendimiento-backend-2026-10-28.md). Medianas de comparación 18,46/19,56 s sin/con animación; 510 pruebas backend. Muestra local limitada, staging/AWS pendiente.
+
+Para probar la versión local revisada: [guía de inicio y recorrido](docs/probar-local.md). Frontend en http://127.0.0.1:5174 y API en :8000. [Estabilidad verificada](docs/evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y flujo real, sin despliegue AWS.

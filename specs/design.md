@@ -233,3 +233,5 @@ T-22 v1 ejecutado sin cambio de modelo: [informe científico y auditoría](../do
 Rendimiento de registros (2026-10-28): comprobadores acotados de esquemas planos en la copia privada, aceptación rápida solo de valores nativos válidos y respaldo Draft para el resto. Sin cache de resultados ni cambios científicos. [Evidencia](../docs/evidencia/rendimiento-backend-2026-10-28.md).
 
 Ciclo de vida del mapa: [contrato del guard de canvas](map-lifecycle.md), evita redibujados de capas retiradas sin modificar datos ni dinámica del simulador.
+
+Estabilización local: [contrato](local-stability.md). JobForm utiliza el límite de carga publicado para la red actual y vincula semilla/hash de preview, sin recortar entradas ni reproducir ciencia en frontend. [Evidencia real](../docs/evidencia/estabilidad-local-2026-10-28.md).

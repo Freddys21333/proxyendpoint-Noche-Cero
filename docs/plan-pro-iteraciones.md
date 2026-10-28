@@ -342,3 +342,7 @@ Actualización I-01 (2026-10-27): [benchmark HTTP completo](evidencia/api-perfor
 Actualización T-22 (2026-10-27): [matriz completa y gate científico APROBADO](evidencia/t22-v1-ejecucion.md). No modifica protocolo ni motor, no cierra rendimiento, T-23, UI ni AWS. Frente a random: 112/33/5 victorias/empates/pérdidas; mercado redundante y censura explícitos.
 
 Actualización I-01 (2026-10-28): [rendimiento HTTP y salidas](evidencia/rendimiento-backend-2026-10-28.md). Las seis comparaciones finales observadas cumplen <25 s, con medianas 18,46/19,56 s sin/con frames; PDF, ZIP y tres jobs bajo carga local verificados. 510 pruebas y hashes conservados. Aceptación de staging/p95 y carga general siguen pendientes; no se cierra I-08 ni entrega integral.
+
+## Prioridad operativa ajustada por el usuario (2026-10-28)
+
+Se adopta local → UX → AWS por partes. La primera etapa se verificó en el [incremento de estabilidad local](evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y recorrido real. No se exige una calibración nueva ni la prueba formal del jurado para seguir mejorando localmente. Las tareas formales y gates de despliegue siguen explícitos; esta decisión no declara completa aceptación humana/T-23 ni autoriza recursos AWS. Próximo frente: mejoras UX concretas sobre la versión local utilizable.

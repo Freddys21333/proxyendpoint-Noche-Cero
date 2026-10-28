@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-28",
+  "baseCommit": "8b43893a8682056fd1a5f03b157f77814940161c",
+  "scope": "Estabilización local; no aceptación humana formal ni AWS",
+  "frontendTests": 151,
+  "backendTests": 510,
+  "frontendTypesAndBuild": "PASA",
+  "backendRuffAndMypy": "PASA",
+  "checks": [
+    {
+      "case": "default-comparison",
+      "configuration": "N1000/T90/R30, semilla 20261026",
+      "status": "PASA",
+      "hash": "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+      "pageErrors": []
+    },
+    {
+      "case": "downloads",
+      "status": "PASA",
+      "formats": [
+        "JSON",
+        "ZIP/CSV",
+        "PDF",
+        "HTML"
+      ],
+      "zipCRC": "PASA",
+      "manifestMatchesJSON": true
+    },
+    {
+      "case": "zero-budget-inventory-adaptive",
+      "status": "PASA",
+      "hash": "sha256:449bb4972ed8fee533f9aa2eb5704f48b76d4ac4ca8279ef987a6cbbec257ee2",
+      "spentCents": 0,
+      "assignedVaccines": 0,
+      "receivedAndAvailable": 15
+    },
+    {
+      "case": "no-eligible-after-full-coverage",
+      "status": "PASA",
+      "hash": "sha256:560fddecdc61ca0cc6abbc28262d7e3ca8b4917a5b115faa311f64654301d90c",
+      "assignedVaccines": 59,
+      "remainingVaccines": 1,
+      "susceptiblesFromDayZero": 0
+    },
+    {
+      "case": "pro-default-capacity",
+      "before": "HTTP 422 al enviar R30",
+      "after": "Máximo 9 para esta red; R30 conservado, error visible y envío deshabilitado",
+      "status": "CORREGIDO"
+    },
+    {
+      "case": "pro-complete-session-recovery",
+      "status": "PASA",
+      "replicas": 2,
+      "hash": "sha256:552ee085bd085acb0a6212471af25fd8d63f621c64510b7185200065a122f4df"
+    },
+    {
+      "case": "pro-seed-cancel-retry",
+      "status": "PASA",
+      "rootSeed": 12345,
+      "repetitions": 44,
+      "cancelled": true,
+      "retryHash": "sha256:a9db6c79daad62f8c8568880acbe166da4c95f4cfe5bbb1c6a14a4ae0dc8e631"
+    },
+    {
+      "case": "invalid-input-and-obsolete-results",
+      "status": "PASA",
+      "invalidValue": 49,
+      "preserved": true,
+      "requestSent": false,
+      "comparisonDisabled": true
+    },
+    {
+      "case": "network-recovery",
+      "status": "PASA",
+      "fault": "Abort controlado de preview, sin resultados simulados falsos",
+      "inputsPreserved": true,
+      "realRetryHTTP": 200
+    },
+    {
+      "case": "mobile-keyboard-resources",
+      "status": "PASA",
+      "width": 390,
+      "scrollWidthMap": 390,
+      "scrollWidthComparison": 390,
+      "scrollWidthPro": 390,
+      "skipLinkFocus": "main-content",
+      "faviconHTTP": 200
+    },
+    {
+      "case": "canonical-browser-script",
+      "status": "PASA",
+      "script": "scripts/verify_local_stability.browser.js",
+      "hash": "sha256:61e336e8230db3a6a838758d2006bf8e67e20956dd05aa492a744e5b3b11e36b",
+      "pageErrors": []
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".tools/local-stability/experiment.json",
+      "bytes": 9673406,
+      "sha256": "c5225fd86a66e78a442f704f2e08314e821b870e397e472fccee8f2572f622be"
+    },
+    {
+      "path": ".tools/local-stability/experiment.zip",
+      "bytes": 812169,
+      "sha256": "8153697abc3fd2161835f9ef8a748a3b2e100323c241f74b1592dcc0025a9b3a"
+    },
+    {
+      "path": ".tools/local-stability/report.pdf",
+      "bytes": 8275,
+      "sha256": "2226b8dd78ceae50fbde4316cebbaf66c12999e800b30e27cf7a81b711fa2038"
+    },
+    {
+      "path": ".tools/local-stability/report.html",
+      "bytes": 5317,
+      "sha256": "42ba87a90d67cf2a9945bb049bf40738f5cfd1082ecdef8774e4d32a9871d5bb"
+    },
+    {
+      "path": ".tools/local-stability/zero-budget.json",
+      "bytes": 99798,
+      "sha256": "c36b20e2956e54a8dfb11f9228741391a505abade3ce31dfc34a05110930fec3"
+    },
+    {
+      "path": ".tools/local-stability/no-eligible.json",
+      "bytes": 147829,
+      "sha256": "70c35ae54aafc67e9b5cf15bea2407dd9b462d10d3ed2b0545c0c4786e1036a9"
+    }
+  ],
+  "reproductions": [
+    "sha256:c37de16855e971145b36e30094d5a72159a0425b4770631ad96e1f37ccbd9d97",
+    "sha256:449bb4972ed8fee533f9aa2eb5704f48b76d4ac4ca8279ef987a6cbbec257ee2",
+    "sha256:560fddecdc61ca0cc6abbc28262d7e3ca8b4917a5b115faa311f64654301d90c"
+  ],
+  "backendEngineAndFrozenProtocolChanged": false,
+  "localURL": "http://127.0.0.1:5174",
+  "apiURL": "http://127.0.0.1:8000/v1",
+  "remaining": [
+    "Aceptación humana/moderada y táctil real",
+    "Impresión nativa del HTML no validada manualmente",
+    "Prueba formal T-23 con semilla externa",
+    "Trabajos locales no durables, cola/retención limitadas",
+    "AWS/staging y observabilidad/costos de infraestructura"
+  ],
+  "implementationCommit": "9d1f399090c0344ea6580e542b15318a5a3676ea"
+}

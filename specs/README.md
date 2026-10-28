@@ -29,3 +29,5 @@ Contrato PRO de ejecución: [P-03, trabajos Monte Carlo locales](p03-monte-carlo
 Rendimiento HTTP completo de comparación: [contrato y alcance](api-performance.md), verificado localmente; objetivo consistente ≤25 s pendiente.
 
 [Rendimiento backend posterior al merge](../docs/evidencia/rendimiento-backend-2026-10-28.md): comparación HTTP, PDF, ZIP y jobs/carga local medidos; objetivo <25 s observado en seis comparaciones, sin certificar staging/p95.
+
+[Estabilidad local](local-stability.md): recorrido completo revisado con API real, validación preventiva PRO y regresión de navegador. [Guía de prueba](../docs/probar-local.md). No cierra aceptación humana ni AWS.

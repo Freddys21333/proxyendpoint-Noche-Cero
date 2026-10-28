@@ -192,3 +192,7 @@ Preview debe coincidir con todos los parámetros solicitados (se permiten campos
 ## Aclaración de alcance — 2026-10-27
 
 Los casos distintos del jurado se atienden editando parámetros y semilla manualmente. No se requieren presets fijos ni botones de sorpresa. Los helpers applyPreset y sus pruebas se conservan como utilidades opcionales históricas; su existencia no obliga a exponerlos. Las descripciones anteriores de pantallas con presets son historial, no alcance vigente. Falta medir la aceptación del flujo manual RF-15/CA-12.
+
+## Revisión local del recorrido
+
+[Guía para probar](../docs/probar-local.md) y [evidencia](../docs/evidencia/estabilidad-local-2026-10-28.md): 151 pruebas, tipos/build y navegador real correctos. PRO muestra el máximo para la red previsualizada y conserva réplicas inválidas para corregirlas; su semilla corresponde a la vista previa. Para otra semilla, cambiarla en el simulador y consultar la red.
