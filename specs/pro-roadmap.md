@@ -14,7 +14,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 | Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **P-03 backend verificado localmente**: trabajos 2..100 con cola limitada, progreso, cancelación, capacidades e idempotencia. La comparación síncrona conserva 2..30. Distributed Map y miles en AWS siguen pendientes P-04. |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
 | Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
-| Informe sencillo para el alcalde | PRO-7 | **No iniciado**: salida preferida PDF desde plantilla determinista y un experimento validado. No requiere un LLM. P-08. |
+| Informe sencillo para el alcalde | PRO-7 | **Parcial**: informe HTML imprimible desde comparación validada, claramente ficticia y trazable. Falta aceptación visual y PDF directo/reproducible. P-08. |
 | Mapa geográfico de referencia | PRO-6 (presentación) | **Verificado localmente como presentación**: mapa OSM de Manta, trece polígonos residenciales versionados, posiciones deterministas y sincronización con la reproducción. No es dato epidemiológico ni altera el modelo. P-09. |
 
 No se confunden posiciones OSM con observaciones epidemiológicas reales, ni los costos educativos de intervenciones con tarifas verificadas o gasto AWS.
@@ -89,7 +89,8 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-08 — Informe para el alcalde, salida preferida PDF (PRO-7)
 
-- [ ] Estado: **no iniciado**. Dependencia: un experimento completo y validado; puede usar primero el modo ficticio, claramente identificado.
+- [ ] Estado: **parcial**. Descarga HTML imprimible desde `CompareResponse` validada, con cifras, diferencias, incertidumbre, costos educativos, hash y límites. Falta aceptación visual humana y PDF directo; no es informe de dengue. [Evidencia](../docs/evidencia/p08-informe-html-2026-10-28.md).
+- Dependencia: un experimento completo y validado; puede usar primero el modo ficticio, claramente identificado.
 - Plantilla determinista con problema, escenario/enfermedad, lugar/período, recursos, intervenciones, estrategias, comparación contra no intervenir y azar, incertidumbre, gasto/saldo, beneficio, recomendación explicada y límites. Incluir fuentes reales cuando existan, configuración, semilla, versiones y hash del experimento.
 - Lenguaje sencillo; explicar contagios evitados y diferencia entre una réplica y promedio. Conservar empates/pérdidas; no prometer ganador para toda semilla. Costo por evitado no aplicable cuando no hay mejora positiva. Separar costos de intervenciones y AWS.
 - Aceptación: las cifras coinciden con el JSON; archivo legible y visualmente revisado, tablas/gráficos sin recortes, fuentes trazables y plantilla reproducible. No fabricar resultados faltantes. Fecha de generación puede ser volátil sin cambiar la evidencia del experimento.

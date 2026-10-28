@@ -176,6 +176,22 @@ export default function App() {
       setNotice('No se pudo generar el ZIP del experimento. Puedes descargar el JSON e intentarlo nuevamente.');
     }
   };
+  const exportMayorReport = async () => {
+    if (!comparison) return;
+    try {
+      const { buildMayorReportHtml } = await import('@/lib/mayor-report');
+      const blob = new Blob([buildMayorReportHtml(comparison)], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `informe-alcaldia-${comparison.configuration.rootSeed}-${comparison.manifest.experimentHash.slice(7, 15)}.html`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setNotice('Informe descargado. Ábrelo y usa “Imprimir o guardar como PDF” para generar una copia PDF.');
+    } catch {
+      setNotice('No se pudo generar el informe. El experimento y su JSON siguen disponibles.');
+    }
+  };
   const run = async () => {
     if (!serverConfig) { setErrors(["Espera a que se cargue la configuración del servidor."]); return; }
     setApiFailure(null);
@@ -396,7 +412,7 @@ export default function App() {
           </>
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
-            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
+            {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} onExportMayorReport={exportMayorReport} /></Suspense> : <div className="comparison-empty">
               <div className="comparison-empty-content"><h1 id="results-title">Las decisiones necesitan evidencia.</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} réplicas con tres estrategias…` : remotePreview ? "La red está lista. Ejecuta la comparación para medir las tres estrategias bajo el mismo escenario." : "Consulta primero la red para generar una población sintética y luego compara las estrategias."}</p>
               {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}
               {apiFailure?.operation === "comparison" && <ApiErrorPanel

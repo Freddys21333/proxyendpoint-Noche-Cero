@@ -38,7 +38,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | P-04 | No iniciado: Distributed Map, S3, cuotas/costos y evidencia AWS. |
 | P-05/P-06 | P-05: se inspeccionó temporalmente el esquema/hash de fuente candidata, pero no se importó por falta de condiciones de reutilización confirmadas. P-06 sigue bloqueado; no hay calibración. |
 | P-07 | Parcial: reproducción y mapa funcionan; faltan aceptación de sincronización, rendimiento y accesibilidad. |
-| P-08 | No iniciado: no hay informe PDF determinista. |
+| P-08 | Parcial: informe HTML imprimible desde resultado validado, con límites ficticios visibles y hash/incertidumbre/costos. Falta aceptación visual y PDF directo/reproducible. |
 | AWS | No desplegado; `infra/` vacío. Se deja para la última fase. |
 
 Evidencia de partida: [auditoría PRO 2026-10-27](evidencia/auditoria-pro-2026-10-27.md).
@@ -198,6 +198,10 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 ### I-06 — P-08: informe para el alcalde
 
 **Problema:** los resultados existen, pero no hay un documento sencillo, determinista y trazable para una autoridad.
+
+**Decisión de dependencia (2026-10-28):** se adelanta solo la plantilla para experimentos ficticios con respuestas backend validadas, permitida por el roadmap. No se espera P-06 para presentar el resultado como dengue: el informe lo identifica como ficticio. P-05/P-06 siguen bloqueando cualquier informe calibrado. La primera entrega es HTML imprimible, no equivale al PDF directo requerido para cerrar I-06.
+
+**Estado 2026-10-28:** descarga HTML en español conectada a la comparación validada. Incluye medias, mediana, P05–P95, diferencias pareadas, presupuesto/gasto de intervención cuando está configurado, parámetros, hash y límites. [Implementación](../frontend/src/lib/mayor-report.ts), [pruebas](../frontend/src/lib/mayor-report.test.ts). El PDF queda pendiente.
 
 **Alcance:**
 
