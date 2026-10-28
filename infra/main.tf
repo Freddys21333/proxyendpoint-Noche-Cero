@@ -4,7 +4,7 @@ locals {
     health  = { handler = "api.health.handler", memory = 256, timeout = 5, route = "GET /v1/health" }
     config  = { handler = "api.config.handler", memory = 256, timeout = 5, route = "GET /v1/config" }
     preview = { handler = "api.preview.handler", memory = 1024, timeout = 28, route = "POST /v1/scenarios/preview" }
-    compare = { handler = "api.compare.handler", memory = 2048, timeout = 28, route = "POST /v1/simulations/compare" }
+    compare = { handler = "api.compare.handler", memory = 3008, timeout = 28, route = "POST /v1/simulations/compare" }
     report  = { handler = "api.report.handler", memory = 2048, timeout = 28, route = "POST /v1/reports/mayor" }
   }
 }
@@ -74,15 +74,17 @@ resource "aws_lambda_function" "function" {
   reserved_concurrent_executions = each.key == "compare" ? var.compare_reserved_concurrency : -1
   environment {
     variables = {
-      ENGINE_VERSION             = "0.1.0"
-      SCHEMA_VERSION             = "1.0"
-      BUILD_COMMIT               = var.build_commit
-      LOCAL_JOBS_ENABLED         = "0"
-      MAX_REQUEST_BYTES          = "65536"
-      MAX_RESPONSE_BYTES         = "5242880"
-      MAX_DECODED_RESPONSE_BYTES = "33554432"
-      MAX_EDGES                  = "100000"
-      MAX_FRAME_STATES           = "400000"
+      ENGINE_VERSION               = "0.1.0"
+      SCHEMA_VERSION               = "1.0"
+      BUILD_COMMIT                 = var.build_commit
+      LOCAL_JOBS_ENABLED           = "0"
+      DEPLOYMENT_PROFILE           = "staging-bounded-v1"
+      MAX_SYNC_EDGE_DAY_REPLICATES = "3000000"
+      MAX_REQUEST_BYTES            = "65536"
+      MAX_RESPONSE_BYTES           = "5242880"
+      MAX_DECODED_RESPONSE_BYTES   = "33554432"
+      MAX_EDGES                    = "100000"
+      MAX_FRAME_STATES             = "400000"
     }
   }
   depends_on = [aws_iam_role_policy.logs]

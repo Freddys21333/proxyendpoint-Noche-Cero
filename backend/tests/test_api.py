@@ -86,6 +86,22 @@ def test_config_defaults_limits_and_contract():
     assert payload["features"]["asyncJobs"] is False
 
 
+def test_staging_profile_publishes_explicit_defaults_and_rejects_excess(monkeypatch):
+    from api.compare import handler as compare
+    from api.config import handler as config
+
+    monkeypatch.setenv("DEPLOYMENT_PROFILE", "staging-bounded-v1")
+    defaults = decode(config(event("/config"), None))["defaults"]
+    assert defaults["scenario"]["populationSize"] == 300
+    assert defaults["scenario"]["days"] == 30
+    assert defaults["repetitions"] == 30
+    graph_hash = decode(preview())["graphHash"]
+    monkeypatch.setenv("MAX_SYNC_EDGE_DAY_REPLICATES", "1")
+    response = compare(compare_request(graph_hash), None)
+    assert response["statusCode"] == 422
+    assert "síncrono" in decode(response)["error"]["message"]
+
+
 @pytest.mark.parametrize("frames", [False, True])
 def test_preview_compare_real_schema_and_reproduction(frames):
     from api.compare import handler

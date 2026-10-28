@@ -49,3 +49,13 @@ planes, credenciales y paquetes no se versionan. Las lockfiles sí.
 Revisar `terraform plan -destroy` del stack de aplicación antes de destruirlo.
 Conservar el bootstrap y su historial. Eliminar el sitio no borra cargos ya
 incurridos ni convierte una alerta de Budget en límite de consumo.
+
+## Perfil operativo de staging
+
+Las mediciones iniciales del caso N=1000/T=90/R=30 agotaron 28 s en Lambda,
+tanto con 2048 como con 3008 MB. La cuenta rechazó 4096 MB: máximo 3008.
+Por ello el despliegue publica explícitamente defaults N=300/T=30/R=30
+(`DEPLOYMENT_PROFILE=staging-bounded-v1`) y rechaza antes del motor cargas que
+superen 3 000 000 arista-día-réplica (`MAX_SYNC_EDGE_DAY_REPLICATES`). El perfil
+local conserva los defaults anteriores; no cambia ninguna semilla ni el motor.
+El error 422 permite reducir la carga. No se acredita el benchmark original.
