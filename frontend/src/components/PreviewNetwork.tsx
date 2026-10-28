@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, Sparkles, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily, InventoryDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -168,27 +168,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     'no-frames': 'Este resultado no incluye trayectoria individual.',
     representative: '',
   }[playback.mode]
-  const transport = <section className="persistent-playback playback-transport" aria-label="Reproducción de la simulación">
-    <div className="playback-heading"><h3>Reproducción</h3><div className="playback-time">{frames ? <><span>Día</span><strong>{currentDay} <small>/ {lastDay}</small></strong></> : <span>Sin trayectoria</span>}</div></div>
-    <div className="playback-actions">
-      <Button type="button" variant="ghost" className="playback-primary" aria-label="Reproducir simulación" aria-describedby={!frames ? 'playback-availability' : undefined} title="Reproducir" disabled={!frames || playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} />{playing ? 'Reproduciendo' : 'Reproducir'}</Button>
-      <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!frames || !playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
-      <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" disabled={!frames} onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
-      <Button type="button" variant="ghost" aria-label="Retroceder un día" title="Día anterior" disabled={!frames || currentDay <= 0} onClick={() => dispatch({ type: 'step-back' })}><StepBack size={17} /></Button>
-      <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={!frames || currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
-    </div>
-    <div className="playback-accessibility-row">
-      <button type="button" className={`playback-motion-toggle${playback.reducedMotion ? ' active' : ''}`}
-        aria-pressed={Boolean(playback.reducedMotion)}
-        onClick={() => dispatch({ type: 'reduced-motion', enabled: !playback.reducedMotion })}
-        title={playback.reducedMotion ? 'Desactivar modo de movimiento reducido' : 'Activar modo de movimiento reducido'}>
-        {playback.reducedMotion ? 'Movimiento reducido' : 'Movimiento normal'}
-      </button>
-      <span className="playback-keyboard-hint" title="Atajos accesibles: Espacio (Play/Pausa), ← / → (Retroceder/Avanzar día), Inicio (Día 0)">Atajos: Espacio, ← / →</span>
-    </div>
-    {!frames && <p id="playback-availability" role="status">{availability}</p>}
-  </section>
-  return <div className="simulator-workbench network-workbench">
+  return <div className={`simulator-workbench network-workbench${playback.reducedMotion ? ' reduced-motion' : ''}`}>
     <section className={`network-demo-panel simulation-visualizer${active ? '' : ' simulation-outdated'}`} aria-label={!active ? 'Vista previa pendiente' : showNetwork ? 'Red real de la vista previa' : 'Mapa geográfico de Manta'}>
       <div className="simulation-visualizer-content" inert={!active} aria-hidden={!active}>
       <header className="network-demo-heading"><h2>{showNetwork ? 'Red de contactos' : 'Mapa de Manta'}</h2>{viewSelector}<span>{frames ? `Réplica ${playback.representativeIndex} · ${policyLabels[policy]}` : 'Vista previa · sin vacunación'} · {graph.nodes.length} personas · Día {currentDay}</span></header>
@@ -245,17 +225,65 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     </section>
     <FloatingSimulationControls actions={panelActions}>
       {frames && <details className="sidebar-section" open><summary>Reproducción y estrategia</summary>
-        {transport}
-        <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
-          <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
-          <fieldset className="playback-settings" disabled={!frames}>
-          <label>Estrategia que estás visualizando <select aria-label="Estrategia que estás visualizando" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
-          <div className="network-playback" role="group" aria-label="Reproductor de simulación real">
-            <label className="playback-timeline"><span>{!frames ? 'Día de reproducción' : playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'Explorar días'}</span><input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label>
-            <label className="playback-speed"><span>Velocidad</span><select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>0,5×</option><option value={700}>1×</option><option value={350}>2×</option><option value={175}>4×</option></select></label>
+        <section className="persistent-playback playback-transport real-playback" aria-label="Reproducción de la simulación">
+          <div className="playback-heading">
+            <h3>Reproducción</h3>
+            <div className="playback-time">
+              <span>Día</span><strong>{currentDay} <small>/ {lastDay}</small></strong>
+            </div>
           </div>
-          </fieldset>
-          {frames && <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>}
+          <div className="playback-actions">
+            <Button type="button" variant="ghost" className="playback-primary" aria-label="Reproducir simulación" aria-describedby={!frames ? 'playback-availability' : undefined} title="Reproducir" disabled={!frames || playing} onClick={() => dispatch({ type: 'toggle' })}><Play size={17} />{playing ? 'Reproduciendo' : 'Reproducir'}</Button>
+            <Button type="button" variant="ghost" aria-label="Pausar simulación" title="Pausar" disabled={!frames || !playing} onClick={() => dispatch({ type: 'pause' })}><Pause size={17} /></Button>
+            <Button type="button" variant="ghost" aria-label="Reiniciar simulación" title="Volver al día 0" disabled={!frames} onClick={() => dispatch({ type: 'reset' })}><RotateCcw size={17} /></Button>
+            <Button type="button" variant="ghost" aria-label="Retroceder un día" title="Día anterior" disabled={!frames || currentDay <= 0} onClick={() => dispatch({ type: 'step-back' })}><StepBack size={17} /></Button>
+            <Button type="button" variant="ghost" aria-label="Avanzar un día" title="Día siguiente" disabled={!frames || currentDay >= lastDay} onClick={() => dispatch({ type: 'step' })}><StepForward size={17} /></Button>
+          </div>
+          <div className="playback-timeline-group network-playback" role="group" aria-label="Línea de tiempo y velocidad de reproducción">
+            <div className="playback-timeline-header">
+              <span className="playback-timeline-title">Explorar días</span>
+              <span className="playback-timeline-badge">{playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : `Día ${currentDay} de ${lastDay}`}</span>
+            </div>
+            <label className="playback-timeline">
+              <span className="sr-only">Día de la réplica</span>
+              <input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} />
+            </label>
+            <div className="playback-speed-row">
+              <label className="playback-speed">
+                <span>Velocidad</span>
+                <select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}>
+                  <option value={1400}>0,5×</option>
+                  <option value={700}>1×</option>
+                  <option value={350}>2×</option>
+                  <option value={175}>4×</option>
+                </select>
+              </label>
+              <span className="playback-status-pill">{currentDay === lastDay ? 'Final alcanzado' : playing ? 'En reproducción' : 'En pausa'}</span>
+            </div>
+          </div>
+          <p className="playback-status-summary" role="status">{`Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.`}</p>
+          <div className="playback-accessibility-row">
+            <button type="button" className={`playback-motion-toggle${playback.reducedMotion ? ' active' : ''}`}
+              aria-pressed={Boolean(playback.reducedMotion)}
+              onClick={() => dispatch({ type: 'reduced-motion', enabled: !playback.reducedMotion })}
+              title={playback.reducedMotion ? 'Desactivar modo de movimiento reducido (volver a animaciones normales)' : 'Activar modo de movimiento reducido para evitar mareo o sensibilidad visual'}
+              aria-label={playback.reducedMotion ? 'Desactivar movimiento reducido' : 'Activar movimiento reducido para accesibilidad'}>
+              <Sparkles size={13} aria-hidden="true" />
+              <span>{playback.reducedMotion ? 'Movimiento reducido' : 'Movimiento normal'}</span>
+            </button>
+            <span className="playback-keyboard-hint" title="Atajos accesibles: Espacio (Play/Pausa), ← / → (Retroceder/Avanzar día), Inicio (Día 0)">Atajos: Espacio, ← / →</span>
+          </div>
+          <p className="playback-motion-explanation">{playback.reducedMotion ? 'Modo accesible activo: animaciones minimizadas.' : 'Accesibilidad: reduce animaciones si tienes sensibilidad al movimiento.'}</p>
+          {!frames && <p id="playback-availability" role="status">{availability}</p>}
+        </section>
+        <section className="playback-strategy-group" aria-label="Estrategia visualizada">
+          <label className="playback-strategy-label">
+            <span>Estrategia que estás visualizando</span>
+            <select aria-label="Estrategia que estás visualizando" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>
+              {((['none', 'random', 'targeted']) as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}
+            </select>
+          </label>
+          <p className="playback-strategy-note">R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>
         </section>
       </details>}
       {children}

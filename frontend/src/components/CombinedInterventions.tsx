@@ -24,14 +24,15 @@ export function CombinedInterventions({ value, onChange, days, population }: {
       <ResourceScheduleEditor value={value.resourceSchedule} days={days} population={population} initialSupplies={value.brigadeDailyCapacity * value.brigadeDays} onChange={schedule => {
         const next = { ...value }; if (schedule) next.resourceSchedule = schedule; else delete next.resourceSchedule; onChange(next)
       }} />
-      <details><summary>Cierre temporal de contactos</summary>
-        <label className="field"><span>Tipo de contacto a cerrar</span><select value={value.closureContext} onChange={event => onChange({ ...value, closureContext: event.target.value as CombinedPlan['closureContext'] })}>
+      <details><summary>Suspender contactos por unos días</summary>
+        <p>Si alcanza el presupuesto, se suspenden estos contactos durante los días elegidos.</p>
+        <label className="field"><span>Contactos que se suspenden</span><select value={value.closureContext} onChange={event => onChange({ ...value, closureContext: event.target.value as CombinedPlan['closureContext'] })}>
           <option value="household">Hogares</option><option value="school">Colegios</option><option value="bus">Rutas de bus</option><option value="market">Mercado</option><option value="neighborhood">Barrios</option>
         </select></label>
-        <div className="configuration-fields">{number('Costo por día de cierre (USD)', 'closureCostCents', 10000, true)}{number('Inicio del cierre', 'closureStart', days)}{number('Días de cierre (0 desactiva)', 'closureDays', days)}</div>
+        <div className="configuration-fields">{number('Costo por día (USD)', 'closureCostCents', 10000, true)}{number('Día de inicio del cierre', 'closureStart', days)}{number('Duración del cierre (días; 0 desactiva)', 'closureDays', days)}</div>
       </details>
-      <details><summary>Brigadas simuladas</summary><p>Reducen temporalmente el contagio en personas sanas. No curan ni inmunizan.</p>
-        <div className="configuration-fields">{number('Costo por persona y día (USD)', 'brigadeCostCents', 10000, true)}{number('Personas atendidas por día', 'brigadeDailyCapacity', population)}{number('Reducción de transmisión (%)', 'brigadeReduction', 100, false, true)}{number('Inicio de brigadas', 'brigadeStart', days)}{number('Días de brigadas (0 desactiva)', 'brigadeDays', days)}</div>
+      <details><summary>Brigadas de prevención</summary><p>Reducen temporalmente el contagio de las personas atendidas. No curan ni inmunizan.</p>
+        <div className="configuration-fields">{number('Costo por persona y día (USD)', 'brigadeCostCents', 10000, true)}{number('Personas atendidas por día', 'brigadeDailyCapacity', population)}{number('Reducción del contagio (%)', 'brigadeReduction', 100, false, true)}{number('Día de inicio de brigadas', 'brigadeStart', days)}{number('Duración de brigadas (días; 0 desactiva)', 'brigadeDays', days)}</div>
       </details>
       <AdaptiveStrategyEditor value={value.adaptiveStrategy} onChange={adaptiveStrategy => {
         const next = { ...value }; if (adaptiveStrategy) next.adaptiveStrategy = adaptiveStrategy; else delete next.adaptiveStrategy; onChange(next)

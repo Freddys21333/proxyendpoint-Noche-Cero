@@ -15,6 +15,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 
 ## Documentación
 
+- [Plan de mejoras a partir del feedback docente](docs/plan-feedback-docentes.md): estado actual, prioridades, aceptación y trabajo seguro con Codex.
 - [Traspaso operativo para agentes](AGENTS.md) y [contexto detallado](docs/traspaso-agentes.md).
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
