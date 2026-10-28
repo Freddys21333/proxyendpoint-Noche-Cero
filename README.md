@@ -122,6 +122,8 @@ Para retirar, revisar y aplicar el plan de destrucción del stack de aplicación
 
 ## Arquitectura y decisiones de diseño
 
+Descargar diagrama actualizado: [PNG en alta resolución](docs/arquitectura-aws.png) · [SVG vectorial](docs/arquitectura-aws.svg).
+
 ```mermaid
 flowchart TD
   U[Interfaz React / Amplify] --> A[HTTP API Gateway]
