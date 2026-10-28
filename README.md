@@ -15,7 +15,6 @@ Es una simulación educativa: no predice epidemias reales ni usa pacientes o pos
 - Curvas, diferencias pareadas, conclusión de resultados y reproducción sincronizada de una réplica en red/mapa.
 - Trabajos Monte Carlo, progreso, cancelación y descarga de resultados.
 - Exportación JSON/ZIP/CSV, hash reproducible e informe PDF/HTML en lenguaje sencillo.
-- Serie real provincial de dengue con procedencia documentada y un ajuste experimental etiquetado **«Ajustado, no validado»**. No equivale al brote ficticio ni demuestra riesgo de Manta.
 
 ## Ejecutar localmente
 
@@ -142,7 +141,6 @@ Contratos y detalles: [PRD](PRD.md), [TRD](TRD.md), [diseño](specs/design.md), 
 - Monte Carlo AWS admite 2..1000 réplicas sujeto al máximo de 50 millones de arista-día-réplica. **100 réplicas verificadas en AWS; 1000 pendientes de ejecución real.** La cifra máxima no garantiza cualquier tamaño de red/horizonte.
 - El sitio no autentica usuarios; las tres admisiones diarias son compartidas. Un visitante puede ocupar la cuota. No hay cuota monetaria individual ni garantía de disponibilidad pública ilimitada.
 - Metadatos con expiración de 24 h y artefactos S3 con lifecycle de un día; limpieza física eventual. Enlaces firmados de cinco minutos; resultados limitados a 32 MiB descomprimidos.
-- El preset dengue `manabi-dengue-2025-v1` pierde frente a persistencia en validación y conserva `fitted-not-validated`. Los datos son provinciales y preliminares; no permiten afirmar riesgo local real.
 - La aceptación humana integral, evaluación táctil y algunos objetivos de rendimiento siguen pendientes. Las pruebas automatizadas no sustituyen esa aceptación.
 - El Budget tiene alertas configuradas, pero las capturas muestran destinatarios pendientes de verificación; no se acredita recepción de avisos.
 
@@ -169,4 +167,4 @@ AWS Budget está configurado por **USD 20 mensuales** (octubre completo), con al
 | `scripts/` | Servidor local, empaquetado, reproducción, despliegue y verificaciones |
 | `docs/evidencia/` | Resultados ejecutados y límites observados |
 
-[Backlog técnico](specs/tasks.md) · [Hoja de ruta Monte Carlo y extensiones](specs/pro-roadmap.md) · [Feedback docente](docs/plan-feedback-docentes.md) · [Entrada para agentes](AGENTS.md).
+[Backlog técnico](specs/tasks.md) · [Hoja de ruta Monte Carlo y extensiones](specs/pro-roadmap.md) · [Entrada para agentes](AGENTS.md).

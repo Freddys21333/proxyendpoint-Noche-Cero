@@ -236,7 +236,7 @@ Si el MSP publica una revisión del PDF en la misma URL, `download` y `extract` 
 - El control de 2025 es **indirecto** (tasas por 100 000), no una tabla de casos.
 - El dataset no alimenta el motor SEIR; la calibración es P-06 y se prueba en la sección 5.
 
-Evidencia: [p05-dengue-manabi-2026-10-27.md](evidencia/p05-dengue-manabi-2026-10-27.md) y figura [p05-dengue-manabi.svg](evidencia/figuras/p05-dengue-manabi.svg).
+Evidencia: [p05-dengue-manabi-2026-10-27.md](https://github.com/Freddys21333/proxyendpoint-Noche-Cero/blob/9a1391d00d396a6d6662c4ec09a85fbe6df7767f/docs/evidencia/p05-dengue-manabi-2026-10-27.md) y figura [p05-dengue-manabi.svg](https://github.com/Freddys21333/proxyendpoint-Noche-Cero/blob/9a1391d00d396a6d6662c4ec09a85fbe6df7767f/docs/evidencia/figuras/p05-dengue-manabi.svg).
 
 ## 5. P-06 — Calibración y preset versionado de dengue
 
@@ -327,7 +327,7 @@ Precondición: API en `:8000` y Vite en `:5174`; vista **Explorar red**.
 | P06-B3 | «Consultar red» con el preset cargado | `POST /v1/scenarios/preview` → 200; 1 000 personas, 59 373 contactos, semilla 20261026 |
 | P06-B4 | Pulsar «Volver al brote ficticio» | `β` vuelve a 0.08; el panel deja de estar activo; aviso de modo ficticio restablecido |
 
-Figura: `docs/evidencia/figuras/p06-preset-dengue.jpeg`. Informe: [p06-dengue-manabi-2026-10-27.md](evidencia/p06-dengue-manabi-2026-10-27.md).
+Figura: `docs/evidencia/figuras/p06-preset-dengue.jpeg`. Informe: [p06-dengue-manabi-2026-10-27.md](https://github.com/Freddys21333/proxyendpoint-Noche-Cero/blob/9a1391d00d396a6d6662c4ec09a85fbe6df7767f/docs/evidencia/p06-dengue-manabi-2026-10-27.md).
 
 ### 5.4 Límites
 

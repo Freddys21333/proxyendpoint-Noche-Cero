@@ -348,7 +348,7 @@ No cambiar hashes, defaults, fórmulas, contratos ni semillas sin actualizar pru
 - [x] P-05 cerrado en local: fuente oficial, procedencia, hash, normalización, controles de totales y límites declarados.
 - La fuente es **provincial** y **preliminar**: no hay Manta ni datos cantonales; 2026 llega a la SE 41.
 - El dataset **no alimenta el motor SEIR** (`wired_into_simulator = false`). Importar datos no es calibrar.
-- [x] P-06 cerrado en local con resultado desfavorable: `manabi-dengue-2025-v1` (`fitted-not-validated`), ventanas fijadas antes de mirar, bootstrap, perfil condicional y puente al motor. Evidencia: [p06-dengue-manabi-2026-10-27](evidencia/p06-dengue-manabi-2026-10-27.md).
+- [x] P-06 cerrado en local con resultado desfavorable: `manabi-dengue-2025-v1` (`fitted-not-validated`), ventanas fijadas antes de mirar, bootstrap, perfil condicional y puente al motor. Evidencia: [p06-dengue-manabi-2026-10-27](https://github.com/Freddys21333/proxyendpoint-Noche-Cero/blob/9a1391d00d396a6d6662c4ec09a85fbe6df7767f/docs/evidencia/p06-dengue-manabi-2026-10-27.md).
 - No re-tunear ventanas, semillas ni parámetros para mejorar la validación. `N`–`ρ` siguen confundidos y el motor no admite la ventana de 371 días.
 - No inventar datos ni repartir casos provinciales sin metodología.
 
