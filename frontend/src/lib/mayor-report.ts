@@ -30,7 +30,11 @@ function pairSummary(label: string, mean: number, p05: number, p95: number, boot
   return `<li><strong>${escapeHtml(label)}:</strong> ${number(mean)} infectados de diferencia media; rango empírico P05–P95 de ${number(p05)} a ${number(p95)}. ${interval}</li>`
 }
 
-export function buildMayorReportHtml(result: CompareResponse): string {
+export interface MayorReportOptions {
+  autoPrint?: boolean
+}
+
+export function buildMayorReportHtml(result: CompareResponse, options: MayorReportOptions = {}): string {
   const { configuration, manifest, summaryByPolicy, pairedComparisons, recommendation } = result
   const { scenario, intervention } = configuration
   const sampleSize = result.progress.replicatesSucceeded
@@ -52,18 +56,56 @@ export function buildMayorReportHtml(result: CompareResponse): string {
     const spend = meanObservedSpend(result, policy)
     return `<tr><th scope="row">${policyLabels[policy]}</th><td>${spend === null ? 'No disponible' : money(spend)}</td><td>${spend === null ? 'No disponible' : money(intervention.combined!.budgetCents - spend)}</td></tr>`
   }).join('')}</tbody></table><p>Los costos unitarios y los efectos son educativos, configurados para el escenario. No son costos sanitarios observados.</p></section>` : '<section><h2>Recursos y presupuesto</h2><p>Este escenario no configuró un presupuesto combinado de intervención. No se reporta gasto operativo real.</p></section>'
+
+  const adaptive = intervention.combined?.adaptiveStrategy
+  const adaptiveSection = adaptive ? `<section><h2>Variante adaptativa evaluada</h2><p>La estrategia dirigida utilizó la política adaptativa <strong>${escapeHtml(adaptive.modelVersion)}</strong>${adaptive.enabled === false ? ' (deshabilitada para esta ejecución)' : ''}.</p><ul>
+    <li>Umbral de cierre de contexto: ${(adaptive.closureInfectionThreshold * 100).toFixed(1)}% de infectados activos.</li>
+    <li>Umbral de reapertura: ${(adaptive.reopenInfectionThreshold * 100).toFixed(1)}% de infectados activos.</li>
+    <li>Prioridad de anillo (contactos de casos activos): ${adaptive.ringVaccinationPriority ? 'Habilitada' : 'Deshabilitada'}.</li>
+  </ul><p>Las decisiones se adoptaron día a día observando únicamente estados reales acumulados y recursos restantes, sin predicción del futuro.</p></section>` : ''
+
   const limitations = [...recommendation.limitations, 'El escenario usa una población sintética y una plaga ficticia. No representa dengue real ni predice brotes.', 'Los resultados describen las réplicas incluidas y pueden variar con otros escenarios o semillas.'].filter((item, index, all) => all.indexOf(item) === index)
   const list = (values: string[]) => values.length ? `<ul>${values.map(value => `<li>${escapeHtml(value)}</li>`).join('')}</ul>` : '<p>No se registraron límites adicionales en la respuesta del motor.</p>'
+
+  const autoPrintScript = options.autoPrint ? '<script>window.addEventListener("load",()=>{window.print()});</script>' : ''
+
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Informe del escenario ficticio</title>
 <style>
-  :root{color-scheme:light;font-family:Arial,Helvetica,sans-serif;color:#17201d;background:#fff}body{max-width:900px;margin:0 auto;padding:40px 48px;line-height:1.5}header{border-bottom:3px solid #175b50;padding-bottom:18px}h1{font-size:30px;margin:0 0 8px}h2{font-size:19px;margin:28px 0 8px;color:#175b50}.label{display:inline-block;background:#fff1d6;border:1px solid #8d5b00;padding:5px 9px;font-weight:700;font-size:12px;letter-spacing:.04em}.lead{font-size:18px;font-weight:600}.meta{color:#47534e;font-size:13px}table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:14px}th,td{border:1px solid #aebbb5;padding:8px;text-align:left}thead{background:#edf3f0}caption{text-align:left;font-weight:700;padding:6px 0}li{margin:5px 0}.hash{overflow-wrap:anywhere;font-family:monospace;font-size:12px}.print{border:0;background:#175b50;color:white;padding:10px 14px;font-size:15px;border-radius:4px;cursor:pointer;margin:0 0 22px}.footer{border-top:1px solid #aebbb5;margin-top:26px;padding-top:12px;font-size:12px;color:#47534e}@media print{body{max-width:none;padding:12mm 14mm}.print{display:none}h2{break-after:avoid}table,section{break-inside:avoid}a{color:inherit}}
-</style></head><body>
-<button class="print" type="button" onclick="window.print()">Imprimir o guardar como PDF</button>
+  :root{color-scheme:light;font-family:Arial,Helvetica,sans-serif;color:#17201d;background:#fff}
+  body{max-width:900px;margin:0 auto;padding:40px 48px;line-height:1.5}
+  header{border-bottom:3px solid #175b50;padding-bottom:18px}
+  h1{font-size:30px;margin:0 0 8px}
+  h2{font-size:19px;margin:28px 0 8px;color:#175b50}
+  .label{display:inline-block;background:#fff1d6;border:1px solid #8d5b00;padding:5px 9px;font-weight:700;font-size:12px;letter-spacing:.04em}
+  .lead{font-size:18px;font-weight:600}
+  .meta{color:#47534e;font-size:13px}
+  table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:14px}
+  th,td{border:1px solid #aebbb5;padding:8px;text-align:left}
+  thead{background:#edf3f0}
+  caption{text-align:left;font-weight:700;padding:6px 0}
+  li{margin:5px 0}
+  .hash{overflow-wrap:anywhere;font-family:monospace;font-size:12px}
+  .print-actions{display:flex;gap:10px;margin:0 0 22px}
+  .print-btn{border:0;background:#175b50;color:white;padding:10px 14px;font-size:15px;border-radius:4px;cursor:pointer}
+  .footer{border-top:1px solid #aebbb5;margin-top:26px;padding-top:12px;font-size:12px;color:#47534e}
+  @page{size:A4 portrait;margin:15mm 15mm 15mm 15mm}
+  @media print{
+    body{max-width:none;padding:0;color:#111;background:#fff;font-size:10.5pt;line-height:1.4}
+    .print-actions{display:none !important}
+    h1{font-size:19pt !important;margin-bottom:4pt !important}
+    h2{font-size:13pt !important;margin-top:14pt !important;margin-bottom:5pt !important;break-after:avoid}
+    table,section{break-inside:avoid}
+    th,td{padding:5pt 7pt !important;font-size:9.5pt !important}
+    a{color:inherit;text-decoration:none}
+  }
+</style>${autoPrintScript}</head><body>
+<div class="print-actions"><button class="print-btn" type="button" onclick="window.print()">Imprimir o guardar como PDF</button></div>
 <header><span class="label">ESCENARIO FICTICIO · USO EDUCATIVO</span><h1>Informe de resultados</h1><p>Resumen para revisión del comité y autoridades locales.</p></header>
 <section><h2>Qué muestra esta simulación</h2><p class="lead">${escapeHtml(comparisonText)}</p><p>${escapeHtml(confidenceText)}</p><p>Se compararon ${sampleSize} réplicas pareadas. Cada política recibió los mismos parámetros, red y condiciones iniciales.</p></section>
 <section><h2>Resultados de infectados acumulados</h2><table><caption>Resumen entre réplicas; no es el resultado de una sola corrida</caption><thead><tr><th>Estrategia</th><th>Media</th><th>Mediana</th><th>Rango empírico P05–P95</th><th>Réplicas</th></tr></thead><tbody>${rows}</tbody></table><p>Una diferencia negativa en las comparaciones pareadas significa que la estrategia comparada registró más infectados que su referencia. Los empates y las pérdidas permanecen dentro del resumen.</p><ul>${comparisons}</ul></section>
 ${budget}
+${adaptiveSection}
 <section><h2>Parámetros del escenario</h2><ul><li>Población sintética: ${scenario.populationSize} personas.</li><li>Duración simulada: ${scenario.days} ${scenario.days === 1 ? 'día' : 'días'}.</li><li>Casos iniciales: ${scenario.initialInfectious}.</li><li>Réplicas solicitadas: ${configuration.repetitions}; semilla raíz: ${configuration.rootSeed}.</li><li>Modelo: ${escapeHtml(manifest.engineVersion)}.</li></ul></section>
 <section><h2>Límites de interpretación</h2>${list(limitations)}</section>
 <footer class="footer"><p>Hash del experimento: <span class="hash">${escapeHtml(manifest.experimentHash)}</span></p><p>Build ${escapeHtml(manifest.buildCommit)} · Esquema ${escapeHtml(manifest.schemaVersion)} · Fecha de resultado ${escapeHtml(result.generatedAt)}.</p><p>Las cifras se transcriben de la respuesta validada del motor. El informe no modifica el experimento.</p></footer>

@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync, unlinkSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { spawnSync } from 'node:child_process'
 import type { CompareResponse } from './api.ts'
 import { buildMayorReportHtml } from './mayor-report.ts'
 
@@ -43,4 +46,54 @@ test('report explains the shared educational budget without calling it AWS or re
   assert.match(html, /Sin intervención/)
   assert.match(html, /Aleatoria/)
   assert.match(html, /Dirigida/)
+})
+
+test('report includes adaptive strategy details when configured and supports autoPrint option', () => {
+  const result = fixture()
+  result.configuration.intervention.combined = {
+    modelVersion: 'combined-educational-v1', budgetCents: 15000, vaccineCostCents: 100,
+    closureCostCents: 50, closureContext: 'school', closureStart: 0, closureDays: 1,
+    brigadeCostCents: 25, brigadeDailyCapacity: 2, brigadeReduction: 0.3, brigadeStart: 0, brigadeDays: 1,
+    adaptiveStrategy: {
+      modelVersion: 'adaptive-policy-v1',
+      closureInfectionThreshold: 0.15,
+      reopenInfectionThreshold: 0.05,
+      ringVaccinationPriority: true,
+      enabled: true,
+    },
+  }
+  const html = buildMayorReportHtml(result, { autoPrint: true })
+  assert.match(html, /Variante adaptativa evaluada/i)
+  assert.match(html, /adaptive-policy-v1/)
+  assert.match(html, /15\.0%/)
+  assert.match(html, /5\.0%/)
+  assert.match(html, /Prioridad de anillo.*Habilitada/)
+  assert.match(html, /window\.print\(\)/)
+  assert.match(html, /@page/)
+})
+
+test('CLI script exports deterministic HTML and PDF reports from valid experiment JSON', () => {
+  const scriptPath = resolve('../scripts/export_mayor_report_pdf.mjs')
+  const fixturePath = resolve('../schemas/examples/compare-response-vaccines.json')
+  const outputHtml = resolve(tmpdir(), `test-mayor-report-${Date.now()}.html`)
+  const outputPdf = resolve(tmpdir(), `test-mayor-report-${Date.now()}.pdf`)
+
+  // Probar exportación HTML
+  const resHtml = spawnSync('node', ['--experimental-strip-types', scriptPath, fixturePath, '--output', outputHtml, '--html-only'], { encoding: 'utf8' })
+  assert.equal(resHtml.status, 0, resHtml.stderr)
+  assert.ok(existsSync(outputHtml))
+  const htmlContent = readFileSync(outputHtml, 'utf8')
+  assert.match(htmlContent, /ESCENARIO FICTICIO/)
+  assert.match(htmlContent, /sha256:eee/)
+  unlinkSync(outputHtml)
+
+  // Probar exportación PDF si Chromium está disponible
+  const resPdf = spawnSync('node', ['--experimental-strip-types', scriptPath, fixturePath, '--output', outputPdf], { encoding: 'utf8' })
+  assert.equal(resPdf.status, 0, resPdf.stderr)
+  if (existsSync(outputPdf)) {
+    const pdfBuf = readFileSync(outputPdf)
+    assert.ok(pdfBuf.length > 1000)
+    assert.equal(pdfBuf.subarray(0, 5).toString('ascii'), '%PDF-')
+    unlinkSync(outputPdf)
+  }
 })

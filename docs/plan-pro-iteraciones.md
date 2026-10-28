@@ -201,7 +201,7 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Decisión de dependencia (2026-10-28):** se adelanta solo la plantilla para experimentos ficticios con respuestas backend validadas, permitida por el roadmap. No se espera P-06 para presentar el resultado como dengue: el informe lo identifica como ficticio. P-05/P-06 siguen bloqueando cualquier informe calibrado. La primera entrega es HTML imprimible, no equivale al PDF directo requerido para cerrar I-06.
 
-**Estado 2026-10-28:** descarga HTML en español conectada a la comparación validada. Incluye medias, mediana, P05–P95, diferencias pareadas, presupuesto/gasto de intervención cuando está configurado, parámetros, hash y límites. [Implementación](../frontend/src/lib/mayor-report.ts), [pruebas](../frontend/src/lib/mayor-report.test.ts). El PDF queda pendiente.
+**Estado 2026-10-28:** generación directa de PDF y HTML en español conectada a la comparación validada, tanto en la interfaz web (diálogo de impresión A4 con descarga automática alternativa) como vía CLI documentado (`scripts/export_mayor_report_pdf.mjs`). Incluye medias, mediana, P05–P95, diferencias pareadas con bootstrap, presupuesto y gasto educativo de intervención P-01, variante adaptativa P-02, parámetros, hash y límites visibles. [Implementación](../frontend/src/lib/mayor-report.ts), [CLI](../scripts/export_mayor_report_pdf.mjs), [pruebas](../frontend/src/lib/mayor-report.test.ts) y [evidencia](../docs/evidencia/p08-informe-pdf-2026-10-28.md). I-06 cerrada para el modo ficticio.
 
 **Alcance:**
 

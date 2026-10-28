@@ -176,18 +176,36 @@ export default function App() {
       setNotice('No se pudo generar el ZIP del experimento. Puedes descargar el JSON e intentarlo nuevamente.');
     }
   };
-  const exportMayorReport = async () => {
+  const exportMayorReport = async (mode: 'print' | 'download' = 'print') => {
     if (!comparison) return;
     try {
       const { buildMayorReportHtml } = await import('@/lib/mayor-report');
-      const blob = new Blob([buildMayorReportHtml(comparison)], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `informe-alcaldia-${comparison.configuration.rootSeed}-${comparison.manifest.experimentHash.slice(7, 15)}.html`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setNotice('Informe descargado. Ábrelo y usa “Imprimir o guardar como PDF” para generar una copia PDF.');
+      if (mode === 'print') {
+        const html = buildMayorReportHtml(comparison, { autoPrint: true });
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url, '_blank');
+        if (!win) {
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `informe-alcaldia-${comparison.configuration.rootSeed}-${comparison.manifest.experimentHash.slice(7, 15)}.html`;
+          link.click();
+          setNotice('El navegador bloqueó la ventana emergente. Se descargó el archivo HTML para abrir e imprimir en PDF.');
+        } else {
+          setNotice('Ventana del informe abierta. Usa el diálogo de impresión para guardar como PDF.');
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      } else {
+        const html = buildMayorReportHtml(comparison, { autoPrint: false });
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `informe-alcaldia-${comparison.configuration.rootSeed}-${comparison.manifest.experimentHash.slice(7, 15)}.html`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setNotice('Informe descargado en HTML. Ábrelo y usa “Imprimir o guardar como PDF” si requieres el documento físico o digital.');
+      }
     } catch {
       setNotice('No se pudo generar el informe. El experimento y su JSON siguen disponibles.');
     }
