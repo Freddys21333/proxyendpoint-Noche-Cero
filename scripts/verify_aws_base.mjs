@@ -11,6 +11,7 @@ await mkdir(output, { recursive: true })
 const api = createApiClient(base)
 const health = await api.health()
 const config = await api.config()
+assert.equal(config.features.asyncJobs, false)
 const c = structuredClone(config.defaults)
 Object.assign(c, { repetitions: 2 })
 Object.assign(c.scenario, { populationSize: 60, days: 7, initialInfectious: 2 })
@@ -42,5 +43,10 @@ try {
   if (error.code !== 'ENOENT') throw error
 }
 const evidence = { health, features: config.features, samples }
+const excessive = structuredClone(config.defaults)
+Object.assign(excessive.scenario, { populationSize: 1000, days: 90 })
+const excessivePreview = await api.preview(excessive, undefined, config.limits)
+await assert.rejects(api.compareForPlayback(excessive, excessivePreview.graphHash, undefined, config.limits), error => error.status === 422 && error.message.includes('síncrono'))
+evidence.largeWorkloadRejected = true
 await writeFile(`${output}/summary.json`, JSON.stringify(evidence, null, 2))
 console.log(JSON.stringify(evidence, null, 2))

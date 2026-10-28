@@ -191,7 +191,7 @@ def _execute(
         return dict(
             **metadata,
             defaults=normalize_configuration(
-                {"scenario": {"populationSize": 300, "days": 30}}
+                {"scenario": {"populationSize": 200, "days": 20}}
                 if os.environ.get("DEPLOYMENT_PROFILE") == "staging-bounded-v1"
                 else {}
             ).to_dict(),

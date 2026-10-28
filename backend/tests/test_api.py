@@ -92,8 +92,8 @@ def test_staging_profile_publishes_explicit_defaults_and_rejects_excess(monkeypa
 
     monkeypatch.setenv("DEPLOYMENT_PROFILE", "staging-bounded-v1")
     defaults = decode(config(event("/config"), None))["defaults"]
-    assert defaults["scenario"]["populationSize"] == 300
-    assert defaults["scenario"]["days"] == 30
+    assert defaults["scenario"]["populationSize"] == 200
+    assert defaults["scenario"]["days"] == 20
     assert defaults["repetitions"] == 30
     graph_hash = decode(preview())["graphHash"]
     monkeypatch.setenv("MAX_SYNC_EDGE_DAY_REPLICATES", "1")
