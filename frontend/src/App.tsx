@@ -162,7 +162,7 @@ export default function App() {
       setComparison(loaded.comparison);
       setNotice("Parámetros del escenario cargado restaurados. La visualización vuelve a estar disponible.");
     } else {
-      setNotice("Configuración modificada. Consulta la red para aplicar los nuevos parámetros.");
+      setNotice("");
     }
     setErrors([]);
     setApiFailure(null);

@@ -204,7 +204,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
       </div>}
     </section>
     <FloatingSimulationControls actions={panelActions}>
-      {children}
       {frames && <details className="sidebar-section"><summary>Reproducción y estrategia</summary>
         {transport}
         <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
@@ -219,6 +218,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
           {frames && <p>R incluye personas recuperadas o inmunizadas. {schedule ? `La vacunación comienza el día ${comparison!.configuration.intervention.interventionDay} y continúa según inventario, capacidad y presupuesto.` : `Las vacunas se aplican al registrar el día ${comparison!.configuration.intervention.interventionDay}.`}</p>}
         </section>
       </details>}
+      {children}
       {(combined || hasComparison) && <details className="sidebar-section"><summary>Intervenciones y registro</summary>
       {combined && <p className="combined-budget-status">Presupuesto restante: <strong>{usd(budgetDay?.budgetRemainingCents ?? combined.budgetCents)}</strong> / {usd(combined.budgetCents)} · {budgetDay ? `Día ${currentDay} · ${policyLabels[policy]} · ${budgetDay.brigadesActive} personas atendidas por brigadas${budgetDay.closedContext ? ` · Contactos cerrados: ${vaccinationContexts[budgetDay.closedContext]}` : ''}` : 'Antes de simular'} · Supuestos educativos</p>}
       {schedule && <ResourceInventory row={inventoryDay} schedule={schedule} day={currentDay} initialVaccines={preview.configuration.intervention.vaccines} />}

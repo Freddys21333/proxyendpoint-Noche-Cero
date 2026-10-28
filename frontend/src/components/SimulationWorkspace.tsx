@@ -9,7 +9,7 @@ const GeographicMap = lazy(() => import('./GeographicMap'))
 
 // One playback controller keeps the map and contact network synchronized.
 export function SimulationWorkspace({ active = true, comparison = null, comparisonState = 'idle', ...props }: PreviewNetworkProps) {
-  const [view, setView] = useState<'network' | 'map'>('network')
+  const [view, setView] = useState<'network' | 'map'>('map')
   const [selectedPersonId, setSelectedPersonId] = useState('')
   const [focusRequest, setFocusRequest] = useState<{ id: number; version: number } | null>(null)
   const source = useMemo(() => getSimulationSource(props.preview, comparison, active, comparisonState), [props.preview, comparison, active, comparisonState])
@@ -24,7 +24,7 @@ export function SimulationWorkspace({ active = true, comparison = null, comparis
   const frames = presentation.mode === 'representative' ? source.frames : null
 
   useEffect(() => { dispatch({ type: 'reset' }) }, [comparison, active, props.preview, comparisonState])
-  useEffect(() => { setSelectedPersonId(''); setFocusRequest(null) }, [props.preview])
+  useEffect(() => { setView('map'); setSelectedPersonId(''); setFocusRequest(null) }, [props.preview])
   useEffect(() => {
     if (presentation.mode !== 'representative') { if (state.playing) dispatch({ type: 'pause' }); return }
     return schedulePlaybackTick({ ...state, day }, lastDay, () => dispatch({ type: 'tick' }))

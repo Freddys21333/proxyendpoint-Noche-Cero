@@ -111,6 +111,19 @@
 .geographic-person-search-row button { padding: 7px 10px; color: var(--map-ink); background: var(--map-surface); border: 1px solid var(--map-border); border-radius: 4px; white-space: nowrap; }
 .geographic-person-clear { display: flex; align-items: center; gap: 5px; margin-top: 10px; background: transparent; border: 0; color: var(--map-ink); font-size: 12px; }
 .geographic-agent-picker [role="alert"] { max-width: 260px; margin: 8px 0 0; color: var(--map-ink); font-size: 12px; }
+.noche-cero.simulator-page .simulator-workbench .floating-person-inspector.node-inspector { bottom: 150px; z-index: 950; max-height: calc(100% - 170px); overflow-y: auto; }
+.noche-cero.simulator-page .geographic-agent-picker { bottom: 150px; z-index: 950; border: 1px solid #82758a; border-radius: 5px; background: #201d28; max-height: calc(100% - 170px); overflow-y: auto; }
+.noche-cero .geographic-search-help { margin: 0 0 10px; color: #cabecb; font-size: 12px; line-height: 1.5; }
+.noche-cero .geographic-map .leaflet-popup-content { max-height: 200px; overflow-y: auto; }
+.noche-cero .configuration-panel .select-wrap select { border: 0; border-radius: 0; box-shadow: none; }
+.noche-cero .simulator-workbench .real-playback .network-playback { background: transparent; padding: 8px 0; }
+.noche-cero .simulator-workbench .playback-transport .playback-actions > button { background: #171620; color: #f1ece4; border: 1px solid #82758a; }
+.noche-cero .simulator-workbench .playback-transport .playback-actions > .playback-primary { background: #ff8250; color: #1c1517; border-color: #ff8250; }
+.noche-cero .simulator-workbench .playback-time > span { color: #cabecb; }
+.noche-cero .simulator-workbench .real-playback input[type="range"] { accent-color: #ff8250; }
+.noche-cero .strategy-explanation h3 { color: #ffb281; font-size: 16px; }
+.noche-cero .strategy-explanation dt { color: #ffcca5; font-weight: 600; font-size: 14px; }
+.noche-cero .strategy-explanation dl { gap: 14px; }
 .geographic-agent-picker :is(summary, input, button):focus-visible { outline: 2px solid var(--map-link); outline-offset: 2px; }
 
 @media (max-height: 650px) {
@@ -131,7 +144,7 @@
 @media (max-width: 700px) {
   .minimal-workspace.noche-cero.simulator-page { display: block; height: auto; min-height: 100dvh; overflow: visible; }
   .noche-cero.simulator-page .simulation-main { overflow: visible; }
-  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr); grid-template-rows: 280px auto; height: auto; }
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr); grid-template-rows: 400px auto; height: auto; }
   .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls,
   .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls[open] { height: auto; overflow: visible; }
   .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > .floating-controls-inner { flex: none; overflow: visible; }
@@ -152,6 +165,6 @@
   .noche-cero.simulator-page .vaccine-inventory-value strong { font-size: 17px; }
   .noche-cero.simulator-page .vaccine-inventory :is(small, .vaccine-inventory-value small) { font-size: 9px; }
   .noche-cero.simulator-page .simulator-workbench .network-playback-status { font-size: 9px; }
-  .noche-cero.simulator-page .geographic-agent-picker { bottom: 124px; left: 12px; font-size: 11px; }
+  .noche-cero.simulator-page .geographic-agent-picker { bottom: 150px; left: 12px; font-size: 11px; }
   .noche-cero.simulator-page .geographic-agent-picker > summary { padding: 7px 9px; }
 }
