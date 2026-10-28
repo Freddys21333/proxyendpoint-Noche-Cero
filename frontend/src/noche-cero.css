@@ -596,6 +596,15 @@
   box-shadow: none;
 }
 .noche-cero .configuration-panel .combined-settings input[type="checkbox"] { accent-color: var(--pumpkin); }
+.noche-cero .configuration-panel .combined-settings .input-wrap > input,
+.noche-cero .configuration-panel .combined-settings .input-wrap > input:is(:focus, :focus-visible) {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 0;
+  outline: none;
+  box-shadow: none;
+}
 .noche-cero .configuration-panel .combined-settings :is(details, .resource-schedule-editor, .resource-delivery) { border-color: var(--night-border); }
 .noche-cero .configuration-panel .combined-settings :is(summary, legend) { color: #f1ece4; }
 .noche-cero .configuration-panel .combined-settings select { color-scheme: light; }
