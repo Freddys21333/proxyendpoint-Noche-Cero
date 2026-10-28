@@ -56,7 +56,7 @@ export function buildMayorReportHtml(result: CompareResponse, options: MayorRepo
   }).join('')
   const impact = policies.map(policy => `<tr><th scope="row">${policyLabels[policy]}</th><td>${policy === 'none' ? 'Referencia' : number(paired.savedVsNone[policy].mean)}</td><td>${number(stats[policy].peakInfectious.mean)}</td><td>${number(stats[policy].vaccinesAssigned.mean)}</td><td>${number(stats[policy].cumulativeInfected.p05)} a ${number(stats[policy].cumulativeInfected.p95)}</td></tr>`).join('')
   const plan = intervention.combined
-  const budget = plan ? `<p>Presupuesto máximo educativo por estrategia: <strong>${money(plan.budgetCents)}</strong>. No es el gasto operativo real del sistema ni incluye AWS.</p><table><thead><tr><th>Estrategia</th><th>Gasto medio</th><th>Saldo medio</th></tr></thead><tbody>${policies.map(policy => {
+  const budget = plan ? `<p>Presupuesto máximo educativo por estrategia: <strong>${money(plan.budgetCents)}</strong>. No es el gasto operativo real del sistema.</p><table><thead><tr><th>Estrategia</th><th>Gasto medio</th><th>Saldo medio</th></tr></thead><tbody>${policies.map(policy => {
     const row = result.decisionSummary?.policies[policy]
     return `<tr><th scope="row">${policyLabels[policy]}</th><td>${row?.spentMeanCents == null ? 'No disponible' : money(row.spentMeanCents)}</td><td>${row?.remainingMeanCents == null ? 'No disponible' : money(row.remainingMeanCents)}</td></tr>`
   }).join('')}</tbody></table><p class="note">Son costos educativos, no precios de salud reales. Sin el resumen financiero del backend no se estima gasto.</p>`

@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import cytoscape from 'cytoscape'
-import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, Sparkles, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronDown, Crosshair, Pause, Play, RotateCcw, SlidersHorizontal, StepBack, StepForward, Syringe, UserRound, ZoomIn, ZoomOut } from 'lucide-react'
 import type { PreviewResponse, CompareResponse, Policy, VaccinationSelection, CombinedDaily, InventoryDaily } from '@/lib/api'
 import { policyLabels } from '@/lib/comparison'
 import { networkPositions, layoutModes, type NetworkLayout } from '@/lib/network-layout'
@@ -263,18 +263,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
             </div>
           </div>
           <p className="playback-status-summary" role="status">{`Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.`}</p>
-          <div className="playback-accessibility-row">
-            <button type="button" className={`playback-motion-toggle${playback.reducedMotion ? ' active' : ''}`}
-              aria-pressed={Boolean(playback.reducedMotion)} aria-describedby="motion-mode-help"
-              onClick={() => dispatch({ type: 'reduced-motion', enabled: !playback.reducedMotion })}
-              title={playback.reducedMotion ? 'Desactivar modo de movimiento reducido (volver a animaciones normales)' : 'Activar modo de movimiento reducido para evitar mareo o sensibilidad visual'}
-              aria-label={'Reducir movimiento'}>
-              <Sparkles size={13} aria-hidden="true" />
-              <span>Reducir movimiento: {playback.reducedMotion ? 'activado' : 'desactivado'}</span>
-            </button>
-            <span className="playback-keyboard-hint" title="Atajos accesibles: Espacio (Play/Pausa), ← / → (Retroceder/Avanzar día), Inicio (Día 0)">Atajos: Espacio, ← / →</span>
-          </div>
-          <p id="motion-mode-help" className="playback-motion-explanation">Normal: conserva las animaciones de la interfaz. Reducido: minimiza animaciones y transiciones. No cambia los días, la velocidad elegida ni los resultados.</p>
           {!frames && <p id="playback-availability" role="status">{availability}</p>}
         </section>
         <section className="playback-strategy-group" aria-label="Estrategia visualizada">

@@ -306,7 +306,7 @@ def render_pdf(report: dict[str, Any]) -> bytes:
     plan = intervention.get("combined")
     if plan:
         y = text(
-            f"Presupuesto máximo por estrategia: {money(plan['budgetCents'])}. Importes educativos, no precios sanitarios ni factura AWS.",
+            f"Presupuesto máximo por estrategia: {money(plan['budgetCents'])}. Importes educativos, no precios sanitarios reales.",
             y,
             size=9,
         )

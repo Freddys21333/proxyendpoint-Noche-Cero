@@ -42,7 +42,7 @@ def conclusion(best: list[Policy], rows: dict[Policy, dict[str, Any]], confidenc
             cheaper = ", ".join(labels[policy] for policy in cheapest)
             verb = "registra" if len(cheapest) == 1 else "registran"
             text += f" Entre las opciones empatadas, {cheaper} {verb} el menor gasto directo: {money(lowest_spend)}, con un presupuesto de {money(rows[best[0]]['budgetCents'])}."
-            text += " Gastar más no muestra un beneficio adicional en contagios medios. Son costos educativos y no incluyen el daño de los contagios ni AWS."
+            text += " Gastar más no muestra un beneficio adicional en contagios medios. Son costos educativos y no incluyen el daño de los contagios."
         else:
             text += " No se configuró presupuesto monetario para comparar costos y gastos."
         return text
@@ -95,7 +95,7 @@ def conclusion(best: list[Policy], rows: dict[Policy, dict[str, Any]], confidenc
             "No hay beneficio positivo frente a no intervenir para calcular costo por contagio evitado. El modelo no pone precio al daño de los contagios."
         )
     parts.append(
-        "Son costos educativos, no precios sanitarios ni gastos AWS. La recomendación no es una optimización económica."
+        "Son costos educativos, no precios sanitarios reales. La recomendación no es una optimización económica."
     )
     return " ".join(parts)
 
@@ -104,6 +104,16 @@ def summary_matches(actual: dict[str, Any], expected: dict[str, Any]) -> bool:
     """Los documentos v1 anteriores no contienen la conclusión aditiva."""
     if "conclusion" not in actual:
         expected = {key: value for key, value in expected.items() if key != "conclusion"}
+    if "conclusion" in actual:
+        actual = dict(actual)
+        actual["conclusion"] = (
+            actual["conclusion"]
+            .replace(
+                "no incluyen el daño de los contagios ni AWS.",
+                "no incluyen el daño de los contagios.",
+            )
+            .replace("no precios sanitarios ni gastos AWS.", "no precios sanitarios reales.")
+        )
     return actual == expected
 
 

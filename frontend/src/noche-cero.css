@@ -842,3 +842,10 @@
 
 .noche-dialog .modal-close { color: #f1ece4; background: #2b2632; border: 1px solid #635373; border-radius: 5px; }
 .noche-dialog .modal-close:hover { color: #ff8250; border-color: #ff8250; }
+
+/* Línea de tiempo compacta; estado y velocidad centrados como un único grupo. */
+.noche-cero .simulator-workbench .real-playback .playback-timeline-group { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; }
+.noche-cero .simulator-workbench .real-playback .playback-timeline { display: block; margin: 0; padding: 0; min-height: 0; }
+.noche-cero .simulator-workbench .real-playback .playback-timeline input[type="range"] { display: block; height: 20px; margin: 0; }
+.noche-cero .simulator-workbench .real-playback .playback-speed-row { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 0; padding-top: 6px; }
+.noche-cero .simulator-workbench .real-playback .playback-speed { display: flex; align-items: center; gap: 8px; }

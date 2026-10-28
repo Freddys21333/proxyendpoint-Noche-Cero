@@ -117,6 +117,15 @@ def test_legacy_summary_without_conclusion_still_loads_and_reproduces():
     assert reproduce(source) == source["manifest"]["experimentHash"]
 
 
+def test_legacy_cost_wording_remains_valid_without_changing_hash():
+    from simulation.decision_summary import summary_matches
+
+    expected = {"conclusion": "Son costos educativos, no precios sanitarios reales.", "value": 3}
+    old = {"conclusion": "Son costos educativos, no precios sanitarios ni gastos AWS.", "value": 3}
+    assert summary_matches(old, expected)
+    assert not summary_matches({**old, "value": 4}, expected)
+
+
 @pytest.mark.parametrize("budget", [0, 10000])
 def test_real_budget_inventory_and_recorded_omissions(budget):
     from test_combined import PLAN

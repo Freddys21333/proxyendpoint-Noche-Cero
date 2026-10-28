@@ -25,7 +25,7 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
       <h2>{rec.winner === 'tie' ? 'Empate en la media de infectados' : `Menor media de infectados: ${labels[rec.winner]}`}</h2>
       <p>{confidence[rec.confidence]}</p>
       <p>Objetivo: reducir el promedio de personas que se infectan durante la simulación.</p>
-      <p className="results-conclusion">{result.decisionSummary?.conclusion ?? 'La conclusión se basa en contagios medios. Para añadir la explicación económica del backend, genera una comparación nueva con la versión actual de la API.'}</p>
+      <p className="results-conclusion">{result.decisionSummary?.conclusion?.replace("no incluyen el daño de los contagios ni AWS.", "no incluyen el daño de los contagios.").replace("no precios sanitarios ni gastos AWS.", "no precios sanitarios reales.") ?? 'La conclusión se basa en contagios medios. Para añadir la explicación económica del backend, genera una comparación nueva con la versión actual de la API.'}</p>
       {rec.confidence !== 'supported' && <p>La menor media no demuestra por sí sola una ventaja consistente. No hay evidencia suficiente para recomendar una única estrategia con confianza.</p>}
       <details><summary>Por qué se obtuvo esta conclusión</summary><ul>{rec.reasons.map((reason, i) => <li key={i}>{reason.replaceAll('targeted', 'Dirigida').replaceAll('random', 'Aleatoria').replaceAll('none', 'Sin intervención')}</li>)}</ul></details>
       <p>Simulación educativa; no es una predicción sanitaria real.</p>
