@@ -6,6 +6,7 @@ import io
 import platform
 import uuid
 import zipfile
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from importlib.metadata import version
 from typing import Any, cast
@@ -236,9 +237,17 @@ def _validate(document: dict[str, Any]) -> None:
         raise ValueError("El resumen de decisión no coincide con las réplicas.")
 
 
-def export_experiment(
+@dataclass(frozen=True)
+class PreparedExperiment:
+    """Documento final y bytes validados para entrega inmediata, sin cache global."""
+
+    document: dict[str, Any]
+    json_body: bytes
+
+
+def prepare_experiment(
     result: dict[str, Any], *, build_commit: str = "unknown", request_id: str | None = None
-) -> dict[str, Any]:
+) -> PreparedExperiment:
     document = copy.deepcopy(result)
     manifest = dict(
         **runtime_versions(),
@@ -257,9 +266,16 @@ def export_experiment(
     manifest["experimentHash"] = experiment_hash(document)
     document["decisionSummary"] = decision_summary(document)
     _validate(document)
-    if len(canonical_json(document)) > MAX_DOCUMENT_BYTES:
+    raw = canonical_json(document)
+    if len(raw) > MAX_DOCUMENT_BYTES:
         raise ConfigurationError("RESULT_TOO_LARGE", 413, "El resultado supera 32 MiB.")
-    return document
+    return PreparedExperiment(document=document, json_body=raw)
+
+
+def export_experiment(
+    result: dict[str, Any], *, build_commit: str = "unknown", request_id: str | None = None
+) -> dict[str, Any]:
+    return prepare_experiment(result, build_commit=build_commit, request_id=request_id).document
 
 
 def load_export(body: bytes) -> dict[str, Any]:

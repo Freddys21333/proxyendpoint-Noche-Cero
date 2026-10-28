@@ -334,3 +334,5 @@ Reglas heredadas que no se pueden romper:
 | I-09 | Pendiente | — | — |
 
 **Nota post-merge (2026-10-27):** `5861407` integró P-02/P-03 backend y cliente. La verificación posterior dio 356 pruebas backend, 116 frontend y hashes base preservados; el detalle y todo lo pendiente están en [estado post-merge](evidencia/estado-post-merge-2026-10-27.md).
+
+Actualización I-01 (2026-10-27): [benchmark HTTP completo](evidencia/api-performance-2026-10-27.md), sin frames mediana 24,35 s, con frames 33,41 s (n=3). El objetivo consistente de 25 s y T-22 permanecen abiertos.

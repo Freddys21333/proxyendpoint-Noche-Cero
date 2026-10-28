@@ -25,3 +25,5 @@ Leer requisitos, diseño y acuerdos antes de tomar una tarea. [Los contratos eje
 Se adopta esta organización de tres documentos en lugar del listado anterior de specs numeradas. El detalle de cada incremento se mantiene en sus secciones/tareas y solo se añaden anexos cuando haga falta. Estados de avance: borrador, lista, en implementación, verificada; verificar documentación no implica verificar el software.
 
 Contrato PRO de ejecución: [P-03, trabajos Monte Carlo locales](p03-monte-carlo-jobs.md), backend verificado; interfaz visual y P-04 AWS pendientes.
+
+Rendimiento HTTP completo de comparación: [contrato y alcance](api-performance.md), verificado localmente; objetivo consistente ≤25 s pendiente.

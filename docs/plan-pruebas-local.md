@@ -382,3 +382,7 @@ Sin servidor, omitir `--api-base`. La primera orden ejecuta N60/T7/R30 con presu
 Desde `backend/`: `.venv/Scripts/python.exe -m pytest tests/test_report.py -q` (13 casos). Desde `frontend/`: `npm test -- --run` incluye pruebas del cliente PDF. En navegador: ejecutar comparación → descargar informe junto a exportaciones; alternativamente crear trabajo → leer resultado completo → descargar informe. Nunca habilitarlo para resultado parcial. Probar error/reintento e invalidación al cambiar escenario.
 
 Resultado observado: 404 pruebas backend, 137 frontend, Ruff/mypy/tipos/build correctos. [Contrato](../specs/p08-report.md) y [evidencia](evidencia/p08-informe-2026-10-27.md). T-22 y aceptación humana integral conservan sus pendientes.
+
+## Rendimiento HTTP local
+
+`backend/.venv/Scripts/python.exe -X utf8 scripts/benchmark_api.py --samples 3 --output-dir .tools/api-performance-repeat` mide preview y comparación real con/sin frames. Ejecutar sin otros benchmarks propios simultáneos. [Resultados y límites](evidencia/api-performance-2026-10-27.md); no cierra staging ni T-22.

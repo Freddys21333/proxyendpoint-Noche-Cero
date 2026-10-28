@@ -83,3 +83,53 @@ def test_frame_lengths_and_shared_schema_are_not_changed_by_optimization():
             with pytest.raises(ValueError):
                 validate_contract(document, "Representative")
     assert _definitions() == snapshot
+
+
+@pytest.mark.parametrize("value", [-1, 0, 1999, 2000, True, False, 1.0, 0.5, "1", None])
+def test_integer_properties_remain_equivalent_with_bounds_and_non_native_values(value):
+    edge = {"id": 0, "u": value, "v": 1, "context": "household", "weight": 1, "activeDays": [0]}
+    reference = Draft202012Validator({"$defs": DEFINITIONS, "$ref": "#/$defs/Edge"})
+    if reference.is_valid(edge):
+        validate_contract(edge, "Edge")
+    else:
+        with pytest.raises(ValueError):
+            validate_contract(edge, "Edge")
+
+
+def test_required_and_extra_properties_still_checked_with_native_integers():
+    edge = {"id": 0, "u": 0, "v": 1, "context": "household", "weight": 1, "activeDays": [0]}
+    del edge["u"]
+    with pytest.raises(ValueError):
+        validate_contract(edge, "Edge")
+    edge["u"] = 0
+    edge["extra"] = 0
+    with pytest.raises(ValueError):
+        validate_contract(edge, "Edge")
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("weight", 0),
+        ("weight", 0.5),
+        ("weight", 1),
+        ("weight", -0.01),
+        ("weight", 1.01),
+        ("weight", True),
+        ("weight", "0.5"),
+        ("weight", 10**400),
+        ("context", "school"),
+        ("context", "invalid"),
+        ("context", None),
+        ("context", 1),
+    ],
+)
+def test_flat_number_and_enum_properties_match_reference(field, value):
+    edge = {"id": 0, "u": 0, "v": 1, "context": "household", "weight": 1, "activeDays": [0]}
+    edge[field] = value
+    reference = Draft202012Validator({"$defs": DEFINITIONS, "$ref": "#/$defs/Edge"})
+    if reference.is_valid(edge):
+        validate_contract(edge, "Edge")
+    else:
+        with pytest.raises(ValueError):
+            validate_contract(edge, "Edge")

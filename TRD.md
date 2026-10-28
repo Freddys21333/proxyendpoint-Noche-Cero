@@ -734,3 +734,7 @@ Cada paso termina con evidencia antes de iniciar el siguiente. Si el plazo oblig
 - [AWS Lambda: cuotas](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 
 Los límites, runtimes, cuotas y precios se vuelven a verificar en las fuentes oficiales antes del despliegue; no se copian como constantes permanentes en la documentación.
+
+### Medición HTTP local adicional (2026-10-27)
+
+[API completa hasta parseo del cliente](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s; con frames 33,41 s, n=3 por modo. Objetivo consistente ≤25 s pendiente; sin certificación de p95 staging/AWS.

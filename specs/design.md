@@ -225,3 +225,5 @@ Incremento I-08 (RF-13): export-experiment adapta la respuesta vigente a los onc
 
 
 I-09: validConfig/validPreview completan guardas de contrato; preview requiere correspondencia con petición, estructura coherente y posiciones seguras para Cytoscape. fromConfiguration/applyServerDefaults separan defaults publicados de campos editados; ref de campos modificados evita sobrescribir ediciones durante la carga. Config válida habilita consulta, Restablecer usa defaults publicados y toConfiguration conserva network. Límites publicados de bytes/grafo/frames aplicados sin confundir transporte comprimido con JSON descomprimido ni inventar rangos de formulario. No cambia modelo ni hashes.
+
+Optimización interna de API: [preparación de JSON validado y benchmark HTTP](api-performance.md), sin cambio de contrato ni simulación.

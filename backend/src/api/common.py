@@ -16,7 +16,12 @@ from domain.configuration import normalize_configuration, parse_request, validat
 from domain.errors import ConfigurationError
 from domain.reproducibility import canonical_json, json_hash
 from simulation.experiments import run_experiment
-from simulation.exports import ENGINE_VERSION, SCHEMA_VERSION, export_experiment
+from simulation.exports import (
+    ENGINE_VERSION,
+    SCHEMA_VERSION,
+    PreparedExperiment,
+    prepare_experiment,
+)
 from simulation.jobs import (
     GLOBAL_JOB_MANAGER,
     MAX_CONCURRENT,
@@ -103,9 +108,14 @@ def _metadata(request_id: str) -> dict[str, str]:
 
 
 def _response(
-    payload: dict[str, Any], status: int, compressed: bool, limits: dict[str, int]
+    payload: dict[str, Any],
+    status: int,
+    compressed: bool,
+    limits: dict[str, int],
+    *,
+    serialized_body: bytes | None = None,
 ) -> dict[str, Any]:
-    raw = canonical_json(payload)
+    raw = canonical_json(payload) if serialized_body is None else serialized_body
     if len(raw) > limits["maxDecodedResponseBytes"]:
         raise ConfigurationError("RESULT_TOO_LARGE", 413, "El resultado supera el límite de JSON.")
     headers = {"Content-Type": "application/json", "Cache-Control": "no-store"}
@@ -167,7 +177,7 @@ def _body(event: dict[str, Any], limit: int) -> bytes:
 
 def _execute(
     endpoint: Endpoint, event: dict[str, Any], request_id: str, limits: dict[str, int]
-) -> dict[str, Any]:
+) -> dict[str, Any] | PreparedExperiment:
     metadata = _metadata(request_id)
     if endpoint == "health":
         return dict(
@@ -298,7 +308,7 @@ def _execute(
         replicatesTotal=total, replicatesSucceeded=total, replicatesFailed=0
     ) or [rep["index"] for rep in experiment["replicates"]] != list(range(total)):
         raise ConfigurationError("SIMULATION_FAILED", 500, "El experimento no está completo.")
-    result = export_experiment(
+    result = prepare_experiment(
         experiment,
         build_commit=os.environ.get("BUILD_COMMIT", "unknown"),
         request_id=request_id,
@@ -344,7 +354,12 @@ def dispatch(endpoint: Endpoint, event: dict[str, Any], context: Any) -> dict[st
             raise ConfigurationError(
                 "COMPUTE_UNAVAILABLE", 503, "Tiempo de ejecución no disponible."
             )
-        payload = _execute(endpoint, event, request_id, limits)
+        computed = _execute(endpoint, event, request_id, limits)
+        serialized_body = None
+        if isinstance(computed, PreparedExperiment):
+            payload, serialized_body = computed.document, computed.json_body
+        else:
+            payload = computed
         definition = {
             "health": "HealthResponse",
             "config": "ConfigResponse",
@@ -359,7 +374,11 @@ def dispatch(endpoint: Endpoint, event: dict[str, Any], context: Any) -> dict[st
             validate_contract(payload, definition)
         status_code = 202 if endpoint in ("jobs_create", "jobs_cancel") else 200
         response = _response(
-            payload, status_code, endpoint in ("preview", "compare", "jobs_result"), limits
+            payload,
+            status_code,
+            endpoint in ("preview", "compare", "jobs_result"),
+            limits,
+            serialized_body=serialized_body,
         )
     except ConfigurationError as error:
         error_code = error.code

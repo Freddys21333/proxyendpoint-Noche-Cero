@@ -234,3 +234,5 @@ resultados, no cambies semillas ni protocolos congelados y no despliegues sin
 autorización. Al terminar entrega archivos tocados, comando ejecutado,
 resultado observado, evidencia, riesgos y pendientes.
 ```
+
+Actualización posterior de API (2026-10-27): suite actual **478 pruebas backend**, Ruff/mypy correctos. [Medición HTTP completa](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s y con frames 33,41 s, n=3. Objetivo consistente ≤25 s pendiente; no certifica staging/AWS ni T-22. Compare reutiliza bytes JSON validados sin modificar hashes.

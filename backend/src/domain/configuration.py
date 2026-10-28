@@ -31,6 +31,10 @@ from domain.models import (
 MAX_REQUEST_BYTES = 65536
 _OMITTED = object()
 _STATE_SCHEMA = {"type": "string", "enum": ["S", "E", "I", "R"]}
+_CONTEXT_SCHEMA = {
+    "type": "string",
+    "enum": ["household", "school", "bus", "market", "neighborhood"],
+}
 
 
 def _primitive_items(
@@ -58,8 +62,50 @@ def _primitive_items(
     yield from Draft202012Validator.VALIDATORS["items"](validator, items, instance, schema)
 
 
+def _primitive_properties(
+    validator: Any,
+    properties: Any,
+    instance: Any,
+    schema: Any,
+) -> Iterator[ValidationError]:
+    """Comprobar escalares planos nativos sin crear un validador por propiedad."""
+    if type(instance) is not dict:
+        yield from Draft202012Validator.VALIDATORS["properties"](
+            validator, properties, instance, schema
+        )
+        return
+    for name, subschema in properties.items():
+        if name not in instance:
+            continue  # required se sigue validando por separado.
+        value = instance[name]
+        if (
+            isinstance(subschema, dict)
+            and (
+                (type(value) is int and subschema.get("type") == "integer")
+                or (
+                    subschema.get("type") == "number"
+                    and (type(value) is int or (type(value) is float and math.isfinite(value)))
+                )
+            )
+            and set(subschema) <= {"type", "minimum", "maximum"}
+            and ("minimum" not in subschema or value >= subschema["minimum"])
+            and ("maximum" not in subschema or value <= subschema["maximum"])
+        ):
+            continue
+        if (
+            type(value) is str
+            and isinstance(subschema, dict)
+            and set(subschema) == {"type", "enum"}
+            and subschema["type"] == "string"
+            and all(type(choice) is str for choice in subschema["enum"])
+            and value in subschema["enum"]
+        ):
+            continue
+        yield from validator.descend(value, subschema, path=name, schema_path=name)
+
+
 _ResultValidator = validators.extend(  # type: ignore[no-untyped-call]
-    Draft202012Validator, {"items": _primitive_items}
+    Draft202012Validator, {"items": _primitive_items, "properties": _primitive_properties}
 )
 
 
@@ -104,10 +150,11 @@ def _result_validator(name: str) -> Any:
 
 @lru_cache(maxsize=1)
 def _result_definitions() -> dict[str, Any]:
-    """Resolver State plano una vez, sin modificar el contrato compartido."""
+    """Resolver State/Context planos una vez, sin modificar el contrato compartido."""
     definitions = _definitions()
     if definitions.get("State") != _STATE_SCHEMA:
         return definitions
+    inline_context = definitions.get("Context") == _CONTEXT_SCHEMA
     has_ids = False
 
     def inline(value: Any) -> Any:
@@ -116,6 +163,8 @@ def _result_definitions() -> dict[str, Any]:
             has_ids |= "$id" in value
             if value == {"$ref": "#/$defs/State"}:
                 return copy.deepcopy(_STATE_SCHEMA)
+            if inline_context and value == {"$ref": "#/$defs/Context"}:
+                return copy.deepcopy(_CONTEXT_SCHEMA)
             return {
                 key: copy.deepcopy(item)
                 if key in ("const", "enum", "default", "examples")

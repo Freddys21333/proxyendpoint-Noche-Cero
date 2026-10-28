@@ -90,3 +90,5 @@ Informe para alcaldía P-08: [contrato y comandos](specs/p08-report.md), [eviden
 Rendimiento local: [mediciones de carga/exportación y equivalencia científica](docs/evidencia/rendimiento-validacion-2026-10-27.md). Optimización de validación; motor y hashes conservados.
 
 Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-summary.md), con porcentajes, alternativa siguiente, recursos y motivos registrados calculados en backend. [Verificación local](docs/evidencia/resumen-decision-2026-10-27.md).
+
+Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites; 478 pruebas backend.

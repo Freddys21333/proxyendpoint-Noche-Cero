@@ -584,3 +584,5 @@ inventes URL, gasto ni resultados de AWS.
 - [Validación del flujo local](evidencia/validacion-flujo-local.md).
 - [Costos](costos.md).
 - [Mapa geográfico](manta-geography.md) y [P-09](../specs/p09-geographic-map.md).
+
+Actualización de rendimiento API (2026-10-27): 478 pruebas backend, Ruff/mypy correctos. [Evidencia HTTP completa](evidencia/api-performance-2026-10-27.md). Compare reutiliza bytes JSON validados; no cambia hashes. ≤25 s consistente, T-22 y staging siguen pendientes.
