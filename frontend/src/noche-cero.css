@@ -12,7 +12,17 @@
   --night-border: #403a4a;
   --pumpkin: #ff8250;
   --pumpkin-soft: #ffb281;
+  --pumpkin-hover: #e9794b;
   --lime: #bde76b;
+  --success-surface: #26312b;
+  --success-border: #526947;
+  --success-ink: #d9e9cd;
+  --warning-surface: #332d21;
+  --warning-border: #665638;
+  --warning-ink: #f4d78c;
+  --danger-surface: #382522;
+  --danger-border: #8c564c;
+  --danger-ink: #ffb6a5;
   min-height: 100vh;
   background: var(--night);
   color: var(--ink);
