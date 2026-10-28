@@ -193,6 +193,8 @@ PRO no puede retrasar la entrega base. Cada elemento se etiqueta `no iniciado`, 
 
 ## 7. Métricas y protocolo experimental
 
+Datos explicativos UX (2026-10-27): el [resumen de decisión](specs/decision-summary.md) añade porcentajes contextualizados, diferencia con la siguiente alternativa, agregados económicos y motivos operativos registrados. Se calculan en backend y se presentan en UI sin modificar las métricas primarias ni el criterio de recomendación; empates, pérdidas y valores no aplicables permanecen visibles.
+
 P-07 backend (2026-10-27): la presentación de una réplica debe preservar identidad por persona, día, política y semilla, con frames/eventos coherentes con las filas diarias. [Aceptación](specs/p07-backend-playback.md). Esta verificación no sustituye la aceptación humana ni el protocolo científico siguiente.
 
 ### 7.1 Unidad experimental

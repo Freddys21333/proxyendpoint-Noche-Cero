@@ -2,10 +2,12 @@
 
 **Fecha de corte:** 2026-10-27.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** rendimiento de validación (`git log --grep=rendimiento`); P-07 backend y P-08 locales verificados; P-06 conserva su resultado desfavorable.
+**Último incremento:** datos UX (`git log --grep=datos-ux`); P-07 backend y P-08 locales verificados; P-06 conserva su resultado desfavorable.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
+
+**Datos UX verificados:** [decisionSummary](../specs/decision-summary.md), porcentajes, alternativa siguiente, agregados financieros e incidencias. [Evidencia](evidencia/resumen-decision-2026-10-27.md); no cierra la aceptación humana.
 
 **Mejoras de producto y UX (2026-10-27):** [backlog UX-01..UX-08](../specs/mejoras-sistema-ux.md), derivado de la retroalimentación del equipo y contrastado con capacidades existentes. Incluye presupuesto educativo; pitch y AWS se gestionan por separado. Es planificación, no implementación ni aceptación cerrada, y conserva las dependencias científicas.
 

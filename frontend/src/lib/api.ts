@@ -1,5 +1,6 @@
 import { fromConfiguration, validateScenario, type Scenario } from './scenario.ts'
 import { normalizedCombinedPlan } from './resource-schedule.ts'
+import { validDecisionSummary } from './decision-summary.ts'
 
 export type ResourceSchedule = { modelVersion: 'daily-inventory-v1'; vaccineDailyCapacity: number; initialBrigadeSupplies: number;
   deliveries: { day: number; vaccines: number; brigadeSupplies: number }[] }
@@ -45,6 +46,7 @@ export type Metric = 'cumulativeInfected' | 'peakInfectious' | 'peakDay' | 'fina
 export type Comparison = { values: number[]; mean: number; median: number; p05: number; p95: number;
   bootstrap: { level: number; resamples: number; lower: number; upper: number } | null }
 export type CompareResponse = Metadata & {
+  decisionSummary?: import('./decision-summary.ts').DecisionSummary;
   configuration: ConfigurationInput; graphHash: string; graph: PreviewResponse['graph']; generatedAt: string;
   progress: { replicatesTotal: number; replicatesSucceeded: number; replicatesFailed: number };
   aggregatedCurves: Record<Policy, ({ day: number } & Record<CurveMetric, Stats>)[]>;
@@ -139,6 +141,7 @@ function validStats(value: unknown, n: number, censored = false): boolean {
   return ['mean', 'median', 'p05', 'p95'].every(key => count === 0 ? value[key] === null : finite(value[key]))
 }
 function completeComparison(data: Record<string, unknown>, configuration: ConfigurationInput, graphHash: string, includeFrames: boolean): boolean {
+  if (data.decisionSummary !== undefined && !validDecisionSummary(data.decisionSummary)) return false
   const n = configuration.repetitions, days = configuration.scenario.days + 1
   if (data.graphHash !== graphHash || !containsRequested(data.configuration, configuration) || !object(data.progress) || data.progress.replicatesTotal !== n || data.progress.replicatesSucceeded !== n || data.progress.replicatesFailed !== 0) return false
   if (!Array.isArray(data.replicates) || data.replicates.length !== n || !object(data.aggregatedCurves) || !object(data.summaryByPolicy)) return false
@@ -153,6 +156,11 @@ function completeComparison(data: Record<string, unknown>, configuration: Config
   if (!object(paired) || !object(paired.savedVsNone) || !object(rec) || ![...policies, 'tie'].includes(String(rec.winner)) || !['descriptive', 'supported', 'inconclusive'].includes(String(rec.confidence)) || !Array.isArray(rec.reasons) || !rec.reasons.every(v => typeof v === 'string') || !Array.isArray(rec.limitations) || !rec.limitations.every(v => typeof v === 'string')) return false
   if (!['targetedWinRateVsNone', 'targetedWinRateVsRandom'].every(key => finite(paired[key]) && paired[key] >= 0 && paired[key] <= 1) || (n < 30 && rec.confidence !== 'descriptive')) return false
   const comparisons = [paired.savedVsNone.random, paired.savedVsNone.targeted, paired.gainVsRandom]
+  if (validDecisionSummary(data.decisionSummary)) {
+    const summary = data.decisionSummary
+    if (summary.confidence !== rec.confidence || (rec.winner === 'tie' ? summary.bestPolicies.length < 2 : summary.bestPolicies.length !== 1 || summary.bestPolicies[0] !== rec.winner)) return false
+    if (policies.some(policy => summary.policies[policy].budgetCents !== (configuration.intervention.combined?.budgetCents ?? null) || summary.policies[policy].vaccinesReceived > configuration.scenario.populationSize)) return false
+  }
   if (!comparisons.every(c => object(c) && Array.isArray(c.values) && c.values.length === n && c.values.every(finite) && ['mean', 'median', 'p05', 'p95'].every(k => finite(c[k])) && (n < 30 ? c.bootstrap === null : object(c.bootstrap) && c.bootstrap.level === 0.95 && c.bootstrap.resamples === 2000 && finite(c.bootstrap.lower) && finite(c.bootstrap.upper) && c.bootstrap.lower <= c.bootstrap.upper))) return false
   return object(data.manifest) && typeof data.manifest.experimentHash === 'string' && /^sha256:[0-9a-f]{64}$/.test(data.manifest.experimentHash) && data.manifest.engineVersion === data.engineVersion && data.manifest.schemaVersion === data.schemaVersion && data.manifest.rootSeed === configuration.rootSeed && typeof data.manifest.buildCommit === 'string' && object(data.representative) && finite(data.representative.index) && Number.isInteger(data.representative.index) && data.representative.index >= 0 && data.representative.index < n && (includeFrames ? validFrames(data, configuration) : data.representative.frames === null)
 }

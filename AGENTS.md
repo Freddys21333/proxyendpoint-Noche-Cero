@@ -16,12 +16,12 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-27
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: rendimiento de validación (`git log --grep=rendimiento`); P-07 backend y P-08 locales verificados; conserva P-06 ajustado, no validado. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
+Rama de trabajo: `feat/backend-contratos`. Último incremento: datos UX (`git log --grep=datos-ux`); P-07 backend y P-08 locales verificados; conserva P-06 ajustado, no validado. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **443 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
-| Frontend base | **137 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **450 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
+| Frontend base | **139 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
 | Rendimiento | Motor `N=1000/T=90/R=30` en Windows: **13,80 s**, control anterior 13,60 s, mismos resultados. Referencia Linux histórica 44,3 s. Carga JSON grande optimizada a ~6 s. [Evidencia](docs/evidencia/rendimiento-validacion-2026-10-27.md). | No acredita p95, tiempo HTTP total ni AWS. T-22 sigue pendiente. |
 | T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
@@ -96,6 +96,8 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 - [x] P-09: mapa geográfico y capa de agentes; verificado localmente como presentación.
 
 ## 7. Funcionalidades que ya existen
+
+- Resumen de decisión UX: porcentajes, alternativa siguiente, presupuesto/gasto e incidencias registradas en `decisionSummary`; calculado y comprobado por backend, presentado sin recalcular finanzas en React. [Contrato](specs/decision-summary.md) y [evidencia](docs/evidencia/resumen-decision-2026-10-27.md).
 
 - Configuración canónica, defaults, límites y errores saneados.
 - Generación de red `synthetic-manta-v1` con hogares, colegios, buses, mercados y barrios; calendario semanal; origen aleatorio/contexto/nodo.

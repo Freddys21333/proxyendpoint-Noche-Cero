@@ -1,5 +1,7 @@
 # Plan de pruebas local (acumulativo)
 
+Datos explicativos UX: con API local, `$env:API_BASE='http://127.0.0.1:18009/v1'; node --experimental-strip-types scripts/verify_decision_summary.mjs`. Comparar proyección con réplicas/registros reales, sin cambiar el criterio de recomendación. [Contrato](../specs/decision-summary.md), [evidencia y pasos de navegador](evidencia/resumen-decision-2026-10-27.md). Backend: 450 pruebas, frontend: 139; Ruff/mypy/tipos/build correctos. No cierra la aceptación humana ni T-22.
+
 Rendimiento de carga/exportación: `backend/.venv/Scripts/python.exe -X utf8 scripts/benchmark_exports.py .tools/p07-backend/experiment.json --output .tools/exports-benchmark.json`. Verifica contenido y bytes canónicos, restaurando solo la fecha volátil de exportación, y mide por separado carga/reexportación. [Aceptación](../specs/performance-exports.md), [mediciones antes/después](evidencia/rendimiento-validacion-2026-10-27.md). La suite actual backend tiene 443 pruebas; no implica aprobar T-22.
 
 P-07 backend: desde `backend/`, `.venv/Scripts/python.exe -m pytest tests/test_playback_integrity.py -q` (14 casos). Desde raíz, `backend/.venv/Scripts/python.exe scripts/verify_playback.py` genera N1000/T90/R2, valida una exportación real y mide el control temporal; resultados en `.tools/p07-backend/`. [Aceptación](../specs/p07-backend-playback.md) y [evidencia](evidencia/p07-backend-2026-10-27.md). No cierra la aceptación UI de P-07 ni T-22.

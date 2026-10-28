@@ -1,10 +1,12 @@
 # Plan de tareas — versión base
 
 **Fecha:** 27 de octubre de 2026
-**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación backend tras optimizar carga/exportación: 443 pruebas backend, 137 frontend, Ruff/mypy/tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
+**Estado:** T-02..T-12 verificados localmente; T-13..T-16 con integración parcial I-01..I-08 y pendientes de aceptación; infraestructura, despliegue y gate científico pendientes. [Revisión de base](../docs/evidencia/revision-base.md). Verificación tras datos UX: 450 pruebas backend, 139 frontend, Ruff/mypy/tipos/build correctos ([plan de pruebas local](../docs/plan-pruebas-local.md), [auditoría de partida](../docs/evidencia/auditoria-pro-2026-10-27.md)).
 **Fuentes:** [Requisitos](requirements.md), [Diseño](design.md), [PRD](../PRD.md), [TRD](../TRD.md).
 
 ## 1. Reparto y flujo de trabajo
+
+Incremento UX de datos (RF-12/13/19): [resumen de decisión](decision-summary.md) verificado localmente con backend, esquema aditivo, cliente y UI. [Evidencia](../docs/evidencia/resumen-decision-2026-10-27.md). No marca completas T-13..T-16 ni las fichas integrales UX.
 
 Las tareas se agrupan por frente técnico: **backend**, **frontend** e **infraestructura con Terraform**. No se asignan personas. Los contratos y verificaciones de integración son compartidos entre los frentes que intervienen.
 

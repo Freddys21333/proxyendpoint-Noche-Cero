@@ -10,6 +10,8 @@
 
 ## 1. Propósito y alcance
 
+Datos para UX-02/03/04/05: [resumen de decisión](decision-summary.md), RF-12/13/19. Comparación, recursos y motivos se presentan desde datos derivados del backend; porcentajes con referencia cero, beneficio no positivo y costos no configurados se expresan como null/«No aplica» según el contrato. No se cambia la regla científica de elección.
+
 Rendimiento sin cambios científicos: [aceptación y límites de carga/exportación](performance-exports.md). Se exige igualdad de contenido y hashes, validación equivalente y reproducción antes/después; no se alteran las reglas del modelo para obtener tiempos menores.
 
 P-07 backend: la [aceptación de integridad temporal](p07-backend-playback.md) concreta RF-12/13/19 para comprobar frames/eventos opcionales, identidad, semillas y conteos antes de entregar o cargar experimentos. No incorpora geografía ni calcula ciencia en frontend; aceptación visual y T-22 conservan su estado.

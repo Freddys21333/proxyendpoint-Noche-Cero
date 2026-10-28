@@ -31,6 +31,10 @@ def main() -> None:
     )
     export_seconds = time.perf_counter() - start
     exported["generatedAt"] = source["generatedAt"]
+    ignored_additive_fields = []
+    if "decisionSummary" not in source:
+        exported.pop("decisionSummary", None)
+        ignored_additive_fields.append("decisionSummary")
     assert exported == source
     assert canonical_json(exported) == canonical_json(source)
     report = {
@@ -43,6 +47,7 @@ def main() -> None:
         "loadSeconds": load_seconds,
         "exportSeconds": export_seconds,
         "exactContentPreserved": True,
+        "ignoredAdditiveFields": ignored_additive_fields,
         "scientificGate": False,
     }
     args.output.write_text(json.dumps(report, indent=2), encoding="utf-8")

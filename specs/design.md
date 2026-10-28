@@ -9,6 +9,8 @@
 
 ## 1. Arquitectura y límites
 
+Proyección UX: `simulation/decision_summary.py` genera `decisionSummary` al exportar; `exports._validate` comprueba la proyección presente y mantiene compatibilidad sin ella. Cliente `decision-summary.ts` valida formato/metadatos; `DecisionSummaryResults` y `CombinedCostResults` presentan porcentajes, brechas y finanzas sin calcularlos en React. [Especificación](decision-summary.md). No hay nuevo endpoint ni cambio de modelo/hash.
+
 Optimización local de resultados: [diseño de validación equivalente](performance-exports.md). Extensión conservadora de Draft202012Validator para arrays primitivos reconocidos y eliminación de una validación duplicada en carga. Esquema compartido, diagnósticos, integridad temporal, motor y hashes conservados; sin nuevas dependencias.
 
 P-07 backend: [integridad temporal](p07-backend-playback.md) mediante `simulation/playback.py`, compartida por exportación/carga/ZIP y sus consumidores API. Reutiliza la selección representativa vigente; verifica trazas sin RNG ni nueva simulación. No cambia esquemas, rutas, campos ni hashes; frames/eventos ausentes conservan su semántica opcional.

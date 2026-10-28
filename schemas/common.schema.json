@@ -2259,6 +2259,9 @@
         },
         "generatedAt": {
           "$ref": "#/$defs/DateTime"
+        },
+        "decisionSummary": {
+          "$ref": "#/$defs/DecisionSummary"
         }
       },
       "required": [
@@ -3072,6 +3075,250 @@
         "maxRetained",
         "retentionSeconds",
         "maxEdgeDayReplicates"
+      ],
+      "additionalProperties": false
+    },
+    "DecisionSummary": {
+      "type": "object",
+      "properties": {
+        "modelVersion": {
+          "const": "decision-summary-v1"
+        },
+        "criterion": {
+          "const": "minimize-mean-cumulative-infected"
+        },
+        "confidence": {
+          "enum": [
+            "descriptive",
+            "inconclusive",
+            "supported"
+          ]
+        },
+        "bestPolicies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "none",
+              "random",
+              "targeted"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "nearestAlternative": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "policies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "random",
+                      "targeted"
+                    ]
+                  },
+                  "minItems": 1,
+                  "maxItems": 2,
+                  "uniqueItems": true
+                },
+                "gapMean": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "policies",
+                "gapMean"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policies": {
+          "type": "object",
+          "properties": {
+            "none": {
+              "$ref": "#/$defs/DecisionPolicySummary"
+            },
+            "random": {
+              "$ref": "#/$defs/DecisionPolicySummary"
+            },
+            "targeted": {
+              "$ref": "#/$defs/DecisionPolicySummary"
+            }
+          },
+          "required": [
+            "none",
+            "random",
+            "targeted"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "modelVersion",
+        "criterion",
+        "confidence",
+        "bestPolicies",
+        "nearestAlternative",
+        "policies"
+      ],
+      "additionalProperties": false
+    },
+    "DecisionPolicySummary": {
+      "type": "object",
+      "properties": {
+        "infectedMean": {
+          "type": "number",
+          "minimum": 0
+        },
+        "infectedPopulationPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "avoidedVsNoneMean": {
+          "type": "number"
+        },
+        "reductionVsNonePercent": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "vaccinesAssignedMean": {
+          "type": "number",
+          "minimum": 0
+        },
+        "vaccinesReceived": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000
+        },
+        "budgetCents": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spentMeanCents": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "remainingMeanCents": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "costPerAvoidedCents": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "avoidedPer100Usd": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "omissionReasons": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "enum": [
+                      "closure_budget_exhausted",
+                      "closure_no_active_contacts",
+                      "no_infectious_hold_brigades",
+                      "vaccine_stock_empty",
+                      "vaccine_capacity_zero",
+                      "vaccine_budget_exhausted",
+                      "vaccine_no_eligible",
+                      "brigade_capacity_zero",
+                      "brigade_stock_empty",
+                      "brigade_budget_exhausted",
+                      "brigade_no_eligible"
+                    ]
+                  },
+                  "replicateDays": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18100
+                  }
+                },
+                "required": [
+                  "reason",
+                  "replicateDays"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 11
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "infectedMean",
+        "infectedPopulationPercent",
+        "avoidedVsNoneMean",
+        "reductionVsNonePercent",
+        "vaccinesAssignedMean",
+        "vaccinesReceived",
+        "budgetCents",
+        "spentMeanCents",
+        "remainingMeanCents",
+        "costPerAvoidedCents",
+        "avoidedPer100Usd",
+        "omissionReasons"
       ],
       "additionalProperties": false
     }

@@ -6,6 +6,7 @@ import ComparisonChart from './ComparisonChart'
 import { CombinedCostResults } from './CombinedCostResults'
 import { AdaptiveDecisionsPanel } from './AdaptiveDecisionsPanel'
 import { MayorReportDownload } from './MayorReportDownload'
+import { DecisionSummaryResults } from './DecisionSummaryResults'
 
 const policies = ['none', 'random', 'targeted'] as const
 const metricNames: Record<Metric, string> = { cumulativeInfected: 'Infectados acumulados', peakInfectious: 'Pico de Zombies', peakDay: 'Primer día del pico', finalInfectious: 'Zombies al final', outbreakDuration: 'Día de extinción', vaccinesAssigned: 'Dosis asignadas', vaccinesEffective: 'Dosis efectivas', vaccinesUnused: 'Dosis sin usar' }
@@ -30,6 +31,7 @@ export function ComparisonResults({ result, region, onExport, onExportCsv }: { r
       <p>{confidence[rec.confidence]}</p>
       <ul>{rec.reasons.map((reason, i) => <li key={i}>{reason.replaceAll('targeted', 'Dirigida').replaceAll('random', 'Aleatoria').replaceAll('none', 'Sin intervención')}</li>)}</ul>
     </section>
+    <DecisionSummaryResults result={result} />
     <section className="results-example" aria-label="Curvas reales del experimento">
       <label>Estado o métrica de la curva <select aria-label="Métrica de la curva" value={curve} onChange={event => setCurve(event.target.value as CurveMetric)}>{Object.entries(metricLabels).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
       <p>Líneas: media entre réplicas. Bandas: P05–P95, rango empírico; no es un intervalo de confianza.</p>

@@ -88,3 +88,5 @@ PRO tiene **P-01, P-05, P-06, P-08 y P-09 verificados localmente**, y **P-02/P-0
 Informe para alcaldía P-08: [contrato y comandos](specs/p08-report.md), [evidencia local](docs/evidencia/p08-informe-2026-10-27.md). Descarga PDF desde Comparación o el resultado completo de un trabajo PRO.
 
 Rendimiento local: [mediciones de carga/exportación y equivalencia científica](docs/evidencia/rendimiento-validacion-2026-10-27.md). Optimización de validación; motor y hashes conservados.
+
+Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-summary.md), con porcentajes, alternativa siguiente, recursos y motivos registrados calculados en backend. [Verificación local](docs/evidencia/resumen-decision-2026-10-27.md).

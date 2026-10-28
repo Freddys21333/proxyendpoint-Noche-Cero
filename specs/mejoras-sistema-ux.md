@@ -28,6 +28,8 @@ Referencias de partida: [integración real](../docs/evidencia/integracion-revisa
 
 ## Backlog priorizado
 
+Avance técnico 2026-10-27: [datos para UX-02/03/04/05](decision-summary.md) verificados localmente: porcentajes, diferencia con siguiente alternativa, agregados financieros y motivos registrados; la UI deja de calcular gasto/cocientes. [Evidencia](../docs/evidencia/resumen-decision-2026-10-27.md). No cierra las fichas completas ni la aceptación humana.
+
 Todas las fichas están pendientes de implementación o de aceptación del cambio concreto. Prioridad alta no significa ausencia total de funcionalidad.
 
 ### UX-01 · Alta · Ordenar el recorrido y las acciones
