@@ -8,7 +8,7 @@ export type MapRuntime = Pick<typeof import('leaflet'), 'map' | 'tileLayer'> & A
 const mantaCenter: [number, number] = [-0.9677, -80.7089]
 const tileError = 'No se pudo cargar parte del mapa de OpenStreetMap. Revisa tu conexión o reintenta.'
 
-export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, onError: (message: string | null) => void) {
+export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, onError: (message: string | null) => void, showPopups = true) {
   let map: LeafletMap | undefined
   let tiles: TileLayer | undefined
   let agents: ReturnType<typeof createGeographicAgentLayer> | undefined
@@ -60,7 +60,7 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
     setAgents: (values: GeographicAgent[], popup: (agent: GeographicAgent, presentation: AgentPresentation) => HTMLElement, onSelect: (id: number) => void) => {
       if (destroyed) return
       agents?.destroy()
-      agents = createGeographicAgentLayer(map!, leaflet, values, popup, onSelect)
+      agents = createGeographicAgentLayer(map!, leaflet, values, popup, onSelect, showPopups)
       agentBounds = values.length ? values.map(agent => [agent.lat, agent.lng]) : null
       pendingBounds = agentBounds
       fitAgents()

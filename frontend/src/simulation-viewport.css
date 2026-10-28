@@ -6,6 +6,7 @@
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
 }
+
 .simulator-page .simulation-header { position: relative; top: auto; }
 .noche-cero.simulator-page .simulation-main {
   position: relative;
@@ -167,4 +168,56 @@
   .noche-cero.simulator-page .simulator-workbench .network-playback-status { font-size: 9px; }
   .noche-cero.simulator-page .geographic-agent-picker { bottom: 150px; left: 12px; font-size: 11px; }
   .noche-cero.simulator-page .geographic-agent-picker > summary { padding: 7px 9px; }
+}
+
+/* Give the scene, selection and population summary their own layout rows. */
+.noche-cero.simulator-page .simulation-visualizer-content { display: grid; grid-template-rows: auto minmax(220px, 1fr) auto auto auto; overflow-y: auto; }
+.noche-cero.simulator-page .simulator-workbench .network-demo-heading { position: static; grid-row: 1; padding: 8px 12px; justify-content: flex-end; background: var(--night-raised); }
+.noche-cero.simulator-page .visualizer-scene { position: relative; grid-row: 2; min-height: 220px; overflow: hidden; }
+.noche-cero.simulator-page .simulator-workbench .population-inventory-summary { position: static; grid-row: 4; margin: 0; border: 0; border-top: 1px solid var(--night-border); pointer-events: auto; }
+.noche-cero.simulator-page .simulator-workbench .network-playback-status { position: static; grid-row: 5; }
+.noche-cero.simulator-page .simulator-workbench .floating-person-inspector.node-inspector { position: static; grid-row: 3; width: 100%; max-height: 180px; border: 0; border-top: 1px solid var(--night-border); border-radius: 0; box-shadow: none; }
+.noche-cero.simulator-page .simulator-workbench .floating-person-inspector:not([open]) { width: 100%; }
+.noche-cero.simulator-page .geographic-map { display: grid; grid-template-rows: minmax(150px, 1fr) auto; }
+.noche-cero.simulator-page .geographic-map-canvas { grid-row: 1; min-height: 0; }
+.noche-cero.simulator-page .simulator-workbench .geographic-agent-picker { position: static; grid-row: 2; width: 100%; max-width: none; max-height: 180px; border: 0; border-top: 1px solid #82758a; border-radius: 0; }
+.noche-cero.simulator-page .geographic-agent-picker > form { width: 100%; }
+.noche-cero .geographic-selection-detail { padding: 0 12px 12px; }
+.noche-cero .geographic-selection-detail p { margin: 4px 0; font-size: 12px; line-height: 1.4; }
+.noche-cero.simulator-page .geographic-person-search-row { flex-wrap: wrap; }
+.noche-cero.simulator-page .geographic-map-view[hidden], .noche-cero.simulator-page .network-view[hidden], .noche-cero.simulator-page .floating-person-inspector[hidden] { display: none; }
+.noche-cero .comparison-wait { max-width: 65ch; }
+.noche-cero .comparison-wait h2 { margin: 20px 0 8px; font-size: 18px; }
+.noche-cero .comparison-wait .elapsed-time { color: var(--ink); font-size: 18px; font-variant-numeric: tabular-nums; }
+.noche-cero .comparison-wait summary { min-height: 44px; padding-block: 10px; cursor: pointer; }
+.noche-cero .submitted-configuration { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+.noche-cero .submitted-configuration dt { font-size: 12px; color: #cabecb; }
+.noche-cero .submitted-configuration dd { margin: 3px 0 0; color: var(--ink); font-size: 14px; overflow-wrap: anywhere; }
+.noche-cero .primary-indicators { margin-bottom: 28px; }
+.noche-cero .primary-indicators h2 { margin: 0 0 8px; font-size: 22px; }
+.noche-cero .primary-indicators > p { max-width: 75ch; color: #cabecb; font-size: 14px; line-height: 1.5; }
+.noche-cero .primary-indicators-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 20px; }
+.noche-cero .primary-indicators-grid > section { min-width: 0; border-top: 1px solid #82758a; padding-top: 12px; }
+.noche-cero .primary-indicators-grid h3 { margin: 0 0 8px; font-size: 16px; color: #ffcca5; }
+.noche-cero .primary-indicators-grid p { margin: 0 0 16px; min-height: 5em; font-size: 13px; line-height: 1.5; color: #cabecb; }
+.noche-cero .primary-indicators-grid dl { display: grid; gap: 10px; }
+.noche-cero .primary-indicators-grid dl > div { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.noche-cero .primary-indicators-grid dt { font-size: 13px; color: #cabecb; }
+.noche-cero .primary-indicators-grid dd { margin: 0; font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { .noche-cero .primary-indicators-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) {
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-rows: auto auto; }
+  .noche-cero.simulator-page .simulator-workbench .network-demo-panel.simulation-visualizer { height: auto; }
+  .noche-cero.simulator-page .simulation-visualizer-content { height: auto; grid-template-rows: auto 340px auto auto auto; overflow: visible; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .noche-cero.simulator-page .simulator-workbench .population-inventory-summary { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .noche-cero.simulator-page .population-inventory-summary .seir-instrument-label { font-size: 12px; }
+  .noche-cero.simulator-page .population-inventory-summary .vaccine-inventory { border-left: 0; border-top: 1px solid var(--night-border); padding: 10px 0 0; }
+  .noche-cero.simulator-page .vaccine-inventory :is(small, .vaccine-inventory-label, .vaccine-inventory-value small), .noche-cero.simulator-page .simulator-workbench .network-playback-status { font-size: 12px; }
+  .noche-cero .playback-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .noche-cero .playback-actions > button { width: 100%; min-height: 40px; }
+  .noche-cero .playback-actions > .playback-primary { grid-column: 1 / -1; }
+  .noche-cero .simulator-workbench .real-playback .network-playback { grid-template-columns: minmax(0, 1fr); }
+  .noche-cero .primary-indicators-grid { grid-template-columns: minmax(0, 1fr); }
+  .noche-cero .primary-indicators-grid p { min-height: 0; }
 }

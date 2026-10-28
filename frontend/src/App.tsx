@@ -1,5 +1,7 @@
 import { experimentZip } from '@/lib/export-experiment';
 import { CombinedInterventions } from '@/components/CombinedInterventions';
+import { ComparisonWait } from '@/components/ComparisonWait';
+import { PrimaryIndicators } from '@/components/PrimaryIndicators';
 import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { ArrowDownToLine, ChevronDown, CircleHelp, Network, RotateCcw, X } from "lucide-react";
@@ -273,6 +275,7 @@ export default function App() {
 
   const runComparison = async () => {
     if (!remotePreview || pending || comparisonPending) return;
+    setNotice("");
     comparisonController.current?.abort();
     const controller = new AbortController();
     comparisonController.current = controller;
@@ -362,8 +365,8 @@ export default function App() {
               <Field label="Casos iniciales" help="Infectados al inicio." value={scenario.initial} onChange={(value) => update("initial", value)} unit="personas" min={1} max={Math.min(20, scenario.population)} />
               <Field label="Probabilidad diaria de pasar de mordido a zombie" value={scenario.sigma} onChange={(value) => update("sigma", value)} compact percentage unit="%" min={0} max={100} step="any" />
               <Field label="Probabilidad diaria de recuperación" value={scenario.gamma} onChange={(value) => update("gamma", value)} compact percentage unit="%" min={0} max={100} step="any" />
-              <Field label="Repeticiones del experimento" help="2 a 30 repeticiones para medir la variación." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
-              <Field label="Semilla para reproducir el experimento" help="Identifica los sorteos del experimento." value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
+              <Field label="Repeticiones del experimento" help="Réplicas: repeticiones para medir la variación. De 2 a 30." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
+              <Field label="Semilla para reproducir el experimento" help="Semilla: permite repetir el experimento." value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
             </div>
             <p>Para reproducir: misma configuración, semilla y versión del motor.</p>
           </div>
@@ -453,6 +456,7 @@ export default function App() {
           </>
         ) : view === "results" ? (
           <section className="results-view" aria-labelledby="results-title">
+            {comparison && <PrimaryIndicators result={comparison} />}
             {comparison && <section className="results-reading-guide" aria-labelledby="reading-guide-title">
               <h2 id="reading-guide-title">Cómo leer la comparación</h2>
               <p>Compara los infectados acumulados y el pico de zombies entre estrategias. Revisa también la variación entre repeticiones: una media menor no garantiza el mismo resultado en cada simulación.</p>
@@ -460,7 +464,7 @@ export default function App() {
             </section>}
             {comparison ? <Suspense fallback={<p role="status">Cargando resultados…</p>}><ComparisonResults result={comparison} region={serverHealth?.region} onExport={exportConfig} onExportCsv={exportCsv} /></Suspense> : <div className="comparison-empty">
               <div className="comparison-empty-content"><h1 id="results-title">Compara las estrategias de vacunación</h1><p role="status">{comparisonPending ? `Ejecutando ${scenario.repetitions} repeticiones con tres estrategias…` : remotePreview ? "La red está lista. Compara las estrategias Sin intervención, Aleatoria y Dirigida con la misma población." : "Configura un escenario y consulta la red antes de comparar."}</p>
-              {comparisonPending && <p>El motor está calculando el experimento. Los resultados aparecerán cuando termine.</p>}
+              {comparisonPending && remotePreview && <ComparisonWait configuration={remotePreview.configuration} />}
               {apiFailure?.operation === "comparison" && <ApiErrorPanel
                 error={apiFailure.error}
                 operation="comparison"

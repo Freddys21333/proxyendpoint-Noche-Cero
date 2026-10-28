@@ -8,6 +8,28 @@ import type { SimulationPresentation } from './simulation-playback.ts'
 import type { CompareResponse, Policy } from './api.ts'
 import { readFileSync } from 'node:fs'
 
+test('reserved inspector mode selects and updates people without binding or opening map popups', () => {
+  let bindings = 0, opened = 0, selected = -1
+  const agents = [{ id: 0, nodeId: 0, lat: -0.96, lng: -80.7, state: 'S', householdId: 'household-0',
+    neighborhoodId: 'neighborhood-0', sectorId: 'synthetic-sector-0', role: 'community', schoolId: null, busId: null, marketId: null }] as GeographicAgent[]
+  const original = JSON.stringify(agents)
+  let click = () => {}
+  const marker = { bindPopup() { bindings++; return this }, openPopup() { opened++; return this },
+    on(_event: string, handler: () => void) { click = handler; return this }, off() {}, addTo() {}, bringToFront() { return this },
+    setStyle() {}, setRadius() {}, getPopup() { return undefined } }
+  const runtime = { canvas: () => ({ remove() {} }), layerGroup: () => ({ addTo() { return this }, clearLayers() {}, remove() {} }),
+    circleMarker: () => marker } as unknown as AgentMapRuntime
+  const map = { getZoom: () => 13, on() {}, off() {}, closePopup() {} } as unknown as LeafletMap
+  const layer = createGeographicAgentLayer(map, runtime, agents, () => ({} as HTMLElement), id => { selected = id }, false)
+  click(); layer.select(0)
+  layer.update({ mode: 'representative', day: 1, policy: 'targeted', frame: ['I'], representativeIndex: 0 })
+  assert.equal(selected, 0)
+  assert.equal(bindings, 0)
+  assert.equal(opened, 0)
+  assert.equal(JSON.stringify(agents), original)
+  layer.destroy()
+})
+
 test('Canvas markers retain each original ID, initial state color and selection callback', () => {
   const agents = ['S', 'E', 'I', 'R'].map((state, index) => ({ id: index + 10, nodeId: index + 10, lat: -0.96 + index * 0.001,
     lng: -80.7, state, householdId: 'household-0', neighborhoodId: 'neighborhood-0', sectorId: 'synthetic-sector-0',

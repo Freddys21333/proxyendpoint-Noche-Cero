@@ -7,7 +7,7 @@ export type AgentMapRuntime = Pick<typeof import('leaflet'), 'canvas' | 'layerGr
 export type AgentPresentation = Pick<SimulationPresentation, 'mode' | 'day' | 'policy' | 'frame' | 'representativeIndex'>
 
 export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRuntime, agents: GeographicAgent[],
-  popup: (agent: GeographicAgent, presentation: AgentPresentation) => HTMLElement, onSelect: (id: number) => void) {
+  popup: (agent: GeographicAgent, presentation: AgentPresentation) => HTMLElement, onSelect: (id: number) => void, showPopups = true) {
   const renderer = leaflet.canvas({ padding: 0.5 })
   const layer = leaflet.layerGroup().addTo(map)
   const markers = new Map<number, ReturnType<AgentMapRuntime['circleMarker']>>()
@@ -40,7 +40,7 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
       const color = seirColors[agent.state]
       const marker = leaflet.circleMarker([agent.lat, agent.lng], { renderer, radius: radius(agent.state), weight: 0.7,
         color: color.stroke, fillColor: color.marker, fillOpacity: 0.95, bubblingMouseEvents: false })
-        .bindPopup(() => popup({ ...agent, state: stateAt(agent, current)! }, current), { maxWidth: 240, maxHeight: 190,
+      if (showPopups) marker.bindPopup(() => popup({ ...agent, state: stateAt(agent, current)! }, current), { maxWidth: 240, maxHeight: 190,
           autoPanPaddingTopLeft: [64, 95], autoPanPaddingBottomRight: [10, 100] })
       marker.on('click', () => { if (!disposed) onSelect(agent.nodeId) })
       marker.addTo(layer)
@@ -54,7 +54,11 @@ export function createGeographicAgentLayer(map: LeafletMap, leaflet: AgentMapRun
     select: (id: number | null) => {
       if (disposed) return
       if (id === null) map.closePopup()
-      else markers.get(id)?.bringToFront().openPopup()
+      else {
+        const marker = markers.get(id)
+        marker?.bringToFront()
+        if (showPopups) marker?.openPopup()
+      }
     },
     update: (presentation: AgentPresentation) => {
       if (disposed || (current.mode === presentation.mode && current.day === presentation.day && current.policy === presentation.policy &&

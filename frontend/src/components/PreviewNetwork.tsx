@@ -58,7 +58,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
     const cy = cytoscape({ container: container.current, elements: graph.elements,
       layout: { name: 'preset' }, minZoom: 0.01, maxZoom: 5, boxSelectionEnabled: false, selectionType: 'single',
       style: [
-        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#e7dec9', label: 'data(groupLabel)', color: '#eee7d9', 'font-size': 15, 'text-valign': 'top', 'text-margin-y': -14, 'text-background-color': '#25212e', 'text-background-opacity': 0.94, 'text-background-padding': '4px' } },
+        { selector: 'node', style: { width: 15, height: 15, 'background-color': seirColors.S.marker, 'border-width': 1, 'border-color': '#e7dec9', label: 'data(groupLabel)', color: '#eee7d9', 'font-size': 18, 'min-zoomed-font-size': 12, 'text-valign': 'top', 'text-margin-y': -14, 'text-background-color': '#25212e', 'text-background-opacity': 0.94, 'text-background-padding': '4px' } },
         { selector: 'node[state="I"]', style: { width: 23, height: 23, 'background-color': seirColors.I.marker, 'font-size': 14, 'text-valign': 'top', 'text-margin-y': -10, 'text-background-color': '#25212e', 'text-background-opacity': 0.94 } },
         { selector: 'node[state="E"]', style: { 'background-color': seirColors.E.marker } },
         { selector: 'node[state="R"]', style: { 'background-color': seirColors.R.marker } },
@@ -165,6 +165,7 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         <small>{frames ? `Día ${currentDay} · ${policyLabels[policy]}${inventoryDay ? ' · recibidas hasta hoy' : ''}` : 'Antes de simular'}</small>
       </div>
       </div>
+      <div className="visualizer-scene">
       <div className="network-view" hidden={!showNetwork}>
         <div ref={container} className="network-canvas" role="img" aria-label={`Red real de ${graph.nodes.length} personas sintéticas, contactos del día ${currentDay}. Seleccione una persona o use el selector.`} />
         <div className="network-zoom" aria-label="Herramientas de exploración">
@@ -172,6 +173,9 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
           <button type="button" aria-label="Alejar red" onClick={() => zoom(0.8)}><ZoomOut size={17} /></button>
           <button type="button" aria-label="Ajustar grafo a la vista" onClick={() => network.current?.fit(undefined, 20)}><Crosshair size={17} /></button>
         </div>
+      </div>
+      {mapView}
+      </div>
       <details ref={inspector} className="node-inspector floating-person-inspector" hidden={!showNetwork} open={Boolean(detail)} aria-label="Información de la persona seleccionada">
         <summary><UserRound size={17} aria-hidden="true" /><span>{detail ? `Persona ${String(detail.id).padStart(3, '0')}` : 'Explorar personas'}</span><ChevronDown size={16} aria-hidden="true" /></summary>
         <div className="person-inspector-body">
@@ -190,8 +194,6 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         </div>}
         </div>
       </details>
-      </div>
-      {mapView}
       <p className="network-playback-status">Semilla {preview.configuration.rootSeed}.{frames ? ` Réplica representativa ${playback.representativeIndex} (índice desde 0). No es el promedio de las réplicas.` : ` Origen: ${preview.initialInfectiousNodeIds.join(', ')}. Las vacunas se aplican al ejecutar la simulación, no en esta vista previa.`}{showNetwork && ' Las personas sin contactos del filtro se atenúan.'}</p>
       </div>
       {!active && <div className="simulation-update-overlay">
@@ -209,7 +211,8 @@ export function PreviewNetwork({ preview, layer, resetKey, children, panelAction
         <section className="temporal-chart-panel real-playback persistent-playback" aria-label="Opciones de reproducción">
           <p role="status">{frames ? `Día ${currentDay} · ${playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'En pausa'}. Trayectoria real de una réplica.` : simulationModeMessages[playback.mode]}</p>
           <fieldset className="playback-settings" disabled={!frames}>
-          <label>Estrategia que estás visualizando <select aria-label="Estrategia que estás visualizando" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
+          <label>Estrategia que estás visualizando <select aria-label="Estrategia que estás visualizando" aria-describedby="visualized-strategy-help" value={policy} onChange={event => dispatch({ type: 'policy', policy: event.target.value as Policy })}>{(['none', 'random', 'targeted'] as const).map(p => <option key={p} value={p}>{policyLabels[p]}</option>)}</select></label>
+          <p id="visualized-strategy-help">Solo cambia la estrategia que ves en el mapa y la red. No ejecuta otra comparación ni cambia los resultados.</p>
           <div className="network-playback" role="group" aria-label="Reproductor de simulación real">
             <label className="playback-timeline"><span>{!frames ? 'Día de reproducción' : playing ? 'Reproduciendo' : currentDay === lastDay ? 'Final de la réplica' : 'Explorar días'}</span><input aria-label="Día de la réplica" type="range" min={0} max={lastDay} value={currentDay} onChange={event => dispatch({ type: 'seek', day: Number(event.target.value) })} /></label>
             <label className="playback-speed"><span>Velocidad</span><select aria-label="Velocidad de reproducción" value={speed} onChange={event => dispatch({ type: 'speed', speed: Number(event.target.value) })}><option value={1400}>0,5×</option><option value={700}>1×</option><option value={350}>2×</option><option value={175}>4×</option></select></label>

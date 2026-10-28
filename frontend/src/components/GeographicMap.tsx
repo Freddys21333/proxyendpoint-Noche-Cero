@@ -8,7 +8,6 @@ import type { SimulationPresentation } from '@/lib/simulation-playback'
 import type { AgentPresentation } from '@/lib/geographic-agents-layer'
 import { policyLabels } from '@/lib/comparison'
 import geographicResource from '@/data/manta-residential.json'
-import { seirColors } from './seir-colors'
 import 'leaflet/dist/leaflet.css'
 import './GeographicMap.css'
 
@@ -55,7 +54,7 @@ export default function GeographicMap({ visible, preview, playback, resetKey, se
     if (!container.current) return
     let resize: ResizeObserver | undefined
     try {
-      const view = mountGeographicMap(container.current, leaflet, setError)
+      const view = mountGeographicMap(container.current, leaflet, setError, false)
       controller.current = view
       resize = new ResizeObserver(() => {
         if (container.current?.clientWidth && container.current.clientHeight) view.resize()
@@ -100,14 +99,11 @@ export default function GeographicMap({ visible, preview, playback, resetKey, se
 
   return <div className="geographic-map">
     <div ref={container} className="geographic-map-canvas" role="region" aria-label="Mapa interactivo de Manta, Ecuador" />
-    <div className="geographic-agent-legend" aria-label="Leyenda de estados SEIR">
-      <strong>{playback.mode === 'representative' ? `Día ${playback.day} · ${policyLabels[playback.policy]} · Réplica ${playback.representativeIndex}` : 'Estado inicial · Sin reproducción individual'} · {placement.agents.length} agentes</strong>
-      <div>{(Object.keys(stateLabels) as (keyof typeof stateLabels)[]).map(state => <span key={state}>
-        <i aria-hidden="true" style={{ background: seirColors[state].marker }} />{state} · {stateLabels[state]}
-      </span>)}</div>
-    </div>
-    {placement.agents.length > 0 && <details className="geographic-agent-picker">
+    {placement.agents.length > 0 && <details className="geographic-agent-picker" open={selectedId !== null}>
       <summary><Search size={15} aria-hidden="true" />Buscar persona</summary>
+      {selectedId !== null && placement.agents.filter(agent => agent.nodeId === selectedId).map(agent => <section className="geographic-selection-detail" key={agent.nodeId} aria-label="Ficha de la persona seleccionada">
+        {describeAgent({ ...agent, state: playback.mode === 'representative' ? playback.frame?.[agent.nodeId] ?? agent.state : agent.state }, playback).map((line, index) => <p key={index}>{line}</p>)}
+      </section>)}
       <form noValidate onSubmit={event => {
         event.preventDefault()
         const value = personQuery.trim()

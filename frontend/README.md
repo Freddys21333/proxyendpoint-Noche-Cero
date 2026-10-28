@@ -8,6 +8,8 @@ Checklist de capacidades, contratos y pendientes del frontend PRO: [estado al 20
 
 La [auditoría de UX y usabilidad](../docs/ux-usability-audit-2026-10-27.md) registra los hallazgos de Nielsen, el recorrido inicial y los límites de accesibilidad comprobados. El panel presenta Escenario y Vacunación antes de las herramientas desplegables; consultar confirma la red sin abrir un diálogo y las acciones conservan su posición. Reproducción aparece al disponer de una trayectoria. PRO y el informe local mantienen pendientes editoriales identificados en la auditoría.
 
+Durante la comparación se muestran tiempo transcurrido y configuración enviada. La API síncrona no proporciona fases ni progreso intermedio: no se estima un porcentaje ni tiempo restante. Los indicadores principales muestran medias de infectados acumulados, diferencias pareadas frente a Sin intervención, pico infeccioso y dosis asignadas, con unidades y definiciones; los valores negativos se conservan. El visualizador reserva filas para escena, selección y población; a 320 px las leyendas y acciones se apilan. La ficha de mapa usa el área reservada, sin popup sobre los puntos. `mountGeographicMap` y `createGeographicAgentLayer` admiten `showPopups` opcional (por defecto `true` para conservar el comportamiento existente); esta pantalla lo desactiva.
+
 Para revisar localmente: iniciar el backend con `backend/.venv/bin/python scripts/serve_api.py`, iniciar Vite con `npm run dev -- --host 127.0.0.1 --port 5174` desde `frontend/` y abrir `http://127.0.0.1:5174/`. El proxy Vite dirige `/v1` al backend local.
 
 ## Estado de integración I-09
