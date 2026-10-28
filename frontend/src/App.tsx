@@ -305,12 +305,12 @@ export default function App() {
           <RotateCcw size={16} /> Restablecer
         </button>
       </div>
-      <p role="status">{serverConfig ? 'Valores predeterminados del servidor cargados. Restablecer recupera esos valores.' : serverStatus === 'checking' ? 'Cargando configuración del servidor; puedes editar los campos mientras esperas.' : 'Configuración del servidor no disponible. Tus entradas están conservadas.'}</p>
+      <p role="status">{serverConfig ? 'Configuración del servidor cargada.' : serverStatus === 'checking' ? 'Cargando configuración; puedes editar mientras esperas.' : 'Servidor no disponible. Tus entradas se conservan.'}</p>
       <form id="scenario-form" onSubmit={(event) => { event.preventDefault(); run(); }}>
         <div className="configuration-fields">
-          <Field label="Población" help="Personas sintéticas de la red. Puedes simular entre 50 y 2000." value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
-          <Field label="Duración de la simulación" help="Días que observarás después del inicio del brote, entre 1 y 180." value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
-          <label className="field">
+          <Field label="Población" help="50 a 2000 personas." value={scenario.population} onChange={(value) => update("population", value)} unit="personas" min={50} max={2000} />
+          <Field label="Duración de la simulación" help="1 a 180 días." value={scenario.days} onChange={(value) => update("days", value)} unit="días" min={1} max={180} />
+          <label className="field origin-field">
             <span>Origen del brote</span>
             <div className="select-wrap">
               <select aria-label="Origen del brote" aria-describedby="origin-help" value={scenario.origin} onChange={(event) => update("origin", event.target.value)}>
@@ -320,19 +320,19 @@ export default function App() {
               </select>
               <ChevronDown size={16} />
             </div>
-            <small id="origin-help" className="parameter-help">Dónde se eligen los casos iniciales. La opción aleatoria usa toda la población.</small>
+            <small id="origin-help" className="parameter-help">Dónde comienza el brote.</small>
           </label>
           <div className="field transmission-field" role="group" aria-label="Facilidad de contagio" aria-describedby="transmission-help">
-            <Field label="Facilidad de contagio" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, true)) : NaN} onChange={(value) => update("beta", probabilityFromPercent(String(value)))} compact unit="de 100" min={0} max={100} step="any" />
-            <input className="range" aria-label="Facilidad de contagio" aria-valuetext={Number.isNaN(scenario.beta) ? "Sin valor" : `${percentInputValue(scenario.beta, true)} de 100`} aria-describedby="transmission-help" type="range" min="0" max="100" step="any" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, true)) : 0} onChange={(event) => update("beta", probabilityFromPercent(event.target.value))} />
+            <Field label="Facilidad de contagio" value={scenario.beta} onChange={(value) => update("beta", value)} compact percentage unit="de 100" min={0} max={100} step="any" />
+            <input className="range" aria-label="Facilidad de contagio" aria-valuetext={Number.isNaN(scenario.beta) ? "Sin valor" : `${percentInputValue(scenario.beta, false)} de 100`} aria-describedby="transmission-help" type="range" min="0" max="100" step="1" value={Number.isFinite(scenario.beta) ? Number(percentInputValue(scenario.beta, false)) : 0} onChange={(event) => update("beta", probabilityFromPercent(event.target.value))} />
             <small className="transmission-scale" aria-hidden="true"><span>0 · Sin nuevos contagios</span><span>100 · Mayor facilidad</span></small>
-            <small id="transmission-help" className="parameter-help">Sube el valor para que el brote se propague con más facilidad. El tipo de contacto también influye. Este número no es el porcentaje de personas que se contagiarán.</small>
+            <small id="transmission-help" className="parameter-help">Mayor valor, mayor facilidad de contagio.</small>
           </div>
           {scenario.origin === "node" && (
             <Field label="Número de persona" help="Identificador de la persona donde comienza el brote; la numeración empieza en 0." value={scenario.node} onChange={(value) => update("node", value)} min={0} max={scenario.population - 1} maxMessage="El número de persona debe ser menor que la población. Elige un identificador de la red." />
           )}
-          <Field label={scenario.combined?.resourceSchedule ? 'Vacunas iniciales' : 'Vacunas disponibles'} help="Dosis disponibles al inicio. Una dosis asignada se consume aunque no resulte efectiva." value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} maxMessage="Las vacunas disponibles no pueden superar la población. Reduce las dosis o aumenta la población." />
-          <Field label="Eficacia de la vacuna" help="Probabilidad de que una dosis proteja a una persona sana: 0 % no protege; 100 % siempre es efectiva." value={scenario.efficacy} onChange={(value) => update("efficacy", value)} percentage unit="%" min={0} max={100} step="any" />
+          <Field label={scenario.combined?.resourceSchedule ? 'Vacunas iniciales' : 'Vacunas disponibles'} value={scenario.vaccines} onChange={(value) => update("vaccines", value)} unit="dosis" min={0} max={scenario.population} maxMessage="Las vacunas disponibles no pueden superar la población. Reduce las dosis o aumenta la población." />
+          <Field label="Eficacia de la vacuna" value={scenario.efficacy} onChange={(value) => update("efficacy", value)} compact percentage unit="%" min={0} max={100} step="any" />
         </div>
         <button type="button" className="advanced-toggle" onClick={() => setAdvanced(!advanced)} aria-expanded={advanced} aria-controls="advanced-parameters">
           Parámetros avanzados <ChevronDown size={16} className={advanced ? "rotate" : ""} />
@@ -340,14 +340,14 @@ export default function App() {
         {advanced && (
           <div className="configuration-advanced" id="advanced-parameters">
             <div className="configuration-fields">
-              <Field label="Casos iniciales" help="Personas que ya transmiten al inicio del brote, entre 1 y 20." value={scenario.initial} onChange={(value) => update("initial", value)} unit="personas" min={1} max={Math.min(20, scenario.population)} />
-              <Field label="Día de intervención" help="Día en que comienza la vacunación. El día 0 es el inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La intervención debe ocurrir dentro de la simulación. Reduce el día o aumenta la duración." />
+              <Field label="Casos iniciales" help="Infectados al inicio." value={scenario.initial} onChange={(value) => update("initial", value)} unit="personas" min={1} max={Math.min(20, scenario.population)} />
+              <Field label="Día de intervención" help="0 = inicio del brote." value={scenario.interventionDay} onChange={(value) => update("interventionDay", value)} unit="día" min={0} max={scenario.days} maxMessage="La intervención debe ocurrir dentro de la simulación. Reduce el día o aumenta la duración." />
               <Field label="Probabilidad diaria de pasar de mordido a zombie" value={scenario.sigma} onChange={(value) => update("sigma", value)} compact percentage unit="%" min={0} max={100} step="any" />
               <Field label="Probabilidad diaria de recuperación" value={scenario.gamma} onChange={(value) => update("gamma", value)} compact percentage unit="%" min={0} max={100} step="any" />
-              <Field label="Repeticiones del experimento" help="Ejecuta el mismo escenario varias veces para medir la variación de los resultados. Entre 2 y 30 repeticiones." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
-              <Field label="Semilla para reproducir el experimento" help="Con la misma configuración completa, semilla y versión del motor puedes reproducir el experimento. Cambiarla genera otros sorteos." value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
+              <Field label="Repeticiones del experimento" help="2 a 30 repeticiones para medir la variación." value={scenario.repetitions} onChange={(value) => update("repetitions", value)} unit="repeticiones" min={2} max={30} />
+              <Field label="Semilla para reproducir el experimento" help="Identifica los sorteos del experimento." value={scenario.seed} onChange={(value) => update("seed", value)} min={0} max={4294967295} />
             </div>
-            <p>Las probabilidades diarias no son duraciones ni garantizan que ese porcentaje exacto de personas cambie de estado. Los demás parámetros se conservan al editar un campo.</p>
+            <p>Para reproducir: misma configuración, semilla y versión del motor.</p>
           </div>
         )}
         <CombinedInterventions value={scenario.combined} days={scenario.days} population={scenario.population} onChange={combined => {
@@ -374,10 +374,10 @@ export default function App() {
   );
 
   const previewButton = (
-    <Button type="submit" form="scenario-form" className={`validate-button${remotePreview ? " validate-button--secondary" : ""}`} ref={previewSubmit} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
+    <Button type="submit" form="scenario-form" className={`validate-button${remotePreview ? " validate-button--secondary" : ""}`} ref={previewSubmit} title={!serverConfig ? "Espera a que el servidor esté disponible." : pending ? "La red se está preparando." : "Crea la red de personas y contactos con estos parámetros."} disabled={pending || !serverConfig}>{pending ? "Consultando red…" : "Consultar red"}</Button>
   );
   const compareButton = (
-    <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
+    <Button type="button" variant={remotePreview ? "default" : "outline"} className={remotePreview ? "validate-button comparison-button" : "comparison-button"} title={!remotePreview ? "Primero consulta la red." : comparisonPending ? "La comparación está en curso." : "Compara las estrategias usando el mismo escenario."} disabled={!remotePreview || pending || comparisonPending} onClick={runComparison}>{comparisonPending ? "Comparando…" : "Comparar estrategias"}</Button>
   );
   const cancelComparison = () => {
     invalidateComparison();
@@ -388,7 +388,7 @@ export default function App() {
   const configurationActions = (
     <div className="configuration-actions">
       {remotePreview ? <>{compareButton}{previewButton}</> : <>{previewButton}{compareButton}</>}
-      <button type="button" className="plain-action" onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
+      <button type="button" className="plain-action" title={comparison ? "Elige cómo descargar los resultados del experimento." : "Descarga los parámetros actuales como borrador."} onClick={event => { dialogReturn.current = event.currentTarget; setModal("export"); }}>
         <ArrowDownToLine size={17} /> Exportar
       </button>
       {comparisonPending && <button type="button" className="plain-action cancel-comparison" onClick={cancelComparison}>Cancelar comparación</button>}

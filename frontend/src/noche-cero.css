@@ -370,7 +370,8 @@
 }
 
 .noche-cero .configuration-panel .configuration-fields {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 .noche-cero .configuration-panel .parameter-field > label {
   display: block;
@@ -402,13 +403,20 @@
 }
 .noche-cero .configuration-panel .transmission-scale > span { flex: 1; }
 .noche-cero .configuration-panel .transmission-scale > span:last-child { text-align: right; }
-.noche-cero .configuration-panel .transmission-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .origin-field { grid-column: 1 / -1; }
+.noche-cero .configuration-panel .transmission-field {
+  grid-column: 1 / -1;
+  padding: 10px;
+  border: 1px solid #5a505d;
+  border-radius: 6px;
+  background: #201d29;
+}
 .noche-cero .configuration-panel .transmission-field > .parameter-field {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px;
+  grid-template-columns: minmax(0, 1fr) 88px;
   align-items: center;
   gap: 6px 12px;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 .noche-cero .configuration-panel .transmission-field .parameter-field > label { margin-bottom: 0; }
 .noche-cero .configuration-panel .transmission-field .parameter-error { grid-column: 1 / -1; }
@@ -430,5 +438,74 @@
 }
 .noche-cero .configuration-panel .input-wrap--approximate input { padding-left: 26px; }
 .noche-cero .configuration-panel .input-unit { max-width: 48%; font-size: 11px; }
-.noche-cero .configuration-panel .parameter-field--percentage,
+.noche-cero .configuration-panel .configuration-advanced .parameter-field--percentage,
 .noche-cero .configuration-panel .parameter-field:has(input[max="4294967295"]) { grid-column: 1 / -1; }
+
+/* One outer focus indicator; inner controls do not draw a second rectangle. */
+.noche-cero.minimal-workspace :is(input, select):focus-visible,
+.noche-cero .configuration-panel :is(input, select):focus-visible {
+  outline: 2px solid var(--pumpkin);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel .input-wrap input:focus,
+.noche-cero .configuration-panel .input-wrap input:focus-visible,
+.noche-cero .configuration-panel .select-wrap select:focus,
+.noche-cero .configuration-panel .select-wrap select:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel input { caret-color: var(--pumpkin); }
+.noche-cero .configuration-panel input::selection { background: #ff8250; color: #1c1517; }
+.noche-cero .configuration-panel .configuration-fields > .parameter-field > label,
+.noche-cero .configuration-panel .combined-settings .configuration-fields > .field > span {
+  min-height: 3em;
+}
+.noche-cero .configuration-panel .configuration-advanced .parameter-field--percentage > label,
+.noche-cero .configuration-panel .parameter-field:has(input[max="4294967295"]) > label { min-height: 0; }
+.noche-cero .configuration-panel .transmission-field .range { height: 28px; margin: 4px 0; }
+.noche-cero .configuration-panel .transmission-field .parameter-help,
+.noche-cero .configuration-panel .transmission-scale { font-size: 11px; margin-bottom: 0; }
+.noche-cero .configuration-panel .advanced-toggle { border-bottom: 1px solid var(--night-border); }
+.noche-cero .configuration-panel .combined-settings { border-top: 0; margin-top: 12px; padding-top: 0; }
+.noche-cero .configuration-panel .combined-settings :is(p, small),
+.noche-cero .configuration-panel .configuration-advanced > p {
+  color: #cabecb;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.noche-cero .configuration-panel .combined-settings .combined-toggle-help { margin: 5px 0 10px; font-size: 11px; }
+.noche-cero .configuration-panel .combined-settings .field > span { color: #e4dce6; font-size: 12px; }
+.noche-cero .configuration-panel .combined-settings :is(input[type="number"], input[type="text"], select) {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #6b6070;
+  border-radius: 5px;
+  background: #171620;
+  color: #f1ece4;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.noche-cero .configuration-panel .combined-settings :is(input[type="number"], input[type="text"], select):focus {
+  border-color: var(--pumpkin);
+  outline: 1px solid var(--pumpkin);
+  outline-offset: 0;
+  box-shadow: none;
+}
+.noche-cero .configuration-panel .combined-settings input[type="checkbox"] { accent-color: var(--pumpkin); }
+.noche-cero .configuration-panel .combined-settings :is(details, .resource-schedule-editor, .resource-delivery) { border-color: var(--night-border); }
+.noche-cero .configuration-panel .combined-settings :is(summary, legend) { color: #f1ece4; }
+.noche-cero .configuration-panel .combined-settings select { color-scheme: light; }
+.noche-cero .configuration-panel .combined-settings option { color: #171620; background: #fff; }
+.noche-cero .configuration-panel .combined-settings option:checked { color: HighlightText; background: Highlight; }
+.noche-cero .configuration-panel .plain-action:hover { color: #ffcca5; }
+.noche-cero .configuration-actions button:disabled { pointer-events: auto; cursor: not-allowed; }
+@media (max-width: 340px) {
+  .noche-cero .configuration-panel .configuration-fields { grid-template-columns: 1fr; }
+  .noche-cero .configuration-panel .configuration-fields > .parameter-field > label { min-height: 0; }
+}

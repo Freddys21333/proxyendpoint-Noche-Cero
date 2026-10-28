@@ -129,7 +129,13 @@
   .noche-cero.simulator-page .simulator-workbench .population-inventory-summary { gap: 10px; padding: 10px; left: 12px; right: 12px; }
 }
 @media (max-width: 700px) {
-  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(240px, 44%) minmax(0, 1fr); }
+  .minimal-workspace.noche-cero.simulator-page { display: block; height: auto; min-height: 100dvh; overflow: visible; }
+  .noche-cero.simulator-page .simulation-main { overflow: visible; }
+  .noche-cero.simulator-page .simulator-workbench.network-workbench { grid-template-columns: minmax(0, 1fr); grid-template-rows: 280px auto; height: auto; }
+  .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls,
+  .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls[open] { height: auto; overflow: visible; }
+  .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > .floating-controls-inner { flex: none; overflow: visible; }
+  .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls > .floating-controls-inner > .floating-controls-body { flex: none; overflow: visible; }
   .noche-cero.simulator-page .simulation-notice { top: 64px; right: 12px; left: 12px; }
   .noche-cero.simulator-page .simulator-workbench .floating-simulation-controls { border-left: 0; border-top: 1px solid var(--night-border); }
   .noche-cero.simulator-page .simulator-workbench .network-demo-heading { right: 12px; }
