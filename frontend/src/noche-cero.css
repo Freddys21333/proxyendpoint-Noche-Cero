@@ -114,6 +114,15 @@
 .noche-cero .configuration-panel .select-wrap:focus-within { border-color: var(--pumpkin); outline: 1px solid var(--pumpkin); }
 .noche-cero .configuration-panel .input-wrap input,
 .noche-cero .configuration-panel .select-wrap select { color: var(--ink); background: transparent; font-size: 14px; }
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] { color-scheme: light; }
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] option {
+  color: #171620;
+  background-color: #fff;
+}
+.noche-cero .configuration-panel select[aria-label="Origen del brote"] option:checked {
+  color: HighlightText;
+  background-color: Highlight;
+}
 .noche-cero .configuration-panel .input-unit { color: #aaa0b0; font-size: 11px; }
 .noche-cero :is(.range, input[type="range"]) { accent-color: var(--pumpkin); }
 .noche-cero .configuration-panel .transmission-field output { color: var(--pumpkin-soft); }
