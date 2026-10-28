@@ -12,7 +12,7 @@ Las specs detallan el [PRD](../PRD.md) y el [TRD](../TRD.md) para coordinar la v
 | [requirements.md](requirements.md) | Alcance, requisitos RF/CA, parámetros y aceptación | Borrador para revisión del equipo |
 | [design.md](design.md) | Módulos, contratos, motor, UI, AWS y acuerdos D-01..D-08 | Diseño adoptado; verificación AWS pendiente |
 | [tasks.md](tasks.md) | Tareas T-01..T-23, frentes técnicos, dependencias y evidencia de terminado | T-02..T-12 verificadas localmente; integración frontend parcial y validación/AWS pendientes |
-| [Protocolo T-22 v1](validation/t22-v1/README.md) | Matriz científica, semillas, criterios y archivos de ejecución | Preparado y congelado; experimentos no ejecutados |
+| [Protocolo T-22 v1](validation/t22-v1/README.md) | Matriz científica, semillas, criterios y archivos de ejecución | Congelado; 15 experimentos ejecutados, componente científico APROBADO; [informe](../docs/evidencia/t22-v1-ejecucion.md) |
 | [agreements.md](agreements.md) | Decisiones D-01..D-08, contrato detallado y ejemplos de aceptación | Diseño adoptado; comprobaciones AWS pendientes |
 | [Hoja de ruta PRO](pro-roadmap.md) | P-01..P-09: recursos, adaptación, AWS Monte Carlo, datos reales/calibración, animación, PDF y mapa geográfico; ideas opcionales | Planificación 2026-10-27; estados y aceptación separados de la base |
 | [Frentes de trabajo PRO](pro-workstreams.md) | División backend/frontend para P-01..P-09, contratos, trabajo paralelo, integración incremental y trazabilidad a código/pruebas | Guía de coordinación; respeta el alcance y estado de la hoja de ruta |

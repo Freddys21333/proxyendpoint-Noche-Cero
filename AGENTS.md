@@ -16,14 +16,14 @@ Usuarios principales: comité de contención, jurado/alcaldía que evalúa impac
 
 ## 2. Estado real al 2026-10-27
 
-Rama de trabajo: `feat/backend-contratos`. Último incremento: datos UX (`git log --grep=datos-ux`); P-07 backend y P-08 locales verificados; conserva P-06 ajustado, no validado. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
+Rama de trabajo: `feat/backend-contratos`. Último incremento: T-22 científico completo y APROBADO; 15 experimentos, 450 pares y 17 reproducciones. Estado verificado y pendientes: [post-merge 2026-10-27](docs/evidencia/estado-post-merge-2026-10-27.md).
 
 | Área | Estado comprobable | Qué falta |
 |---|---|---|
-| Base backend T-02..T-12 + PRO local | Suite actual: **450 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
+| Base backend T-02..T-12 + PRO local | Suite actual: **486 pruebas backend**, Ruff, mypy, contratos, motor, exportación, reproducción, P-02/P-03/P-05/P-06. | Integración E2E completa y aceptación de UI. |
 | Frontend base | **139 pruebas**, typecheck y build correctos; API real para health/config, preview, comparación, reproducción, vacunación, jobs (pantalla PRO), ZIP/JSON, mapa y panel P-06. | T-13..T-16 abiertas por aceptación, no por falta total de código. |
-| Rendimiento | Motor `N=1000/T=90/R=30` en Windows: **13,80 s**, control anterior 13,60 s, mismos resultados. Referencia Linux histórica 44,3 s. Carga JSON grande optimizada a ~6 s. [Evidencia](docs/evidencia/rendimiento-validacion-2026-10-27.md). | No acredita p95, tiempo HTTP total ni AWS. T-22 sigue pendiente. |
-| T-22 | Protocolo v1 congelado. **Controles técnicos ejecutados y PASA** (5 controles, R30, reproducción). `base-root-0` exportado, pero sin metadatos/reproducción completa para el gate. | Matriz primaria (5 raíces × 30) y 5 contrastes pendientes; el gate científico **no** está aprobado. |
+| Rendimiento | Motor `N=1000/T=90/R=30` en Windows: **13,80 s**, control anterior 13,60 s, mismos resultados. Referencia Linux histórica 44,3 s. Carga JSON grande optimizada a ~6 s. [Evidencia](docs/evidencia/rendimiento-validacion-2026-10-27.md). | No acredita p95, tiempo HTTP total ni AWS. Rendimiento HTTP consistente ≤25 s sigue pendiente. |
+| T-22 | **Componente científico APROBADO**: 15/15 experimentos, 450 pares (150 primarios), controles 5/5 y 17 reproducciones. [Evidencia](docs/evidencia/t22-v1-ejecucion.md). | T-23/semilla externa, aceptación humana y entrega integral permanecen pendientes. |
 | PRO-1/2 y P-01 | P-01 verificado localmente: llegadas, inventario, capacidad, costos educativos y exportación. | Aceptación integral de intervenciones combinadas y límites visibles. |
 | P-02 | Backend, cliente y UI verificados localmente: `adaptive-v1`, reglas, anillo, motivos, editor, historial diario, exportación y reproducción. | Aceptación humana integral (T-13..T-16) y repetir en UI saldo agotado/sin elegibles. |
 | P-03 | Backend, cliente y pantalla PRO verificados localmente: `/v1/jobs`, cola, token, idempotencia, cancelación, resultado reproducible, credenciales en `sessionStorage`, sondeo, reintento e historial. | P-04 AWS (miles de réplicas, durabilidad, cuotas y costos). |
@@ -54,7 +54,7 @@ La evidencia de partida está en [docs/evidencia/auditoria-pro-2026-10-27.md](do
 
 El orden oficial está en [docs/plan-pro-iteraciones.md](docs/plan-pro-iteraciones.md). No se salta una dependencia sin registrar la decisión.
 
-1. **I-01 — cerrar rendimiento y T-22.** Los controles ya pasan; falta ejecutar primaria y contrastes, reproducir, analizar y publicar el gate. No iniciar P-04 antes de cerrar esto.
+1. **I-01 — rendimiento y T-22.** T-22 científico ejecutado y APROBADO; queda cerrar rendimiento consistente antes de P-04; staging se verifica en la fase AWS. No repetir ni modificar v1 para ocultar pérdidas.
 2. **I-02 — P-02.** Política adaptativa versionada, explicable y observable; no redefinir silenciosamente `targeted`.
 3. **I-03 — P-05.** Fuente real de dengue en Manabí con procedencia, hash, normalización y límites. Sin datos inventados.
 4. **I-04 — P-03.** Jobs Monte Carlo locales, manifiesto, progreso, cancelación, idempotencia y agregado reproducible.
@@ -78,7 +78,7 @@ Detalle, dependencias y evidencia en [specs/tasks.md](specs/tasks.md).
 - [ ] T-19: staging, smoke y benchmark AWS. Pendiente; sin autorización de gasto.
 - [ ] T-20: frontend público y health desde sesión limpia. Pendiente.
 - [ ] T-21: arquitectura SVG, costos, README, runbook y Budget verificable. Pendiente.
-- [ ] T-22: matriz científica. Protocolo congelado, controles PASA, primaria/contrastes pendientes.
+- [x] T-22: matriz científica completa y APROBADA; 15 experimentos, 450 pares, 17 reproducciones. [Informe](docs/evidencia/t22-v1-ejecucion.md).
 - [ ] T-23: escenarios variables, semilla externa y reproducibilidad operativa. Pendiente.
 
 ## 6. Checklist PRO resumido
@@ -118,7 +118,7 @@ Detalle y aceptación en [specs/pro-roadmap.md](specs/pro-roadmap.md) y reparto 
 
 Prioridad inmediata:
 
-1. **Terminar T-22.** Ejecutar las cinco raíces primarias y los cinco contrastes; conservar JSON/ZIP/logs; reproducir cada JSON y `base-root-0` tres veces; validar controles y generar informe. No editar el protocolo.
+1. **T-22 cerrado científicamente.** Consultar el informe antes de repetir: 112 victorias, 33 empates y 5 pérdidas frente a random. El contraste market-origin es redundante en v1; cualquier cambio semántico requiere v2. Rendimiento y aceptación integral siguen abiertos.
 2. **P-02, cierre de aceptación.** El editor, la etiqueta de variante y el historial diario ya funcionan contra el motor real ([evidencia](docs/evidencia/p02-ui-2026-10-27.md)). Falta la aceptación humana T-13..T-16 y repetir en UI los escenarios de saldo agotado y sin elegibles.
 3. **P-03 cerrada en local / P-04.** Rutas `/v1/jobs`, cliente y pantalla PRO verificados localmente ([evidencia](docs/evidencia/p03-ui-2026-10-27.md)). Queda P-04 AWS.
 4. **P-06 cerrada en local, resultado desfavorable.** El preset `manabi-dengue-2025-v1` existe y se reproduce (`scripts/p06_calibrate.py verify`), pero la validación pierde frente a persistencia ([evidencia](docs/evidencia/p06-dengue-manabi-2026-10-27.md)). No se re-tunea: P-08 debe citar la etiqueta `fitted-not-validated`.
@@ -159,14 +159,7 @@ backend/.venv/bin/python scripts/check_validation_protocol.py
 backend/.venv/bin/python scripts/run_t22.py --help
 ```
 
-Los controles ya se ejecutaron en `.tools/t22-v1-attempt-01`. Para continuar la matriz con reanudación:
-
-```sh
-backend/.venv/bin/python scripts/run_t22.py \
-  --attempt .tools/t22-v1-attempt-01 --resume --group all
-```
-
-Antes de ejecutar, leer [specs/validation/t22-v1/README.md](specs/validation/t22-v1/README.md). El intento y los JSON grandes están bajo `.tools/` y no se versionan.
+La matriz completa está en `.tools/t22-v1-attempt-02`: 15 JSON/ZIP y 17 reproducciones correctas. [Informe versionado](docs/evidencia/t22-v1-ejecucion.md). El intento 01 citado históricamente no está en este checkout; no se inventaron sus archivos. Para una ejecución nueva, usar un directorio nuevo y leer primero [el protocolo congelado](specs/validation/t22-v1/README.md). No sobrescribir el intento 02 ni sus resultados. Los JSON grandes y logs permanecen bajo `.tools/`, ignorados por Git.
 
 Pruebas PRO locales, desde la raíz. `verify_jobs_flow.mjs` requiere la API de `scripts/serve_api.py` en `:8000`; `verify_adaptive_integration.mjs` usa `:18002` por defecto y acepta `API_BASE`. Para el navegador hace falta Vite en `:5174`.
 
@@ -200,9 +193,9 @@ Comandos, pasos y resultados esperados de cada funcionalidad PRO ya cerrada est�
 
 ## 11. Trampas conocidas
 
-- **T-22 no está aprobado.** Los controles pasan, pero faltan primaria y contrastes. `base-root-0` no representa el gate.
+- **T-22 científico APROBADO no cierra la aplicación.** Targeted pierde en 5/150 pares frente a random y hay 33 empates. T-23, aceptación humana, rendimiento consistente y AWS siguen pendientes. Market-origin es redundante; no modificar v1.
 - **El benchmark de 44 s no es el costo de exportar.** Exportar un JSON de 8,3 MB con validación/ZIP y reproducirlo tarda minutos; presupuestar la matriz completa por decenas de minutos.
-- **`scripts/run_t22.py` no ha corrido la matriz completa.** Su compilación, Ruff y controles funcionaron; aun así, revisarlo antes de confiar en él para primaria/contrastes.
+- **`scripts/run_t22.py` ya corrió la matriz completa.** Fuente fijada en 0e90ff4; ver informe y auditoría antes de repetir. No sobrescribir artefactos anteriores.
 - **La API síncrona está limitada a 2..30 réplicas.** Los trabajos de 2..100 viven en `/v1/jobs`; no presentar `repetitions` del endpoint síncrono como jobs asíncronos.
 - **P-03 es local y no durable.** La pantalla PRO usa la API real, pero reiniciar el servidor pierde los trabajos; la UI solo avisa. No es AWS ni evidencia de miles de réplicas.
 - **Los datos de P-05 son provinciales y preliminares.** `manabi-dengue-weekly-v1` no tiene granularidad de Manta, 2026 llega hasta la SE 41 y el dataset no alimenta el simulador. No es calibración ni evidencia de riesgo local; el control de 2025 es indirecto (tasas), no una tabla de casos.
@@ -235,4 +228,6 @@ autorización. Al terminar entrega archivos tocados, comando ejecutado,
 resultado observado, evidencia, riesgos y pendientes.
 ```
 
-Actualización posterior de API (2026-10-27): suite actual **478 pruebas backend**, Ruff/mypy correctos. [Medición HTTP completa](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s y con frames 33,41 s, n=3. Objetivo consistente ≤25 s pendiente; no certifica staging/AWS ni T-22. Compare reutiliza bytes JSON validados sin modificar hashes.
+Actualización posterior de API (2026-10-27): en ese incremento, **478 pruebas backend**, Ruff/mypy correctos. [Medición HTTP completa](docs/evidencia/api-performance-2026-10-27.md): sin frames mediana 24,35 s y con frames 33,41 s, n=3. Objetivo consistente ≤25 s pendiente; no certifica staging/AWS ni T-22. Compare reutiliza bytes JSON validados sin modificar hashes.
+
+Actualización T-22 (2026-10-27): componente científico **APROBADO**, medias none/random/targeted 713,6067 / 575,1067 / 359,2067. Protocolo v1 intacto; más I finales con targeted al día 90 y contraste de mercado redundante son límites explícitos. [Informe y auditoría](docs/evidencia/t22-v1-ejecucion.md). Suite actual 486 pruebas backend.

@@ -386,3 +386,7 @@ Resultado observado: 404 pruebas backend, 137 frontend, Ruff/mypy/tipos/build co
 ## Rendimiento HTTP local
 
 `backend/.venv/Scripts/python.exe -X utf8 scripts/benchmark_api.py --samples 3 --output-dir .tools/api-performance-repeat` mide preview y comparación real con/sin frames. Ejecutar sin otros benchmarks propios simultáneos. [Resultados y límites](evidencia/api-performance-2026-10-27.md); no cierra staging ni T-22.
+
+## T-22 científico completo (2026-10-27)
+
+Comando ejecutado desde raíz: `backend/.venv/Scripts/python.exe -X utf8 scripts/run_t22.py --attempt .tools/t22-v1-attempt-02 --group all`. Quince experimentos/R30, 450 pares, 17 reproducciones y controles 5/5: **APROBADO**. [Informe y límites](evidencia/t22-v1-ejecucion.md). La carpeta no debe sobrescribirse; una repetición completa requiere otra carpeta. Cada JSON puede verificarse con `scripts/reproduce.py`. Suite actual: 486 pruebas backend, Ruff/formato/mypy correctos. Semilla externa y aceptación humana permanecen pendientes.

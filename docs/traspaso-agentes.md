@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-27.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** datos UX (`git log --grep=datos-ux`); P-07 backend y P-08 locales verificados; P-06 conserva su resultado desfavorable.
+**Último incremento:** T-22 científico completo y APROBADO; [informe](evidencia/t22-v1-ejecucion.md), 486 pruebas backend. P-06 conserva su resultado desfavorable.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -21,7 +21,7 @@ El proyecto ya tiene un motor SEIR reproducible, comparación pareada de tres po
 
 Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar evidencia y contratos. Faltan:
 
-- T-22 completo: matriz primaria y contrastes, no solo controles.
+- T-22 científico está completo y APROBADO; quedan rendimiento consistente, semilla externa y aceptación integral.
 - P-02: aceptación humana UI; editor, historial y backend adaptativo ya verificados en local.
 - P-04: AWS; la pantalla de jobs ya usa la API real (P-03 cerrada en local, no durable).
 - P-06: existe el preset `manabi-dengue-2025-v1`, pero la validación fuera de muestra es desfavorable; no hay versión validada.
@@ -29,7 +29,7 @@ Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar e
 - P-07: backend temporal verificado ([evidencia](evidencia/p07-backend-2026-10-27.md)); aceptación UI de sincronización, accesibilidad y rendimiento pendiente.
 - T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
 
-**No hay URL pública, no hay AWS desplegado y no hay gate científico aprobado.** Cualquier afirmación distinta debe tratarse como error documental.
+**T-22 científico está aprobado. No hay URL pública ni AWS desplegado; la aceptación integral sigue pendiente.** Consultar la evidencia y sus límites antes de afirmar que el producto está listo.
 
 ---
 
@@ -200,53 +200,28 @@ Evidencia: [estado del frontend PRO](estado-frontend-pro-2026-10-27.md), [integr
 
 ## 6. Qué falta exactamente
 
-### 6.1 T-22 — gate científico
+### 6.1 T-22 — componente científico ejecutado
 
-**Estado:** protocolo v1 congelado; cinco controles técnicos ejecutados y PASA; `base-root-0` exportado, pero el runner no lo cuenta como raíz completa por metadatos/reproducción; matriz primaria y contrastes pendientes. La decisión global sigue **INCOMPLETO/INVÁLIDO**.
+**Estado: APROBADO**, intento `.tools/t22-v1-attempt-02`, fuente `0e90ff4`. [Informe](evidencia/t22-v1-ejecucion.md), [resumen completo](evidencia/t22-v1-ejecucion.json) y [auditoría con observaciones pareadas](evidencia/t22-v1-auditoria.json).
 
-**Protocolo:** [specs/validation/t22-v1/README.md](../specs/validation/t22-v1/README.md).
+- Protocolo v1 congelado y sin modificaciones: 5 raíces primarias × 30 pares, 5 contrastes × 30 y 5 controles × 30; 450 pares totales.
+- Quince JSON/ZIP completos; controles 5/5 PASA, 17 reproducciones correctas en procesos nuevos (base-root-0 tres veces).
+- Medias primarias none/random/targeted: 713,6067 / 575,1067 / 359,2067. Sumas D_none=53.160 y D_random=32.385, ambas estrictamente positivas.
+- Frente a random: 112 victorias, 33 empates y 5 pérdidas. No se afirma victoria universal.
+- IC bootstrap por raíz conservados; no hay bootstrap global que trate los 150 pares como redes independientes.
+- Targeted deja más infecciosos al día 90 en las cinco raíces: no demuestra menor duración del brote; censura explícita.
+- `market-origin` es redundante: los 1.000 nodos son candidatos de mercado y produce las mismas réplicas que base-root-0. No aporta evidencia independiente sobre sensibilidad al origen. Cualquier cambio semántico exige v2, conservando v1.
+- T-23, semilla externa, tiempos humanos, aceptación UI, rendimiento consistente y AWS siguen pendientes.
 
-**Diseño:**
+Los artefactos crudos de intento 01 citados históricamente no están en este checkout. El intento 02 se ejecutó desde cero y conserva JSON/ZIP/logs/entorno/hardware localmente bajo `.tools/`. No sobrescribirlo. El informe y los resúmenes están versionados; los JSON grandes no se suben a Git.
 
-- 5 raíces primarias fijadas por SHA-256 público, 30 réplicas cada una (150 pares).
-- 5 contrastes descriptivos: mayor transmisión, vacunas escasas, eficacia parcial, origen mercado, intervención tardía.
-- 5 controles técnicos: K0, beta0, eficacia0, cobertura completa, intervención en T.
-- Endpoint primario: `cumulativeInfected` (incluye I inicial, excluye inmunidad por vacuna).
-- Gate: suma de `D_none=C_none−C_targeted > 0` y suma de `D_random=C_random−C_targeted > 0` sobre los 150 pares.
-- Un cero no aprueba; una raíz que pierda se reporta.
-- Controles deben pasar antes de interpretar la primaria.
-- Cada JSON se reproduce al menos una vez en proceso nuevo; `base-root-0` tres veces.
-- No se edita el protocolo después de ver resultados; si cambia el motor/escenario, crear v2.
+Comando realmente ejecutado:
 
-**Controles ejecutados:**
-
-```sh
-backend/.venv/bin/python scripts/run_t22.py \
-  --attempt .tools/t22-v1-attempt-01 --resume --group control \
-  --report .tools/t22-v1-attempt-01/control-report.md \
-  --summary .tools/t22-v1-attempt-01/control-summary.json
+```powershell
+backend/.venv/Scripts/python.exe -X utf8 scripts/run_t22.py --attempt .tools/t22-v1-attempt-02 --group all
 ```
 
-Resultado: 5 controles PASA; la corrida se declara incompleta porque faltan primaria/contrastes. Informe local: `.tools/t22-v1-attempt-01/control-report.md` (ignorado en Git).
-
-**Para continuar:**
-
-```sh
-backend/.venv/bin/python scripts/run_t22.py \
-  --attempt .tools/t22-v1-attempt-01 --resume --group all
-```
-
-Antes de ejecutar, revisar `scripts/run_t22.py`. Su compilación, Ruff y corrida de controles funcionaron, pero no se ha validado la matriz completa. El intento `.tools/t22-v1-attempt-01` conserva JSON/ZIP/logs; no se versiona.
-
-**Costo esperado:** el benchmark de 44,3 s no incluye validación, exportación, ZIP ni reproducción. Un JSON base pesa ~8,3 MB y su exportación puede tardar ~2 min; la matriz completa se presupuesta por decenas de minutos. No prometer 44 s para T-22.
-
-**Qué debe producir el agente:**
-
-- JSON/ZIP/logs de las 15 filas;
-- reproducciones con hash esperado/obtenido;
-- informe con medias por política, ambas diferencias, win rates, intervalos por raíz, pérdidas/empates;
-- decisión APROBADO / NO APROBADO / INCOMPLETO;
-- referencias a `docs/evidencia/` y limitaciones.
+Para repetir toda la matriz usar un directorio nuevo; para comprobar una fila existente, ejecutar `scripts/reproduce.py` sobre su JSON con el entorno fijado por backend/uv.lock. Leer el protocolo antes de cualquier nueva evaluación. El lote tardó aproximadamente 14 minutos incluyendo validación, exportación y reproducciones; no es un benchmark de API/AWS.
 
 ### 6.2 Base pendiente T-13..T-23
 
@@ -261,7 +236,7 @@ Antes de ejecutar, revisar `scripts/run_t22.py`. Su compilación, Ruff y corrida
 | T-19 | Staging autorizado, smoke y benchmark AWS N1000/T90/R30; medir ≤25 s backend y p95 ≤60 s total. |
 | T-20 | URL pública, health desde sesión limpia y semilla nueva. |
 | T-21 | Arquitectura SVG + fuente, costos fechados, README/runbook, Budget verificable. |
-| T-22 | Primaria y contrastes; ver arriba. |
+| T-22 | Cerrado científicamente y APROBADO; evidencia y límites arriba. |
 | T-23 | Escenarios variables, semilla externa, reproducibilidad operativa y explicación. |
 
 **No reordenar:** T-22 y rendimiento antes de P-04. La semilla externa no se agrega retrospectivamente a las 150 unidades primarias.
@@ -305,7 +280,7 @@ Detalle completo: [specs/pro-roadmap.md](../specs/pro-roadmap.md) y [specs/pro-w
 - [ ] Staging y benchmark AWS (T-19).
 - [ ] Frontend público (T-20).
 - [ ] Arquitectura, costos y documentación de entrega (T-21).
-- [ ] T-22 completo (controles PASA; primaria/contrastes pendientes).
+- [x] T-22 científico completo y APROBADO; 15 experimentos y 17 reproducciones.
 - [ ] T-23 escenarios variables y semilla externa.
 
 ### 7.2 PRO
@@ -322,7 +297,7 @@ Detalle completo: [specs/pro-roadmap.md](../specs/pro-roadmap.md) y [specs/pro-w
 
 ### 7.3 Entregables de cierre
 
-- [ ] T-22 con informe y gate explícito.
+- [x] T-22 con informe y gate científico APROBADO explícito.
 - [ ] Suite E2E de navegador con éxito, empate, pérdida, error y obsolescencia.
 - [ ] Prueba cronometrada con semilla externa y Brote Sorpresa <5 min.
 - [ ] `docs/arquitectura.svg` y fuente editable.
@@ -457,8 +432,8 @@ No guardar credenciales, correos, tokens ni datos personales en evidencia.
 | Backend | 391 pruebas, Ruff y mypy correctos (24 archivos fuente). |
 | Frontend | 135 pruebas, typecheck y build correctos. |
 | Benchmark local | Windows N1000/T90/R30: 13,80 s de motor (control anterior 13,60 s, resultados idénticos); Linux histórico 44,3 s. [Carga/exportación optimizadas](evidencia/rendimiento-validacion-2026-10-27.md); no certifica latencia HTTP total ni AWS. |
-| T-22 controles | 5/5 PASA; matriz primaria/contrastes pendientes. |
-| T-22 exportación | `base-root-0` JSON ~8,3 MB; exportación ~2 min; reproducción pendiente para la matriz. |
+| T-22 controles | 5/5 PASA; matriz completa y componente científico APROBADO. |
+| T-22 exportación | 15 JSON/ZIP completos, 17 reproducciones correctas; intento 02 conservado localmente. |
 | AWS | No desplegado; sin benchmark ni URL pública. |
 | E2E | No hay suite automatizada completa; flujos manuales documentados. |
 
@@ -512,16 +487,15 @@ No marcar `[x]` por código, mock, spec o ejecución parcial.
 
 ## 13. Plantillas para asignar trabajo
 
-### 13.1 T-22
+### 13.1 Revisión de T-22 ya cerrado
 
 ```text
-Lee AGENTS.md y docs/traspaso-agentes.md. Trabaja solo en T-22/I-01.
-No edites specs/validation/t22-v1. Revisa scripts/run_t22.py, ejecuta
-controles si hace falta y luego la matriz completa con --resume --group all.
-Conserva JSON/ZIP/logs, reproduce cada JSON y base-root-0 tres veces, valida
-invariantes y escribe el informe con decisión, empates, pérdidas e intervalos.
-No inventes resultados ni cambies semillas. Al terminar entrega archivos,
-comandos, resultados, evidencia, riesgos y pendientes.
+Lee AGENTS.md y docs/evidencia/t22-v1-ejecucion.md. T-22 v1 ya está ejecutado
+con componente científico APROBADO. No edites el protocolo ni sobrescribas
+.tools/t22-v1-attempt-02. Revisa primero la auditoría y sus límites: pérdidas,
+empates, censura y contraste de mercado redundante. Si cambia la semántica
+del motor, registra una evaluación v2 conservando todos los resultados v1.
+No confundas este resultado con T-23, aceptación humana ni despliegue AWS.
 ```
 
 ### 13.2 P-02
@@ -585,4 +559,4 @@ inventes URL, gasto ni resultados de AWS.
 - [Costos](costos.md).
 - [Mapa geográfico](manta-geography.md) y [P-09](../specs/p09-geographic-map.md).
 
-Actualización de rendimiento API (2026-10-27): 478 pruebas backend, Ruff/mypy correctos. [Evidencia HTTP completa](evidencia/api-performance-2026-10-27.md). Compare reutiliza bytes JSON validados; no cambia hashes. ≤25 s consistente, T-22 y staging siguen pendientes.
+Actualización de rendimiento API (2026-10-27): 478 pruebas backend, Ruff/mypy correctos. [Evidencia HTTP completa](evidencia/api-performance-2026-10-27.md). Compare reutiliza bytes JSON validados; no cambia hashes. ≤25 s consistente y staging siguen pendientes; T-22 científico fue ejecutado y aprobado después de esa medición.

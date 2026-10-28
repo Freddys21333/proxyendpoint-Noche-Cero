@@ -12,7 +12,7 @@ Simulará una plaga SEIR sobre una población sintética inspirada en Manta y co
 - [PRD: alcance y aceptación](PRD.md).
 - [TRD: arquitectura, contratos y metodología](TRD.md).
 - [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
-- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado; controles técnicos ejecutados y PASA; matriz primaria pendiente.
+- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado; matriz completa ejecutada y componente científico APROBADO. [Resultados y límites](docs/evidencia/t22-v1-ejecucion.md).
 - [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
 - [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
 - [Auditoría PRO de partida](docs/evidencia/auditoria-pro-2026-10-27.md).
@@ -44,7 +44,7 @@ Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/
 
 Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. El siguiente trabajo es cerrar T-22 (I-01) con la matriz primaria/contrastes y decidir el límite de rendimiento; después siguen la UI de P-02/P-03 y P-05. El protocolo T-22 v1 está preparado y congelado; sus cinco controles técnicos ya pasaron, pero la matriz primaria/contrastes y el resultado científico siguen pendientes, junto con infraestructura T-17/18 y despliegue T-19/20. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. T-22 científico está completo y APROBADO: 15 experimentos, 450 pares y 17 reproducciones. [Informe con incertidumbre, empates y pérdidas](docs/evidencia/t22-v1-ejecucion.md). Siguen pendientes rendimiento consistente, aceptación humana/UI, T-23 y AWS. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
 
 ## Parámetros previstos
 
@@ -61,7 +61,7 @@ Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). 
 | Duración infecciosa media | 7 días | Supuesto del equipo |
 | Semilla | 20261026 | Supuesto del equipo |
 
-La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; el gate científico de T-22 y el benchmark AWS siguen pendientes. No se afirma que la estrategia supere las líneas base hasta medirlo.
+La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; T-22 científico pasa con la matriz congelada, conservando 5 pérdidas y 33 empates frente al azar entre los 150 pares primarios. El benchmark AWS y la aceptación integral siguen pendientes.
 
 ## AWS y pendientes técnicos
 
@@ -91,4 +91,4 @@ Rendimiento local: [mediciones de carga/exportación y equivalencia científica]
 
 Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-summary.md), con porcentajes, alternativa siguiente, recursos y motivos registrados calculados en backend. [Verificación local](docs/evidencia/resumen-decision-2026-10-27.md).
 
-Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites; 478 pruebas backend.
+Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites. Suite backend actual: 486 pruebas.

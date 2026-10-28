@@ -29,7 +29,7 @@ No se mezclan features, correcciones de rendimiento y despliegue en el mismo com
 | Base local | 356 pruebas backend y 116 frontend; Ruff, mypy, typecheck y build correctos. |
 | Motor por defecto | `N=1000`, `T=90`, `R=30`, semilla `20261026`; `none=723,7`, `random=575,1`, `targeted=378,1`; ganancia pareada `196,97` con IC bootstrap `81,62–309,59`; 22 victorias, 6 empates y 2 derrotas frente a random. |
 | Rendimiento | **44,3 s** para el escenario por defecto sin frames, frente a objetivos de ~25 s backend y ~60 s total. |
-| Gate científico | Protocolo T-22 congelado; **controles PASA**, primaria/contrastes pendientes. |
+| Gate científico | **T-22 APROBADO**: 15 experimentos, 450 pares, 17 reproducciones; [informe](evidencia/t22-v1-ejecucion.md). Aceptación integral pendiente. |
 | P-01 | Verificado localmente: calendario de llegadas, inventario, costos y exportación. |
 | P-09 | Verificado localmente como presentación: mapa OSM, polígonos y posiciones deterministas. |
 | PRO-1/2 | Parcial: vacunas, cierre y brigadas con presupuesto y costos educativos; falta cerrar aceptación integral. |
@@ -76,11 +76,11 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-01 — Rendimiento base y gate T-22
 
-**Actualización local Windows 2026-10-27:** [carga/exportación optimizadas con equivalencia](evidencia/rendimiento-validacion-2026-10-27.md): carga 32,75–44,36 s → 6,05–6,17 s, reexportación 18,18–21,51 s → 12,14–13,28 s en un JSON N1000/T90/R2. Motor R30 controlado antes/después 13,603/13,796 s, mismos resultados; la referencia de 44,3 s inferior corresponde a Linux y se conserva como histórica. El objetivo ≤25 s se observó en esta corrida Windows del motor, sin certificar p95/HTTP total/AWS. I-01 sigue abierto por T-22.
+**Actualización local Windows 2026-10-27:** [carga/exportación optimizadas con equivalencia](evidencia/rendimiento-validacion-2026-10-27.md): carga 32,75–44,36 s → 6,05–6,17 s, reexportación 18,18–21,51 s → 12,14–13,28 s en un JSON N1000/T90/R2. Motor R30 controlado antes/después 13,603/13,796 s, mismos resultados; la referencia de 44,3 s inferior corresponde a Linux y se conserva como histórica. El objetivo ≤25 s se observó en esta corrida Windows del motor, sin certificar p95/HTTP total/AWS. T-22 científico ya está aprobado; I-01 conserva el objetivo de rendimiento consistente; staging se verifica en la fase AWS.
 
-**Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El gate científico no está ejecutado.
+**Problema:** el escenario por defecto tarda 377,9 s; el objetivo es ≤25 s backend y ≤60 s total. El componente científico se ejecutó y aprobó; ver actualización T-22.
 
-**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22: protocolo congelado y **cinco controles técnicos PASA**; matriz primaria y contrastes pendientes. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md) y [protocolo T-22](../specs/validation/t22-v1/README.md).
+**Estado 2026-10-27:** motor vectorizado y benchmark reproducible en **44,3 s** (8,5× menos), con hashes idénticos a la versión anterior. Objetivo local de ≤60 s cumplido; objetivo de ≤25 s backend aún no. T-22: **APROBADO**, 15 experimentos completos, controles 5/5 y 17 reproducciones. Evidencia: [I-01 rendimiento](evidencia/i01-rendimiento.md) y [protocolo T-22](../specs/validation/t22-v1/README.md).
 
 **Alcance:**
 
@@ -335,4 +335,6 @@ Reglas heredadas que no se pueden romper:
 
 **Nota post-merge (2026-10-27):** `5861407` integró P-02/P-03 backend y cliente. La verificación posterior dio 356 pruebas backend, 116 frontend y hashes base preservados; el detalle y todo lo pendiente están en [estado post-merge](evidencia/estado-post-merge-2026-10-27.md).
 
-Actualización I-01 (2026-10-27): [benchmark HTTP completo](evidencia/api-performance-2026-10-27.md), sin frames mediana 24,35 s, con frames 33,41 s (n=3). El objetivo consistente de 25 s y T-22 permanecen abiertos.
+Actualización I-01 (2026-10-27): [benchmark HTTP completo](evidencia/api-performance-2026-10-27.md), sin frames mediana 24,35 s, con frames 33,41 s (n=3). El objetivo consistente de 25 s permanece abierto; T-22 científico ya está completo y aprobado.
+
+Actualización T-22 (2026-10-27): [matriz completa y gate científico APROBADO](evidencia/t22-v1-ejecucion.md). No modifica protocolo ni motor, no cierra rendimiento, T-23, UI ni AWS. Frente a random: 112/33/5 victorias/empates/pérdidas; mercado redundante y censura explícitos.

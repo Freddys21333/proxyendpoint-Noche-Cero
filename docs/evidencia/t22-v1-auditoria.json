@@ -1,0 +1,3816 @@
+{
+  "archive": {
+    "bytes": 17078053,
+    "path": ".tools/t22-v1-attempt-02-evidence.zip",
+    "scope": "Artefactos crudos del intento 02 y copia del protocolo intacto; local, ignorado por Git.",
+    "sha256": "d7c4b7800ef0fc7948f873f136d5a78ef885801222a299d8582599101b96b969"
+  },
+  "checks": {
+    "base-root-0": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "5ad91119de75609f88f8885e8c7822b12b5ab3176c9ff83e179b137b16fac9dc",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 3,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "2b46e35fda7d318e5b8cdc8c6e12284fc467b9d64676354a35bcf9aa2d66b2f4"
+    },
+    "base-root-1": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "6aa7a943649987dec74b95243fc47f1f46da2f18b3be42e360ed23f6f9f6467b",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "7c6804085aba258cee05c39db360a778f1429329784af70c07c471db91ef92eb"
+    },
+    "base-root-2": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "d9886a4b6d0a9e2553b7e326f2acd8a2500ebe8a59e0f35f47cb9425324d9d59",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "7ce479b4b855dbc9a47b6f0da15064659e8102c680a45786703463afe58de5f6"
+    },
+    "base-root-3": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "71480ee0bce401a1b356a76641876c5ff3d3dbc5efd2308c7a2b5068286e49c3",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "b722f47cbd290c64d373c30d53136eac56cf6dac8bbe04c101f6e23c853a873a"
+    },
+    "base-root-4": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "c1148cb9a2b6cef8639227d8f061d3d4d48357b071c07fbc829d7a49da4d32ac",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "64eb368a7e295cfca55f3f0612c1cadedabfca00921a17a308602df01951d773"
+    },
+    "control-full-coverage": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "eb0bc6c4c51f46e7dc5aa415446abb55d79e39cd3ff3344a45b6e9b1ed991d17",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "b46e1a7a995d462feed493d7124db0080337540521b4948c9840a37024fe9a2e"
+    },
+    "control-terminal-intervention": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "4a824a009eaf22ae185b06485b7a109f6830c026b83910c00dfe505083f1b86c",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "7b0815ebf5f7d1a9f8bb9ec563186b8ffefbaf40d864ad16fe5ab6acf5de154d"
+    },
+    "control-zero-efficacy": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "e0e08995d443883c05e5093d0f47f0280f3d1bb26f0d756178cb7f1f9ddc3ebf",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "292e3c83d11108bc1e1557488d2351874ffa126a162e3da973155d8390148d71"
+    },
+    "control-zero-transmission": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "64064817293e765dc042052331597810b9d4e8897587f5e07416bf68f49b79da",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "e66f176387cc8e9ae8791b037484a510874cbda2162c2c2f746d6bd9beec25b6"
+    },
+    "control-zero-vaccines": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "418c536dd2accac1321a6ddf56e9759adedc359a5bef98de290c3a3d63fe5f4f",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "f17e0056fa32e947cf3c4e98cb638b7cb1ab7d842d0df4f275c6e2d8198e4358"
+    },
+    "delayed-intervention": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "4dab1af0c3de29138eaf5e825e63fc8a6068b94687a589f4bc735f9ebffab8e2",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "dfe4f09765a4a176678930dcd97155bb0704d0441fd4445943ea3f5895423168"
+    },
+    "higher-transmission": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "8fa99d02c260edc3e11cd9dd635e2f98e5e67b90e0ba3215e6bd16308c381ffa",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "c05dc0a7451fd16fcfefc4d72834eef8247e59af03ad2dc0d1c42e286fc3fc05"
+    },
+    "market-origin": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "cdd75da8c77b13f70ce04dba3cdfd55148a2133e1685c2de9a4ac53c503110f4",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "a842c2b2900885e419f2a3ef244f6143347bf026b3554ecab2630b96d0d3722d"
+    },
+    "partial-efficacy": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "3c3175e76e55b63cdb7710947fa194527673bbe5bc78fffb58c0517718ad2e25",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "8f09fce04cafbd5a083a91355aa051507752f233a8e903587b556623679b2ffb"
+    },
+    "scarce-vaccines": {
+      "configurationMatchesFrozenInput": true,
+      "jsonSHA256": "2568974fe0369247043aa74b64233285fde2c5de7526d5f16275ff4a522340a0",
+      "manifestMatchesSourceCommit": true,
+      "reproductions": 1,
+      "status": "PASA",
+      "zipCRC": "PASA",
+      "zipSHA256": "e77ff7c0ed0cd129c88423befd5959273fce71ab2dca25a2018c80c948487b53"
+    }
+  },
+  "counts": {
+    "experiments": 15,
+    "freshProcessReproductions": 17,
+    "pairedReplicates": 450,
+    "primaryPairs": 150
+  },
+  "dNone": {
+    "losses": 0,
+    "mean": 354.4,
+    "sum": 53160,
+    "ties": 29,
+    "wins": 121
+  },
+  "dRandom": {
+    "losses": 5,
+    "mean": 215.9,
+    "sum": 32385,
+    "ties": 33,
+    "wins": 112
+  },
+  "decision": "APROBADO",
+  "hardware": {
+    "collectedAt": "2026-10-28T02:15:04.1526628Z",
+    "cpu": {
+      "Name": "12th Gen Intel(R) Core(TM) i7-1255U",
+      "NumberOfCores": 10,
+      "NumberOfLogicalProcessors": 12
+    },
+    "memoryBytes": 12596011008
+  },
+  "marketContrast": {
+    "interpretation": "Contraste redundante en v1; no aporta evidencia independiente sobre origen.",
+    "marketCandidates": 1000,
+    "population": 1000,
+    "sameGraphAsBaseRoot0": true,
+    "sameReplicatesAsBaseRoot0": true
+  },
+  "pairedObservations": {
+    "base-root-0": [
+      {
+        "dNone": 322,
+        "dRandom": 182,
+        "index": 0,
+        "none": 909,
+        "random": 769,
+        "targeted": 587
+      },
+      {
+        "dNone": 306,
+        "dRandom": 198,
+        "index": 1,
+        "none": 898,
+        "random": 790,
+        "targeted": 592
+      },
+      {
+        "dNone": 495,
+        "dRandom": -379,
+        "index": 2,
+        "none": 878,
+        "random": 4,
+        "targeted": 383
+      },
+      {
+        "dNone": 284,
+        "dRandom": 181,
+        "index": 3,
+        "none": 887,
+        "random": 784,
+        "targeted": 603
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 294,
+        "dRandom": 172,
+        "index": 5,
+        "none": 923,
+        "random": 801,
+        "targeted": 629
+      },
+      {
+        "dNone": 301,
+        "dRandom": 197,
+        "index": 6,
+        "none": 900,
+        "random": 796,
+        "targeted": 599
+      },
+      {
+        "dNone": 417,
+        "dRandom": 305,
+        "index": 7,
+        "none": 881,
+        "random": 769,
+        "targeted": 464
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 450,
+        "dRandom": 314,
+        "index": 9,
+        "none": 893,
+        "random": 757,
+        "targeted": 443
+      },
+      {
+        "dNone": 289,
+        "dRandom": 182,
+        "index": 10,
+        "none": 901,
+        "random": 794,
+        "targeted": 612
+      },
+      {
+        "dNone": 283,
+        "dRandom": 166,
+        "index": 11,
+        "none": 881,
+        "random": 764,
+        "targeted": 598
+      },
+      {
+        "dNone": 323,
+        "dRandom": 224,
+        "index": 12,
+        "none": 901,
+        "random": 802,
+        "targeted": 578
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 311,
+        "dRandom": 179,
+        "index": 14,
+        "none": 907,
+        "random": 775,
+        "targeted": 596
+      },
+      {
+        "dNone": 334,
+        "dRandom": 227,
+        "index": 15,
+        "none": 898,
+        "random": 791,
+        "targeted": 564
+      },
+      {
+        "dNone": 351,
+        "dRandom": 218,
+        "index": 16,
+        "none": 902,
+        "random": 769,
+        "targeted": 551
+      },
+      {
+        "dNone": 322,
+        "dRandom": -589,
+        "index": 17,
+        "none": 913,
+        "random": 2,
+        "targeted": 591
+      },
+      {
+        "dNone": 256,
+        "dRandom": 115,
+        "index": 18,
+        "none": 899,
+        "random": 758,
+        "targeted": 643
+      },
+      {
+        "dNone": 268,
+        "dRandom": 183,
+        "index": 19,
+        "none": 868,
+        "random": 783,
+        "targeted": 600
+      },
+      {
+        "dNone": 447,
+        "dRandom": 350,
+        "index": 20,
+        "none": 887,
+        "random": 790,
+        "targeted": 440
+      },
+      {
+        "dNone": 285,
+        "dRandom": 158,
+        "index": 21,
+        "none": 906,
+        "random": 779,
+        "targeted": 621
+      },
+      {
+        "dNone": 304,
+        "dRandom": 203,
+        "index": 22,
+        "none": 891,
+        "random": 790,
+        "targeted": 587
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 909,
+        "dRandom": 778,
+        "index": 24,
+        "none": 911,
+        "random": 780,
+        "targeted": 2
+      },
+      {
+        "dNone": 879,
+        "dRandom": 762,
+        "index": 25,
+        "none": 885,
+        "random": 768,
+        "targeted": 6
+      },
+      {
+        "dNone": 907,
+        "dRandom": 0,
+        "index": 26,
+        "none": 909,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 379,
+        "dRandom": 254,
+        "index": 27,
+        "none": 886,
+        "random": 761,
+        "targeted": 507
+      },
+      {
+        "dNone": 209,
+        "dRandom": 82,
+        "index": 28,
+        "none": 898,
+        "random": 771,
+        "targeted": 689
+      },
+      {
+        "dNone": 237,
+        "dRandom": 119,
+        "index": 29,
+        "none": 882,
+        "random": 764,
+        "targeted": 645
+      }
+    ],
+    "base-root-1": [
+      {
+        "dNone": 327,
+        "dRandom": 207,
+        "index": 0,
+        "none": 884,
+        "random": 764,
+        "targeted": 557
+      },
+      {
+        "dNone": 880,
+        "dRandom": 0,
+        "index": 1,
+        "none": 882,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 338,
+        "dRandom": 226,
+        "index": 2,
+        "none": 888,
+        "random": 776,
+        "targeted": 550
+      },
+      {
+        "dNone": 274,
+        "dRandom": 191,
+        "index": 3,
+        "none": 898,
+        "random": 815,
+        "targeted": 624
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 585,
+        "dRandom": 447,
+        "index": 5,
+        "none": 906,
+        "random": 768,
+        "targeted": 321
+      },
+      {
+        "dNone": 273,
+        "dRandom": 172,
+        "index": 6,
+        "none": 860,
+        "random": 759,
+        "targeted": 587
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 242,
+        "dRandom": 111,
+        "index": 8,
+        "none": 877,
+        "random": 746,
+        "targeted": 635
+      },
+      {
+        "dNone": 285,
+        "dRandom": 170,
+        "index": 9,
+        "none": 895,
+        "random": 780,
+        "targeted": 610
+      },
+      {
+        "dNone": 917,
+        "dRandom": 789,
+        "index": 10,
+        "none": 925,
+        "random": 797,
+        "targeted": 8
+      },
+      {
+        "dNone": 267,
+        "dRandom": 162,
+        "index": 11,
+        "none": 878,
+        "random": 773,
+        "targeted": 611
+      },
+      {
+        "dNone": 334,
+        "dRandom": 236,
+        "index": 12,
+        "none": 899,
+        "random": 801,
+        "targeted": 565
+      },
+      {
+        "dNone": 864,
+        "dRandom": 751,
+        "index": 13,
+        "none": 872,
+        "random": 759,
+        "targeted": 8
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 328,
+        "dRandom": 221,
+        "index": 15,
+        "none": 898,
+        "random": 791,
+        "targeted": 570
+      },
+      {
+        "dNone": 433,
+        "dRandom": 325,
+        "index": 16,
+        "none": 852,
+        "random": 744,
+        "targeted": 419
+      },
+      {
+        "dNone": 206,
+        "dRandom": 111,
+        "index": 17,
+        "none": 909,
+        "random": 814,
+        "targeted": 703
+      },
+      {
+        "dNone": 916,
+        "dRandom": 768,
+        "index": 18,
+        "none": 917,
+        "random": 769,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 20,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 898,
+        "dRandom": 0,
+        "index": 22,
+        "none": 899,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 899,
+        "dRandom": 786,
+        "index": 23,
+        "none": 900,
+        "random": 787,
+        "targeted": 1
+      },
+      {
+        "dNone": 235,
+        "dRandom": 113,
+        "index": 24,
+        "none": 910,
+        "random": 788,
+        "targeted": 675
+      },
+      {
+        "dNone": 334,
+        "dRandom": 213,
+        "index": 25,
+        "none": 894,
+        "random": 773,
+        "targeted": 560
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 26,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 27,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 359,
+        "dRandom": 228,
+        "index": 28,
+        "none": 924,
+        "random": 793,
+        "targeted": 565
+      },
+      {
+        "dNone": 265,
+        "dRandom": 164,
+        "index": 29,
+        "none": 885,
+        "random": 784,
+        "targeted": 620
+      }
+    ],
+    "base-root-2": [
+      {
+        "dNone": 227,
+        "dRandom": 124,
+        "index": 0,
+        "none": 898,
+        "random": 795,
+        "targeted": 671
+      },
+      {
+        "dNone": 256,
+        "dRandom": 130,
+        "index": 1,
+        "none": 907,
+        "random": 781,
+        "targeted": 651
+      },
+      {
+        "dNone": 345,
+        "dRandom": 211,
+        "index": 2,
+        "none": 919,
+        "random": 785,
+        "targeted": 574
+      },
+      {
+        "dNone": 302,
+        "dRandom": 178,
+        "index": 3,
+        "none": 909,
+        "random": 785,
+        "targeted": 607
+      },
+      {
+        "dNone": 3,
+        "dRandom": 3,
+        "index": 4,
+        "none": 5,
+        "random": 5,
+        "targeted": 2
+      },
+      {
+        "dNone": 239,
+        "dRandom": 126,
+        "index": 5,
+        "none": 892,
+        "random": 779,
+        "targeted": 653
+      },
+      {
+        "dNone": 527,
+        "dRandom": 400,
+        "index": 6,
+        "none": 869,
+        "random": 742,
+        "targeted": 342
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 546,
+        "dRandom": 423,
+        "index": 8,
+        "none": 917,
+        "random": 794,
+        "targeted": 371
+      },
+      {
+        "dNone": 284,
+        "dRandom": 176,
+        "index": 9,
+        "none": 888,
+        "random": 780,
+        "targeted": 604
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 230,
+        "dRandom": 152,
+        "index": 11,
+        "none": 882,
+        "random": 804,
+        "targeted": 652
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 12,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 276,
+        "dRandom": 155,
+        "index": 14,
+        "none": 886,
+        "random": 765,
+        "targeted": 610
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 313,
+        "dRandom": 189,
+        "index": 16,
+        "none": 894,
+        "random": 770,
+        "targeted": 581
+      },
+      {
+        "dNone": 351,
+        "dRandom": 250,
+        "index": 17,
+        "none": 900,
+        "random": 799,
+        "targeted": 549
+      },
+      {
+        "dNone": 859,
+        "dRandom": 791,
+        "index": 18,
+        "none": 861,
+        "random": 793,
+        "targeted": 2
+      },
+      {
+        "dNone": 898,
+        "dRandom": 772,
+        "index": 19,
+        "none": 906,
+        "random": 780,
+        "targeted": 8
+      },
+      {
+        "dNone": 217,
+        "dRandom": 91,
+        "index": 20,
+        "none": 910,
+        "random": 784,
+        "targeted": 693
+      },
+      {
+        "dNone": 327,
+        "dRandom": 188,
+        "index": 21,
+        "none": 896,
+        "random": 757,
+        "targeted": 569
+      },
+      {
+        "dNone": 449,
+        "dRandom": 323,
+        "index": 22,
+        "none": 898,
+        "random": 772,
+        "targeted": 449
+      },
+      {
+        "dNone": 573,
+        "dRandom": 451,
+        "index": 23,
+        "none": 912,
+        "random": 790,
+        "targeted": 339
+      },
+      {
+        "dNone": 499,
+        "dRandom": 363,
+        "index": 24,
+        "none": 920,
+        "random": 784,
+        "targeted": 421
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 25,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 272,
+        "dRandom": 143,
+        "index": 26,
+        "none": 916,
+        "random": 787,
+        "targeted": 644
+      },
+      {
+        "dNone": 887,
+        "dRandom": 763,
+        "index": 27,
+        "none": 890,
+        "random": 766,
+        "targeted": 3
+      },
+      {
+        "dNone": 854,
+        "dRandom": 734,
+        "index": 28,
+        "none": 923,
+        "random": 803,
+        "targeted": 69
+      },
+      {
+        "dNone": 295,
+        "dRandom": 194,
+        "index": 29,
+        "none": 926,
+        "random": 825,
+        "targeted": 631
+      }
+    ],
+    "base-root-3": [
+      {
+        "dNone": 254,
+        "dRandom": 144,
+        "index": 0,
+        "none": 902,
+        "random": 792,
+        "targeted": 648
+      },
+      {
+        "dNone": 353,
+        "dRandom": 243,
+        "index": 1,
+        "none": 879,
+        "random": 769,
+        "targeted": 526
+      },
+      {
+        "dNone": 231,
+        "dRandom": 120,
+        "index": 2,
+        "none": 884,
+        "random": 773,
+        "targeted": 653
+      },
+      {
+        "dNone": 919,
+        "dRandom": 815,
+        "index": 3,
+        "none": 921,
+        "random": 817,
+        "targeted": 2
+      },
+      {
+        "dNone": 279,
+        "dRandom": 147,
+        "index": 4,
+        "none": 885,
+        "random": 753,
+        "targeted": 606
+      },
+      {
+        "dNone": 278,
+        "dRandom": 153,
+        "index": 5,
+        "none": 871,
+        "random": 746,
+        "targeted": 593
+      },
+      {
+        "dNone": 911,
+        "dRandom": 804,
+        "index": 6,
+        "none": 912,
+        "random": 805,
+        "targeted": 1
+      },
+      {
+        "dNone": 242,
+        "dRandom": 128,
+        "index": 7,
+        "none": 879,
+        "random": 765,
+        "targeted": 637
+      },
+      {
+        "dNone": 360,
+        "dRandom": -544,
+        "index": 8,
+        "none": 907,
+        "random": 3,
+        "targeted": 547
+      },
+      {
+        "dNone": 336,
+        "dRandom": 222,
+        "index": 9,
+        "none": 896,
+        "random": 782,
+        "targeted": 560
+      },
+      {
+        "dNone": 267,
+        "dRandom": 137,
+        "index": 10,
+        "none": 888,
+        "random": 758,
+        "targeted": 621
+      },
+      {
+        "dNone": 242,
+        "dRandom": 130,
+        "index": 11,
+        "none": 888,
+        "random": 776,
+        "targeted": 646
+      },
+      {
+        "dNone": 893,
+        "dRandom": 781,
+        "index": 12,
+        "none": 894,
+        "random": 782,
+        "targeted": 1
+      },
+      {
+        "dNone": 563,
+        "dRandom": 458,
+        "index": 13,
+        "none": 902,
+        "random": 797,
+        "targeted": 339
+      },
+      {
+        "dNone": 343,
+        "dRandom": 225,
+        "index": 14,
+        "none": 900,
+        "random": 782,
+        "targeted": 557
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 7,
+        "random": 7,
+        "targeted": 7
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 16,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 889,
+        "dRandom": 781,
+        "index": 17,
+        "none": 891,
+        "random": 783,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 3,
+        "dRandom": 3,
+        "index": 19,
+        "none": 7,
+        "random": 7,
+        "targeted": 4
+      },
+      {
+        "dNone": 322,
+        "dRandom": 225,
+        "index": 20,
+        "none": 908,
+        "random": 811,
+        "targeted": 586
+      },
+      {
+        "dNone": 487,
+        "dRandom": 341,
+        "index": 21,
+        "none": 913,
+        "random": 767,
+        "targeted": 426
+      },
+      {
+        "dNone": 430,
+        "dRandom": 309,
+        "index": 22,
+        "none": 898,
+        "random": 777,
+        "targeted": 468
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 24,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 270,
+        "dRandom": 180,
+        "index": 25,
+        "none": 905,
+        "random": 815,
+        "targeted": 635
+      },
+      {
+        "dNone": 215,
+        "dRandom": 96,
+        "index": 26,
+        "none": 878,
+        "random": 759,
+        "targeted": 663
+      },
+      {
+        "dNone": 316,
+        "dRandom": 196,
+        "index": 27,
+        "none": 902,
+        "random": 782,
+        "targeted": 586
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 28,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 876,
+        "dRandom": 784,
+        "index": 29,
+        "none": 877,
+        "random": 785,
+        "targeted": 1
+      }
+    ],
+    "base-root-4": [
+      {
+        "dNone": 334,
+        "dRandom": 210,
+        "index": 0,
+        "none": 903,
+        "random": 779,
+        "targeted": 569
+      },
+      {
+        "dNone": 414,
+        "dRandom": 294,
+        "index": 1,
+        "none": 923,
+        "random": 803,
+        "targeted": 509
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 2,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 346,
+        "dRandom": 213,
+        "index": 3,
+        "none": 938,
+        "random": 805,
+        "targeted": 592
+      },
+      {
+        "dNone": 904,
+        "dRandom": 785,
+        "index": 4,
+        "none": 912,
+        "random": 793,
+        "targeted": 8
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 5,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 289,
+        "dRandom": 194,
+        "index": 6,
+        "none": 901,
+        "random": 806,
+        "targeted": 612
+      },
+      {
+        "dNone": 418,
+        "dRandom": 296,
+        "index": 7,
+        "none": 899,
+        "random": 777,
+        "targeted": 481
+      },
+      {
+        "dNone": 915,
+        "dRandom": 789,
+        "index": 8,
+        "none": 919,
+        "random": 793,
+        "targeted": 4
+      },
+      {
+        "dNone": 223,
+        "dRandom": 129,
+        "index": 9,
+        "none": 917,
+        "random": 823,
+        "targeted": 694
+      },
+      {
+        "dNone": 318,
+        "dRandom": 188,
+        "index": 10,
+        "none": 916,
+        "random": 786,
+        "targeted": 598
+      },
+      {
+        "dNone": 302,
+        "dRandom": 191,
+        "index": 11,
+        "none": 889,
+        "random": 778,
+        "targeted": 587
+      },
+      {
+        "dNone": 301,
+        "dRandom": 196,
+        "index": 12,
+        "none": 907,
+        "random": 802,
+        "targeted": 606
+      },
+      {
+        "dNone": 301,
+        "dRandom": 210,
+        "index": 13,
+        "none": 894,
+        "random": 803,
+        "targeted": 593
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 747,
+        "dRandom": 587,
+        "index": 15,
+        "none": 910,
+        "random": 750,
+        "targeted": 163
+      },
+      {
+        "dNone": 783,
+        "dRandom": 662,
+        "index": 16,
+        "none": 904,
+        "random": 783,
+        "targeted": 121
+      },
+      {
+        "dNone": 271,
+        "dRandom": -631,
+        "index": 17,
+        "none": 909,
+        "random": 7,
+        "targeted": 638
+      },
+      {
+        "dNone": 325,
+        "dRandom": 241,
+        "index": 18,
+        "none": 913,
+        "random": 829,
+        "targeted": 588
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 898,
+        "dRandom": 790,
+        "index": 20,
+        "none": 900,
+        "random": 792,
+        "targeted": 2
+      },
+      {
+        "dNone": 913,
+        "dRandom": 805,
+        "index": 21,
+        "none": 919,
+        "random": 811,
+        "targeted": 6
+      },
+      {
+        "dNone": 908,
+        "dRandom": 0,
+        "index": 22,
+        "none": 910,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 882,
+        "dRandom": -11,
+        "index": 23,
+        "none": 897,
+        "random": 4,
+        "targeted": 15
+      },
+      {
+        "dNone": 320,
+        "dRandom": 212,
+        "index": 24,
+        "none": 922,
+        "random": 814,
+        "targeted": 602
+      },
+      {
+        "dNone": 370,
+        "dRandom": 258,
+        "index": 25,
+        "none": 934,
+        "random": 822,
+        "targeted": 564
+      },
+      {
+        "dNone": 246,
+        "dRandom": 126,
+        "index": 26,
+        "none": 918,
+        "random": 798,
+        "targeted": 672
+      },
+      {
+        "dNone": 244,
+        "dRandom": 133,
+        "index": 27,
+        "none": 886,
+        "random": 775,
+        "targeted": 642
+      },
+      {
+        "dNone": 259,
+        "dRandom": 138,
+        "index": 28,
+        "none": 896,
+        "random": 775,
+        "targeted": 637
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 29,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      }
+    ],
+    "control-full-coverage": [
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 0,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 4,
+        "dRandom": 0,
+        "index": 1,
+        "none": 5,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 14,
+        "dRandom": 0,
+        "index": 2,
+        "none": 15,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 2,
+        "dRandom": 0,
+        "index": 3,
+        "none": 3,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 6,
+        "dRandom": 0,
+        "index": 4,
+        "none": 7,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 12,
+        "dRandom": 0,
+        "index": 5,
+        "none": 13,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 6,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 1,
+        "dRandom": 0,
+        "index": 9,
+        "none": 2,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 8,
+        "dRandom": 0,
+        "index": 11,
+        "none": 9,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 1,
+        "dRandom": 0,
+        "index": 12,
+        "none": 2,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 5,
+        "dRandom": 0,
+        "index": 13,
+        "none": 6,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 3,
+        "dRandom": 0,
+        "index": 14,
+        "none": 4,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 5,
+        "dRandom": 0,
+        "index": 15,
+        "none": 6,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 4,
+        "dRandom": 0,
+        "index": 16,
+        "none": 5,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 17,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 4,
+        "dRandom": 0,
+        "index": 19,
+        "none": 5,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 3,
+        "dRandom": 0,
+        "index": 20,
+        "none": 4,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 14,
+        "dRandom": 0,
+        "index": 22,
+        "none": 15,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 7,
+        "dRandom": 0,
+        "index": 23,
+        "none": 8,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 2,
+        "dRandom": 0,
+        "index": 24,
+        "none": 3,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 4,
+        "dRandom": 0,
+        "index": 25,
+        "none": 5,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 18,
+        "dRandom": 0,
+        "index": 26,
+        "none": 19,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 3,
+        "dRandom": 0,
+        "index": 27,
+        "none": 4,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 2,
+        "dRandom": 0,
+        "index": 28,
+        "none": 3,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 10,
+        "dRandom": 0,
+        "index": 29,
+        "none": 11,
+        "random": 1,
+        "targeted": 1
+      }
+    ],
+    "control-terminal-intervention": [
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 0,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 1,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 2,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 3,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 7,
+        "random": 7,
+        "targeted": 7
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 5,
+        "none": 13,
+        "random": 13,
+        "targeted": 13
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 6,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 9,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 11,
+        "none": 9,
+        "random": 9,
+        "targeted": 9
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 12,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 16,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 17,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 20,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 22,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 8,
+        "random": 8,
+        "targeted": 8
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 24,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 25,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 26,
+        "none": 19,
+        "random": 19,
+        "targeted": 19
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 27,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 28,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 29,
+        "none": 11,
+        "random": 11,
+        "targeted": 11
+      }
+    ],
+    "control-zero-efficacy": [
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 0,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 1,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 2,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 3,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 7,
+        "random": 7,
+        "targeted": 7
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 5,
+        "none": 13,
+        "random": 13,
+        "targeted": 13
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 6,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 9,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 11,
+        "none": 9,
+        "random": 9,
+        "targeted": 9
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 12,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 16,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 17,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 20,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 22,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 8,
+        "random": 8,
+        "targeted": 8
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 24,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 25,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 26,
+        "none": 19,
+        "random": 19,
+        "targeted": 19
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 27,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 28,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 29,
+        "none": 11,
+        "random": 11,
+        "targeted": 11
+      }
+    ],
+    "control-zero-transmission": [
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 0,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 1,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 2,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 3,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 5,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 6,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 9,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 11,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 12,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 16,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 17,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 20,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 22,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 24,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 25,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 26,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 27,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 28,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 29,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      }
+    ],
+    "control-zero-vaccines": [
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 0,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 1,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 2,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 3,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 7,
+        "random": 7,
+        "targeted": 7
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 5,
+        "none": 13,
+        "random": 13,
+        "targeted": 13
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 6,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 7,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 9,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 10,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 11,
+        "none": 9,
+        "random": 9,
+        "targeted": 9
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 12,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 14,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 15,
+        "none": 6,
+        "random": 6,
+        "targeted": 6
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 16,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 17,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 18,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 19,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 20,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 21,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 22,
+        "none": 15,
+        "random": 15,
+        "targeted": 15
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 8,
+        "random": 8,
+        "targeted": 8
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 24,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 25,
+        "none": 5,
+        "random": 5,
+        "targeted": 5
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 26,
+        "none": 19,
+        "random": 19,
+        "targeted": 19
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 27,
+        "none": 4,
+        "random": 4,
+        "targeted": 4
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 28,
+        "none": 3,
+        "random": 3,
+        "targeted": 3
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 29,
+        "none": 11,
+        "random": 11,
+        "targeted": 11
+      }
+    ],
+    "delayed-intervention": [
+      {
+        "dNone": 314,
+        "dRandom": 184,
+        "index": 0,
+        "none": 909,
+        "random": 779,
+        "targeted": 595
+      },
+      {
+        "dNone": 272,
+        "dRandom": 155,
+        "index": 1,
+        "none": 898,
+        "random": 781,
+        "targeted": 626
+      },
+      {
+        "dNone": 668,
+        "dRandom": 553,
+        "index": 2,
+        "none": 878,
+        "random": 763,
+        "targeted": 210
+      },
+      {
+        "dNone": 282,
+        "dRandom": 176,
+        "index": 3,
+        "none": 887,
+        "random": 781,
+        "targeted": 605
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 246,
+        "dRandom": 132,
+        "index": 5,
+        "none": 923,
+        "random": 809,
+        "targeted": 677
+      },
+      {
+        "dNone": 301,
+        "dRandom": 186,
+        "index": 6,
+        "none": 900,
+        "random": 785,
+        "targeted": 599
+      },
+      {
+        "dNone": 387,
+        "dRandom": 288,
+        "index": 7,
+        "none": 881,
+        "random": 782,
+        "targeted": 494
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 480,
+        "dRandom": 325,
+        "index": 9,
+        "none": 893,
+        "random": 738,
+        "targeted": 413
+      },
+      {
+        "dNone": 279,
+        "dRandom": 157,
+        "index": 10,
+        "none": 901,
+        "random": 779,
+        "targeted": 622
+      },
+      {
+        "dNone": 291,
+        "dRandom": 178,
+        "index": 11,
+        "none": 881,
+        "random": 768,
+        "targeted": 590
+      },
+      {
+        "dNone": 371,
+        "dRandom": 261,
+        "index": 12,
+        "none": 901,
+        "random": 791,
+        "targeted": 530
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 285,
+        "dRandom": 158,
+        "index": 14,
+        "none": 907,
+        "random": 780,
+        "targeted": 622
+      },
+      {
+        "dNone": 347,
+        "dRandom": 243,
+        "index": 15,
+        "none": 898,
+        "random": 794,
+        "targeted": 551
+      },
+      {
+        "dNone": 273,
+        "dRandom": 160,
+        "index": 16,
+        "none": 902,
+        "random": 789,
+        "targeted": 629
+      },
+      {
+        "dNone": 272,
+        "dRandom": 154,
+        "index": 17,
+        "none": 913,
+        "random": 795,
+        "targeted": 641
+      },
+      {
+        "dNone": 255,
+        "dRandom": 147,
+        "index": 18,
+        "none": 899,
+        "random": 791,
+        "targeted": 644
+      },
+      {
+        "dNone": 235,
+        "dRandom": 135,
+        "index": 19,
+        "none": 868,
+        "random": 768,
+        "targeted": 633
+      },
+      {
+        "dNone": 314,
+        "dRandom": 185,
+        "index": 20,
+        "none": 887,
+        "random": 758,
+        "targeted": 573
+      },
+      {
+        "dNone": 314,
+        "dRandom": 190,
+        "index": 21,
+        "none": 906,
+        "random": 782,
+        "targeted": 592
+      },
+      {
+        "dNone": 270,
+        "dRandom": 162,
+        "index": 22,
+        "none": 891,
+        "random": 783,
+        "targeted": 621
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 251,
+        "dRandom": 124,
+        "index": 24,
+        "none": 911,
+        "random": 784,
+        "targeted": 660
+      },
+      {
+        "dNone": 365,
+        "dRandom": 232,
+        "index": 25,
+        "none": 885,
+        "random": 752,
+        "targeted": 520
+      },
+      {
+        "dNone": 312,
+        "dRandom": 188,
+        "index": 26,
+        "none": 909,
+        "random": 785,
+        "targeted": 597
+      },
+      {
+        "dNone": 469,
+        "dRandom": 350,
+        "index": 27,
+        "none": 886,
+        "random": 767,
+        "targeted": 417
+      },
+      {
+        "dNone": 240,
+        "dRandom": 120,
+        "index": 28,
+        "none": 898,
+        "random": 778,
+        "targeted": 658
+      },
+      {
+        "dNone": 333,
+        "dRandom": 199,
+        "index": 29,
+        "none": 882,
+        "random": 748,
+        "targeted": 549
+      }
+    ],
+    "higher-transmission": [
+      {
+        "dNone": 133,
+        "dRandom": 35,
+        "index": 0,
+        "none": 976,
+        "random": 878,
+        "targeted": 843
+      },
+      {
+        "dNone": 150,
+        "dRandom": 53,
+        "index": 1,
+        "none": 977,
+        "random": 880,
+        "targeted": 827
+      },
+      {
+        "dNone": 155,
+        "dRandom": 48,
+        "index": 2,
+        "none": 983,
+        "random": 876,
+        "targeted": 828
+      },
+      {
+        "dNone": 166,
+        "dRandom": 64,
+        "index": 3,
+        "none": 978,
+        "random": 876,
+        "targeted": 812
+      },
+      {
+        "dNone": 985,
+        "dRandom": 860,
+        "index": 4,
+        "none": 986,
+        "random": 861,
+        "targeted": 1
+      },
+      {
+        "dNone": 151,
+        "dRandom": 49,
+        "index": 5,
+        "none": 972,
+        "random": 870,
+        "targeted": 821
+      },
+      {
+        "dNone": 165,
+        "dRandom": 60,
+        "index": 6,
+        "none": 979,
+        "random": 874,
+        "targeted": 814
+      },
+      {
+        "dNone": 151,
+        "dRandom": 43,
+        "index": 7,
+        "none": 986,
+        "random": 878,
+        "targeted": 835
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 173,
+        "dRandom": 60,
+        "index": 9,
+        "none": 988,
+        "random": 875,
+        "targeted": 815
+      },
+      {
+        "dNone": 137,
+        "dRandom": 34,
+        "index": 10,
+        "none": 982,
+        "random": 879,
+        "targeted": 845
+      },
+      {
+        "dNone": 160,
+        "dRandom": 53,
+        "index": 11,
+        "none": 983,
+        "random": 876,
+        "targeted": 823
+      },
+      {
+        "dNone": 169,
+        "dRandom": 69,
+        "index": 12,
+        "none": 987,
+        "random": 887,
+        "targeted": 818
+      },
+      {
+        "dNone": 985,
+        "dRandom": 875,
+        "index": 13,
+        "none": 986,
+        "random": 876,
+        "targeted": 1
+      },
+      {
+        "dNone": 163,
+        "dRandom": 61,
+        "index": 14,
+        "none": 979,
+        "random": 877,
+        "targeted": 816
+      },
+      {
+        "dNone": 149,
+        "dRandom": 59,
+        "index": 15,
+        "none": 976,
+        "random": 886,
+        "targeted": 827
+      },
+      {
+        "dNone": 174,
+        "dRandom": 63,
+        "index": 16,
+        "none": 986,
+        "random": 875,
+        "targeted": 812
+      },
+      {
+        "dNone": 175,
+        "dRandom": 74,
+        "index": 17,
+        "none": 986,
+        "random": 885,
+        "targeted": 811
+      },
+      {
+        "dNone": 149,
+        "dRandom": 45,
+        "index": 18,
+        "none": 978,
+        "random": 874,
+        "targeted": 829
+      },
+      {
+        "dNone": 126,
+        "dRandom": 22,
+        "index": 19,
+        "none": 971,
+        "random": 867,
+        "targeted": 845
+      },
+      {
+        "dNone": 170,
+        "dRandom": 62,
+        "index": 20,
+        "none": 984,
+        "random": 876,
+        "targeted": 814
+      },
+      {
+        "dNone": 144,
+        "dRandom": 44,
+        "index": 21,
+        "none": 972,
+        "random": 872,
+        "targeted": 828
+      },
+      {
+        "dNone": 161,
+        "dRandom": 48,
+        "index": 22,
+        "none": 983,
+        "random": 870,
+        "targeted": 822
+      },
+      {
+        "dNone": 159,
+        "dRandom": -819,
+        "index": 23,
+        "none": 979,
+        "random": 1,
+        "targeted": 820
+      },
+      {
+        "dNone": 146,
+        "dRandom": 45,
+        "index": 24,
+        "none": 989,
+        "random": 888,
+        "targeted": 843
+      },
+      {
+        "dNone": 173,
+        "dRandom": 61,
+        "index": 25,
+        "none": 987,
+        "random": 875,
+        "targeted": 814
+      },
+      {
+        "dNone": 148,
+        "dRandom": -830,
+        "index": 26,
+        "none": 980,
+        "random": 2,
+        "targeted": 832
+      },
+      {
+        "dNone": 162,
+        "dRandom": 57,
+        "index": 27,
+        "none": 989,
+        "random": 884,
+        "targeted": 827
+      },
+      {
+        "dNone": 149,
+        "dRandom": 40,
+        "index": 28,
+        "none": 991,
+        "random": 882,
+        "targeted": 842
+      },
+      {
+        "dNone": 157,
+        "dRandom": 50,
+        "index": 29,
+        "none": 984,
+        "random": 877,
+        "targeted": 827
+      }
+    ],
+    "market-origin": [
+      {
+        "dNone": 322,
+        "dRandom": 182,
+        "index": 0,
+        "none": 909,
+        "random": 769,
+        "targeted": 587
+      },
+      {
+        "dNone": 306,
+        "dRandom": 198,
+        "index": 1,
+        "none": 898,
+        "random": 790,
+        "targeted": 592
+      },
+      {
+        "dNone": 495,
+        "dRandom": -379,
+        "index": 2,
+        "none": 878,
+        "random": 4,
+        "targeted": 383
+      },
+      {
+        "dNone": 284,
+        "dRandom": 181,
+        "index": 3,
+        "none": 887,
+        "random": 784,
+        "targeted": 603
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 294,
+        "dRandom": 172,
+        "index": 5,
+        "none": 923,
+        "random": 801,
+        "targeted": 629
+      },
+      {
+        "dNone": 301,
+        "dRandom": 197,
+        "index": 6,
+        "none": 900,
+        "random": 796,
+        "targeted": 599
+      },
+      {
+        "dNone": 417,
+        "dRandom": 305,
+        "index": 7,
+        "none": 881,
+        "random": 769,
+        "targeted": 464
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 450,
+        "dRandom": 314,
+        "index": 9,
+        "none": 893,
+        "random": 757,
+        "targeted": 443
+      },
+      {
+        "dNone": 289,
+        "dRandom": 182,
+        "index": 10,
+        "none": 901,
+        "random": 794,
+        "targeted": 612
+      },
+      {
+        "dNone": 283,
+        "dRandom": 166,
+        "index": 11,
+        "none": 881,
+        "random": 764,
+        "targeted": 598
+      },
+      {
+        "dNone": 323,
+        "dRandom": 224,
+        "index": 12,
+        "none": 901,
+        "random": 802,
+        "targeted": 578
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 311,
+        "dRandom": 179,
+        "index": 14,
+        "none": 907,
+        "random": 775,
+        "targeted": 596
+      },
+      {
+        "dNone": 334,
+        "dRandom": 227,
+        "index": 15,
+        "none": 898,
+        "random": 791,
+        "targeted": 564
+      },
+      {
+        "dNone": 351,
+        "dRandom": 218,
+        "index": 16,
+        "none": 902,
+        "random": 769,
+        "targeted": 551
+      },
+      {
+        "dNone": 322,
+        "dRandom": -589,
+        "index": 17,
+        "none": 913,
+        "random": 2,
+        "targeted": 591
+      },
+      {
+        "dNone": 256,
+        "dRandom": 115,
+        "index": 18,
+        "none": 899,
+        "random": 758,
+        "targeted": 643
+      },
+      {
+        "dNone": 268,
+        "dRandom": 183,
+        "index": 19,
+        "none": 868,
+        "random": 783,
+        "targeted": 600
+      },
+      {
+        "dNone": 447,
+        "dRandom": 350,
+        "index": 20,
+        "none": 887,
+        "random": 790,
+        "targeted": 440
+      },
+      {
+        "dNone": 285,
+        "dRandom": 158,
+        "index": 21,
+        "none": 906,
+        "random": 779,
+        "targeted": 621
+      },
+      {
+        "dNone": 304,
+        "dRandom": 203,
+        "index": 22,
+        "none": 891,
+        "random": 790,
+        "targeted": 587
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 909,
+        "dRandom": 778,
+        "index": 24,
+        "none": 911,
+        "random": 780,
+        "targeted": 2
+      },
+      {
+        "dNone": 879,
+        "dRandom": 762,
+        "index": 25,
+        "none": 885,
+        "random": 768,
+        "targeted": 6
+      },
+      {
+        "dNone": 907,
+        "dRandom": 0,
+        "index": 26,
+        "none": 909,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 379,
+        "dRandom": 254,
+        "index": 27,
+        "none": 886,
+        "random": 761,
+        "targeted": 507
+      },
+      {
+        "dNone": 209,
+        "dRandom": 82,
+        "index": 28,
+        "none": 898,
+        "random": 771,
+        "targeted": 689
+      },
+      {
+        "dNone": 237,
+        "dRandom": 119,
+        "index": 29,
+        "none": 882,
+        "random": 764,
+        "targeted": 645
+      }
+    ],
+    "partial-efficacy": [
+      {
+        "dNone": 117,
+        "dRandom": 33,
+        "index": 0,
+        "none": 909,
+        "random": 825,
+        "targeted": 792
+      },
+      {
+        "dNone": 91,
+        "dRandom": 28,
+        "index": 1,
+        "none": 898,
+        "random": 835,
+        "targeted": 807
+      },
+      {
+        "dNone": 110,
+        "dRandom": 58,
+        "index": 2,
+        "none": 878,
+        "random": 826,
+        "targeted": 768
+      },
+      {
+        "dNone": 131,
+        "dRandom": 84,
+        "index": 3,
+        "none": 887,
+        "random": 840,
+        "targeted": 756
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 92,
+        "dRandom": 13,
+        "index": 5,
+        "none": 923,
+        "random": 844,
+        "targeted": 831
+      },
+      {
+        "dNone": 83,
+        "dRandom": 29,
+        "index": 6,
+        "none": 900,
+        "random": 846,
+        "targeted": 817
+      },
+      {
+        "dNone": 90,
+        "dRandom": 47,
+        "index": 7,
+        "none": 881,
+        "random": 838,
+        "targeted": 791
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 167,
+        "dRandom": 106,
+        "index": 9,
+        "none": 893,
+        "random": 832,
+        "targeted": 726
+      },
+      {
+        "dNone": 100,
+        "dRandom": 43,
+        "index": 10,
+        "none": 901,
+        "random": 844,
+        "targeted": 801
+      },
+      {
+        "dNone": 82,
+        "dRandom": 21,
+        "index": 11,
+        "none": 881,
+        "random": 820,
+        "targeted": 799
+      },
+      {
+        "dNone": 144,
+        "dRandom": 108,
+        "index": 12,
+        "none": 901,
+        "random": 865,
+        "targeted": 757
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 149,
+        "dRandom": 89,
+        "index": 14,
+        "none": 907,
+        "random": 847,
+        "targeted": 758
+      },
+      {
+        "dNone": 76,
+        "dRandom": 16,
+        "index": 15,
+        "none": 898,
+        "random": 838,
+        "targeted": 822
+      },
+      {
+        "dNone": 117,
+        "dRandom": 48,
+        "index": 16,
+        "none": 902,
+        "random": 833,
+        "targeted": 785
+      },
+      {
+        "dNone": 115,
+        "dRandom": 59,
+        "index": 17,
+        "none": 913,
+        "random": 857,
+        "targeted": 798
+      },
+      {
+        "dNone": 97,
+        "dRandom": 41,
+        "index": 18,
+        "none": 899,
+        "random": 843,
+        "targeted": 802
+      },
+      {
+        "dNone": 102,
+        "dRandom": 52,
+        "index": 19,
+        "none": 868,
+        "random": 818,
+        "targeted": 766
+      },
+      {
+        "dNone": 152,
+        "dRandom": 108,
+        "index": 20,
+        "none": 887,
+        "random": 843,
+        "targeted": 735
+      },
+      {
+        "dNone": 148,
+        "dRandom": 67,
+        "index": 21,
+        "none": 906,
+        "random": 825,
+        "targeted": 758
+      },
+      {
+        "dNone": 100,
+        "dRandom": 51,
+        "index": 22,
+        "none": 891,
+        "random": 842,
+        "targeted": 791
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 78,
+        "dRandom": 22,
+        "index": 24,
+        "none": 911,
+        "random": 855,
+        "targeted": 833
+      },
+      {
+        "dNone": 80,
+        "dRandom": 22,
+        "index": 25,
+        "none": 885,
+        "random": 827,
+        "targeted": 805
+      },
+      {
+        "dNone": 87,
+        "dRandom": 28,
+        "index": 26,
+        "none": 909,
+        "random": 850,
+        "targeted": 822
+      },
+      {
+        "dNone": 151,
+        "dRandom": 98,
+        "index": 27,
+        "none": 886,
+        "random": 833,
+        "targeted": 735
+      },
+      {
+        "dNone": 118,
+        "dRandom": 53,
+        "index": 28,
+        "none": 898,
+        "random": 833,
+        "targeted": 780
+      },
+      {
+        "dNone": 69,
+        "dRandom": 10,
+        "index": 29,
+        "none": 882,
+        "random": 823,
+        "targeted": 813
+      }
+    ],
+    "scarce-vaccines": [
+      {
+        "dNone": 185,
+        "dRandom": 127,
+        "index": 0,
+        "none": 909,
+        "random": 851,
+        "targeted": 724
+      },
+      {
+        "dNone": 176,
+        "dRandom": 103,
+        "index": 1,
+        "none": 898,
+        "random": 825,
+        "targeted": 722
+      },
+      {
+        "dNone": 132,
+        "dRandom": -741,
+        "index": 2,
+        "none": 878,
+        "random": 5,
+        "targeted": 746
+      },
+      {
+        "dNone": 137,
+        "dRandom": 65,
+        "index": 3,
+        "none": 887,
+        "random": 815,
+        "targeted": 750
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 4,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 161,
+        "dRandom": 96,
+        "index": 5,
+        "none": 923,
+        "random": 858,
+        "targeted": 762
+      },
+      {
+        "dNone": 114,
+        "dRandom": 62,
+        "index": 6,
+        "none": 900,
+        "random": 848,
+        "targeted": 786
+      },
+      {
+        "dNone": 104,
+        "dRandom": 40,
+        "index": 7,
+        "none": 881,
+        "random": 817,
+        "targeted": 777
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 8,
+        "none": 2,
+        "random": 2,
+        "targeted": 2
+      },
+      {
+        "dNone": 225,
+        "dRandom": 159,
+        "index": 9,
+        "none": 893,
+        "random": 827,
+        "targeted": 668
+      },
+      {
+        "dNone": 141,
+        "dRandom": 75,
+        "index": 10,
+        "none": 901,
+        "random": 835,
+        "targeted": 760
+      },
+      {
+        "dNone": 175,
+        "dRandom": 122,
+        "index": 11,
+        "none": 881,
+        "random": 828,
+        "targeted": 706
+      },
+      {
+        "dNone": 171,
+        "dRandom": 103,
+        "index": 12,
+        "none": 901,
+        "random": 833,
+        "targeted": 730
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 13,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 148,
+        "dRandom": 94,
+        "index": 14,
+        "none": 907,
+        "random": 853,
+        "targeted": 759
+      },
+      {
+        "dNone": 154,
+        "dRandom": 92,
+        "index": 15,
+        "none": 898,
+        "random": 836,
+        "targeted": 744
+      },
+      {
+        "dNone": 174,
+        "dRandom": 110,
+        "index": 16,
+        "none": 902,
+        "random": 838,
+        "targeted": 728
+      },
+      {
+        "dNone": 163,
+        "dRandom": 105,
+        "index": 17,
+        "none": 913,
+        "random": 855,
+        "targeted": 750
+      },
+      {
+        "dNone": 131,
+        "dRandom": 81,
+        "index": 18,
+        "none": 899,
+        "random": 849,
+        "targeted": 768
+      },
+      {
+        "dNone": 145,
+        "dRandom": 93,
+        "index": 19,
+        "none": 868,
+        "random": 816,
+        "targeted": 723
+      },
+      {
+        "dNone": 205,
+        "dRandom": 173,
+        "index": 20,
+        "none": 887,
+        "random": 855,
+        "targeted": 682
+      },
+      {
+        "dNone": 166,
+        "dRandom": 88,
+        "index": 21,
+        "none": 906,
+        "random": 828,
+        "targeted": 740
+      },
+      {
+        "dNone": 177,
+        "dRandom": 125,
+        "index": 22,
+        "none": 891,
+        "random": 839,
+        "targeted": 714
+      },
+      {
+        "dNone": 0,
+        "dRandom": 0,
+        "index": 23,
+        "none": 1,
+        "random": 1,
+        "targeted": 1
+      },
+      {
+        "dNone": 169,
+        "dRandom": 110,
+        "index": 24,
+        "none": 911,
+        "random": 852,
+        "targeted": 742
+      },
+      {
+        "dNone": 879,
+        "dRandom": 820,
+        "index": 25,
+        "none": 885,
+        "random": 826,
+        "targeted": 6
+      },
+      {
+        "dNone": 907,
+        "dRandom": 853,
+        "index": 26,
+        "none": 909,
+        "random": 855,
+        "targeted": 2
+      },
+      {
+        "dNone": 151,
+        "dRandom": 89,
+        "index": 27,
+        "none": 886,
+        "random": 824,
+        "targeted": 735
+      },
+      {
+        "dNone": 122,
+        "dRandom": 71,
+        "index": 28,
+        "none": 898,
+        "random": 847,
+        "targeted": 776
+      },
+      {
+        "dNone": 133,
+        "dRandom": 63,
+        "index": 29,
+        "none": 882,
+        "random": 812,
+        "targeted": 749
+      }
+    ]
+  },
+  "protocolSHA256": "cb6b3e62795de8a6ec87f1a7e4c972c692ebbcb5144d3546ec6f622a92ffbb8b",
+  "sourceCommit": "0e90ff4b8b646d65165c7793c500d46c598aac39"
+}
