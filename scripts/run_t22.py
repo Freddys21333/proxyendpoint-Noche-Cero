@@ -16,10 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend/src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from check_validation_protocol import check_protocol  # noqa: E402
-
-from domain.reproducibility import canonical_json  # noqa: E402
-from simulation.experiments import POLICIES, statistics  # noqa: E402
+from check_validation_protocol import check_protocol
+from domain.reproducibility import canonical_json
+from simulation.experiments import POLICIES, statistics
 
 PROTOCOL_ROOT = ROOT / "specs/validation/t22-v1"
 ATTEMPT_DEFAULT = ROOT / ".tools/t22-v1-attempt-01"
@@ -509,16 +508,34 @@ def run_summary(document: dict[str, Any]) -> dict[str, Any]:
             "values": d_none,
             "wins": sum(value > 0 for value in d_none),
             "ties": sum(value == 0 for value in d_none),
+            "losses": sum(value < 0 for value in d_none),
+            "winRate": sum(value > 0 for value in d_none) / len(d_none),
         },
         "dRandom": {
             **statistics(d_random),
             "values": d_random,
             "wins": sum(value > 0 for value in d_random),
             "ties": sum(value == 0 for value in d_random),
+            "losses": sum(value < 0 for value in d_random),
+            "winRate": sum(value > 0 for value in d_random) / len(d_random),
         },
         "backendRecommendation": document["recommendation"],
         "backendPaired": document["pairedComparisons"],
+        "secondaryByPolicy": document["summaryByPolicy"],
     }
+
+
+def artifact_failures(row: dict[str, Any], document: dict[str, Any]) -> list[str]:
+    failures = []
+    if document["configuration"] != read_json(PROTOCOL_ROOT / row["configuration"]):
+        failures.append("configuración distinta del input congelado")
+    if document.get("progress") != {
+        "replicatesTotal": row["repetitions"],
+        "replicatesSucceeded": row["repetitions"],
+        "replicatesFailed": 0,
+    }:
+        failures.append("progreso incompleto o con réplicas fallidas")
+    return failures
 
 
 def collect_runs(
@@ -536,7 +553,14 @@ def collect_runs(
             failures.append(f"{row['id']}: metadatos de ejecución no completos")
             continue
         document = read_json(json_path)
-        common = common_invariants(document)
+        common = common_invariants(document) + artifact_failures(row, document)
+        export = metadata.get("export", {})
+        if (
+            export.get("sha256") != sha256_file(json_path)
+            or export.get("zipSHA256") != sha256_file(zip_path)
+            or export.get("experimentHash") != document["manifest"]["experimentHash"]
+        ):
+            common.append("artefactos distintos de los registrados al exportar")
         if common:
             failures.extend(f"{row['id']}: {item}" for item in common[:5])
         control = (
@@ -549,7 +573,11 @@ def collect_runs(
         reproductions = metadata.get("reproductions", [])
         expected = 3 if row["id"] == "base-root-0" else 1
         if len(reproductions) < expected or any(
-            item.get("status") != "ok" for item in reproductions
+            item.get("status") != "ok"
+            or item.get("exitCode") != 0
+            or item.get("expectedHash") != export.get("experimentHash")
+            or item.get("obtainedHash") != export.get("experimentHash")
+            for item in reproductions
         ):
             failures.append(f"{row['id']}: reproducciones incompletas o fallidas")
         runs[row["id"]] = {
@@ -687,10 +715,15 @@ def build_report(
         lines.append("Motivos de invalidez o pendientes:")
         lines.append("")
         lines.extend(f"- {reason}" for reason in reasons)
-    else:
+    elif decision == "APROBADO":
         lines.append(
             "Las cinco raíces primarias y los controles técnicos están completos y "
             "válidos; ambas diferencias sumadas son positivas."
+        )
+    else:
+        lines.append(
+            "La matriz está completa y válida, pero no satisface la mejora estricta "
+            "frente a ambas referencias. Se conservan empates y pérdidas."
         )
     lines.extend(
         ["", "## Resumen primario combinado", "", "| Métrica | Valor |", "|---|---:|"]
@@ -885,6 +918,8 @@ def analyze_and_write(
                 "dNone": item["summary"]["dNone"],
                 "dRandom": item["summary"]["dRandom"],
                 "backendRecommendation": item["summary"]["backendRecommendation"],
+                "backendPaired": item["summary"]["backendPaired"],
+                "secondaryByPolicy": item["summary"]["secondaryByPolicy"],
                 "commonFailures": item["commonFailures"],
                 "controlFailures": item["controlFailures"],
                 "export": item["metadata"]["export"],
@@ -950,8 +985,9 @@ def main() -> int:
                 for reason in reasons:
                     print(f"- {reason}", flush=True)
                 if decision == "INCOMPLETO/INVÁLIDO" and any(
-                    item.get("controlFailures")
+                    item.get("controlFailures") or item.get("commonFailures")
                     for item in collect_runs(plan, attempt)[0].values()
+                    if item["row"]["kind"] == "technical-control"
                 ):
                     return 1
         if args.group == "all":
