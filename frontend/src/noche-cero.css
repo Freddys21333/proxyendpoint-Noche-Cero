@@ -249,7 +249,7 @@
 .noche-cero .vaccination-details .plain-action { color: #ffc39e; }
 .noche-cero .vaccination-details .plain-action:hover { color: #ffe1cc; }
 .noche-cero .geographic-map { --map-surface: #201d28; --map-ink: #f1ece4; --map-border: #534959; --map-link: #ffb281; }
-.noche-cero .geographic-map .leaflet-tile-pane { filter: grayscale(1) brightness(0.58) contrast(0.85); }
+.noche-cero .geographic-map .leaflet-tile-pane { filter: saturate(0.65) brightness(0.76) contrast(0.95); }
 .noche-cero .simulation-update-overlay { background: #111019a8; }
 .noche-cero .simulation-update-card { border-color: #845341; background: #2a222b; color: var(--ink); box-shadow: 0 18px 55px #06040a99; }
 .noche-cero .simulation-update-icon { background: #4c302e; color: var(--pumpkin); }

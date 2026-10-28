@@ -43,7 +43,7 @@ export function mountGeographicMap(container: HTMLElement, leaflet: MapRuntime, 
 
   try {
     map = leaflet.map(container, {
-      scrollWheelZoom: true, zoomAnimation: false, dragging: true, zoomControl: true, attributionControl: true, zoomSnap: 0.25,
+      scrollWheelZoom: true, zoomAnimation: true, dragging: true, zoomControl: true, attributionControl: true, zoomSnap: 0.25,
     })
     map.setView(mantaCenter, 13)
     tiles = leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {

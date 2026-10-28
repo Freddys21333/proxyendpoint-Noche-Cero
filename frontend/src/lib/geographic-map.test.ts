@@ -36,7 +36,7 @@ test('the base map opens in Manta with OSM attribution, dragging and mouse-wheel
   assert.ok(center[0] < -0.9 && center[0] > -1.1)
   assert.ok(center[1] < -80.6 && center[1] > -80.9)
   assert.equal(f.options.scrollWheelZoom, true)
-  assert.equal(f.options.zoomAnimation, false)
+  assert.equal(f.options.zoomAnimation, true)
   assert.equal(f.options.dragging, true)
   assert.equal(f.options.zoomControl, true)
   assert.equal(f.options.attributionControl, true)
