@@ -1,110 +1,142 @@
 # Comité de Contención de Manta
 
-**Estado actual — AWS publicado con P-04:** [abrir staging](https://staging.d2uefmypgx02e9.amplifyapp.com). Prueba real de 100 réplicas y navegador correctos; 1000 pendientes de prueba. [Evidencia](docs/evidencia/despliegue-main-p04-2026-10-28.md). Las notas de retirada inferiores describen el despliegue anterior.
+Aplicación web educativa para explorar un brote ficticio de zombis en una población sintética inspirada en Manta. Permite configurar un modelo SEIR, observar la red y el mapa, comparar vacunación dirigida, aleatoria y ninguna intervención con los mismos recursos, y exportar resultados reproducibles e informes breves para alcaldía.
 
-> Retirado el 28/10/2026 por solicitud del usuario. Las URLs siguientes son históricas. [Guía para publicar y retirar](infra/CICLO-DESPLIEGUE.md).
+**Sitio AWS actual:** [abrir simulador](https://staging.d2uefmypgx02e9.amplifyapp.com/). Región `us-east-2` (Ohio). [Health API](https://n75ovr6vb5.execute-api.us-east-2.amazonaws.com/v1/health). Despliegue del 28/10/2026; [evidencia AWS y límites](docs/evidencia/despliegue-main-p04-2026-10-28.md). Las URLs pueden cambiar al recrear la infraestructura.
 
+Es una simulación educativa: no predice epidemias reales ni usa pacientes o posiciones personales. El mapa OSM sirve de contexto visual. La estrategia dirigida puede ganar, empatar o perder; el informe conserva la incertidumbre.
 
-**Staging AWS (28/10/2026):** [abrir sitio](https://staging.djv4hstnt7jgb.amplifyapp.com). Perfil inicial: 200 personas, 20 días y 30 repeticiones; escenarios grandes limitados hasta P-04. [Evidencia y límites](docs/evidencia/aws-base-2026-10-28.md) · [Terraform y operación](infra/README.md).
+## Qué incluye
 
-Simulador de propagación y comparación de estrategias de contención sobre una población sintética.
+- Configuración, preview de contactos multicapa y simulación diaria SEIR.
+- Comparaciones pareadas de `none`, `random` y `targeted`; política adaptativa explicable, inventario, llegadas, capacidad y presupuesto educativo.
+- Curvas, diferencias pareadas, conclusión de resultados y reproducción sincronizada de una réplica en red/mapa.
+- Trabajos Monte Carlo, progreso, cancelación y descarga de resultados.
+- Exportación JSON/ZIP/CSV, hash reproducible e informe PDF/HTML en lenguaje sencillo.
+- Serie real provincial de dengue con procedencia documentada y un ajuste experimental etiquetado **«Ajustado, no validado»**. No equivale al brote ficticio ni demuestra riesgo de Manta.
 
-Simulará una plaga SEIR sobre una población sintética inspirada en Manta y comparará vacunación estratégica con no intervenir y vacunar al azar, usando recursos limitados y experimentos reproducibles. Escenario educativo con parámetros del equipo.
+## Ejecutar localmente
 
-**Estado:** especificaciones, entorno backend, contratos, normalizador de configuración, primitivas de reproducibilidad y experimentos SEIR con exportación y reproducción verificados localmente. El backend ejecuta y resume none/random/targeted, exporta JSON/CSV y reproduce el hash en otro proceso. Los cuatro handlers API están integrados y verificados localmente; la interfaz muestra preview, comparación y curvas reales y descarga el experimento JSON. La animación de una réplica representativa ya usa estados diarios reales y permite alternar estrategias. El inspector explica las selecciones de vacunas y muestra dosis efectivas/fallidas de la réplica. La red permite agrupación visual por barrio, hogar, colegio, bus o mercado y distribución circular. La vista **Mapa** (feature P-09) sitúa a las personas sintéticas sobre polígonos residenciales OSM versionados sin alterar el modelo ni los hashes. ZIP con CSV disponible para experimentos vigentes; staging AWS base publicado (ver actualización siguiente). Se conserva además el [prototipo local exploratorio](prototype/README.md) con simulación y visualización.
+Requisitos: Git, Python **3.12**, uv y Node/npm. Dependencias fijadas en `backend/uv.lock` y `frontend/package-lock.json`. En PowerShell, desde la raíz:
 
-## Documentación
+```powershell
+Push-Location backend
+uv sync --locked --python 3.12
+Pop-Location
+Push-Location frontend
+npm ci
+Pop-Location
+```
 
-- [Plan de mejoras a partir del feedback docente](docs/plan-feedback-docentes.md): estado actual, prioridades, aceptación y trabajo seguro con Codex.
-- [Traspaso operativo para agentes](AGENTS.md) y [contexto detallado](docs/traspaso-agentes.md).
-- [PRD: alcance y aceptación](PRD.md).
-- [TRD: arquitectura, contratos y metodología](TRD.md).
-- [Especificaciones compartidas](specs/README.md): [requisitos](specs/requirements.md), [diseño](specs/design.md) y [tareas](specs/tasks.md).
-- [Protocolo científico T-22](specs/validation/t22-v1/README.md): congelado; matriz completa ejecutada y componente científico APROBADO. [Resultados y límites](docs/evidencia/t22-v1-ejecucion.md).
-- [Validación funcional del flujo local](docs/evidencia/validacion-flujo-local.md).
-- [Revisión de cumplimiento de la base](docs/evidencia/revision-base.md).
-- [Auditoría PRO de partida](docs/evidencia/auditoria-pro-2026-10-27.md).
-- [Estado y pendientes después del merge P-02/P-03](docs/evidencia/estado-post-merge-2026-10-27.md).
-- [Plan de iteraciones PRO](docs/plan-pro-iteraciones.md): orden, aceptación, commits y contexto para agentes.
-- [Costos y evidencia pendiente](docs/costos.md).
-- [Instalación y verificación del backend](backend/README.md).
-- [Contratos de API y ejemplos para frontend/backend](schemas/README.md).
-- [Hoja de ruta PRO y frentes](specs/pro-roadmap.md): P-01..P-09 con estado, dependencias y aceptación; división backend/frontend en [pro-workstreams.md](specs/pro-workstreams.md).
-- [P-09: mapa geográfico](specs/p09-geographic-map.md): mapa OSM, polígonos versionados, posiciones deterministas y aceptación.
-- [Procedencia geográfica y reproducción](docs/manta-geography.md).
-- [Laboratorio local ejecutable](prototype/README.md): grafo sintético, comparación SEIR y exploración inicial de cierre de capa y animación.
-- [Guía para leer el grafo y evolución PRO](docs/lectura-y-pro.md).
+Si uv no está disponible, seguir la [instalación del backend](backend/README.md). Abrir dos terminales desde la raíz:
 
-## Estructura
+```powershell
+backend/.venv/Scripts/python.exe scripts/serve_api.py
+```
 
-- `backend/src/`: dominio, simulación, estrategias y adaptadores HTTP.
-- `backend/tests/`: pruebas del motor y contratos.
-- `frontend/src/`: interfaz React/TypeScript con API, grafo, resultados y exportación reales.
-- `schemas/`: contratos OpenAPI/JSON Schema y ejemplos mock.
-- `infra/`: futura infraestructura AWS con Terraform.
-- `scripts/`: reproducción/exportación, servidor API local y utilidades de entorno.
-- `specs/`: especificaciones incrementales antes de implementar.
-- `docs/evidencia/`: verificaciones locales y resultados observados.
+```powershell
+cd frontend
+npm run dev -- --host 127.0.0.1 --port 5174 --strictPort
+```
 
-Se adopta la separación backend/frontend del TRD. La carpeta local vacía `src/` no tiene contenido que versionar y no forma parte de la estructura acordada.
+Abrir [sitio local](http://127.0.0.1:5174/) y [health local](http://127.0.0.1:8000/v1/health). La configuración Vite local conecta la API en el puerto 8000. Para probar rápido: 60 personas, siete días y dos repeticiones; consultar red, comparar y revisar resultados. [Recorrido completo y errores esperados](docs/probar-local.md).
 
-## Trabajo y siguiente incremento
+Los trabajos locales viven en memoria y se pierden al reiniciar la API. AWS usa almacenamiento durable con expiración. No se necesitan credenciales AWS para probar el motor y la interfaz local.
 
-Commits pequeños con mensajes en español y referencia RF/CA cuando corresponda. El comportamiento se desarrolla con TDD: prueba que falla, implementación mínima y refactorización; las verificaciones disponibles deben pasar antes de publicar.
+## Cómo probar
 
-Las interfaces están fijadas en [los acuerdos técnicos](specs/agreements.md). T-02..T-12 están verificados localmente; T-13..T-16 tienen integración real documentada en I-01..I-08, pero faltan criterios de aceptación. I-09 corrige la validación de preview y el consumo de configuración publicada. Por aclaración del responsable (2026-10-27), los casos del jurado se configuran manualmente; no hay presets fijos obligatorios. T-22 científico está completo y APROBADO: 15 experimentos, 450 pares y 17 reproducciones. [Informe con incertidumbre, empates y pérdidas](docs/evidencia/t22-v1-ejecucion.md). Siguen pendientes rendimiento consistente, aceptación humana/UI, T-23 y AWS. Consulta la [revisión de base](docs/evidencia/revision-base.md) antes de declarar terminada una tarea. El orden de ejecución y la aceptación por iteración están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+Desde la raíz, con dependencias instaladas:
 
-## Parámetros previstos
+```powershell
+Push-Location backend
+.venv/Scripts/python.exe -m pytest -q
+.venv/Scripts/python.exe -m ruff check src tests
+.venv/Scripts/python.exe -m ruff format --check src tests
+.venv/Scripts/python.exe -m mypy
+Pop-Location
+Push-Location frontend
+npm test -- --run
+npm run typecheck
+npm run build
+Pop-Location
+backend/.venv/Scripts/python.exe scripts/check_validation_protocol.py
+```
 
-| Parámetro | Valor | Procedencia |
-|---|---:|---|
-| Población | 1.000 | Supuesto del equipo |
-| Horizonte | 90 días | Supuesto del equipo |
-| Casos iniciales | 1 | Reto oficial |
-| Réplicas | 30 | Supuesto del equipo |
-| Vacunas | 100 | Supuesto del equipo |
-| Día de intervención | 0 | Supuesto del equipo |
-| Eficacia | 100 % | Supuesto del equipo |
-| Incubación media | 3 días | Supuesto del equipo |
-| Duración infecciosa media | 7 días | Supuesto del equipo |
-| Semilla | 20261026 | Supuesto del equipo |
+En Linux/macOS usar `.venv/bin/python`. Para aceptación funcional recorrer configuración → preview → comparación → reproducción → exportación → informe; probar también errores de conexión, presupuesto agotado y ausencia de susceptibles. [Plan de pruebas locales](docs/plan-pruebas-local.md).
 
-La configuración completa y las fórmulas están en el TRD. Estos valores ya permiten ejecutar localmente experimentos y resúmenes Monte Carlo; T-22 científico pasa con la matriz congelada, conservando 5 pérdidas y 33 empates frente al azar entre los 150 pares primarios. El benchmark AWS y la aceptación integral siguen pendientes.
+El protocolo científico T-22 tiene [resultados y límites versionados](docs/evidencia/t22-v1-ejecucion.md); no reescribir semillas ni escenarios para mejorar resultados. La aceptación humana y una ejecución AWS de 1000 réplicas siguen siendo verificaciones independientes.
 
-## AWS y pendientes técnicos
+## Desplegar, retirar y volver a publicar
 
-Región elegida: `us-east-2` (Ohio). El enunciado permite elegir la región; no se requiere confirmar `us-east-1`. La decisión se documentará en el runbook de despliegue y en la evidencia de AWS.
+La infraestructura está en `infra/`, con Terraform, estado remoto privado/versionado en S3 y bloqueo nativo S3. Requiere AWS CLI con sesión autorizada, Terraform >=1.10 y permisos en la cuenta destino. Los comandos de aplicación crean recursos facturables.
 
-El diagrama lógico está en la sección 2 del TRD. Falta exportar el diagrama de entrega a SVG y conservar su fuente editable. También están pendientes la URL pública, resultados, benchmark y estimación mensual.
+1. Ejecutar las pruebas anteriores e iniciar sesión con `aws login`.
+2. Preparar el estado remoto: conservar el bootstrap existente; para una cuenta nueva, seguir [infra/README.md](infra/README.md).
+3. Empaquetar Lambda, inicializar Terraform y revisar el plan según [CICLO-DESPLIEGUE.md](infra/CICLO-DESPLIEGUE.md).
+4. Para mantener los trabajos Monte Carlo habilitados, incluir **`enable_aws_jobs=true`** en el plan según [P04-OPERACION.md](infra/P04-OPERACION.md). El procedimiento base por sí solo los deja deshabilitados.
+5. Aplicar el plan revisado, tomar los outputs actuales y compilar frontend con `VITE_API_BASE_URL`, `VITE_BUILD_COMMIT` y `VITE_SCHEMA_VERSION=1.0`; publicar con `scripts/deploy_amplify.py`.
+6. Confirmar despliegue `SUCCEED`, health, preview/comparación y el flujo en navegador. Los lotes de trabajos consumen cuota y deben ejecutarse deliberadamente.
 
-### AWS Budget — evidencia provisional
+El frontend se compila localmente y se carga manualmente a Amplify; un push de Git no lo despliega automáticamente. No incluir secretos en variables Vite ni en artefactos versionados.
 
-Presupuesto `SpookyThon2026-PRO` configurado por **USD 20 mensuales**, con umbrales de costo real al **25/50/75/100 %** y de costo previsto al **100 %**.
+Para retirar, revisar y aplicar el plan de destrucción del stack de aplicación siguiendo la misma guía, conservando el bootstrap y el Budget. Se eliminan también artefactos del stack y logs; exportar antes cualquier evidencia necesaria. Para volver a publicar, repetir el procedimiento y usar los nuevos outputs. No borrar el estado remoto como método de retirada.
 
-**Pendiente:** la captura muestra `0/2` destinatarios verificados. El envío de verificación está bloqueado por permisos de `notifications-contacts` en la experiencia simplificada de AWS; al intentar modificar el rol, la consola solicita activar características avanzadas. La recepción de notificaciones aún no está confirmada y el requisito de alerta operativa no se declara completado.
+## Arquitectura y decisiones de diseño
 
-Las siguientes capturas documentan la configuración observada, no una consulta en tiempo real ni el gasto final del evento. No muestran las direcciones de correo de los destinatarios; la barra superior conserva el nombre visible del titular.
+```mermaid
+flowchart TD
+  U[Interfaz React / Amplify] --> A[HTTP API Gateway]
+  A --> L[Lambda: configuración, preview, comparación e informe]
+  A --> J[Lambda API de trabajos]
+  J --> D[DynamoDB: estado, cuotas e idempotencia]
+  J --> F[Step Functions Standard / Distributed Map]
+  F --> W[Lambda: preparación, lotes y agregación]
+  W --> S[S3 privado: entradas y resultados]
+  J --> S
+  E[EventBridge: recuperación terminal] --> D
+  L --> C[CloudWatch: logs y alarmas]
+  W --> C
+```
 
-![Detalle del AWS Budget: USD 20 mensuales y destinatarios pendientes de verificación](docs/budget.png)
+- **Ciencia en backend:** Python/NumPy/NetworkX calculan SEIR, agregados, costos educativos y conclusiones; React presenta el contrato y evita duplicar fórmulas.
+- **Comparación justa:** mismas semillas y recursos entre estrategias, transiciones simultáneas, hashes y manifiesto exportable. No se ocultan empates o pérdidas.
+- **Operación por demanda:** API síncrona para escenarios pequeños y trabajos distribuidos para réplicas; sin servidores EC2, NAT Gateway ni modelos de lenguaje de pago.
+- **Gasto contenido:** un trabajo AWS activo, dos workers simultáneos, lotes de cinco y tres admisiones nuevas por día UTC compartidas por el stack; retención limitada. Son controles operativos, no un techo monetario.
+- **Presentación explicable:** inventario y decisiones observables, incertidumbre visible, exportación y mapa sintético separados de datos epidemiológicos reales.
 
-![Cinco umbrales configurados para alertas de costo real y previsto](docs/budget2.png)
+Contratos y detalles: [PRD](PRD.md), [TRD](TRD.md), [diseño](specs/design.md), [OpenAPI y esquemas](schemas/README.md), [procedencia geográfica](docs/manta-geography.md).
 
-Una alerta de Budget no detiene automáticamente el gasto. Se actualizará la evidencia cuando se resuelva la verificación de destinatarios.
+## Limitaciones conocidas
 
-PRO tiene **P-01, P-05, P-06, P-08 y P-09 verificados localmente**, y **P-02/P-03 con backend y UI conectados a la API real**; **P-07 tiene backend y UI integrados, con aceptación en navegador posterior al merge pendiente**; **P-04 sigue pendiente**. P-06 se publica como `fitted-not-validated`: la validación fuera de muestra pierde frente a persistencia. Se han ejecutado simulaciones y pruebas locales; la aplicación todavía no se ha desplegado en AWS. El laboratorio local permite probar cierre de capa y reproducción temporal sincronizada, pero no acredita esos requisitos. El orden, la aceptación y el protocolo de commits están en el [plan de iteraciones PRO](docs/plan-pro-iteraciones.md).
+- Staging usa un perfil inicial de 200 personas/20 días/30 repeticiones. El caso original 1000/90/30 no queda acreditado en la API síncrona AWS: puede exceder su timeout de 28 s.
+- Monte Carlo AWS admite 2..1000 réplicas sujeto al máximo de 50 millones de arista-día-réplica. **100 réplicas verificadas en AWS; 1000 pendientes de ejecución real.** La cifra máxima no garantiza cualquier tamaño de red/horizonte.
+- El sitio no autentica usuarios; las tres admisiones diarias son compartidas. Un visitante puede ocupar la cuota. No hay cuota monetaria individual ni garantía de disponibilidad pública ilimitada.
+- Metadatos con expiración de 24 h y artefactos S3 con lifecycle de un día; limpieza física eventual. Enlaces firmados de cinco minutos; resultados limitados a 32 MiB descomprimidos.
+- El preset dengue `manabi-dengue-2025-v1` pierde frente a persistencia en validación y conserva `fitted-not-validated`. Los datos son provinciales y preliminares; no permiten afirmar riesgo local real.
+- La aceptación humana integral, evaluación táctil y algunos objetivos de rendimiento siguen pendientes. Las pruebas automatizadas no sustituyen esa aceptación.
+- El Budget tiene alertas configuradas, pero las capturas muestran destinatarios pendientes de verificación; no se acredita recepción de avisos.
 
-Informe para alcaldía P-08: [contrato y comandos](specs/p08-report.md), [evidencia local del PDF](docs/evidencia/p08-informe-2026-10-27.md) y [evidencia del informe HTML/CLI](docs/evidencia/p08-informe-html-2026-10-28.md). Descarga PDF desde Comparación o el resultado completo de un trabajo PRO; el mismo panel permite imprimir o descargar el informe como HTML autocontenido.
+## Costos, gasto real y AWS Budget
 
-Rendimiento local: [mediciones de carga/exportación y equivalencia científica](docs/evidencia/rendimiento-validacion-2026-10-27.md). Optimización de validación; motor y hashes conservados.
+**Estimación de planificación: USD 2,63/mes**, para 1000 visitas y diez trabajos de 1000 réplicas pequeñas (N60/T7), además del tráfico API indicado. Sin descontar créditos ni capa gratuita. Incluye Lambda, HTTP API, Amplify, Step Functions, S3, DynamoDB, logs, cinco alarmas y transferencia. [Supuestos, tarifas, cálculo visible y comando reproducible](docs/costos.md).
 
-Datos explicativos UX: [contrato y fórmulas de decisionSummary](specs/decision-summary.md), con porcentajes, alternativa siguiente, recursos y motivos registrados calculados en backend. [Verificación local](docs/evidencia/resumen-decision-2026-10-27.md).
+**Presupuesto del equipo: USD 20 desde el 26/10. Operación del despliegue actual: 28–30/10/2026.** La consulta del 28/10 a las 06:13 de Ecuador muestra **USD 0,00 provisional** para ese día en Cost Explorer, a nivel de cuenta y con `Estimated=true`. El gasto final 28–30 queda pendiente hasta terminar el período y actualizar la facturación; no se declara cero definitivo. [Lectura verificable](docs/evidencia/facturacion-2026-10-28.json) y [procedimiento de cierre](docs/costos.md#cómo-cerrar-el-gasto-después-del-30).
 
-Rendimiento local: [comparación HTTP completa](docs/evidencia/api-performance-2026-10-27.md), con mediciones por fase y límites. Suite backend actual: 486 pruebas.
+AWS Budget está configurado por **USD 20 mensuales** (octubre completo), con alertas reales al 25/50/75/100 % y prevista al 100 %. No detiene gasto. Estas capturas archivadas acreditan configuración, **no entrega de correo**: muestran 0/2 destinatarios verificados.
 
-Rendimiento backend actualizado: [comparación, PDF, ZIP y trabajos bajo carga local](docs/evidencia/rendimiento-backend-2026-10-28.md). Medianas de comparación 18,46/19,56 s sin/con animación; 510 pruebas backend. Muestra local limitada, staging/AWS pendiente.
+![AWS Budget: límite mensual USD 20 y estado de destinatarios](docs/budget.png)
 
-Para probar la versión local revisada: [guía de inicio y recorrido](docs/probar-local.md). Frontend en http://127.0.0.1:5174 y API en :8000. [Estabilidad verificada](docs/evidencia/estabilidad-local-2026-10-28.md): 510 pruebas backend, 151 frontend y flujo real, sin despliegue AWS.
+![AWS Budget: alertas de consumo real y previsto](docs/budget2.png)
 
+## Estructura y documentación
 
+| Carpeta | Contenido |
+|---|---|
+| `backend/` | Motor, API, estrategias, exportación e informes; pruebas Python |
+| `frontend/` | Interfaz React/TypeScript y pruebas |
+| `infra/` | Terraform, bootstrap y guías de despliegue/retirada |
+| `schemas/` y `specs/` | Contratos, requisitos, diseño y tareas |
+| `scripts/` | Servidor local, empaquetado, reproducción, despliegue y verificaciones |
+| `docs/evidencia/` | Resultados ejecutados y límites observados |
 
-**P-04 preparado, sin desplegar:** trabajos duraderos y hasta 1000 réplicas dentro del límite de carga. [Operación y pruebas AWS pendientes](infra/P04-OPERACION.md).
+[Backlog técnico](specs/tasks.md) · [Hoja de ruta Monte Carlo y extensiones](specs/pro-roadmap.md) · [Feedback docente](docs/plan-feedback-docentes.md) · [Entrada para agentes](AGENTS.md).

@@ -1,0 +1,54 @@
+{
+  "consultado": "2026-10-28T06:13:26-05:00",
+  "fuente": "AWS Cost Explorer GetCostAndUsage",
+  "metrica": "UnblendedCost",
+  "moneda": "USD",
+  "alcance": "Cuenta completa; sin filtro por proyecto",
+  "granularidad": "DAILY; fechas UTC; End exclusivo",
+  "presupuesto_equipo_usd": "20.00",
+  "inicio_presupuesto_evento": "2026-10-26",
+  "operacion_despliegue": {
+    "Start": "2026-10-28",
+    "End_exclusivo": "2026-10-31"
+  },
+  "cierre_final_disponible": false,
+  "lecturas": [
+    {
+      "dia": "2026-10-26",
+      "Estimated": true,
+      "grupos": [
+        {
+          "tipo": "Credit",
+          "importe": "-0.0000000304"
+        },
+        {
+          "tipo": "Usage",
+          "importe": "0.0000000304"
+        }
+      ],
+      "neto_usd": "0E-10"
+    },
+    {
+      "dia": "2026-10-27",
+      "Estimated": true,
+      "grupos": [
+        {
+          "tipo": "Usage",
+          "importe": "0"
+        }
+      ],
+      "neto_usd": "0"
+    },
+    {
+      "dia": "2026-10-28",
+      "Estimated": true,
+      "grupos": [
+        {
+          "tipo": "Usage",
+          "importe": "0"
+        }
+      ],
+      "neto_usd": "0"
+    }
+  ]
+}
