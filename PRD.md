@@ -193,6 +193,8 @@ PRO no puede retrasar la entrega base. Cada elemento se etiqueta `no iniciado`, 
 
 ## 7. Métricas y protocolo experimental
 
+P-07 backend (2026-10-27): la presentación de una réplica debe preservar identidad por persona, día, política y semilla, con frames/eventos coherentes con las filas diarias. [Aceptación](specs/p07-backend-playback.md). Esta verificación no sustituye la aceptación humana ni el protocolo científico siguiente.
+
 ### 7.1 Unidad experimental
 
 Una réplica contiene un grafo, caso inicial, calendario de contactos, parámetros y flujo de aleatoriedad. Dentro de la réplica, las tres políticas usan la misma realización externa. Las réplicas cambian la subsemilla de transmisión y, según el experimento, pueden conservar o regenerar el grafo; esta decisión debe quedar en el manifiesto.

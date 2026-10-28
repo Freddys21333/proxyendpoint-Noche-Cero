@@ -216,6 +216,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 ### I-07 — P-07: cierre de mapa y animación
 
+**Avance backend 2026-10-27:** por solicitud explícita se verifica [integridad temporal](../specs/p07-backend-playback.md) sin cambiar el motor ni esperar al gate científico. [Evidencia](evidencia/p07-backend-2026-10-27.md): 418 pruebas backend y contratos HTTP reales pasan. I-07 sigue abierto por controles, accesibilidad, sincronización visual y aceptación humana; T-22 conserva su pendiente.
+
 **Problema:** la reproducción y P-09 funcionan, pero falta aceptar sincronización, rendimiento, accesibilidad y transiciones.
 
 **Alcance:**

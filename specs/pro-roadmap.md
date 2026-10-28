@@ -132,6 +132,8 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-07 — Completar visualización temporal y animación opcional (PRO-6)
 
+Backend verificado localmente (2026-10-27): [validación compartida de integridad temporal](p07-backend-playback.md), trazas reales, rechazo de frames/eventos incoherentes y hashes conservados. [Evidencia](../docs/evidencia/p07-backend-2026-10-27.md). Se mantiene abierta la aceptación integral de UI, controles, accesibilidad y rendimiento visual.
+
 - [ ] Estado: **en progreso**. Base de reproducción disponible; depende de frames/eventos exportados por el modelo correspondiente.
 - Aceptar mapa y red sincronizados con día, política y réplica; conservar cámara, selección, coordenadas y conteos. Mostrar límites cuando no hay frames. La curva media nunca determina los estados individuales.
 - Si queda tiempo, interpolar colores/transiciones entre fotogramas e indicar exposiciones únicamente con eventos causales reales registrados. No inventar trayectos, contagios o desplazamientos de personas porque se vea más animado.

@@ -2,7 +2,7 @@
 
 **Fecha de corte:** 2026-10-27.
 **Rama de trabajo:** `feat/backend-contratos`.
-**Último incremento:** P-08 (`git log --grep=pro-p08`), informe local ficticio; P-06 conserva su resultado desfavorable.
+**Último incremento:** backend P-07 (`git log --grep=pro-p07`), integridad temporal; P-08 local verificado; P-06 conserva su resultado desfavorable.
 **Estado post-merge:** [checklist y pendientes](evidencia/estado-post-merge-2026-10-27.md).
 **Entrada obligatoria:** [AGENTS.md](../AGENTS.md).
 **Documento vivo:** [plan de iteraciones PRO](plan-pro-iteraciones.md).
@@ -24,7 +24,7 @@ Lo que bloquea una entrega creíble no es “hacer otra pantalla”: es cerrar e
 - P-04: AWS; la pantalla de jobs ya usa la API real (P-03 cerrada en local, no durable).
 - P-06: existe el preset `manabi-dengue-2025-v1`, pero la validación fuera de muestra es desfavorable; no hay versión validada.
 - P-08: informe PDF verificado localmente en modo ficticio; [contrato](../specs/p08-report.md) y [evidencia](evidencia/p08-informe-2026-10-27.md); no cierra T-22.
-- P-07: aceptación de sincronización, accesibilidad y rendimiento.
+- P-07: backend temporal verificado ([evidencia](evidencia/p07-backend-2026-10-27.md)); aceptación UI de sincronización, accesibilidad y rendimiento pendiente.
 - T-17..T-21: Terraform, staging, URL pública, benchmark, costos, Budget, arquitectura y pitch.
 
 **No hay URL pública, no hay AWS desplegado y no hay gate científico aprobado.** Cualquier afirmación distinta debe tratarse como error documental.

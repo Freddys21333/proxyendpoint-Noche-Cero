@@ -64,6 +64,12 @@ def _comparison(values: list[int], indices: NDArray[np.int64] | None) -> dict[st
     }
 
 
+def select_representative(cumulative: list[int]) -> int:
+    """Índice más próximo a la mediana de Dirigida; empate por índice ascendente."""
+    median = float(np.median(cumulative))
+    return min(range(len(cumulative)), key=lambda i: (abs(cumulative[i] - median), i))
+
+
 def aggregate(replicates: list[dict[str, Any]], root_seed: int) -> dict[str, Any]:
     """Agrega por índice y comparte índices bootstrap en todas las diferencias."""
     ordered = sorted(replicates, key=lambda rep: rep["index"])
@@ -147,8 +153,7 @@ def aggregate(replicates: list[dict[str, Any]], root_seed: int) -> dict[str, Any
             "La recomendación no garantiza una victoria para toda semilla ni predice brotes reales.",
         ],
     )
-    median = float(np.median(cumulative["targeted"]))
-    representative = min(range(n), key=lambda i: (abs(cumulative["targeted"][i] - median), i))
+    representative = select_representative(cumulative["targeted"])
     return dict(
         summaryByPolicy=summary,
         pairedComparisons=paired,

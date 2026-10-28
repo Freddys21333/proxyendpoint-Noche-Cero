@@ -10,6 +10,8 @@
 
 ## 1. Propósito y alcance
 
+P-07 backend: la [aceptación de integridad temporal](p07-backend-playback.md) concreta RF-12/13/19 para comprobar frames/eventos opcionales, identidad, semillas y conteos antes de entregar o cargar experimentos. No incorpora geografía ni calcula ciencia en frontend; aceptación visual y T-22 conservan su estado.
+
 Construir una herramienta educativa para comparar intervenciones sobre una población sintética inspirada en Manta. El comité configura un brote, ejecuta varias réplicas y decide con curvas, métricas e incertidumbre. El jurado debe poder cambiar la semilla y las condiciones sin editar código.
 
 El alcance base incluye red multicapa, SEIR, vacunas limitadas, políticas `none`, `random`, `targeted`, API, interfaz, exportación reproducible y despliegue AWS. No incluye predicción clínica, datos personales, mortalidad, reinfección ni garantías de que `targeted` siempre gane.

@@ -1,5 +1,7 @@
 # Plan de pruebas local (acumulativo)
 
+P-07 backend: desde `backend/`, `.venv/Scripts/python.exe -m pytest tests/test_playback_integrity.py -q` (14 casos). Desde raíz, `backend/.venv/Scripts/python.exe scripts/verify_playback.py` genera N1000/T90/R2, valida una exportación real y mide el control temporal; resultados en `.tools/p07-backend/`. [Aceptación](../specs/p07-backend-playback.md) y [evidencia](evidencia/p07-backend-2026-10-27.md). No cierra la aceptación UI de P-07 ni T-22.
+
 Este documento reúne las pruebas que **ya existen y se pueden ejecutar** sobre las funcionalidades PRO implementadas en local. Crece junto con el código: una funcionalidad sin implementación no aparece aquí. No sustituye a la aceptación humana de T-13..T-16 ni autoriza AWS/P-04.
 
 - Última actualización: 2026-10-27.

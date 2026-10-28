@@ -20,6 +20,7 @@ from domain.reproducibility import (
     json_hash,
 )
 from simulation.experiments import POLICIES, run_experiment
+from simulation.playback import validate_playback
 
 ENGINE_VERSION = "0.1.0"
 SCHEMA_VERSION = "1.0"
@@ -228,6 +229,8 @@ def _validate(document: dict[str, Any]) -> None:
                 {key: result[key] for key in ("metrics", "daily", "selections")}
             ):
                 raise ValueError("El hash de política no coincide.")
+
+    validate_playback(document)
 
 
 def export_experiment(
