@@ -58,13 +58,15 @@ export type SimulationPlaybackState = {
   policy: Policy
   playing: boolean
   speed: number
+  reducedMotion?: boolean
 }
 
 export type SimulationPlaybackAction =
-  | { type: 'toggle' | 'pause' | 'tick' | 'step' | 'reset' }
+  | { type: 'toggle' | 'pause' | 'tick' | 'step' | 'step-back' | 'reset' }
   | { type: 'seek'; day: number }
   | { type: 'policy'; policy: Policy }
   | { type: 'speed'; speed: number }
+  | { type: 'reduced-motion'; enabled: boolean }
 
 export type SimulationPlayback = SimulationPlaybackState & SimulationPresentation & {
   lastDay: number
@@ -92,12 +94,16 @@ export function simulationPlaybackReducer(
     }
     case 'step':
       return { ...state, day: Math.min(lastDay, state.day + 1), playing: false }
+    case 'step-back':
+      return { ...state, day: Math.max(0, state.day - 1), playing: false }
     case 'seek':
       return { ...state, day: action.day, playing: false }
     case 'policy':
       return { ...state, policy: action.policy, playing: false }
     case 'speed':
       return { ...state, speed: action.speed }
+    case 'reduced-motion':
+      return { ...state, reducedMotion: action.enabled }
     case 'reset':
       return { ...state, day: 0, playing: false }
   }

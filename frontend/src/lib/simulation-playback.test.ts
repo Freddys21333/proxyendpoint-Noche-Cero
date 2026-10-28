@@ -140,6 +140,27 @@ test('next day pauses and cannot advance beyond the final day', () => {
   assert.deepEqual(reduce(state, { type: 'step' }), state)
 })
 
+test('previous day pauses and cannot retreat below day zero', () => {
+  let state = reduce({ ...initialSimulationPlayback, day: 2, playing: true }, { type: 'step-back' })
+  assert.deepEqual(state, { ...initialSimulationPlayback, day: 1, playing: false })
+  state = reduce(state, { type: 'step-back' })
+  assert.equal(state.day, 0)
+  state = reduce(state, { type: 'step-back' })
+  assert.equal(state.day, 0)
+  assert.equal(state.playing, false)
+})
+
+test('reduced motion mode can be toggled without changing day or policy', () => {
+  const before = { ...initialSimulationPlayback, day: 3, policy: 'targeted' as const }
+  const enabled = reduce(before, { type: 'reduced-motion', enabled: true })
+  assert.equal(enabled.reducedMotion, true)
+  assert.equal(enabled.day, 3)
+  assert.equal(enabled.policy, 'targeted')
+  const disabled = reduce(enabled, { type: 'reduced-motion', enabled: false })
+  assert.equal(disabled.reducedMotion, false)
+  assert.equal(disabled.day, 3)
+})
+
 test('no frames means no temporal progression or timer', () => {
   const state = simulationPlaybackReducer(initialSimulationPlayback, { type: 'toggle' }, 0)
   assert.deepEqual(state, initialSimulationPlayback)

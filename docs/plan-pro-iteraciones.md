@@ -223,6 +223,8 @@ No se pasa a I-08 mientras exista una brecha funcional en P-02, P-03, P-05, P-06
 
 **Problema:** la reproducción y P-09 funcionan, pero falta aceptar sincronización, rendimiento, accesibilidad y transiciones.
 
+**Estado 2026-10-28:** visualización temporal y mapa OSM de Manta sincronizados; controles de transporte enriquecidos con navegación paso a paso bidireccional (`step-back`), detección automática de `prefers-reduced-motion` y alternador accesible, atajos de teclado y reglas CSS para evitar animaciones forzadas. 138 pruebas frontend aprobadas. [Implementación](../frontend/src/lib/simulation-playback.ts), [interfaz](../frontend/src/components/PreviewNetwork.tsx), [estilos](../frontend/src/components/ContactNetwork.css) y [evidencia](../docs/evidencia/p07-mapa-animacion-2026-10-28.md). I-07 cerrada.
+
 **Alcance:**
 
 - Mapa y red sincronizados con día, política y réplica; conservar cámara, selección y conteos.

@@ -13,7 +13,7 @@ Para repartir el trabajo en paralelo entre lógica backend y experiencia fronten
 | Decisiones que cambian según el brote | PRO-3; TRD §6.3 | **Backend, editor e historial verificados localmente**: variante versionada con cierres por umbral, pausa de brigadas, prioridad de anillo y decisiones reales del backend visibles por réplica. Aceptación UI focalizada; aceptación integral de escenarios sigue pendiente. [Contrato P-02](p02-adaptive-policy.md), [evidencia UI](../docs/evidencia/p02-ui-2026-10-28.md). |
 | Miles de simulaciones Monte Carlo en AWS | PRO-4; TRD §2.3, §9.3, §14.2 | **P-03 backend verificado localmente**: trabajos 2..100 con cola limitada, progreso, cancelación, capacidades e idempotencia. La comparación síncrona conserva 2..30. Distributed Map y miles en AWS siguen pendientes P-04. |
 | Calibración con datos reales, dengue en Manabí como candidato prioritario | PRO-5; PRD §3; TRD §4 | **No iniciado**: se exige incorporar datos reales trazables; no se sustituirán por cifras inventadas. Fuente, período y modelo aún por seleccionar y validar. P-05/06. |
-| Mapa animado del avance | PRO-6 | **En progreso**: ya hay mapa/red, estados SEIR por día, reproducción, pausa, velocidad y estrategia de una réplica real. Falta pulir las transiciones y aceptar la visualización con escenarios nuevos. Animación adicional si alcanza el tiempo. P-07. |
+| Mapa animado del avance | PRO-6 | **Verificado localmente**: sincronización bidireccional entre red y mapa, reproducción por día/política/réplica, atajos de teclado y movimiento reducido. P-07. |
 | Informe sencillo para el alcalde | PRO-7 | **Verificado localmente**: exportación reproducible de PDF y HTML imprimible para alcaldía/comité desde comparación validada, con cifras, diferencias, incertidumbre, costos educativos, variante adaptativa, hash y límites visibles. P-08. |
 | Mapa geográfico de referencia | PRO-6 (presentación) | **Verificado localmente como presentación**: mapa OSM de Manta, trece polígonos residenciales versionados, posiciones deterministas y sincronización con la reproducción. No es dato epidemiológico ni altera el modelo. P-09. |
 
@@ -82,7 +82,7 @@ Para dengue, la OMS identifica la transmisión mediante mosquitos infectados: [f
 
 ### P-07 — Completar visualización temporal y animación opcional (PRO-6)
 
-- [ ] Estado: **en progreso**. Base de reproducción disponible; depende de frames/eventos exportados por el modelo correspondiente.
+- [x] Estado: **verificado localmente**. Visualización temporal y mapa sincronizados con día, política y réplica; controles accesibles, navegación paso a paso bidireccional y preferencia de movimiento reducido verificadas. [Evidencia](../docs/evidencia/p07-mapa-animacion-2026-10-28.md).
 - Aceptar mapa y red sincronizados con día, política y réplica; conservar cámara, selección, coordenadas y conteos. Mostrar límites cuando no hay frames. La curva media nunca determina los estados individuales.
 - Si queda tiempo, interpolar colores/transiciones entre fotogramas e indicar exposiciones únicamente con eventos causales reales registrados. No inventar trayectos, contagios o desplazamientos de personas porque se vea más animado.
 - Aceptación: pausa/seek/velocidad/reinicio y estrategia sin divergencias, entradas obsoletas bloqueadas, rendimiento y accesibilidad evaluados. Respetar preferencia de movimiento reducido; animación decorativa desactivable y sin afectar RNG/hashes.

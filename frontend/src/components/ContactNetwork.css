@@ -692,3 +692,77 @@
     margin-right: 392px;
   }
 }
+
+.playback-accessibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.playback-motion-toggle {
+  background: transparent;
+  border: 1px solid #dbe4dd;
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 11px;
+  color: #254c39;
+  cursor: pointer;
+}
+
+.playback-motion-toggle:hover {
+  background: #edf3ee;
+}
+
+.playback-motion-toggle.active {
+  background: #254c39;
+  color: #fff;
+  border-color: #254c39;
+}
+
+.playback-keyboard-hint {
+  color: #718375;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dark .playback-motion-toggle {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.dark .playback-motion-toggle:hover {
+  background: var(--muted);
+}
+
+.dark .playback-motion-toggle.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.dark .playback-keyboard-hint {
+  color: var(--muted-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simulator-workbench *,
+  .simulator-workbench *::before,
+  .simulator-workbench *::after,
+  .network-view *,
+  .network-view *::before,
+  .network-view *::after,
+  .geographic-map *,
+  .geographic-map *::before,
+  .geographic-map *::after,
+  .playback-transport * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
