@@ -29,7 +29,7 @@ export function JobsWorkspace({ config, preview, onShowSimulator }: {
   const [result, setResult] = useState<{ jobId: string; data: CompareResponse } | null>(null)
   const [notice, setNotice] = useState<JobNotice>(null)
 
-  const maxReplicates = jobMaxReplicates(config?.jobLimits)
+  const maxReplicates = jobMaxReplicates(config?.jobLimits, preview)
   const available = Boolean(config?.features.asyncJobs)
   const activeJob = useMemo(() => jobs.find(job => job.id === activeId) ?? null, [jobs, activeId])
   const activeRecord = useMemo(() => records.find(record => record.id === activeId) ?? null, [records, activeId])
@@ -68,12 +68,12 @@ export function JobsWorkspace({ config, preview, onShowSimulator }: {
     return () => { cancelled = true }
   }, [available, config])
 
-  // Ajusta semilla y réplicas al escenario previsualizado sin pisar lo que el usuario ya eligió.
+  // La red está ligada a su semilla; no recortar las réplicas elegidas silenciosamente.
   useEffect(() => {
     if (!preview) return
     setDraft(current => ({
-      rootSeed: current.rootSeed === 20261026 ? preview.configuration.rootSeed : current.rootSeed,
-      replicates: Math.min(current.replicates, maxReplicates),
+      rootSeed: preview.configuration.rootSeed,
+      replicates: current.replicates,
     }))
   }, [preview?.graphHash, preview?.configuration.rootSeed, maxReplicates])
 
@@ -93,7 +93,7 @@ export function JobsWorkspace({ config, preview, onShowSimulator }: {
     if (!available) { setNotice({ tone: 'error', text: 'Este servidor no expone trabajos asíncronos.' }); return }
     if (!configuration || !graphHash) { setNotice({ tone: 'error', text: 'Consulta la red antes de crear un trabajo.' }); return }
     if (seed) {
-      const nextErrors = validateJobDraft(seed, config?.jobLimits)
+      const nextErrors = validateJobDraft(seed, config?.jobLimits, preview)
       setErrors(nextErrors)
       if (Object.keys(nextErrors).length) return
     }
@@ -176,7 +176,7 @@ export function JobsWorkspace({ config, preview, onShowSimulator }: {
     </div>}
     <div className="pro-work-grid">
       <JobForm
-        draft={draft} errors={errors} maxReplicates={maxReplicates} hasPreview={Boolean(preview)}
+        draft={draft} errors={{ ...errors, ...validateJobDraft(draft, config?.jobLimits, preview) }} maxReplicates={maxReplicates} hasPreview={Boolean(preview)}
         previewLabel={previewLabel} available={available} busy={creating}
         onChange={next => { setDraft(next); setErrors({}) }} onSubmit={submit} onShowSimulator={onShowSimulator}
       />

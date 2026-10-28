@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { ConfigurationInput, JobResponse } from '../lib/api.ts'
+import type { ConfigurationInput, JobResponse, PreviewResponse } from '../lib/api.ts'
 import {
   isTerminalJob, jobConfigurationFrom, jobErrorMessage, jobFromResponse, jobMaxReplicates, jobOutcome,
   jobProgressPercent, jobStatusDescriptions, jobStatusLabels, mergeJob, statusFromApi, validateJobDraft,
@@ -109,4 +109,18 @@ test('API errors are translated and unknown codes keep a generic message', () =>
   assert.match(jobErrorMessage({ code: 'IDEMPOTENCY_CONFLICT' }), /idempotencia/)
   assert.equal(jobErrorMessage({ code: 'DESCONOCIDO' }), 'No se pudo completar la operación con el trabajo.')
   assert.equal(jobErrorMessage(null), 'No se pudo completar la operación con el trabajo.')
+})
+
+
+test('workload limit follows the preview and never changes the requested draft', () => {
+  const preview = { configuration: { ...configuration(), scenario: { ...configuration().scenario, days: 90 } }, graph: { edges: new Array(59373) } } as unknown as PreviewResponse
+  const caps = limits(100)
+  assert.equal(jobMaxReplicates(caps, preview), 9)
+  const draft = { replicates: 30, rootSeed: 20261026 }
+  assert.match(validateJobDraft(draft, caps, preview).replicates!, /entre 2 y 9/)
+  assert.equal(draft.replicates, 30)
+  assert.deepEqual(validateJobDraft({ ...draft, replicates: 9 }, caps, preview), {})
+  assert.match(validateJobDraft({ replicates: 9, rootSeed: 123 }, caps, preview).rootSeed!, /vista previa/)
+  assert.equal(jobMaxReplicates({ ...caps, maxEdgeDayReplicates: 1 }, preview), 0)
+  assert.match(validateJobDraft({ ...draft, replicates: 2 }, { ...caps, maxEdgeDayReplicates: 1 }, preview).replicates!, /población|duración/)
 })

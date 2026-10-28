@@ -19,14 +19,14 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
   const seedId = useId()
   const replicateError = errors.replicates
   const seedError = errors.rootSeed
-  const quickValues = [...new Set([10, 50, Math.min(100, maxReplicates)])].filter(value => value >= JOB_REPLICATE_MIN && value <= maxReplicates)
-  const canSubmit = available && hasPreview && !busy
+  const quickValues = [...new Set([2, 5, 10, 50, Math.min(100, maxReplicates)])].filter(value => value >= JOB_REPLICATE_MIN && value <= maxReplicates)
+  const canSubmit = available && hasPreview && !busy && maxReplicates >= JOB_REPLICATE_MIN && !replicateError && !seedError
 
   return <section className="pro-card pro-form-card" aria-labelledby="pro-job-form-title">
     <div className="pro-card-heading">
       <div>
         <h2 id="pro-job-form-title">Nuevo trabajo</h2>
-        <p>Ejecuta el escenario vigente como trabajo local de 2 a {maxReplicates.toLocaleString('es-EC')} réplicas.</p>
+        <p>{maxReplicates >= JOB_REPLICATE_MIN ? `Ejecuta el escenario vigente como trabajo local de 2 a ${maxReplicates.toLocaleString('es-EC')} réplicas.` : 'Reduce el tamaño del escenario para ejecutar trabajos locales.'}</p>
       </div>
       <span className={`pro-badge${available ? '' : ' pro-badge--muted'}`}>{available ? 'Backend local' : 'Sin trabajos'}</span>
     </div>
@@ -54,6 +54,7 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
           <span>Réplicas</span>
           <input
             id={replicatesId}
+            aria-label="Réplicas"
             type="number"
             inputMode="numeric"
             min={JOB_REPLICATE_MIN}
@@ -71,17 +72,19 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
           <span>Semilla raíz</span>
           <input
             id={seedId}
+            aria-label="Semilla raíz"
             type="number"
             inputMode="numeric"
             min={0}
             max={JOB_SEED_MAX}
             step={1}
             value={Number.isNaN(draft.rootSeed) ? '' : draft.rootSeed}
+            readOnly
             aria-invalid={Boolean(seedError)}
-            aria-describedby={seedError ? `${seedId}-error` : undefined}
+            aria-describedby={`${seedId}-help${seedError ? ` ${seedId}-error` : ''}`}
             disabled={!available}
-            onChange={event => onChange({ ...draft, rootSeed: event.target.value === '' ? NaN : Number(event.target.value) })}
           />
+          <small id={`${seedId}-help`}>Semilla de la vista previa. Para cambiarla, ve al simulador y consulta la red de nuevo.</small>
           {seedError && <small className="pro-field-error" id={`${seedId}-error`}>{seedError}</small>}
         </label>
       </div>
@@ -94,7 +97,7 @@ export function JobForm({ draft, errors, maxReplicates, hasPreview, previewLabel
           disabled={!available}
           onClick={() => onChange({ ...draft, replicates: value })}
         >{value.toLocaleString('es-EC')}</button>)}
-        <span>Máximo del servidor: {maxReplicates.toLocaleString('es-EC')} réplicas. La cola admite pocos trabajos a la vez.</span>
+        <span>Máximo para esta red según los límites del servidor: {maxReplicates.toLocaleString('es-EC')} réplicas. La cola admite pocos trabajos a la vez.</span>
       </div>
       <dl className="pro-form-meta">
         <div>

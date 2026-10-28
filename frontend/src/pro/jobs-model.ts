@@ -1,4 +1,4 @@
-import type { ConfigurationInput, JobLimits, JobResponse } from '../lib/api.ts'
+import type { ConfigurationInput, JobLimits, JobResponse, PreviewResponse } from '../lib/api.ts'
 
 export type ProJobStatus = 'PENDING' | 'RUNNING' | 'AGGREGATING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED'
 export type ProJobDraft = { replicates: number; rootSeed: number }
@@ -63,8 +63,12 @@ export function statusFromApi(status: JobResponse['status']): ProJobStatus {
   return apiStatuses[status]
 }
 
-export function jobMaxReplicates(limits?: JobLimits): number {
-  return limits?.maxRepetitions ?? JOB_REPLICATE_DEFAULT_MAX
+export function jobMaxReplicates(limits?: JobLimits, preview?: PreviewResponse | null): number {
+  const maximum = limits?.maxRepetitions ?? JOB_REPLICATE_DEFAULT_MAX
+  if (!limits || !preview) return maximum
+  // Validación del límite de trabajo publicado por la API; no calcula epidemiología.
+  const workPerReplicate = preview.graph.edges.length * preview.configuration.scenario.days
+  return workPerReplicate > 0 ? Math.min(maximum, Math.floor(limits.maxEdgeDayReplicates / workPerReplicate)) : maximum
 }
 
 export function isTerminalStatus(status: ProJobStatus): boolean {
@@ -86,15 +90,18 @@ export function jobOutcome(job: ProJob): { label: string; partial: boolean } {
   return { label: jobStatusLabels[job.status], partial: false }
 }
 
-export function validateJobDraft(draft: ProJobDraft, limits?: JobLimits): { replicates?: string; rootSeed?: string } {
-  const max = jobMaxReplicates(limits)
+export function validateJobDraft(draft: ProJobDraft, limits?: JobLimits, preview?: PreviewResponse | null): { replicates?: string; rootSeed?: string } {
+  const max = jobMaxReplicates(limits, preview)
   const errors: { replicates?: string; rootSeed?: string } = {}
   if (!Number.isInteger(draft.replicates) || draft.replicates < JOB_REPLICATE_MIN || draft.replicates > max) {
     errors.replicates = `Las réplicas deben ser un entero entre ${JOB_REPLICATE_MIN} y ${max.toLocaleString('es-EC')}.`
   }
   if (!Number.isInteger(draft.rootSeed) || draft.rootSeed < 0 || draft.rootSeed > JOB_SEED_MAX) {
     errors.rootSeed = `La semilla debe ser un entero entre 0 y ${JOB_SEED_MAX.toLocaleString('es-EC')}.`
+  } else if (preview && draft.rootSeed !== preview.configuration.rootSeed) {
+    errors.rootSeed = 'La semilla debe coincidir con la vista previa. Cámbiala en el simulador y consulta la red de nuevo.'
   }
+  if (max < JOB_REPLICATE_MIN) errors.replicates = 'Esta red supera la capacidad local. Reduce población o duración y consulta la red de nuevo.'
   return errors
 }
 
