@@ -1,6 +1,7 @@
 import { AlertTriangle, Check, Clock, RefreshCw, Square } from 'lucide-react'
 import { policyLabels } from '../lib/comparison.ts'
 import type { CompareResponse } from '../lib/api.ts'
+import type { JobAccessIssue } from './jobs-errors.ts'
 import {
   isTerminalJob, jobOutcome, jobProgressPercent, jobStatusDescriptions, jobStatusLabels,
   type ProJob, type ProJobStatus,
@@ -22,8 +23,9 @@ function formatDate(value: string): string {
   return Number.isNaN(date.getTime()) ? '—' : dateFormat.format(date)
 }
 
-export function JobStatusPanel({ job, fullResult, onCancel, onRetry, onForget, onExport }: {
+export function JobStatusPanel({ job, issue, fullResult, onCancel, onRetry, onForget, onExport }: {
   job: ProJob | null
+  issue?: JobAccessIssue
   fullResult?: CompareResponse
   onCancel: () => void
   onRetry: () => void
@@ -56,7 +58,9 @@ export function JobStatusPanel({ job, fullResult, onCancel, onRetry, onForget, o
       </div>
     </div>
 
-    <p className="pro-status-description" role="status" aria-live="polite">{jobStatusDescriptions[job.status]}</p>
+    <p className="pro-status-description" role="status" aria-live="polite">{issue ? `Último estado conocido: ${outcome.label}.` : jobStatusDescriptions[job.status]}</p>
+
+    {issue && <div className="pro-alert" role="alert"><AlertTriangle size={19} aria-hidden="true" /><div><strong>No se pudo consultar el trabajo</strong><p>{issue.message}</p>{issue.retryable && <p>Se volverá a consultar automáticamente.</p>}</div></div>}
 
     <div className="pro-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={`Progreso del trabajo: ${percent}%`}>
       <span style={{ width: `${percent}%` }} />
@@ -101,7 +105,7 @@ export function JobStatusPanel({ job, fullResult, onCancel, onRetry, onForget, o
       </div>
     </div>}
 
-    {!terminal && <div className="pro-actions">
+    {!terminal && !issue?.unavailable && <div className="pro-actions">
       <button type="button" className="pro-secondary pro-secondary--danger" onClick={onCancel}>
         <Square size={15} aria-hidden="true" /> Cancelar trabajo
       </button>
@@ -132,8 +136,8 @@ export function JobStatusPanel({ job, fullResult, onCancel, onRetry, onForget, o
       </div>
       <p className="pro-hash">Hash del experimento <span className="mono">{job.result.experimentHash}</span></p>
     </section>}
-    {job.source === 'api' && job.status === 'SUCCEEDED' && !job.result && <p role="status">Trabajo completado. Recuperando el agregado completo del backend…</p>}
+    {job.source === 'api' && job.status === 'SUCCEEDED' && !job.result && !issue && <p role="status">Trabajo completado. Recuperando el agregado completo del backend…</p>}
     {job.source === 'api' && job.result && fullResult && <button type="button" className="pro-secondary" onClick={() => onExport(fullResult)}>Descargar resultado ZIP</button>}
-    {job.source === 'api' && terminal && <div className="pro-actions"><button type="button" className="pro-link-button" onClick={onForget}>Quitar de esta sesión</button></div>}
+    {job.source === 'api' && (terminal || issue?.unavailable) && <div className="pro-actions"><button type="button" className="pro-link-button" onClick={onForget}>Quitar de esta sesión</button></div>}
   </section>
 }

@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { Gauge, Play } from 'lucide-react'
 import { JOB_POLICIES, JOB_REPLICATE_MIN, JOB_SEED_MAX, type ProJobDraft } from './jobs-model.ts'
 import { policyLabels } from '../lib/comparison.ts'
@@ -17,6 +17,12 @@ export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submittin
   const seedId = useId()
   const replicateError = errors.replicates
   const seedError = errors.rootSeed
+  const replicatesRef = useRef<HTMLInputElement>(null)
+  const seedRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    if (replicateError) replicatesRef.current?.focus()
+    else if (seedError) seedRef.current?.focus()
+  }, [replicateError, seedError])
 
   return <section className="pro-card pro-form-card" aria-labelledby="pro-job-form-title">
     <div className="pro-card-heading">
@@ -31,6 +37,7 @@ export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submittin
         <label className="pro-field" htmlFor={replicatesId}>
           <span>Réplicas</span>
           <input
+            ref={replicatesRef}
             id={replicatesId}
             type="number"
             inputMode="numeric"
@@ -47,6 +54,7 @@ export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submittin
         <label className="pro-field" htmlFor={seedId}>
           <span>Semilla raíz</span>
           <input
+            ref={seedRef}
             id={seedId}
             type="number"
             inputMode="numeric"
@@ -61,6 +69,7 @@ export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submittin
           {seedError && <small className="pro-field-error" id={`${seedId}-error`}>{seedError}</small>}
         </label>
       </div>
+      {(replicateError || seedError) && <p className="pro-field-error" role="alert">Revisa los campos señalados antes de iniciar el trabajo.</p>}
       <div className="pro-quick-row" aria-label="Cantidades rápidas de réplicas">
         {[10, 30, 100].filter(value => value <= maxReplicates).map(value => <button
           key={value}
@@ -69,7 +78,7 @@ export function JobForm({ draft, errors, maxReplicates, maxConcurrent, submittin
           aria-pressed={draft.replicates === value}
           onClick={() => onChange({ ...draft, replicates: value })}
         >{value.toLocaleString('es-EC')}</button>)}
-        <span>Máximo del servidor: {maxReplicates.toLocaleString('es-EC')} réplicas · hasta {maxConcurrent.toLocaleString('es-EC')} trabajos en paralelo.</span>
+        <span>{available ? `Máximo del servidor: ${maxReplicates.toLocaleString('es-EC')} réplicas · hasta ${maxConcurrent.toLocaleString('es-EC')} trabajos en paralelo.` : 'Los límites del servidor no están disponibles.'}</span>
       </div>
       <dl className="pro-form-meta">
         <div>

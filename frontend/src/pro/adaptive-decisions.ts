@@ -1,4 +1,5 @@
 import type { CompareResponse } from '../lib/api.ts'
+import { vaccinationContexts } from '../lib/vaccination.ts'
 
 export type AdaptiveDailyRecord = {
   day: number
@@ -65,4 +66,12 @@ export function adaptiveDecisionRows(result: CompareResponse, replicateIndex: nu
 
 export function adaptiveTriggerLabel(trigger: string): string {
   return triggerLabels[trigger] ?? `Motivo registrado: ${trigger}`
+}
+
+export function adaptiveStrategyDisabled(enabled: boolean | undefined): boolean {
+  return enabled === false
+}
+
+export function adaptiveContextLabel(context: string): string {
+  return vaccinationContexts[context] ?? context
 }

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ApiError, createJobCredentials, type CompareResponse, type ConfigResponse, type ConfigurationInput, type JobResponse, type JobCredentials } from '../lib/api.ts'
+import { createJobCredentials, type CompareResponse, type ConfigResponse, type ConfigurationInput, type JobResponse, type JobCredentials } from '../lib/api.ts'
 import { experimentZip } from '../lib/export-experiment.ts'
 import type { createApiClient } from '../lib/api.ts'
 import { JOB_REPLICATE_MIN, mapApiJob, previewConfigurationForJob, validateJobDraft, type ProJob, type ProJobDraft } from './jobs-model.ts'
 import { JobForm } from './JobForm.tsx'
 import { JobStatusPanel } from './JobStatusPanel.tsx'
 import { JobHistory } from './JobHistory.tsx'
+import { classifyJobError, mergeJobStatus, nextJobPollDelay, type JobAccessIssue } from './jobs-errors.ts'
 
 const SESSION_KEY = 'noche-cero:local-jobs:v1'
 type StoredJob = {
@@ -14,7 +15,7 @@ type StoredJob = {
   graphHash: string
   credentials: JobCredentials
   result?: CompareResponse
-  localError?: string
+  localError?: JobAccessIssue
 }
 
 function restoreJobs(): StoredJob[] {
@@ -29,19 +30,7 @@ function restoreJobs(): StoredJob[] {
 }
 
 function toUiJobs(records: StoredJob[]): ProJob[] {
-  return records.map(record => {
-    const job = mapApiJob(record.response, record.configuration, record.result)
-    return record.localError ? { ...job, error: { code: 'SESSION_ERROR', message: record.localError } } : job
-  })
-}
-
-function errorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
-    if (error.status === 403 || error.status === 404) return 'El trabajo ya no está disponible en este proceso del backend o la sesión venció.'
-    if (error.status === 429) return 'La cola está ocupada. Espera un momento y vuelve a consultar.'
-    return error.message
-  }
-  return 'No se pudo completar la operación con el backend local.'
+  return records.map(record => mapApiJob(record.response, record.configuration, record.result))
 }
 
 export function JobsWorkspace({ api, serverConfig, comparison, preview }: {
@@ -88,18 +77,21 @@ export function JobsWorkspace({ api, serverConfig, comparison, preview }: {
         } else if (!['failed', 'cancelled', 'completed'].includes(response.status)) {
           response = await api.jobStatus(response.jobId, activeRecord.credentials.token, controller.signal)
         }
-        setRecords(current => current.map(record => record.response.jobId === response.jobId ? { ...record, response, result, localError: undefined } : record))
+        setRecords(current => current.map(record => {
+          if (record.response.jobId !== response.jobId) return record
+          const merged = mergeJobStatus(record.response, response)
+          return { ...record, response: merged, result: result ?? record.result, localError: undefined }
+        }))
         if (!controller.signal.aborted && (!['failed', 'cancelled'].includes(response.status) && (response.status !== 'completed' || !result))) {
           timer = window.setTimeout(refresh, delay)
           delay = Math.min(15000, Math.round(delay * 1.6))
         }
       } catch (error) {
         if (controller.signal.aborted) return
-        const message = errorMessage(error)
-        setRecords(current => current.map(record => record.response.jobId === activeRecord.response.jobId ? { ...record, localError: message } : record))
-        const retryable = !(error instanceof ApiError) || error.status === 0 || error.status === 429 || error.status >= 500
-        if (retryable) {
-          timer = window.setTimeout(refresh, delay)
+        const issue = classifyJobError(error)
+        setRecords(current => current.map(record => record.response.jobId === activeRecord.response.jobId ? { ...record, localError: issue } : record))
+        if (issue.retryable) {
+          timer = window.setTimeout(refresh, nextJobPollDelay(delay, issue))
           delay = Math.min(15000, Math.round(delay * 1.6))
         }
       }
@@ -127,7 +119,7 @@ export function JobsWorkspace({ api, serverConfig, comparison, preview }: {
       setRecords(current => [record, ...current.filter(item => item.response.jobId !== response.jobId)])
       setActiveId(response.jobId)
     } catch (error) {
-      if (!controller.signal.aborted) setRequestError(errorMessage(error))
+      if (!controller.signal.aborted) setRequestError(classifyJobError(error).message)
     } finally {
       if (createController.current === controller) {
         createController.current = null
@@ -148,8 +140,8 @@ export function JobsWorkspace({ api, serverConfig, comparison, preview }: {
     setRequestError(null)
     try {
       const response = await api.cancelJob(activeRecord.response.jobId, activeRecord.credentials.token)
-      setRecords(current => current.map(record => record.response.jobId === response.jobId ? { ...record, response, localError: undefined } : record))
-    } catch (error) { setRequestError(errorMessage(error)) }
+      setRecords(current => current.map(record => record.response.jobId === response.jobId ? { ...record, response: mergeJobStatus(record.response, response), localError: undefined } : record))
+    } catch (error) { setRequestError(classifyJobError(error).message) }
   }
 
   const retry = () => { if (activeRecord) void create(activeRecord) }
@@ -172,7 +164,7 @@ export function JobsWorkspace({ api, serverConfig, comparison, preview }: {
     {requestError && <div className="pro-alert" role="alert"><strong>No se pudo completar el trabajo.</strong><p>{requestError}</p></div>}
     <div className="pro-work-grid">
       <JobForm draft={draft} errors={errors} maxReplicates={maxReplicates} maxConcurrent={maxConcurrent} submitting={submitting} available={available} onChange={updateDraft} onSubmit={submit} />
-      <JobStatusPanel job={activeJob} fullResult={activeRecord?.result} onCancel={() => { void cancel() }} onRetry={retry} onForget={forget} onExport={exportResult} />
+      <JobStatusPanel job={activeJob} issue={activeRecord?.localError} fullResult={activeRecord?.result} onCancel={() => { void cancel() }} onRetry={retry} onForget={forget} onExport={exportResult} />
     </div>
     <JobHistory jobs={uiJobs} activeId={activeId} onSelect={setActiveId} />
   </>

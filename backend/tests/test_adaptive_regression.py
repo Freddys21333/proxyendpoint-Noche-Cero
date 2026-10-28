@@ -131,6 +131,37 @@ def test_reopening_and_terminal_day_record_actual_closure():
     assert trace.daily[-1]["adaptiveDecisions"]["closureActive"] is False
 
 
+def test_rising_then_falling_outbreak_closes_and_reopens_without_looking_ahead():
+    cfg = configuration(100000)
+    plan = cfg.intervention.combined
+    assert plan is not None and plan.adaptive_strategy is not None
+    strategy = replace(
+        plan.adaptive_strategy, closure_infection_threshold=0.08, reopen_infection_threshold=0.04
+    )
+    cfg = replace(
+        cfg,
+        scenario=replace(cfg.scenario, days=20, beta=1, sigma=1, gamma=0.3),
+        intervention=replace(cfg.intervention, combined=replace(plan, adaptive_strategy=strategy)),
+    )
+    trace = simulate_paired(cfg, generate_graph(cfg))["targeted"]
+    closed = [
+        row
+        for row in trace.daily
+        if "closure_triggered_by_threshold" in row["adaptiveDecisions"]["triggers"]
+    ]
+    reopened = [
+        row
+        for row in trace.daily
+        if "reopen_triggered_by_threshold" in row["adaptiveDecisions"]["triggers"]
+    ]
+    assert len(closed) == len(reopened) == 1
+    assert closed[0]["i"] / cfg.scenario.population_size >= 0.08
+    assert reopened[0]["i"] / cfg.scenario.population_size < 0.04
+    assert closed[0]["day"] < reopened[0]["day"]
+    assert closed[0]["adaptiveDecisions"]["closureActive"] is True
+    assert reopened[0]["adaptiveDecisions"]["closureActive"] is False
+
+
 def test_inverted_thresholds_are_rejected():
     wire = configuration().to_dict()
     wire["intervention"]["combined"]["adaptiveStrategy"]["reopenInfectionThreshold"] = 0.9

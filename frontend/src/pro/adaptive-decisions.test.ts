@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { CompareResponse } from '../lib/api.ts'
-import { adaptiveDecisionRows, adaptiveTriggerLabel } from './adaptive-decisions.ts'
+import { adaptiveContextLabel, adaptiveDecisionRows, adaptiveTriggerLabel, adaptiveStrategyDisabled } from './adaptive-decisions.ts'
 
 function comparison(adaptive = true): CompareResponse {
   const daily = [
@@ -39,4 +39,16 @@ test('adaptive decision reasons are shown in Spanish and unknown reasons remain 
   assert.equal(adaptiveTriggerLabel('closure_triggered_by_threshold'), 'Se alcanzó el umbral de cierre.')
   assert.equal(adaptiveTriggerLabel('reopen_triggered_by_threshold'), 'La fracción infecciosa bajó del umbral de reapertura.')
   assert.equal(adaptiveTriggerLabel('future_reason'), 'Motivo registrado: future_reason')
+})
+
+test('an omitted enabled flag keeps the policy enabled; only explicit false disables it', () => {
+  assert.equal(adaptiveStrategyDisabled(undefined), false)
+  assert.equal(adaptiveStrategyDisabled(true), false)
+  assert.equal(adaptiveStrategyDisabled(false), true)
+})
+
+test('closure context uses the Spanish interface label and retains unknown values', () => {
+  assert.equal(adaptiveContextLabel('household'), 'Hogar')
+  assert.equal(adaptiveContextLabel('school'), 'Colegio')
+  assert.equal(adaptiveContextLabel('future'), 'future')
 })

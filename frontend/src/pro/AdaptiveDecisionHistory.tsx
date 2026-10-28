@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { CompareResponse } from '../lib/api.ts'
-import { adaptiveDecisionRows, adaptiveTriggerLabel } from './adaptive-decisions.ts'
+import { adaptiveContextLabel, adaptiveDecisionRows, adaptiveStrategyDisabled, adaptiveTriggerLabel } from './adaptive-decisions.ts'
 
 const percent = new Intl.NumberFormat('es-EC', { style: 'percent', maximumFractionDigits: 2 })
 const money = new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 })
@@ -22,14 +22,14 @@ export function AdaptiveDecisionHistory({ result }: { result: CompareResponse })
       </select></label>
     </div>
     <p>Umbral de cierre {percent.format(strategy.closureInfectionThreshold)} · reapertura {percent.format(strategy.reopenInfectionThreshold)} · anillo {strategy.ringVaccinationPriority ? 'habilitado' : 'deshabilitado'}.</p>
-    {!strategy.enabled && <p role="note">La variante está desactivada; se muestran las decisiones registradas por la configuración, sin aplicar reglas adaptativas.</p>}
+    {adaptiveStrategyDisabled(strategy.enabled) && <p role="note">La variante está desactivada; se muestran las decisiones registradas por la configuración, sin aplicar reglas adaptativas.</p>}
     {rows.length === 0 ? <p role="status">Esta respuesta no contiene registros adaptativos válidos para la réplica seleccionada.</p> : <div className="comparison-table-scroll">
       <table>
         <caption>Decisiones diarias de la política Dirigida; la fracción infecciosa usa el estado observado ese día.</caption>
         <thead><tr><th scope="col">Día</th><th scope="col">S / E / I / R</th><th scope="col">Infecciosos</th><th scope="col">Vacunación</th><th scope="col">Cierre</th><th scope="col">Brigadas</th><th scope="col">Prioridad anillo</th><th scope="col">Saldo</th><th scope="col">Motivos registrados</th></tr></thead>
         <tbody>{rows.map(row => {
           const decision = row.adaptiveDecisions
-          const closure = decision.closureActive === null ? 'No aplica' : decision.closureActive ? `Activo${row.closedContext ? ` · ${row.closedContext}` : ''}` : 'Inactivo'
+          const closure = decision.closureActive === null ? 'No aplica' : decision.closureActive ? `Activo${row.closedContext ? ` · ${adaptiveContextLabel(row.closedContext)}` : ''}` : 'Inactivo'
           const brigades = decision.brigadesAllowed ? `Permitidas${row.brigadesActive === undefined ? '' : ` · ${row.brigadesActive} atendidas`}` : 'Pausadas'
           const reasons = decision.triggers.length ? decision.triggers.map(adaptiveTriggerLabel) : ['Sin motivos adicionales registrados.']
           return <tr key={row.day}>
